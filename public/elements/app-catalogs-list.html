@@ -22,6 +22,19 @@
           vertical-align: middle;
         }
 
+        .pages > .detail {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: rgba(0, 0, 0, .8);
+          color: white;
+          font-weight: 100;
+          padding: 5px;
+          opacity: 1;
+          transition: opacity 0.1s;
+        }
+
         /*      JM - ? 
         ::-webkit-input-placeholder {
           color: rgba(255, 255, 255, 0.5);
@@ -39,6 +52,17 @@
           color: rgba(255, 255, 255, 0.5);
         }*/
 
+        .grid-item {
+          cursor: pointer;
+        }
+        .detail {
+          padding: 5px;
+        }
+        paper-fab {
+          width: 32px; 
+          height: 32px;
+          padding: 5px;
+        }
       </style>
 
       <paper-dialog class="intro">
@@ -51,36 +75,35 @@
         </div>
       </paper-dialog>
 
-      <iron-ajax
-          id="getCatalogs"
-          auto
-          url="[[api]]/catalogs"
-          method="get"
-          handle-as="json"
-          loading="{{loading}}"
-          last-response="{{catalogs}}">
+      <div loading-state="loaded">
+        <iron-list id="list" items="[[results]]" as="catalog" grid style="height:100%">
+          <template>
 
-      </iron-ajax>
+            <div class="grid-item" tabindex$="[[index]]" on-click="_select">
+              <paper-material>
+                <iron-image 
+                  sizing="cover"
+                  src$="[[apiHost]]/catalogs/[[catalog.id]]/thumbnail" 
+                  alt="Catalog Thumbnail Image">
+                </iron-image>
 
-      <iron-list items="[[results]]" as="catalog" grid style="height:100%">
-        <template>
-          <div class="pagesContainer">
-            <div class="pages" tabindex$="[[tabIndex]]">
-              <iron-image sizing="cover"
-                          src="[[apiHost]]/catalogs/[[catalog.id]]/thumbnail" alt="Catalog Thumbnail Image">
-              </iron-image>
-              <div class="detail">
-                <a href="/#/catalogs/catalog/[[catalog.id]]"><iron-icon icon="wine:people"></iron-icon></a>
-                <a href="[[apiHost]]/catalogs/[[catalog.id]]/file" target="_blank"><iron-icon icon="wine:picture-as-pdf"></iron-icon></a>
-              </div>
+                <div class="detail">
+                  <paper-fab icon="create"></paper-fab>
+                </div>
+              </paper-material>
             </div>
-          </div>
-        </template>
-      </iron-list>
 
-      <!-- <div class="loadingIndicator" hidden$="[[!loading]]">
-           <paper-spinner active$="[[loading]]"></paper-spinner> Fetching wine catalogs</b>
-           </div> -->
+          </template>
+        </iron-list>
+      </div>
+
+      <div class="loadingIndicator" loading-state="loading">
+        <paper-spinner></paper-spinner> Fetching wine catalogs</b>
+      </div>
+
+      <div loading-state="error">
+        Failed to load wine catalogs :(
+      </div>
 
   </template>
 
@@ -95,11 +118,6 @@
           value: false,
           observer : '_onActive'
         },
-        loading: {
-          type: Boolean,
-          value: false,
-          notify: true
-        },
         results : {
           type : Array,
           value : function() {
@@ -108,9 +126,10 @@
         }
       },
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, StateToggleBehavior],
 
       ready : function() {
+        this.toggleState('loading', 'loading-state');
         this._getApi();
       },
 
@@ -121,6 +140,7 @@
       _onActive : function() {
         if( !this.active ) return;
         this._load();
+        this._updateListSize();
       },
 
       _load : function() {
@@ -136,9 +156,21 @@
       },
 
       _onCatalogsSearchUpdate : function(e) {
+        this.toggleState(e.state, 'loading-state');
         if( e.state !== 'loaded') return;
+
+        this._updateListSize();
         this.results = e.results.data;
-        console.log(e);
+      },
+
+      _updateListSize : function() {
+        this.debounce('_updateListSize', function(){
+          this.$.list.fire('iron-resize');
+        }, 50);
+      },
+
+      _select : function(e) {
+        window.location.hash = 'catalog/'+e.currentTarget.getAttribute('tabindex');
       }
 
     });

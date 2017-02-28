@@ -1,0 +1,91 @@
+<dom-module id="app-pages-list" >
+  <template>
+    <style include="shared-styles"></style>
+    <style >
+      :host {
+        display: none;
+      }
+
+      .loadingIndicator {
+        font-size: 16px;
+        text-align: center;
+        height: 60px;
+      }
+
+      .loadingIndicator paper-spinner {
+        margin-right: 20px;
+        vertical-align: middle;
+      }
+
+      ::-webkit-input-placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      ::-moz-placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      :-ms-input-placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      ::-ms-input-placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+    </style>
+
+    <iron-ajax
+       id="getPages"
+       auto
+        url="[[api]]/pages?catalog_id=[[catalog_id]]"
+       method="get"
+       handle-as="json"
+       last-response="{{pages}}"></iron-ajax>
+
+    <iron-list items="[[pages.data]]" as="page" grid style="height:100%">
+      <template>
+        <div class="grid-item" tabindex$="[[tabIndex]]">
+          <paper-material>
+            <iron-image sizing="cover"
+                        src="[[api]]/pages/[[page.id]]/thumbnail" alt="Catalog Thumbnail Image">
+            </iron-image>
+              <div class="detail">
+                <a href="/#/catalogs/page/[[page.id]]"> <iron-icon icon="wine:people"></iron-icon></a>
+              </div>
+          </paper-material>
+        </div>
+      </template>
+    </iron-list>
+
+
+    <div class="loadingIndicator" hidden$="[[!loading]]">
+      <paper-spinner active$="[[loading]]"></paper-spinner> Fetching wine catalogs</b>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'app-pages-list',
+
+      properties: {
+        catalogId: {
+          type: String,
+          value : ''
+        },
+        active: {
+          type: Boolean,
+          value: false,
+          observer : '_onActive'
+        }
+      },
+
+      behaviors : [EventBusBehavior, StateToggleBehavior],
+
+      _onActive : function() {
+        if( !this.active ) return;
+      }
+    });
+  </script>
+</dom-module>

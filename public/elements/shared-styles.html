@@ -104,40 +104,31 @@
         font-size: 22px;
       }
 
-      .pages {
-        @apply(--layout);
-        background-color: #ddd;
+      .grid-item {
         position: relative;
         width: 114px;
         height: 144px;
-        margin: 8px;
+        padding: 8px;
       }
 
-      .pages:hover .detail{
-        opacity: 1;
-      }
-
-      .pages > iron-image {
-        @apply(--layout-flex);
-      }
-
-      .pages > .detail {
+      .grid-item .detail {
+        display: none;
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
-        background: linear-gradient(to bottom, rgba(255,255,255,0) 25%, rgba(255,255,255,0.8) 100%);
-        color: white;
-        font-weight: 100;
-        padding: 5px;
-        opacity: 1;
-        transition: opacity 0.1s;
+        background-color: rgba(0,0,0,.8);
       }
 
-      @media (max-width: 800px) {
+      .grid-item:hover .detail {
+        display: block;
       }
 
-      @media (max-width: 400px) {
+      .grid-item iron-image {
+        display: block;
+        background-color: #ddd;
+        width: 98px;
+        height: 128px;
       }
 
     </style>
