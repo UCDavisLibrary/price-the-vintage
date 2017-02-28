@@ -1,17 +1,60 @@
-
 <dom-module id="price-the-vintage">
   <template>
     <style>
       :host {
         display: block;
+        height: 100vh;
+        position: relative;
       }
     </style>
 
+    <app-location route="{{route}}" use-hash-as-path></app-location>
+    <app-route route="{{route}}"
+               pattern=":section"
+               data="{{routeInfo}}">
+    </app-route> 
+    <app-route route="{{route}}"
+               pattern="/catalog/:catalog_id"
+               data="{{routeInfo}}">
+    </app-route>
+    <app-route route="{{route}}"
+               pattern="/page/:page_id"
+               data="{{routeInfo}}">
+    </app-route>
+
+    <iron-pages selected="{{routeInfo.section}}" attr-for-selected="section" selected-attribute="active">
+      <app-catalogs-list section="list"></app-catalogs-list>
+      <wine-pages-list section="catalog"></wine-pages-list>
+      <wine-page-markup section="page"></wine-page-markup>
+    </iron-pages>
 
   </template>
+
   <script>
     Polymer({
-      is: 'price-the-vintage'
+      is: 'price-the-vintage',
+
+      properties : {
+        routeInfo : {
+          type : Object,
+          value : function(){
+            return {
+              section : 'list'
+            };
+          },
+          observer : '_onRouteChange'
+        }
+      },
+
+      _onRouteChange : function() {
+        console.log(this.routeInfo);
+
+        if( !this.routeInfo.section ) {
+          return window.location.hash = 'list';
+        }
+      }
+      
     });
   </script>
+
 </dom-module>

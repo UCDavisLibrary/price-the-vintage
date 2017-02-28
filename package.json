@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "./build/build.sh"
   },
   "author": "Justin Merz <jrmerz@gmail.com>",
   "license": "ISC",
@@ -12,5 +13,9 @@
     "redux": "^3.6.0",
     "redux-observers": "^2.0.1",
     "superagent": "^3.5.0"
+  },
+  "devDependencies": {
+    "bulkify": "^1.4.2",
+    "watchify": "^3.9.0"
   }
 }

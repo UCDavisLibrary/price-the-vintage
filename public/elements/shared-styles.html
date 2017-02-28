@@ -1,4 +1,14 @@
 <style is="custom-style">
+    body {
+      @apply(--paper-font-common-base);
+      font-size: 14px;
+      font-weight: 300;
+      margin: 0;
+      padding:0;
+      min-height: 100vh;
+      background-color: #eee;
+    }
+
     :root {
         --dark-primary-color:       #7B1FA2;
         --default-primary-color:    #9C27B0;
@@ -12,21 +22,7 @@
         --divider-color:            #BDBDBD;
 
         --primary-color: var(--default-primary-color);
-
-        paper-card {
-          --primary-background-color: white;
-        }
     }
-
-    body {
-      @apply(--paper-font-common-base);
-      font-size: 14px;
-      font-weight: 300;
-      margin: 0;
-      min-height: 100vh;
-      background-color: #eee;
-    }
-
 </style>
 
 
@@ -34,6 +30,9 @@
 <dom-module id="shared-styles">
   <template>
     <style>
+      paper-card {
+        --primary-background-color: white;
+      }
 
       .layout {
         @apply(--layout-horizontal);

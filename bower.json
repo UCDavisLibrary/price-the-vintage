@@ -44,7 +44,8 @@
     "paper-listbox": "PolymerElements/paper-listbox#^1.1.2",
     "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^1.5.0",
     "paper-fab": "PolymerElements/paper-fab#^1.2.1",
-    "paper-material": "PolymerElements/paper-material#^1.0.6"
+    "paper-material": "PolymerElements/paper-material#^1.0.6",
+    "event-bus-behavior": "jrmerz/event-bus-behavior"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

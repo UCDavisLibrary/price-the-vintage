@@ -3,22 +3,12 @@
       <style include="shared-styles"></style>
       <style>
         :host {
-          display: none;
-        }
-
-        :host([active]) {
           display: block;
-          @apply(--paper-font-common-base);
-        }
-
-        app-header {
-          position: fixed;
-          top: 0;
+          position: absolute;
           left: 0;
           right: 0;
-          z-index: 1;
-          background-color: #4285f4;
-          color: white;
+          top: 0;
+          bottom:0;
         }
 
         .loadingIndicator {
@@ -32,6 +22,7 @@
           vertical-align: middle;
         }
 
+        /*      JM - ? 
         ::-webkit-input-placeholder {
           color: rgba(255, 255, 255, 0.5);
         }
@@ -46,30 +37,11 @@
 
         ::-ms-input-placeholder {
           color: rgba(255, 255, 255, 0.5);
-        }
+        }*/
 
       </style>
 
-      <style>
-        :host {
-          display: none;
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom:0;
-        }
-
-        :host([active]) {
-          display: block;
-        }
-
-        p {
-          line-height: 33.18px;
-        }
-      </style>
-
-      <paper-dialog class="intro" opened=true>
+      <paper-dialog class="intro">
         <h1>Price the Vintage</h1>
         <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
         <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
@@ -77,7 +49,6 @@
         <div class="buttons">
           <paper-button dialog-dismiss>OK</paper-button>
         </div>
-
       </paper-dialog>
 
       <iron-ajax
@@ -91,16 +62,16 @@
 
       </iron-ajax>
 
-      <iron-list items="[[catalogs.data]]" as="catalog" grid style="height:100%">
+      <iron-list items="[[results]]" as="catalog" grid style="height:100%">
         <template>
           <div class="pagesContainer">
             <div class="pages" tabindex$="[[tabIndex]]">
               <iron-image sizing="cover"
-                          src="[[api]]/catalogs/[[catalog.id]]/thumbnail" alt="Catalog Thumbnail Image">
+                          src="[[apiHost]]/catalogs/[[catalog.id]]/thumbnail" alt="Catalog Thumbnail Image">
               </iron-image>
               <div class="detail">
                 <a href="/#/catalogs/catalog/[[catalog.id]]"><iron-icon icon="wine:people"></iron-icon></a>
-                <a href="[[api]]/catalogs/[[catalog.id]]/file" target="_blank"><iron-icon icon="wine:picture-as-pdf"></iron-icon></a>
+                <a href="[[apiHost]]/catalogs/[[catalog.id]]/file" target="_blank"><iron-icon icon="wine:picture-as-pdf"></iron-icon></a>
               </div>
             </div>
           </div>
@@ -114,41 +85,61 @@
   </template>
 
   <script>
-   Polymer({
+    Polymer({
 
-       is: 'app-catalogs-list',
+      is: 'app-catalogs-list',
 
-       properties: {
-           api: {
-               type: "text",
-               reflectToAttribute: true
-           },
-          active: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: true
-          },
-
-          loading: {
-               type: Boolean,
-               value: false,
-               notify: true
+      properties: {
+        active: {
+          type: Boolean,
+          value: false,
+          observer : '_onActive'
+        },
+        loading: {
+          type: Boolean,
+          value: false,
+          notify: true
+        },
+        results : {
+          type : Array,
+          value : function() {
+            return []
           }
-       },
-
-      observers: [
-//        '_lockScroll(loading)'
-      ],
-
-      _lockScroll: function(isLoading) {
-        console.log('lockscroll: '+isLoading);
-        if (isLoading) {
-          document.body.style.overflow = 'hidden';
-        } else {
-          document.body.style.overflow = 'visible';
         }
-      }
+      },
 
+      behaviors : [EventBusBehavior],
+
+      ready : function() {
+        this._getApi();
+      },
+
+      ebBind : {
+        'search-catalogs-update' : '_onCatalogsSearchUpdate'
+      },
+
+      _onActive : function() {
+        if( !this.active ) return;
+        this._load();
+      },
+
+      _load : function() {
+        this.ebEmit('search-catalogs', {handler: this._onCatalogsSearchUpdate.bind(this)});
+      },
+
+      _getApi : function() {
+        this.ebEmit('get-api-host', {
+          handler : function(host){
+            this.apiHost = host;
+          }.bind(this)
+        });
+      },
+
+      _onCatalogsSearchUpdate : function(e) {
+        if( e.state !== 'loaded') return;
+        this.results = e.results.data;
+        console.log(e);
+      }
 
     });
   </script>
