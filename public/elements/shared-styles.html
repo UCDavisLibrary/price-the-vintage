@@ -1,0 +1,146 @@
+<style is="custom-style">
+    :root {
+        --dark-primary-color:       #7B1FA2;
+        --default-primary-color:    #9C27B0;
+        --light-primary-color:      #E1BEE7;
+        --text-primary-color:       #FFFFFF;
+        --accent-color:             #4CAF50;
+        --primary-background-color: #E1BEE7;
+        --primary-text-color:       #212121;
+        --secondary-text-color:     #757575;
+        --disabled-text-color:      #BDBDBD;
+        --divider-color:            #BDBDBD;
+
+        --primary-color: var(--default-primary-color);
+
+        paper-card {
+          --primary-background-color: white;
+        }
+    }
+
+    body {
+      @apply(--paper-font-common-base);
+      font-size: 14px;
+      font-weight: 300;
+      margin: 0;
+      min-height: 100vh;
+      background-color: #eee;
+    }
+
+</style>
+
+
+<!-- shared styles for all views -->
+<dom-module id="shared-styles">
+  <template>
+    <style>
+
+      .layout {
+        @apply(--layout-horizontal);
+      }
+      .stretch {
+        @apply( --layout-self-stretch:);
+      }
+      .center {
+        @apply(--layout-center);
+      }
+      .flex {
+        @apply(--layout-flex);
+      }
+
+		 a,paper-button {
+				 font-weight: bold;
+		 }
+
+		 a {
+					/*color: var(--primary-color);*/
+		 }
+
+		 paper-button {
+				 /*color: var(--primary-color);*/
+		 }
+
+		 paper-button.primary {
+				 /*background: var(--primary-color);*/
+		 }
+
+		 blockquote {
+				 border-left: 4px solid #eee;
+				 margin-left: 4px;
+				 padding-left: 20px;
+		  }
+
+      iron-icon {
+        /*color: var(--primary-background-color);*/
+      }
+      iron-icon:hover {
+        /*color: var(--accent-color);*/
+      }
+
+     .card {
+         margin: 24px;
+         padding: 16px;
+
+         color: #757575;
+         border-radius: 5px;
+         background-color: #fff;
+         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      }
+
+      .circle {
+        display: inline-block;
+        width: 64px;
+        height: 64px;
+        text-align: center;
+        color: #555;
+        border-radius: 50%;
+        background: #ddd;
+        font-size: 30px;
+        line-height: 64px;
+      }
+
+      h1 {
+        margin: 16px 0;
+        color: #212121;
+        font-size: 22px;
+      }
+
+      .pages {
+        @apply(--layout);
+        background-color: #ddd;
+        position: relative;
+        width: 114px;
+        height: 144px;
+        margin: 8px;
+      }
+
+      .pages:hover .detail{
+        opacity: 1;
+      }
+
+      .pages > iron-image {
+        @apply(--layout-flex);
+      }
+
+      .pages > .detail {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to bottom, rgba(255,255,255,0) 25%, rgba(255,255,255,0.8) 100%);
+        color: white;
+        font-weight: 100;
+        padding: 5px;
+        opacity: 1;
+        transition: opacity 0.1s;
+      }
+
+      @media (max-width: 800px) {
+      }
+
+      @media (max-width: 400px) {
+      }
+
+    </style>
+  </template>
+</dom-module>

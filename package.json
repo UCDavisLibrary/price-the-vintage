@@ -1,0 +1,16 @@
+{
+  "name": "price-the-vintage",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justin Merz <jrmerz@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "redux": "^3.6.0",
+    "redux-observers": "^2.0.1",
+    "superagent": "^3.5.0"
+  }
+}

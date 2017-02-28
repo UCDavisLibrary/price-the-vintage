@@ -1,0 +1,413 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="/bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="/bower_components/paper-item/paper-item.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/iron-form/iron-form.html">
+<link rel="import" href="/bower_components/iron-list/iron-list.html">
+
+<!-- Leaflet for image drawing -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@0.4.9/dist/leaflet.draw.css" />
+<script src="https://unpkg.com/leaflet-draw@0.4.9/dist/leaflet.draw.js"></script>
+
+<!--
+     `wine-page-markup`
+     demo demo/index.html
+   -->
+
+<link rel="import" href="/bower_components/paper-dialog-behavior/paper-dialog-behavior.html">
+<link rel="import" href="/bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html">
+
+
+<dom-module id="wine-price-item">
+	<template>
+
+    <style include="paper-dialog-shared-styles">
+      :host {
+        padding: 15px;
+      }
+      paper-input[type^=number] {
+        width: 100px;
+      }
+
+    </style>
+
+    <paper-dialog-scrollable>
+
+      <form is="iron-form" method="get" action="/" id="basic">
+
+      <div class="container flex-horizontal">
+
+        <paper-dropdown-menu label="Wine Color">
+					<paper-listbox class="dropdown-content" attr-for-selected="value" selected="Red">
+						<paper-item value="Red">Red Wine</paper-item>
+						<paper-item value="White">White Wine</paper-item>
+						<paper-item value="Rose">Rose</paper-item>
+					</paper-listbox>
+				</paper-dropdown-menu>
+
+					<paper-dropdown-menu label="Wine Type">
+						<paper-listbox class="dropdown-content" attr-for-selected="value" selected="Still">
+							<paper-item value="Still">Still</paper-item>
+							<paper-item value="Sparkling">Sparkling</paper-item>
+							<paper-item value="Fortified">Fortified</paper-item>
+						</paper-listbox>
+					</paper-dropdown-menu>
+      </div>
+
+      <div class="container flex-horizontal">
+
+          <paper-dropdown-menu label="Bottle Size">
+					  <paper-listbox class="dropdown-content" attr-for-selected="value" selected="Standard">
+						  <paper-item value="Standard">Standard</paper-item>
+						  <paper-item value="Split">Split</paper-item>
+              <paper-item value="Piccolo">Piccolo</paper-item>
+              <paper-item value="Pony">Pony</paper-item>
+              <paper-item value="Split">Split</paper-item>
+              <paper-item value="Quarter Bottle">Quarter Bottle</paper-item>
+              <paper-item value="Snipe">Snipe</paper-item>
+              <paper-item value="Quarter">Quarter</paper-item>
+              <paper-item value="Chopine">Chopine</paper-item>
+              <paper-item value="Demi">Demi</paper-item>
+              <paper-item value="Half Bottle">Half Bottle</paper-item>
+              <paper-item value="Tenth">Tenth</paper-item>
+              <paper-item value="Jennie">Jennie</paper-item>
+              <paper-item value="Demie">Demie</paper-item>
+              <paper-item value="Pinte">Pinte</paper-item>
+              <paper-item value="Clavelin">Clavelin</paper-item>
+              <paper-item value="Standard">Standard</paper-item>
+              <paper-item value="Fifth">Fifth</paper-item>
+              <paper-item value="Litre">Litre</paper-item>
+              <paper-item value="Magnum">Magnum</paper-item>
+              <paper-item value="Marie Jeanne">Marie Jeanne</paper-item>
+              <paper-item value="Jeroboam">Jeroboam</paper-item>
+              <paper-item value="Rehoboam">Rehoboam</paper-item>
+              <paper-item value="McKenzie">McKenzie</paper-item>
+              <paper-item value="Imperial">Imperial</paper-item>
+              <paper-item value="Methuselah">Methuselah</paper-item>
+              <paper-item value="Salmanazar">Salmanazar</paper-item>
+              <paper-item value="Balthazar">Balthazar</paper-item>
+              <paper-item value="Nebuchadnezzar">Nebuchadnezzar</paper-item>
+              <paper-item value="Melchior">Melchior</paper-item>
+              <paper-item value="Solomon">Solomon</paper-item>
+              <paper-item value="Sovereign">Sovereign</paper-item>
+              <paper-item value="Primat">Primat</paper-item>
+              <paper-item value="Goliath">Goliath</paper-item>
+              <paper-item value="Melchizedek">Melchizedek</paper-item>
+              <paper-item value="Midas">Midas</paper-item>
+              <paper-item value="Tenths">Tenths</paper-item>
+              <paper-item value="Pint">Pint</paper-item>
+              <paper-item value="Quar">Quart</paper-item>
+					  </paper-listbox>
+				  </paper-dropdown-menu>
+
+          <paper-input label="Bottle Price" value="" type="number" min="0" step="0.01" size="10">
+            <div prefix>$</div>
+          </paper-input>
+          <paper-input label="Case Price" value="" type="number" min="0" step="0.01">
+            <div prefix>$</div>
+          </paper-input>
+
+      </div>
+      <paper-input label="brandName" value="" type="string" ></paper-input>
+      <paper-input label="varietal" value="" type="string"></paper-input>
+      <paper-input label="otherDesignation" value="" type="string"></paper-input>
+      <paper-input label="vintage (year)" value="" type="number" ></paper-input>
+      <paper-input label="price year" value="" type="number" ></paper-input>
+
+          <!-- <paper-input label="page_id" value="[[page_id]]"></paper-input> -->
+          <!-- <paper-input label="row_col" value="[[row_col.lng]],[[row_col.lat]]"></paper-input> -->
+
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm autofocus>Accept</paper-button>
+      </div>
+    </paper-dialog-scrollable>
+    </form>
+
+	</template>
+
+	<script>
+    Polymer({
+		  is: 'wine-price-item',
+      behaviors: [
+        Polymer.PaperDialogBehavior
+      ],
+      properties: {
+				page_id : {
+					type : String,
+					value : null,
+				},
+				row_col : {
+					type : Array,
+					value : [],
+				}
+      },
+		  });
+	</script>
+
+</dom-module>
+
+<dom-module id="wine-page-markup">
+  <template include="shared-styles">
+
+    <style>
+
+      :host {
+        display: none;
+      }
+
+      :host([active]) {
+        display: block;
+        @apply(--paper-font-common-base);
+      }
+
+		  .page_aspect {
+				/* width within the parent.
+					 can be any percentage. */
+				width: 100%;
+		  }
+		  .page_aspect:before {
+				content: "";
+				float: left;
+
+				/* essentially the aspect ratio. 100% means the
+					 div will remain 100% as tall as it is wide, or
+					 square in other words.  */
+				padding-bottom: 120%;
+		  }
+		  /* this is a clearfix. you can use whatever
+				 clearfix you usually use, add
+				 overflow:hidden to the parent element,
+				 or simply float the parent container. */
+		  .page_aspect:after {
+				content: "";
+				display: table;
+				clear: both;
+		  }
+
+		  .flex-item {
+				@apply(--layout-flex);
+			}
+
+		  .flex-center-justified {
+				@apply(--layout-vertical);
+				@apply(--layout-center-justified);
+		  }
+
+		  .flex-horizontal {
+				@apply(--layout-horizontal);
+		  }
+
+      wine-price-item {
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        width: 100%;
+        overflow: auto;
+        z-index : 1003;
+      }
+    </style>
+
+    <iron-ajax
+        auto
+        url="[[api]]/price_marks?page_id=[[page_id]]"
+        handle-as="json"
+        on-response="add_marks"
+        last-response="{{marks}}"
+    >
+    </iron-ajax>
+
+		<div class="page_aspect" id="mapid">
+		</div>
+
+    <!-- <iron-list items="[[marks.data]]" as="mark">
+         <template>
+         <div class="pages" tabindex$="[[tabIndex]]">
+         [[mark.type]]
+         </div>
+         </template>
+         </iron-list> -->
+
+    <wine-price-item id="price_item" always-on-top=true>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'wine-page-markup',
+
+      properties: {
+				page_id : {
+					type : String,
+					value : '',
+          observer: 'newpage'
+				},
+				active: {
+					type: Boolean,
+					value: false,
+					reflectToAttribute: true
+				},
+				marks : {
+					type : Object,
+          value : function() {
+          	return {
+              data:[]
+            };
+          },
+					observer: 'add_marks_too'
+				},
+				map: {
+					type: Object,
+					value: null
+				},
+        bounds: {
+          type: Object,
+          value: null
+        }
+      },
+
+      newpage : function() {
+        this.marks={data:[]};
+        if (this.page_id) {
+          var img = new Image();
+          var page=this;
+          img.onload = function() {
+            //            page.bounds=[[0,0],[-this.naturalWidth,this.naturalHeight]];
+            page.bounds=[[0,0],[this.naturalHeight,this.naturalWidth]];
+            page.redraw();
+          }
+
+          img.src=this.api+'/pages/'+this.page_id+'/image';
+          //console.log('url: '+img.src);
+        }
+      },
+
+			redraw: function() {
+        if ( ! this.bounds ) {
+          return
+        }
+				if (this.map) {
+					this.map.remove();
+				}
+				this.map = L.map(this.$.mapid, {
+					crs: L.CRS.Simple,
+					minZoom: -2
+				});
+
+				var map=this.map;
+				setTimeout(function(){ map.invalidateSize()}, 200);
+        //					 map.invalidateSize();
+
+        // Need to get bounds from image.
+				var bounds = this.bounds;
+				var image = L.imageOverlay(this.api+'/pages/'+this.page_id+'/image', bounds).addTo(map);
+				map.fitBounds(bounds);
+
+        var marks_layer = new L.FeatureGroup();
+        map.addLayer(marks_layer);
+
+        var markup=this.$.price_item;
+        var page_id=this.page_id;
+
+        var PriceMarker = L.Icon.Default;
+
+        function mark_to_html(mark) {
+          var html="<div class=\"price_popup\">";
+          var items=[
+            'brandname',
+            'otherdesignation',
+            'vintage_date',
+            'country',
+            'bottlesize',
+            'type',
+            'color',
+            'region',
+            'perprice',
+            'caseprice'];
+
+          var label={
+            country:'Country',
+            otherdesignation:"Other Designation",
+            brandname:"Brand Name",
+            vintage_date:"Vintage",
+            region:"Wine Region",
+            bottlesize:"Bottle Size",
+            perprice:"Bottle Price",
+            caseprice:"Case Price"
+          };
+          items.forEach(function(i) {
+            if (mark[i]) {
+//              html+="<dt>"+((label[i])?label[i]:i)+"</dt>"+
+//                    "<dl>"+mark[i]+"</dl>";
+              html+="<b>"+((label[i])?label[i]:i)+":</b>  "+mark[i]+"<br/>";
+            }
+          });
+          html+="</div>";
+          return html;
+        }
+
+        this.marks.data.forEach(function(mark) {
+          var marker=L.marker([mark.r,mark.c]);
+          marker.bindPopup(mark_to_html(mark)+
+                           "<a href='/#/catalogs/page/9/mark/"+mark.id+"'>Edit</a>");
+          marker.addTo(marks_layer);
+          });
+
+        var options = {
+          position: 'topright',
+          draw: {
+            polyline:false,
+            polygon: false,
+            circle: false, // Turns off this drawing tool
+            rectangle: false,
+            marker: {
+              icon: new PriceMarker()
+            }
+          },
+          edit: {
+            featureGroup: marks_layer, //REQUIRED!!
+            remove: false
+          }
+        };
+
+        var drawControl = new L.Control.Draw(options);
+        map.addControl(drawControl);
+
+
+        map.on(L.Draw.Event.CREATED, function (e) {
+          var type = e.layerType,
+              layer = e.layer;
+
+          if (type === 'marker') {
+            layer.bindPopup('latlng: '+layer._latlng);
+          }
+
+          markup.row_col=layer._latlng;
+          markup.pageid=page_id;
+          markup.open();
+
+          marks_layer.addLayer(layer);
+        });
+
+			},
+
+      add_marks : function (foo) {
+        console.log("Add Marks")
+      },
+
+      add_marks_too : function () {
+        console.log("Also Add Marks")
+      },
+
+    });
+  </script>
+
+</dom-module>
