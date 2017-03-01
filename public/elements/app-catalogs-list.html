@@ -128,13 +128,13 @@
 
       behaviors : [EventBusBehavior, StateToggleBehavior],
 
+      ebBind : {
+        'search-catalogs-update' : '_onCatalogsSearchUpdate'
+      },
+
       ready : function() {
         this.toggleState('loading', 'loading-state');
         this._getApi();
-      },
-
-      ebBind : {
-        'search-catalogs-update' : '_onCatalogsSearchUpdate'
       },
 
       _onActive : function() {
@@ -149,7 +149,7 @@
 
       _getApi : function() {
         this.ebEmit('get-api-host', {
-          handler : function(host){
+          handler : function(host) {
             this.apiHost = host;
           }.bind(this)
         });

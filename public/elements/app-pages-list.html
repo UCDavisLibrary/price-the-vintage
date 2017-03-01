@@ -3,7 +3,7 @@
     <style include="shared-styles"></style>
     <style >
       :host {
-        display: none;
+        display: block;
       }
 
       .loadingIndicator {
@@ -16,39 +16,14 @@
         margin-right: 20px;
         vertical-align: middle;
       }
-
-      ::-webkit-input-placeholder {
-        color: rgba(255, 255, 255, 0.5);
-      }
-
-      ::-moz-placeholder {
-        color: rgba(255, 255, 255, 0.5);
-      }
-
-      :-ms-input-placeholder {
-        color: rgba(255, 255, 255, 0.5);
-      }
-
-      ::-ms-input-placeholder {
-        color: rgba(255, 255, 255, 0.5);
-      }
-
     </style>
 
-    <iron-ajax
-       id="getPages"
-       auto
-        url="[[api]]/pages?catalog_id=[[catalog_id]]"
-       method="get"
-       handle-as="json"
-       last-response="{{pages}}"></iron-ajax>
-
-    <iron-list items="[[pages.data]]" as="page" grid style="height:100%">
+    <iron-list items="[[pages]]" as="page" grid style="height:100%">
       <template>
         <div class="grid-item" tabindex$="[[tabIndex]]">
           <paper-material>
             <iron-image sizing="cover"
-                        src="[[api]]/pages/[[page.id]]/thumbnail" alt="Catalog Thumbnail Image">
+                        src="[[apiHost]]/pages/[[page.id]]/thumbnail" alt="Catalog Thumbnail Image">
             </iron-image>
               <div class="detail">
                 <a href="/#/catalogs/page/[[page.id]]"> <iron-icon icon="wine:people"></iron-icon></a>
@@ -78,13 +53,58 @@
           type: Boolean,
           value: false,
           observer : '_onActive'
+        },
+        apiHost : {
+          type : String,
+          value : ''
         }
       },
 
       behaviors : [EventBusBehavior, StateToggleBehavior],
 
+      ebBind : {
+        'selected-catalog-update' : '_onSelectedCatalogUpdate',
+        'catalog-pages-update' : '_onCatalogPagesUpdate'
+      },
+
+      ready : function() {
+        this.toggleState('loading', 'loading-state');
+        this._getApi();
+      },
+
       _onActive : function() {
         if( !this.active ) return;
+        this._getCatalogPages();
+      },
+
+      _getApi : function() {
+        this.ebEmit('get-api-host', {
+          handler : function(host) {
+            this.apiHost = host;
+          }.bind(this)
+        });
+      },
+
+      _onSelectedCatalogUpdate : function(id) {
+        this.selected = id;
+        this._getCatalogPages();
+      },
+
+      _getCatalogPages : function() {
+        if( !this.selected ) return;
+
+        this.ebEmit('get-catalog-pages', {
+          id: this.selected, 
+          handler: this._onCatalogPagesUpdate.bind(this)
+        });
+      },
+
+      _onCatalogPagesUpdate : function(e) {
+        if( !this.active || e.id !== this.selected ) return;
+        if( e.state !== 'loaded' ) return;
+
+        this.pages = e.payload.data;
+        
       }
     });
   </script>

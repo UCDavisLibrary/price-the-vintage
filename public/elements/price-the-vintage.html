@@ -10,21 +10,17 @@
 
     <app-location route="{{route}}" use-hash-as-path></app-location>
     <app-route route="{{route}}"
-               pattern=":section"
+               pattern=":section/:selected"
                data="{{routeInfo}}">
     </app-route> 
-    <app-route route="{{route}}"
-               pattern="/catalog/:catalog_id"
-               data="{{routeInfo}}">
-    </app-route>
-    <app-route route="{{route}}"
-               pattern="/page/:page_id"
-               data="{{routeInfo}}">
-    </app-route>
 
-    <iron-pages selected="{{routeInfo.section}}" attr-for-selected="section" selected-attribute="active">
+    <iron-pages 
+      selected="[[selectedSection]]" 
+      attr-for-selected="section" 
+      selected-attribute="active">
+
       <app-catalogs-list section="list"></app-catalogs-list>
-      <wine-pages-list section="catalog"></wine-pages-list>
+      <app-pages-list section="catalog"></app-pages-list>
       <wine-page-markup section="page"></wine-page-markup>
     </iron-pages>
 
@@ -38,19 +34,45 @@
         routeInfo : {
           type : Object,
           value : function(){
-            return {
-              section : 'list'
-            };
+            return {};
           },
           observer : '_onRouteChange'
+        },
+        selectedSection : {
+          type : String,
+          value : ''
         }
       },
 
-      _onRouteChange : function() {
-        console.log(this.routeInfo);
+      behaviors : [EventBusBehavior],
 
-        if( !this.routeInfo.section ) {
-          return window.location.hash = 'list';
+      ebBind : {
+        'app-state-update' : '_onAppStateUpdate'
+      },
+
+      ready : function() {
+        this._getAppState();
+      },
+
+      _getAppState : function() {
+        this.ebEmit('get-app-state', {handler: this._onAppStateUpdate.bind(this)});
+      },
+
+      _onAppStateUpdate : function(e) {
+        this.selectedSection = e.section;
+      },
+
+      _onRouteChange : function() {
+        var section = this.routeInfo.section || 'list';
+        this.ebEmit('update-app-state', {state: {section: section}});
+
+        switch(section) {
+          case 'catalog':
+            this.ebEmit('select-catalog', {id: this.routeInfo.selected});
+            break;
+          case 'page':
+            this.ebEmit('select-catalog-page', {id: this.routeInfo.selected});
+            break;
         }
       }
       
