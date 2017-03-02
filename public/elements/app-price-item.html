@@ -1,0 +1,189 @@
+<dom-module id="app-price-item">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: none;
+        padding: 15px;
+        overflow-y: auto;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(255,255,255,.85);
+        z-index: 1000;
+        border-top: 1px solid white;
+        box-shadow: 0 0 10px black;
+      }
+
+      paper-input {
+        color: black;
+      }
+
+      paper-input[type^=number] {
+        width: 120px;
+      }
+
+      #header {
+        height: 35px;
+      }
+      #body {
+        overflow: auto;
+      }
+
+      h2 {
+        margin: 0;
+        font-weight: 200;
+      }
+
+      .buttons {
+        text-align: center;
+        padding: 5px;
+      }
+
+      .accept {
+        background-color: var(--primary-color);
+        color: white;
+      }
+    </style>
+
+    <div id="header" class="layout center">
+      <h2 class="flex">Edit Mark</h2>
+      <paper-icon-button icon="close" on-click="hide"></paper-icon-button>
+    </div>
+
+    <div id="body">
+      <form is="iron-form" method="get" action="/" id="basic">
+
+      <div class="container flex-horizontal">
+
+        <paper-dropdown-menu label="Wine Color">
+          <paper-listbox class="dropdown-content" attr-for-selected="value" selected="Red">
+            <paper-item value="Red">Red Wine</paper-item>
+            <paper-item value="White">White Wine</paper-item>
+            <paper-item value="Rose">Rose</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu label="Wine Type">
+          <paper-listbox class="dropdown-content" attr-for-selected="value" selected="Still">
+            <paper-item value="Still">Still</paper-item>
+            <paper-item value="Sparkling">Sparkling</paper-item>
+            <paper-item value="Fortified">Fortified</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu label="Bottle Size">
+            <paper-listbox class="dropdown-content" attr-for-selected="value" selected="Standard">
+              <paper-item value="Standard">Standard</paper-item>
+              <paper-item value="Split">Split</paper-item>
+              <paper-item value="Piccolo">Piccolo</paper-item>
+              <paper-item value="Pony">Pony</paper-item>
+              <paper-item value="Split">Split</paper-item>
+              <paper-item value="Quarter Bottle">Quarter Bottle</paper-item>
+              <paper-item value="Snipe">Snipe</paper-item>
+              <paper-item value="Quarter">Quarter</paper-item>
+              <paper-item value="Chopine">Chopine</paper-item>
+              <paper-item value="Demi">Demi</paper-item>
+              <paper-item value="Half Bottle">Half Bottle</paper-item>
+              <paper-item value="Tenth">Tenth</paper-item>
+              <paper-item value="Jennie">Jennie</paper-item>
+              <paper-item value="Demie">Demie</paper-item>
+              <paper-item value="Pinte">Pinte</paper-item>
+              <paper-item value="Clavelin">Clavelin</paper-item>
+              <paper-item value="Standard">Standard</paper-item>
+              <paper-item value="Fifth">Fifth</paper-item>
+              <paper-item value="Litre">Litre</paper-item>
+              <paper-item value="Magnum">Magnum</paper-item>
+              <paper-item value="Marie Jeanne">Marie Jeanne</paper-item>
+              <paper-item value="Jeroboam">Jeroboam</paper-item>
+              <paper-item value="Rehoboam">Rehoboam</paper-item>
+              <paper-item value="McKenzie">McKenzie</paper-item>
+              <paper-item value="Imperial">Imperial</paper-item>
+              <paper-item value="Methuselah">Methuselah</paper-item>
+              <paper-item value="Salmanazar">Salmanazar</paper-item>
+              <paper-item value="Balthazar">Balthazar</paper-item>
+              <paper-item value="Nebuchadnezzar">Nebuchadnezzar</paper-item>
+              <paper-item value="Melchior">Melchior</paper-item>
+              <paper-item value="Solomon">Solomon</paper-item>
+              <paper-item value="Sovereign">Sovereign</paper-item>
+              <paper-item value="Primat">Primat</paper-item>
+              <paper-item value="Goliath">Goliath</paper-item>
+              <paper-item value="Melchizedek">Melchizedek</paper-item>
+              <paper-item value="Midas">Midas</paper-item>
+              <paper-item value="Tenths">Tenths</paper-item>
+              <paper-item value="Pint">Pint</paper-item>
+              <paper-item value="Quar">Quart</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+      </div>
+
+      <div class="layout">
+        <div class="flex">
+          <paper-input label="Wine Name" value="" type="string" ></paper-input>
+        </div>
+        <div>
+          <paper-input label="Vintage (year)" value="" type="number" ></paper-input>
+        </div>
+      </div>
+
+      <div class="layout flex-horizontal">
+        <div class="flex"></div>
+
+          <paper-input label="Bottle Price" value="" type="number" min="0" step="0.01" size="10">
+            <div prefix>$</div>
+          </paper-input>
+
+          <paper-input label="Case Price" value="" type="number" min="0" step="0.01">
+            <div prefix>$</div>
+          </paper-input>
+      </div>
+      
+      <!--<paper-input label="price year" value="" type="number" ></paper-input>-->
+
+      <div class="buttons">
+        <paper-button on-click="hide">Cancel</paper-button>
+        <paper-button class="accept" on-click="hide">Accept</paper-button>
+      </div>
+
+    </form>
+    </body>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'app-price-item',
+      
+      properties: {
+        pageId : {
+          type : String,
+          value : null,
+        },
+        rowCol : {
+          type : Array,
+          value : [],
+        }
+      },
+
+      ready : function() {
+        window.addEventListener('resize', this._resize.bind(this));
+        this._resize();
+      },
+
+      _resize : function() {
+        var h = Math.floor(window.innerHeight * 0.5);
+        this.style.maxHeight = h+'px';
+        this.$.body.style.maxHeight = (h-35)+'px';
+      },
+
+      show : function() {
+        this.style.display = 'block';
+      },
+
+      hide : function() {
+        this.style.display = 'none';
+      }
+    });
+  </script>
+</dom-module>

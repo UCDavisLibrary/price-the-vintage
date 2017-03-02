@@ -6,23 +6,33 @@
         height: 100vh;
         position: relative;
       }
+
+      paper-toolbar {
+        --paper-toolbar-background: var(--primary-color);
+      }
+
+      paper-header-panel {
+        --paper-header-panel-shadow: {
+          z-index: 600;
+        }
+      }
     </style>
 
-    <app-location route="{{route}}" use-hash-as-path></app-location>
-    <app-route route="{{route}}"
-               pattern=":section/:selected"
-               data="{{routeInfo}}">
-    </app-route> 
+    <paper-header-panel style="height: 100%">
+      <paper-toolbar>
+        <app-header class="flex"></app-header>
+      </paper-toolbar>
 
-    <iron-pages 
-      selected="[[selectedSection]]" 
-      attr-for-selected="section" 
-      selected-attribute="active">
+      <iron-pages 
+        selected="[[selectedSection]]" 
+        attr-for-selected="section" 
+        selected-attribute="active">
 
-      <app-catalogs-list section="list"></app-catalogs-list>
-      <app-pages-list section="catalog"></app-pages-list>
-      <wine-page-markup section="page"></wine-page-markup>
-    </iron-pages>
+        <app-catalogs-list section="list"></app-catalogs-list>
+        <app-pages-list section="catalog"></app-pages-list>
+        <app-page-markup section="page"></app-page-markup>
+      </iron-pages>
+    </paper-header-panel>
 
   </template>
 
@@ -31,13 +41,6 @@
       is: 'price-the-vintage',
 
       properties : {
-        routeInfo : {
-          type : Object,
-          value : function(){
-            return {};
-          },
-          observer : '_onRouteChange'
-        },
         selectedSection : {
           type : String,
           value : ''
@@ -51,7 +54,9 @@
       },
 
       ready : function() {
-        this._getAppState();
+        window.addEventListener('hashchange', this._setPageAndAppState.bind(this));
+        this._setPageAndAppState();
+        // this._getAppState();
       },
 
       _getAppState : function() {
@@ -59,20 +64,46 @@
       },
 
       _onAppStateUpdate : function(e) {
-        this.selectedSection = e.section;
+        this.debounce('_onAppStateUpdate', function(){
+          this.selectedSection = e.section;
+        }, 25);
       },
 
-      _onRouteChange : function() {
-        var section = this.routeInfo.section || 'list';
-        this.ebEmit('update-app-state', {state: {section: section}});
+      _setPageAndAppState : function() {
+        this.route = {
+          section : 'list',
+          catalog : '',
+          page : '',
+          edit : false
+        }
 
-        switch(section) {
-          case 'catalog':
-            this.ebEmit('select-catalog', {id: this.routeInfo.selected});
+        var parts = window
+          .location
+          .hash
+          .replace(/#/,'')
+          .split('/');
+        
+        for( var i = parts.length-1; i >= 0; i-- ) {
+          if( !parts[i] ) parts.splice(i);
+        }
+        
+
+        parts.forEach(this._parseRoute.bind(this));
+        this.ebEmit('update-app-state', {state: {section: this.route.section}});
+      },
+
+      _parseRoute : function(value, index) {
+        switch(index) {
+          case 0:
+            this.route.section = 'catalog';
+            this.ebEmit('select-catalog', {id: value});
             break;
-          case 'page':
-            this.ebEmit('select-catalog-page', {id: this.routeInfo.selected});
+          case 1:
+            this.route.section = 'page';
+            this.ebEmit('select-catalog-page', {id: value});
             break;
+          case 2:
+            if( value === 'edit') this.route.edit = true;
         }
       }
       

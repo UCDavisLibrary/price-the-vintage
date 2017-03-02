@@ -1,0 +1,80 @@
+
+<dom-module id="app-header">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <div class="layout center">
+      <h2 class="flex">[[title]]</h2>
+      <div>
+        <paper-icon-button state="list" icon="search" on-click="search"></paper-icon-button>
+        <paper-icon-button state="page" icon="arrow-back" on-click="_back"></paper-icon-button>
+      </div>
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-header',
+
+      properties : {
+        title : {
+          type : String,
+          value : 'Price the Vintage'
+        }
+      },
+
+      behaviors : [EventBusBehavior, StateToggleBehavior],
+
+      ebBind : {
+        'app-state-update' : '_onAppStateUpdate',
+        'catalog-update' : '_updateTitle',
+        'selected-catalog-update' : '_onSelectedCatalogUpdate',
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+      },
+
+      _onAppStateUpdate : function(e) {
+        this.section = e.section;
+
+        if( this.section === 'list' ) {
+          this.title = 'Price the Vintage';
+          this.catalog = '';
+          this.toggleState('list');
+        } else {
+          this.toggleState('page');
+        }
+      },
+
+      _onSelectedCatalogUpdate : function(id) {
+        this.catalog = id;
+
+        this.ebEmit('get-catalog', {
+          id : id,
+          handler : this._updateTitle.bind(this)
+        });
+      },
+
+      _updateTitle : function(e) {
+        if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;
+        this.title = e.payload.title;
+      },
+
+      _onSelectedCatalogPageUpdate : function(id) {
+        this.page = id;
+      },
+
+      _back : function() {
+        if( this.section === 'page' ) {
+          window.location.hash = this.catalog;
+        } else {
+          window.location.hash = '';
+        }
+      }
+
+    });
+  </script>
+</dom-module>

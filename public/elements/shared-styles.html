@@ -2,7 +2,7 @@
     body {
       @apply(--paper-font-common-base);
       font-size: 14px;
-      font-weight: 300;
+      font-weight: 200;
       margin: 0;
       padding:0;
       min-height: 100vh;
@@ -22,6 +22,7 @@
         --divider-color:            #BDBDBD;
 
         --primary-color: var(--default-primary-color);
+        --primary-background-color: white;
     }
 </style>
 
@@ -30,8 +31,8 @@
 <dom-module id="shared-styles">
   <template>
     <style>
-      paper-card {
-        --primary-background-color: white;
+      h1, h2, h3, h4 {
+        font-weight: 200;
       }
 
       .layout {

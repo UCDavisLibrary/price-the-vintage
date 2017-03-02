@@ -35,23 +35,6 @@
           transition: opacity 0.1s;
         }
 
-        /*      JM - ? 
-        ::-webkit-input-placeholder {
-          color: rgba(255, 255, 255, 0.5);
-        }
-
-        ::-moz-placeholder {
-          color: rgba(255, 255, 255, 0.5);
-        }
-
-        :-ms-input-placeholder {
-          color: rgba(255, 255, 255, 0.5);
-        }
-
-        ::-ms-input-placeholder {
-          color: rgba(255, 255, 255, 0.5);
-        }*/
-
         .grid-item {
           cursor: pointer;
         }
@@ -170,7 +153,7 @@
       },
 
       _select : function(e) {
-        window.location.hash = 'catalog/'+e.currentTarget.getAttribute('tabindex');
+        window.location.hash = e.currentTarget.getAttribute('tabindex');
       }
 
     });

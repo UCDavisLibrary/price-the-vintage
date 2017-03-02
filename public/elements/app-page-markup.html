@@ -1,0 +1,252 @@
+<dom-module id="app-page-markup">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+        :host {
+          display: block;
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom:0;
+        }
+    </style>
+
+    <div style="height:100%">
+      <div></div>
+        <div id="mapid" style="height: 100%;"></div>
+      </div>
+      <div>
+        <app-price-item id="priceItem"></app-price-item>
+      </div>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+
+      is: 'app-page-markup',
+
+      properties: {
+        selected : {
+          type : String,
+          value : ''
+        },
+        active: {
+          type: Boolean,
+          value: false,
+          observer: '_onActive'
+        },
+        marks : {
+          type : Object,
+          value : function() {
+            return {
+              data:[]
+            };
+          },
+          observer: 'add_marks_too'
+        },
+        map: {
+          type: Object,
+          value: null
+        },
+        bounds: {
+          type: Object,
+          value: null
+        }
+      },
+
+      behaviors : [EventBusBehavior],
+
+      ebBind : {
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'catalog-page-marks-update' : '_onPageMarksUpdate'
+      },
+
+      ready : function() {
+        this._getApi();
+      },
+
+      _getApi : function() {
+        this.ebEmit('get-api-host', {
+          handler : function(host) {
+            this.apiHost = host;
+          }.bind(this)
+        });
+      },
+
+      _onActive : function() {
+        if( !this.active ) return;
+
+        this._getPageMarks();
+        this._updateMapSize();
+      },
+
+      _updateMapSize : function() {
+        if( !this.map ) return;
+
+        this.debounce('_updateMapSize', function(){
+          this.map.invalidateSize();
+        }, 50);
+      },
+
+      _onSelectedCatalogPageUpdate : function(id) {
+        this.selected = id;
+        this._getPageMarks();
+      },
+
+      _getPageMarks : function() {
+        if( !this.selected || !this.active ) return;
+
+        this.ebEmit('get-catalog-page-marks', {
+          id: this.selected, 
+          handler: this._onPageMarksUpdate.bind(this)
+        });
+      },
+
+      _onPageMarksUpdate : function(e) {
+        if( !this.active || e.id !== this.selected ) return;
+        if( e.state !== 'loaded' ) return;
+
+        this.marks = e.payload;
+        this._reset();
+      },
+
+      _reset : function() {
+        this.marks = {
+          data : []
+        };
+
+        if( !this.selected ) return;
+
+        var img = new Image();
+        img.onload = function() {
+          this.bounds = [
+            [0,0],
+            [img.naturalHeight, img.naturalWidth]
+          ];
+          
+          this._redraw();
+        }.bind(this);
+
+        img.src = this.apiHost+'/pages/'+this.selected+'/image';
+      },
+
+      _redraw: function() {
+        if ( !this.bounds ) return
+      
+        if( this.map ) this.map.remove();
+
+        this.map = L.map(this.$.mapid, {
+          crs: L.CRS.Simple,
+          minZoom: -2
+        });
+
+        var map = this.map;
+
+
+        // Need to get bounds from image.
+        var bounds = this.bounds;
+        var image = L.imageOverlay(this.apiHost+'/pages/'+this.selected+'/image', bounds).addTo(map);
+        map.fitBounds(bounds);
+
+        var marks_layer = new L.FeatureGroup();
+        map.addLayer(marks_layer);
+
+        var markup = this.$.priceItem;
+        var page_id = this.page_id;
+
+        var PriceMarker = L.Icon.Default;
+
+        function mark_to_html(mark) {
+          var html="<div class=\"price_popup\">";
+          var items=[
+            'brandname',
+            'otherdesignation',
+            'vintage_date',
+            'country',
+            'bottlesize',
+            'type',
+            'color',
+            'region',
+            'perprice',
+            'caseprice'];
+
+          var label={
+            country:'Country',
+            otherdesignation:"Other Designation",
+            brandname:"Brand Name",
+            vintage_date:"Vintage",
+            region:"Wine Region",
+            bottlesize:"Bottle Size",
+            perprice:"Bottle Price",
+            caseprice:"Case Price"
+          };
+          items.forEach(function(i) {
+            if (mark[i]) {
+//              html+="<dt>"+((label[i])?label[i]:i)+"</dt>"+
+//                    "<dl>"+mark[i]+"</dl>";
+              html+="<b>"+((label[i])?label[i]:i)+":</b>  "+mark[i]+"<br/>";
+            }
+          });
+          html+="</div>";
+          return html;
+        }
+
+        this.marks.data.forEach(function(mark) {
+          var marker=L.marker([mark.r,mark.c]);
+          marker.bindPopup(mark_to_html(mark)+
+                           "<a href='/#/catalogs/page/9/mark/"+mark.id+"'>Edit</a>");
+          marker.addTo(marks_layer);
+          });
+
+        var options = {
+          position: 'topright',
+          draw: {
+            polyline:false,
+            polygon: false,
+            circle: false, // Turns off this drawing tool
+            rectangle: false,
+            marker: {
+              icon: new PriceMarker()
+            }
+          },
+          edit: {
+            featureGroup: marks_layer, //REQUIRED!!
+            remove: false
+          }
+        };
+
+        var drawControl = new L.Control.Draw(options);
+        map.addControl(drawControl);
+
+
+        map.on(L.Draw.Event.CREATED, function (e) {
+          var type = e.layerType,
+              layer = e.layer;
+
+          if (type === 'marker') {
+            layer.bindPopup('latlng: '+layer._latlng);
+          }
+
+          markup.rowCol = layer._latlng;
+          markup.pageId = page_id;
+          markup.show();
+
+          marks_layer.addLayer(layer);
+        });
+
+        this._updateMapSize();
+      },
+
+      add_marks : function (foo) {
+        console.log("Add Marks")
+      },
+
+      add_marks_too : function () {
+        console.log("Also Add Marks")
+      },
+
+    });
+  </script>
+</dom-module>

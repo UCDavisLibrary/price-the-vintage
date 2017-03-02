@@ -20,7 +20,6 @@
     "iron-elements": "PolymerElements/iron-elements#^1.0.10",
     "paper-spinner": "PolymerElements/paper-spinner#^1.1.1",
     "iron-image": "PolymerElements/iron-image#^1.2.3",
-    "app-layout": "PolymerElements/app-layout#^0.10.0",
     "paper-icon-button": "PolymerElements/paper-icon-button#^1.1.4",
     "polymer": "Polymer/polymer#^1.6.0",
     "wine-label": "https://github.com/qjhart/wine-label.git#^0.1.2",
@@ -46,7 +45,9 @@
     "paper-fab": "PolymerElements/paper-fab#^1.2.1",
     "paper-material": "PolymerElements/paper-material#^1.0.6",
     "event-bus-behavior": "jrmerz/event-bus-behavior",
-    "state-toggle-behavior": "jrmerz/state-toggle-behavior"
+    "state-toggle-behavior": "jrmerz/state-toggle-behavior",
+    "leaflet": "^1.0.3",
+    "leaflet-draw": "leaflet.draw#^0.4.9"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
