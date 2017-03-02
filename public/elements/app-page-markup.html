@@ -12,13 +12,17 @@
         }
     </style>
 
-    <div style="height:100%">
+    <div style="height:100%" state="loaded">
       <div></div>
         <div id="mapid" style="height: 100%;"></div>
       </div>
       <div>
         <app-price-item id="priceItem"></app-price-item>
       </div>
+    </div>
+
+    <div state="loading">
+      Loading...
     </div>
 
   </template>
@@ -56,7 +60,7 @@
         }
       },
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, StateToggleBehavior],
 
       ebBind : {
         'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
@@ -106,7 +110,11 @@
 
       _onPageMarksUpdate : function(e) {
         if( !this.active || e.id !== this.selected ) return;
-        if( e.state !== 'loaded' ) return;
+
+        if( e.state !== 'loaded' ) {
+          this.toggleState(e.state);
+          return;
+        }
 
         this.marks = e.payload;
         this._reset();
@@ -126,6 +134,7 @@
             [img.naturalHeight, img.naturalWidth]
           ];
           
+          this.toggleState('loaded');
           this._redraw();
         }.bind(this);
 

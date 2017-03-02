@@ -1,0 +1,24 @@
+
+<dom-module id="app-header-list">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <div class="layout center">
+      <h2 class="flex">Price the Vintage</h2>
+      <div>
+        <paper-icon-button state="list" icon="search" on-click="search"></paper-icon-button>
+      </div>
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-header-list'
+    });
+  </script>
+</dom-module>

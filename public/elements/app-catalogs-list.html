@@ -35,7 +35,11 @@
           transition: opacity 0.1s;
         }
 
-        .grid-item {
+        h3 {
+          padding: 0 5px;
+        }
+
+        .grid-card {
           cursor: pointer;
         }
         .detail {
@@ -62,16 +66,20 @@
         <iron-list id="list" items="[[results]]" as="catalog" grid style="height:100%">
           <template>
 
-            <div class="grid-item" tabindex$="[[index]]" on-click="_select">
-              <paper-material>
-                <iron-image 
-                  sizing="cover"
-                  src$="[[apiHost]]/catalogs/[[catalog.id]]/thumbnail" 
-                  alt="Catalog Thumbnail Image">
-                </iron-image>
+            <div class="grid-card" index$="[[catalog.id]]" on-click="_select">
+              <paper-material style="background:white; position: relative">
+                <div class="layout">
 
-                <div class="detail">
-                  <paper-fab icon="create"></paper-fab>
+                  <iron-image 
+                    sizing="cover"
+                    src$="[[apiHost]]/catalogs/[[catalog.id]]/thumbnail" 
+                    alt="Catalog Thumbnail Image">
+                  </iron-image>
+
+                  <div class="flex">
+                    <h3>[[catalog.title]]</h3>
+                    <paper-icon-button style="position: absolute; bottom: 5px; right: 5px;" icon="create"></paper-icon-button>
+                  </div>
                 </div>
               </paper-material>
             </div>
@@ -153,7 +161,7 @@
       },
 
       _select : function(e) {
-        window.location.hash = e.currentTarget.getAttribute('tabindex');
+        window.location.hash = e.currentTarget.getAttribute('index');
       }
 
     });

@@ -1,0 +1,140 @@
+
+<dom-module id="app-header-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      .overflow {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+      }
+    </style>
+
+    <table style="width: 100%">
+      <tr>
+        <td>
+          <paper-icon-button icon="close" on-click="_back"></paper-icon-button>
+        </td>
+        <td>
+          <h2 class="overflow" id="title">[[title]]</h2>
+        </td>
+        <td style="text-align: right">
+          <paper-icon-button icon="arrow-back" id="previousBtn" on-click="_previous"></paper-icon-button>
+          <paper-icon-button icon="arrow-forward" id="nextBtn" on-click="_next"></paper-icon-button>
+        </td>
+      </tr>
+    </table>
+
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-header-page',
+
+      behaviors : [EventBusBehavior],
+
+      ebBind : {
+        'catalog-update' : '_updateTitle',
+        'catalog-pages-update' : '_pagesUpdate',
+        'selected-catalog-update' : '_onSelectedCatalogUpdate',
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+      },
+
+      ready : function() {
+        window.addEventListener('resize', this._resize.bind(this));
+        this._resize();
+      },
+
+      _resize : function() {
+        this.$.title.style.width = (window.innerWidth - 172) + 'px';
+      },
+
+      _onSelectedCatalogPageUpdate : function(id) {
+        this.page = id;
+        this._updateButtons();
+      },
+
+      _onSelectedCatalogUpdate : function(id) {
+        this.catalog = id;
+
+        this.ebEmit('get-catalog', {
+          id : id,
+          handler : this._updateTitle.bind(this)
+        });
+
+        this.ebEmit('get-catalog-pages', {
+          id : id,
+          handler : this._pagesUpdate.bind(this)
+        });
+      },
+
+      _pagesUpdate : function(e) {
+        if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;
+
+        this.pages = e.payload.data;
+        this._updateButtons();
+      },
+
+      _getPageNumber : function() {
+        if( !this.pages ) return -1;
+
+        for( var i = 0; i < this.pages.length; i++ ) {
+          if( this.pages[i].id+'' === this.page ) {
+            return this.pages[i].page;
+          }
+        }
+      },
+
+      _getPageIdFromPageNumber : function(page) {
+        if( !this.pages ) return -1;
+
+        for( var i = 0; i < this.pages.length; i++ ) {
+          if( this.pages[i].page === page ) {
+            return this.pages[i].id;
+          }
+        }
+      },
+
+      _updateButtons : function() {
+        var page = this._getPageNumber();
+        
+        this.$.previousBtn.removeAttribute('disabled');
+        this.$.nextBtn.removeAttribute('disabled');
+        
+        if( page === 0 ) {
+          this.$.previousBtn.setAttribute('disabled', 'disabled');
+        }
+        if( this.pages && page === this.pages.length-1 ) {
+          this.$.nextBtn.setAttribute('disabled', 'disabled');
+        }
+      },
+
+      _previous : function() {
+        var page = this._getPageNumber()-1;
+        page = this._getPageIdFromPageNumber(page);
+        window.location.hash = this.catalog+'/'+page;
+      },
+
+      _next : function() {
+        var page = this._getPageNumber()+1;
+        page = this._getPageIdFromPageNumber(page);
+        window.location.hash = this.catalog+'/'+page;
+      },
+
+      _updateTitle : function(e) {
+        if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;
+        this.catalogData = e.payload;
+        this.title = this.catalogData.title;
+      },
+
+      _back : function() {
+        window.location.hash = this.catalog;
+      }
+
+    });
+  </script>
+</dom-module>
