@@ -11,14 +11,23 @@
       }
     </style>
 
-    <iron-pages 
-      selected="[[section]]" 
-      attr-for-selected="section">
+    <div class="layout center">
+      <div class="flex">
 
-      <app-header-list section="list"></app-header-list>
-      <app-header-catalogs section="catalog"></app-header-catalogs>
-      <app-header-page section="page"></app-header-page>
-    </iron-pages>
+        <iron-pages 
+          selected="[[section]]" 
+          attr-for-selected="section">
+
+          <app-header-list section="list"></app-header-list>
+          <app-header-catalogs section="catalog"></app-header-catalogs>
+          <app-header-page section="page"></app-header-page>
+        </iron-pages>
+
+      </div>
+      <div>
+        <app-auth-header-button></app-auth-header-button>
+      </div>
+    </div>
 
   </template>
   <script>

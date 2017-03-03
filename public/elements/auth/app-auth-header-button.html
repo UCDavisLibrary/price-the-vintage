@@ -1,0 +1,105 @@
+
+<dom-module id="app-auth-header-button">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      img {
+        width: 36px;
+        height: 36px;
+        border-radius: 20px;
+        border: 1px solid white;
+        cursor: pointer;
+      }
+
+      img:hover {
+        border: 1px solid var(--light-primary-color);
+      }
+
+      [state="loggedIn"] {
+        position: relative;
+      }
+
+      #logout {
+        z-index: 1000;
+        color: black;
+        display: none;
+        position: absolute;
+        top: 45px;
+        background-color: white;
+        right: 0px;
+        padding: 10px;
+        box-shadow: 0 0 8px rgba(0,0,0,.5);
+      }
+      a {
+        cursor: pointer;
+      }
+    </style>
+
+    <div state="pending">...</div>
+    
+    <div state="loggedIn">
+      <img src="[[auth.user.photoURL]]" on-click="_toggleLogout" />
+
+      <div id="logout">
+        <div>[[auth.user.email]]</div>
+        <div style="white-space: nowrap; color: blue">
+          <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
+          <a on-click="_logout">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <div state="notLoggedIn">
+      <paper-icon-button on-click="_login" icon="social:person"></paper-icon-button>
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: "app-auth-header-button",
+
+      properties : {
+        user : {
+          type : Object,
+          value : null
+        }
+      },
+
+      behaviors : [EventBusBehavior, StateToggleBehavior],
+
+      ebBind : {
+        'auth-update' : '_onAuthUpdate'
+      },
+
+      ready : function() {
+        this.toggleState('pending');
+        this._getAuthState();
+      },
+
+      _getAuthState : function() {
+        this.ebEmit('get-auth-state',{handler: this._onAuthUpdate.bind(this)})
+      },
+
+      _logout : function() {
+        this.ebEmit('auth-logout');
+      },
+
+      _login : function() {
+        this.ebEmit('auth-login-google');
+      },
+
+      _toggleLogout : function() {
+        this.$.logout.style.display = (this.$.logout.style.display === 'block') ? 'none' : 'block';
+      },
+
+      _onAuthUpdate : function(e) {
+        this.auth = e;
+        this.toggleState(e.state);
+      }
+
+    });
+  </script>
+</dom-module>
