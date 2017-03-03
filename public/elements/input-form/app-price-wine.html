@@ -1,19 +1,9 @@
-<dom-module id="app-price-item">
+<dom-module id="app-price-wine">
   <template>
     <style include="shared-styles"></style>
     <style>
       :host {
-        display: none;
-        padding: 15px;
-        overflow-y: auto;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: rgba(255,255,255,.85);
-        z-index: 1000;
-        border-top: 1px solid white;
-        box-shadow: 0 0 10px black;
+        display: block;
       }
 
       paper-input {
@@ -24,13 +14,6 @@
         width: 120px;
       }
 
-      #header {
-        height: 35px;
-      }
-      #body {
-        overflow: auto;
-      }
-
       h2 {
         margin: 0;
         font-weight: 200;
@@ -38,7 +21,7 @@
 
       .buttons {
         text-align: center;
-        padding: 5px;
+        padding: 15px;
       }
 
       .accept {
@@ -46,11 +29,6 @@
         color: white;
       }
     </style>
-
-    <div id="header" class="layout center">
-      <h2 class="flex">Edit Mark</h2>
-      <paper-icon-button icon="close" on-click="hide"></paper-icon-button>
-    </div>
 
     <div id="body">
       <form is="iron-form" method="get" action="/" id="basic">
@@ -142,8 +120,8 @@
       <!--<paper-input label="price year" value="" type="number" ></paper-input>-->
 
       <div class="buttons">
-        <paper-button on-click="hide">Cancel</paper-button>
-        <paper-button class="accept" on-click="hide">Accept</paper-button>
+        <paper-button on-click="hide" raised>Cancel</paper-button>
+        <paper-button class="accept" on-click="hide" raised>Accept</paper-button>
       </div>
 
     </form>
@@ -153,7 +131,7 @@
 
   <script>
     Polymer({
-      is: 'app-price-item',
+      is: 'app-price-wine',
       
       properties: {
         pageId : {
@@ -166,23 +144,8 @@
         }
       },
 
-      ready : function() {
-        window.addEventListener('resize', this._resize.bind(this));
-        this._resize();
-      },
-
-      _resize : function() {
-        var h = Math.floor(window.innerHeight * 0.5);
-        this.style.maxHeight = h+'px';
-        this.$.body.style.maxHeight = (h-35)+'px';
-      },
-
-      show : function() {
-        this.style.display = 'block';
-      },
-
       hide : function() {
-        this.style.display = 'none';
+        this.fire('cancel');
       }
     });
   </script>

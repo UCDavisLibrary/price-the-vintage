@@ -11,15 +11,9 @@
         bottom:0;
       }
 
-      .loadingIndicator {
-        font-size: 16px;
+      [loading-state="loading"] {
         text-align: center;
-        height: 60px;
-      }
-
-      .loadingIndicator paper-spinner {
-        margin-right: 20px;
-        vertical-align: middle;
+        margin-top: 100px;
       }
 
       .grid-item {
@@ -56,8 +50,8 @@
     </div>
 
 
-    <div class="loadingIndicator" loading-state="loading">
-      <paper-spinner></paper-spinner> Fetching wine catalog pages
+    <div loading-state="loading">
+      <paper-spinner active></paper-spinner>
     </div>
 
     <div loading-state="error">

@@ -10,6 +10,11 @@
           top: 0;
           bottom:0;
         }
+
+        [state="loading"] {
+          text-align: center;
+          margin-top: 100px;
+        }
     </style>
 
     <div style="height:100%" state="loaded">
@@ -17,12 +22,12 @@
         <div id="mapid" style="height: 100%;"></div>
       </div>
       <div>
-        <app-price-item id="priceItem"></app-price-item>
+        <app-price-form id="priceItem"></app-price-form>
       </div>
     </div>
 
     <div state="loading">
-      Loading...
+      <paper-spinner active></paper-spinner>
     </div>
 
   </template>

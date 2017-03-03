@@ -50,6 +50,11 @@
           height: 32px;
           padding: 5px;
         }
+
+        [loading-state="loading"] {
+          text-align: center;
+          margin-top: 100px;
+        }
       </style>
 
       <paper-dialog class="intro">
@@ -88,8 +93,8 @@
         </iron-list>
       </div>
 
-      <div class="loadingIndicator" loading-state="loading">
-        <paper-spinner></paper-spinner> Fetching wine catalogs</b>
+      <div loading-state="loading">
+        <paper-spinner active></paper-spinner>
       </div>
 
       <div loading-state="error">

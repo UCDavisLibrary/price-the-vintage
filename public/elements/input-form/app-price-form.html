@@ -1,0 +1,118 @@
+<link rel="import" href="app-price-type.html">
+<link rel="import" href="app-price-wine.html">
+<link rel="import" href="app-price-spirit.html">
+<link rel="import" href="app-price-section.html">
+
+<dom-module id="app-price-form">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: none;
+        padding: 15px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(255, 255, 255, .90);
+        z-index: 1000;
+        border-top: 1px solid white;
+        box-shadow: 0 0 10px rgba(0,0,0,.4);
+      }
+
+      #header {
+        height: 35px;
+      }
+
+      #body {
+        overflow: auto;
+      }
+    </style>
+
+    <div id="header" class="layout center">
+      <paper-icon-button icon="arrow-back" hidden$="[[!showBackBtn]]" on-click="_back"></paper-icon-button>
+      <h2 class="flex">Edit Mark</h2>
+      <paper-icon-button icon="close" on-click="hide"></paper-icon-button>
+    </div>
+
+    <div id="body">
+      <iron-pages selected="[[currentStep]]" attr-for-selected="step">
+        <app-price-type step="type" on-next="_onNext"></app-price-type>
+        <app-price-section step="section" on-next="_onNext"></app-price-section>
+        <app-price-spirit step="spirit" on-complete="_onComplete" on-cancel="hide"></app-price-spirit>
+        <app-price-wine step="wine" on-complete="_onComplete" on-cancel="hide"></app-price-wine>
+      </iron-pages>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-price-form',
+
+      properties : {
+        currentStep : {
+          type : String,
+          value : 'type'
+        }
+      },
+
+      ready : function() {
+        window.addEventListener('resize', this._resize.bind(this));
+        this._resize();
+      },
+
+      _resize : function() {
+        var h = Math.floor(window.innerHeight * 0.5);
+        this.style.maxHeight = h+'px';
+        this.$.body.style.maxHeight = (h-35)+'px';
+      },
+
+      _reset : function() {
+        this.currentStep = 'type';
+        this.type = '';
+        this.section = '';
+        this.showBackBtn = false;
+      },
+
+      _back : function() {
+        switch(this.currentStep) {
+          case 'wine':
+          case 'spirit':
+            this.currentStep = 'section'
+            break;
+          default:
+            this._reset();
+        }
+      },
+
+      _onNext : function(e) {
+        var step = e.currentTarget.getAttribute('step');
+        this.showBackBtn = true;
+
+        switch(step) {
+          case 'type':
+            this.type = e.detail;
+            this.currentStep = 'section';
+            break;
+          case 'section':
+            this.section = e.detail;
+            this.currentStep = this.type;
+            break;
+        }
+      },
+
+      _onComplete : function() {
+        this.hide();
+      },
+
+      show : function() {
+        this._reset();
+        this.style.display = 'block';
+      },
+
+      hide : function() {
+        this.style.display = 'none';
+      }
+    });
+  </script>
+</dom-module>

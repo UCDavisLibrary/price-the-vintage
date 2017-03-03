@@ -1,0 +1,35 @@
+
+<dom-module id="app-price-type">
+  <template>
+    <style>
+      :host {
+        display: block;
+        text-align: center
+      }
+      h4 {
+        margin: 0;
+      }
+      [type="wine"] {
+        background-color: var(--primary-color);
+        color: white;
+      }
+    </style>
+
+    <h4>Alcohol Type</h4>
+
+    <div style="padding: 15px">
+      <paper-button on-click="_select" type="wine" raised>Wine</paper-button>
+      <paper-button on-click="_select" type="spirit" raised>Spirits</paper-button>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-price-type',
+
+      _select : function(e) {
+        this.fire('next', e.currentTarget.getAttribute('type'));
+      }
+    });
+  </script>
+</dom-module>

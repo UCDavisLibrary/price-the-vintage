@@ -1,0 +1,21 @@
+<dom-module id="app-price-spirit">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <div>Spirit stuff goes here</div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-price-spirit',
+
+      _next : function() {
+        this.fire('next', this.$.input.value);
+      }
+    });
+  </script>
+</dom-module>
