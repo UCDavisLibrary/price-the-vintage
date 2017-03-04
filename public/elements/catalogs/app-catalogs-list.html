@@ -1,3 +1,5 @@
+<link rel="import" href="app-catalog-card.html">
+
 <dom-module id="app-catalogs-list" >
   <template>
       <style include="shared-styles"></style>
@@ -35,20 +37,26 @@
           transition: opacity 0.1s;
         }
 
-        h3 {
-          padding: 0 5px;
-        }
-
         .grid-card {
           cursor: pointer;
         }
+
         .detail {
           padding: 5px;
         }
+
         paper-fab {
           width: 32px; 
           height: 32px;
           padding: 5px;
+        }
+
+        [loading-state="loaded"] {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom:0;
         }
 
         [loading-state="loading"] {
@@ -70,25 +78,13 @@
       <div loading-state="loaded">
         <iron-list id="list" items="[[results]]" as="catalog" grid style="height:100%">
           <template>
-
-            <div class="grid-card" index$="[[catalog.id]]" on-click="_select">
-              <paper-material style="background:white; position: relative">
-                <div class="layout">
-
-                  <iron-image 
-                    sizing="cover"
-                    src$="[[apiHost]]/catalogs/[[catalog.id]]/thumbnail" 
-                    alt="Catalog Thumbnail Image">
-                  </iron-image>
-
-                  <div class="flex">
-                    <h3>[[catalog.title]]</h3>
-                    <paper-icon-button style="position: absolute; bottom: 5px; right: 5px;" icon="create"></paper-icon-button>
-                  </div>
-                </div>
-              </paper-material>
-            </div>
-
+            <app-catalog-card 
+              class="grid-card" 
+              catalog="[[catalog]]"
+              api-host="[[apiHost]]"
+              on-click="_select" >
+            </app-catalog-card>
+            
           </template>
         </iron-list>
       </div>
@@ -119,6 +115,10 @@
           value : function() {
             return []
           }
+        },
+        apiHost : {
+          type : String,
+          value : ''
         }
       },
 
@@ -166,7 +166,7 @@
       },
 
       _select : function(e) {
-        window.location.hash = e.currentTarget.getAttribute('index');
+        window.location.hash = e.currentTarget.catalog.id;
       }
 
     });

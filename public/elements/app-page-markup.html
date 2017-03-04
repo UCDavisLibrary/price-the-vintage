@@ -22,7 +22,7 @@
         <div id="mapid" style="height: 100%;"></div>
       </div>
       <div>
-        <app-price-form id="priceItem"></app-price-form>
+        <app-price-form id="priceItem" on-add-mark="_onAddMark" on-cancel="_onAddCancel"></app-price-form>
       </div>
     </div>
 
@@ -49,11 +49,8 @@
         marks : {
           type : Object,
           value : function() {
-            return {
-              data:[]
-            };
-          },
-          observer: 'add_marks_too'
+            return {};
+          }
         },
         map: {
           type: Object,
@@ -101,6 +98,8 @@
 
       _onSelectedCatalogPageUpdate : function(id) {
         this.selected = id;
+
+        this._reset();
         this._getPageMarks();
       },
 
@@ -114,22 +113,17 @@
       },
 
       _onPageMarksUpdate : function(e) {
-        if( !this.active || e.id !== this.selected ) return;
+        if( !this.active || e.pageId !== this.selected ) return;
+        if( e.state !== 'loaded' ) return;
 
-        if( e.state !== 'loaded' ) {
-          this.toggleState(e.state);
-          return;
-        }
+        this.marks[e.id] = e;
+        console.log(this.marks);
 
-        this.marks = e.payload;
-        this._reset();
+        this._drawMark(e);
       },
 
       _reset : function() {
-        this.marks = {
-          data : []
-        };
-
+        this.marks = {};
         if( !this.selected ) return;
 
         var img = new Image();
@@ -164,55 +158,15 @@
         var image = L.imageOverlay(this.apiHost+'/pages/'+this.selected+'/image', bounds).addTo(map);
         map.fitBounds(bounds);
 
-        var marks_layer = new L.FeatureGroup();
-        map.addLayer(marks_layer);
+        this.marksLayer = new L.FeatureGroup();
+        map.addLayer(this.marksLayer);
 
         var markup = this.$.priceItem;
-        var page_id = this.page_id;
-
         var PriceMarker = L.Icon.Default;
 
-        function mark_to_html(mark) {
-          var html="<div class=\"price_popup\">";
-          var items=[
-            'brandname',
-            'otherdesignation',
-            'vintage_date',
-            'country',
-            'bottlesize',
-            'type',
-            'color',
-            'region',
-            'perprice',
-            'caseprice'];
-
-          var label={
-            country:'Country',
-            otherdesignation:"Other Designation",
-            brandname:"Brand Name",
-            vintage_date:"Vintage",
-            region:"Wine Region",
-            bottlesize:"Bottle Size",
-            perprice:"Bottle Price",
-            caseprice:"Case Price"
-          };
-          items.forEach(function(i) {
-            if (mark[i]) {
-//              html+="<dt>"+((label[i])?label[i]:i)+"</dt>"+
-//                    "<dl>"+mark[i]+"</dl>";
-              html+="<b>"+((label[i])?label[i]:i)+":</b>  "+mark[i]+"<br/>";
-            }
-          });
-          html+="</div>";
-          return html;
-        }
-
-        this.marks.data.forEach(function(mark) {
-          var marker=L.marker([mark.r,mark.c]);
-          marker.bindPopup(mark_to_html(mark)+
-                           "<a href='/#/catalogs/page/9/mark/"+mark.id+"'>Edit</a>");
-          marker.addTo(marks_layer);
-          });
+        // this.marks.data.forEach(function(mark) {
+        //   // TODO
+        // });
 
         var options = {
           position: 'topright',
@@ -226,7 +180,7 @@
             }
           },
           edit: {
-            featureGroup: marks_layer, //REQUIRED!!
+            featureGroup: this.marksLayer, 
             remove: false
           }
         };
@@ -243,19 +197,78 @@
             layer.bindPopup('latlng: '+layer._latlng);
           }
 
-          markup.rowCol = layer._latlng;
-          markup.pageId = page_id;
-          markup.show();
+          markup.show(layer._latlng);
 
-          marks_layer.addLayer(layer);
-        });
+          this.marksLayer.addLayer(layer);
+          this.addMarker = layer;
+        }.bind(this));
+
+        for( var key in this.marks ) {
+          this._drawMark(this.marks[key]);
+        }
 
         this._updateMapSize();
       },
 
-      add_marks : function (foo) {
-        console.log("Add Marks")
+      _onAddCancel : function() {
+         this.marksLayer.removeLayer(this.addMarker);
       },
+
+      _drawMark : function(mark) {
+        if( !this.marksLayer ) return;
+
+        var marker = L.marker([mark.data.xy[1], mark.data.xy[0]]);
+        marker.bindPopup(this.markToHtml(mark.data));
+        marker.on('click', function(){
+          this.$.priceItem.edit(mark);
+        }.bind(this));
+        marker.addTo(this.marksLayer);
+
+        return marker;
+      },
+
+      markToHtml : function(mark) {
+        var html="<div class=\"price_popup\">";
+        var items=[
+          'brandname',
+          'otherdesignation',
+          'vintage_date',
+          'country',
+          'bottlesize',
+          'type',
+          'color',
+          'region',
+          'perprice',
+          'caseprice'];
+
+        var label={
+          country:'Country',
+          otherdesignation:"Other Designation",
+          brandname:"Brand Name",
+          vintage_date:"Vintage",
+          region:"Wine Region",
+          bottlesize:"Bottle Size",
+          perprice:"Bottle Price",
+          caseprice:"Case Price"
+        };
+        items.forEach(function(i) {
+          if (mark[i]) {
+            html+="<b>"+((label[i])?label[i]:i)+":</b>  "+mark[i]+"<br/>";
+          }
+        });
+        html+="</div>";
+        return html;
+      },
+
+      _onAddMark : function(e) {
+        var data = e.detail;
+
+        this.ebEmit('add-catalog-page-mark', {
+          pageId : this.selected,
+          mark : data,
+        })
+      },
+
 
       add_marks_too : function () {
         console.log("Also Add Marks")

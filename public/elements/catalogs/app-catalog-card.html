@@ -1,0 +1,64 @@
+<dom-module id="app-catalog-card">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-material {
+        background :white; 
+        position : relative;
+      }
+
+      h3 {
+        padding: 0 5px;
+      }
+    </style>
+
+    <paper-material>
+      <div class="layout">
+
+        <iron-image 
+          class="grid-item"
+          sizing="cover"
+          src$="[[imgUrl]]" 
+          alt="Catalog Thumbnail Image">
+        </iron-image>
+
+        <div class="flex">
+          <h3>[[catalog.title]]</h3>
+          <paper-icon-button style="position: absolute; bottom: 5px; right: 5px;" icon="create"></paper-icon-button>
+        </div>
+      </div>
+    </paper-material>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-catalog-card',
+
+      properties : {
+        apiHost : {
+          type : String,
+          value : ''
+        },
+        catalog : {
+          type : Object,
+          value : function() {
+            return {};
+          }
+        },
+        imgUrl : {
+          type : String,
+          computed : '_createImgUrl(apiHost, catalog)'
+        }
+      },
+
+      _createImgUrl : function(apiHost, catalog) {
+        return apiHost + '/catalogs/' + catalog.id + '/thumbnail';
+      }
+
+    });
+  </script>
+</dom-module>

@@ -32,15 +32,15 @@
     <div id="header" class="layout center">
       <paper-icon-button icon="arrow-back" hidden$="[[!showBackBtn]]" on-click="_back"></paper-icon-button>
       <h2 class="flex">Edit Mark</h2>
-      <paper-icon-button icon="close" on-click="hide"></paper-icon-button>
+      <paper-icon-button icon="close" on-click="_cancel"></paper-icon-button>
     </div>
 
     <div id="body">
       <iron-pages selected="[[currentStep]]" attr-for-selected="step">
         <app-price-type step="type" on-next="_onNext"></app-price-type>
         <app-price-section step="section" on-next="_onNext"></app-price-section>
-        <app-price-spirit step="spirit" on-complete="_onComplete" on-cancel="hide"></app-price-spirit>
-        <app-price-wine step="wine" on-complete="_onComplete" on-cancel="hide"></app-price-wine>
+        <app-price-spirit step="spirit" on-complete="_onComplete" on-cancel="_cancel"></app-price-spirit>
+        <app-price-wine step="wine" on-complete="_onComplete" on-cancel="_cancel"></app-price-wine>
       </iron-pages>
     </div>
 
@@ -101,11 +101,38 @@
         }
       },
 
-      _onComplete : function() {
+      _onComplete : function(e) {
+        var data = e.detail;
+        data.type = this.type;
+        data.section = this.section;
+        data.xy = [this.ll.lng, this.ll.lat];
+
+        if( data.casePrice ) {
+          data.casePrice = parseFloat(data.casePrice);
+        }
+        if( data.price ) {
+          data.price = parseFloat(data.price);
+        }
+        if( data.year ) {
+          data.year = parseInt(data.year);
+        }
+
+        this.fire('add-mark', data);
         this.hide();
       },
 
-      show : function() {
+      _cancel : function() {
+        this.fire('cancel');
+        this.hide();
+      },
+
+      edit : function(data) {
+        this._reset();
+        this.style.display = 'block';
+      },
+
+      show : function(ll) {
+        this.ll = ll;
         this._reset();
         this.style.display = 'block';
       },
