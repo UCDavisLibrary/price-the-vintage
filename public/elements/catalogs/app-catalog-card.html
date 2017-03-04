@@ -14,6 +14,10 @@
       h3 {
         padding: 0 5px;
       }
+
+      .layout-vertical {
+        height: 100%;
+      }
     </style>
 
     <paper-material>
@@ -27,8 +31,20 @@
         </iron-image>
 
         <div class="flex">
-          <h3>[[catalog.title]]</h3>
-          <paper-icon-button style="position: absolute; bottom: 5px; right: 5px;" icon="create"></paper-icon-button>
+
+          <div class="layout-vertical center">
+            <div class="flex">
+              <h3>[[catalog.title]]</h3>
+            </div>
+            <div>
+                <span hidden$="[[!showUserCount]]">
+                  <iron-icon icon="social:group"></iron-icon> [[userCount]]
+                </span>
+
+                <paper-icon-button icon="create"></paper-icon-button>
+            </div>
+          </div>
+          
         </div>
       </div>
     </paper-material>
@@ -47,16 +63,54 @@
           type : Object,
           value : function() {
             return {};
-          }
+          },
+          observer : '_onCatalogUpdate'
         },
         imgUrl : {
           type : String,
           computed : '_createImgUrl(apiHost, catalog)'
+        },
+        userCount : {
+          type : Number,
+          value : 0
+        },
+        showUserCount : {
+          type : Boolean,
+          value : false
         }
       },
 
+      ebBind : {
+        'user-activity-update' : '_onUserActivityUpdate'
+      },
+
+      behaviors : [EventBusBehavior],
+
       _createImgUrl : function(apiHost, catalog) {
         return apiHost + '/catalogs/' + catalog.id + '/thumbnail';
+      },
+
+      _onCatalogUpdate : function() {
+        if( !this.catalog.id ) return;
+
+        this.ebEmit('get-user-activity', {
+          id : this.catalog.id,
+          handler : this._onUserActivityUpdate.bind(this)
+        })
+      },
+
+      _onUserActivityUpdate : function(e) {
+        if( e.id+'' !== this.catalog.id+'' ) return;
+
+        this.debounce('_onUserActivityUpdate', function(){
+          this._onUserActivityUpdateAsync(e);
+        }, 200);
+      },
+
+      _onUserActivityUpdateAsync : function(e) {
+        if( e.id+'' == '40' ) console.log(e);
+        this.userCount = Object.keys(e.users).length;
+        this.showUserCount = (this.userCount > 0 ) ? true : false;
       }
 
     });
