@@ -38,9 +38,9 @@
     <div id="body">
       <iron-pages selected="[[currentStep]]" attr-for-selected="step">
         <app-price-type step="type" on-next="_onNext"></app-price-type>
-        <app-price-section step="section" on-next="_onNext"></app-price-section>
-        <app-price-spirit step="spirit" on-complete="_onComplete" on-cancel="_cancel"></app-price-spirit>
-        <app-price-wine step="wine" on-complete="_onComplete" on-cancel="_cancel"></app-price-wine>
+        <app-price-section id="section" step="section" on-next="_onNext"></app-price-section>
+        <app-price-spirit id="spirit" step="spirit" on-complete="_onComplete" on-cancel="_cancel"></app-price-spirit>
+        <app-price-wine id="wine" step="wine" on-complete="_onComplete" on-cancel="_cancel"></app-price-wine>
       </iron-pages>
     </div>
 
@@ -72,6 +72,9 @@
         this.type = '';
         this.section = '';
         this.showBackBtn = false;
+        this.$.section.reset();
+        this.$.spirit.reset();
+        this.$.wine.reset();
       },
 
       _back : function() {
@@ -105,7 +108,12 @@
         var data = e.detail;
         data.type = this.type;
         data.section = this.section;
-        data.xy = [this.ll.lng, this.ll.lat];
+
+        if( this.editMode ) {
+          data.xy = this.editMark.data.xy;
+        } else {
+          data.xy = [this.ll.lng, this.ll.lat];
+        }
 
         if( data.casePrice ) {
           data.casePrice = parseFloat(data.casePrice);
@@ -117,7 +125,13 @@
           data.year = parseInt(data.year);
         }
 
-        this.fire('add-mark', data);
+        if( !this.editMode ) {
+          this.fire('add-mark', data);
+        } else {
+          this.editMark.data = data;
+          this.fire('edit-mark', this.editMark);
+        }
+
         this.hide();
       },
 
@@ -126,13 +140,21 @@
         this.hide();
       },
 
-      edit : function(data) {
+      edit : function(mark) {
         this._reset();
+        this.editMode = true;
+        this.editMark = mark;
+        this.$.section.edit(mark.data.section);
+
+        if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
+        else this.$.spirit.edit(mark.data);
+
         this.style.display = 'block';
       },
 
       show : function(ll) {
         this.ll = ll;
+        this.editMode = false;
         this._reset();
         this.style.display = 'block';
       },

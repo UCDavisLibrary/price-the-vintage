@@ -89,17 +89,24 @@
         
 
         parts.forEach(this._parseRoute.bind(this));
+
         this.ebEmit('update-app-state', {state: {section: this.route.section}});
+        this.ebEmit('set-user-activity', {
+          catalogId : this.route.catalog,
+          pageId : this.route.page
+        });
       },
 
       _parseRoute : function(value, index) {
         switch(index) {
           case 0:
             this.route.section = 'catalog';
+            this.route.catalog = value;
             this.ebEmit('select-catalog', {id: value});
             break;
           case 1:
             this.route.section = 'page';
+            this.route.page = value;
             this.ebEmit('select-catalog-page', {id: value});
             break;
           case 2:

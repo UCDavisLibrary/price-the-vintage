@@ -25,6 +25,14 @@
 
       _next : function() {
         this.fire('next', this.$.input.value);
+      },
+
+      reset : function() {
+        this.$.input.value = '';
+      },
+
+      edit : function(value) {
+        this.$.input.value = value;
       }
     });
   </script>

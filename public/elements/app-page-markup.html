@@ -22,7 +22,12 @@
         <div id="mapid" style="height: 100%;"></div>
       </div>
       <div>
-        <app-price-form id="priceItem" on-add-mark="_onAddMark" on-cancel="_onAddCancel"></app-price-form>
+        <app-price-form 
+          id="priceItem" 
+          on-add-mark="_onAddMark" 
+          on-edit-mark="_onEditMark"
+          on-cancel="_onAddCancel">
+        </app-price-form>
       </div>
     </div>
 
@@ -108,8 +113,12 @@
 
         this.ebEmit('get-catalog-page-marks', {
           id: this.selected, 
-          handler: this._onPageMarksUpdate.bind(this)
+          handler: this._onPageMarksLoad.bind(this)
         });
+      },
+
+      _onPageMarksLoad : function(marks) {
+        marks.forEach(this._onPageMarksUpdate.bind(this));
       },
 
       _onPageMarksUpdate : function(e) {
@@ -117,8 +126,6 @@
         if( e.state !== 'loaded' ) return;
 
         this.marks[e.id] = e;
-        console.log(this.marks);
-
         this._drawMark(e);
       },
 
@@ -266,9 +273,18 @@
         this.ebEmit('add-catalog-page-mark', {
           pageId : this.selected,
           mark : data,
-        })
+        });
       },
 
+      _onEditMark : function(e) {
+        var mark = e.detail;
+
+        this.ebEmit('edit-catalog-page-mark', {
+          pageId : this.selected,
+          markId : mark.id,
+          mark : mark.data,
+        });
+      },
 
       add_marks_too : function () {
         console.log("Also Add Marks")

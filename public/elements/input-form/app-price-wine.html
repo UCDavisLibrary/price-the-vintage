@@ -152,6 +152,16 @@
         this.$.casePrice.value = '';
       },
 
+      edit : function(data) {
+        this.$.color.value = data.color || 'Red';
+        this.$.wineType.value = data.wineType || 'Still';
+        this.$.size.value = data.size || 'Standard';
+        this.$.name.value = data.name || '';
+        this.$.year.value = data.year || '';
+        this.$.price.value = data.price || '';
+        this.$.casePrice.value = data.casePrice || '';
+      },
+
       _cancel : function() {
         this.fire('cancel');
       },
