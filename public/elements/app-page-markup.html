@@ -80,6 +80,7 @@
 
       ready : function() {
         this._getApi();
+        this.ebEmit('get-app-state', {handler: this._onAppStateUpdate.bind(this)});
       },
 
       _getApi : function() {
@@ -93,6 +94,7 @@
       _onActive : function() {
         if( !this.active ) return;
 
+        this._onAppStateUpdate();
         this._getPageMarks();
         this._updateMapSize();
       },
@@ -156,6 +158,12 @@
       },
 
       _onAppStateUpdate : function(state) {
+        if( state ) {
+          this.currentState = state;
+        } else {
+          state = this.currentState;
+        }
+
         if( !this.active ) return;
 
         if( !state.editingMark ) {
@@ -164,8 +172,13 @@
           if( this.addMarker && this.marksLayer ) {
             this.marksLayer.removeLayer(this.addMarker);
           }
-        } else {
+        } else if( this.pendingLayer ) {
           this._showHideControls(false);
+          this.$.priceItem.show(this.pendingLayer._latlng);
+          this.marksLayer.addLayer(this.pendingLayer);
+          this.addMarker = this.pendingLayer;
+        } else {
+          window.location.hash = this.catalogId + '/' + this.selected;
         }
       },
 
@@ -221,15 +234,7 @@
           var type = e.layerType,
               layer = e.layer;
 
-          if (type === 'marker') {
-            layer.bindPopup('latlng: '+layer._latlng);
-          }
-
-          markup.show(layer._latlng);
-
-          this.marksLayer.addLayer(layer);
-          this.addMarker = layer;
-
+          this.pendingLayer = layer;
           window.location.hash = this.catalogId + '/' + this.selected + '/edit';
         }.bind(this));
 

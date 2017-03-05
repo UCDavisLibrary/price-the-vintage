@@ -28,99 +28,106 @@
         background-color: var(--primary-color);
         color: white;
       }
+
+      .section {
+        padding-top: 10px;
+      }
     </style>
 
     <div id="body">
-      <form is="iron-form" method="get" action="/" id="basic">
 
-      <div class="container flex-horizontal">
-
-        <div >Wine Color</div>
-        <select value="Red" id="color">
-          <option value="Red">Red Wine</option>
-          <option value="White">White Wine</option>
-          <option value="Rose">Rose</option>
-        </select>
-
-        <div >Wine Type</div>
-        <select value="Still" id="wineType">
-          <option value="Still">Still</option>
-          <option value="Sparkling">Sparkling</option>
-          <option value="Fortified">Fortified</option>
-        </select>
-
-        <div>Bottle Size</div>
-        <select value="Standard" id="size">
-          <option value="Standard">Standard</option>
-          <option value="Split">Split</option>
-          <option value="Piccolo">Piccolo</option>
-          <option value="Pony">Pony</option>
-          <option value="Split">Split</option>
-          <option value="Quarter Bottle">Quarter Bottle</option>
-          <option value="Snipe">Snipe</option>
-          <option value="Quarter">Quarter</option>
-          <option value="Chopine">Chopine</option>
-          <option value="Demi">Demi</option>
-          <option value="Half Bottle">Half Bottle</option>
-          <option value="Tenth">Tenth</option>
-          <option value="Jennie">Jennie</option>
-          <option value="Demie">Demie</option>
-          <option value="Pinte">Pinte</option>
-          <option value="Clavelin">Clavelin</option>
-          <option value="Standard">Standard</option>
-          <option value="Fifth">Fifth</option>
-          <option value="Litre">Litre</option>
-          <option value="Magnum">Magnum</option>
-          <option value="Marie Jeanne">Marie Jeanne</option>
-          <option value="Jeroboam">Jeroboam</option>
-          <option value="Rehoboam">Rehoboam</option>
-          <option value="McKenzie">McKenzie</option>
-          <option value="Imperial">Imperial</option>
-          <option value="Methuselah">Methuselah</option>
-          <option value="Salmanazar">Salmanazar</option>
-          <option value="Balthazar">Balthazar</option>
-          <option value="Nebuchadnezzar">Nebuchadnezzar</option>
-          <option value="Melchior">Melchior</option>
-          <option value="Solomon">Solomon</option>
-          <option value="Sovereign">Sovereign</option>
-          <option value="Primat">Primat</option>
-          <option value="Goliath">Goliath</option>
-          <option value="Melchizedek">Melchizedek</option>
-          <option value="Midas">Midas</option>
-          <option value="Tenths">Tenths</option>
-          <option value="Pint">Pint</option>
-          <option value="Quar">Quart</option>
-        </select>
-
-      </div>
-
-      <div class="layout">
-        <div class="flex">
-          <paper-input id="name" label="Wine Name" value="" type="string" ></paper-input>
+      <div class="layout section">
+        <div class="flex" style="padding-right:10px">
+          <paper-input always-float-label id="name" label="Wine Name" value="" type="string" ></paper-input>
         </div>
         <div>
-          <paper-input id="year" label="Vintage (year)" value="" type="number" ></paper-input>
+          <paper-input always-float-label id="year" label="Vintage (year)" value="" type="number" ></paper-input>
         </div>
       </div>
 
-      <div class="layout flex-horizontal">
+      <div class="layout flex-horizontal section">
         <div class="flex"></div>
 
-          <paper-input id="price" label="Bottle Price" value="" type="number" min="0" step="0.01" size="10">
+          <paper-input always-float-label id="price" label="Bottle Price" value="" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
             <div prefix>$</div>
           </paper-input>
 
-          <paper-input id="casePrice" label="Case Price" value="" type="number" min="0" step="0.01">
+          <paper-input always-float-label id="casePrice" label="Case Price" value="" type="number" min="0" step="0.01">
             <div prefix>$</div>
           </paper-input>
+      </div>
+
+      <div class="container layout center">
+
+        <div class="flex" style="padding-right: 10px">
+          <div class="section">Wine Color</div>
+          <select value="Red" id="color" >
+            <option value="Red">Red Wine</option>
+            <option value="White">White Wine</option>
+            <option value="Rose">Rose</option>
+          </select>
+        </div>
+
+        <div class="flex" style="padding-right: 10px">
+          <div class="section" >Wine Type</div>
+          <select value="Still" id="wineType" >
+            <option value="Still">Still</option>
+            <option value="Sparkling">Sparkling</option>
+            <option value="Fortified">Fortified</option>
+          </select>
+        </div>
+
+        <div class="flex">
+          <div class="section">Bottle Size</div>
+          <select value="Standard" id="size">
+            <option value="Standard">Standard</option>
+            <option value="Split">Split</option>
+            <option value="Piccolo">Piccolo</option>
+            <option value="Pony">Pony</option>
+            <option value="Split">Split</option>
+            <option value="Quarter Bottle">Quarter Bottle</option>
+            <option value="Snipe">Snipe</option>
+            <option value="Quarter">Quarter</option>
+            <option value="Chopine">Chopine</option>
+            <option value="Demi">Demi</option>
+            <option value="Half Bottle">Half Bottle</option>
+            <option value="Tenth">Tenth</option>
+            <option value="Jennie">Jennie</option>
+            <option value="Demie">Demie</option>
+            <option value="Pinte">Pinte</option>
+            <option value="Clavelin">Clavelin</option>
+            <option value="Standard">Standard</option>
+            <option value="Fifth">Fifth</option>
+            <option value="Litre">Litre</option>
+            <option value="Magnum">Magnum</option>
+            <option value="Marie Jeanne">Marie Jeanne</option>
+            <option value="Jeroboam">Jeroboam</option>
+            <option value="Rehoboam">Rehoboam</option>
+            <option value="McKenzie">McKenzie</option>
+            <option value="Imperial">Imperial</option>
+            <option value="Methuselah">Methuselah</option>
+            <option value="Salmanazar">Salmanazar</option>
+            <option value="Balthazar">Balthazar</option>
+            <option value="Nebuchadnezzar">Nebuchadnezzar</option>
+            <option value="Melchior">Melchior</option>
+            <option value="Solomon">Solomon</option>
+            <option value="Sovereign">Sovereign</option>
+            <option value="Primat">Primat</option>
+            <option value="Goliath">Goliath</option>
+            <option value="Melchizedek">Melchizedek</option>
+            <option value="Midas">Midas</option>
+            <option value="Tenths">Tenths</option>
+            <option value="Pint">Pint</option>
+            <option value="Quar">Quart</option>
+          </select>
+        </div>
       </div>
       
       <div class="buttons">
         <paper-button class="accept" on-click="_accept" raised>Save</paper-button>
       </div>
 
-    </form>
-    </body>
+    </div>
 
   </template>
 
