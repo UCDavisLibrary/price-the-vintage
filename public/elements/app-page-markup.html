@@ -177,6 +177,10 @@
           this.$.priceItem.show(this.pendingLayer._latlng);
           this.marksLayer.addLayer(this.pendingLayer);
           this.addMarker = this.pendingLayer;
+          this.pendingLayer = null;
+        } else if( this.pendingEdit ) {
+          this._showHideControls(false);
+          this.pendingEdit = false;
         } else {
           window.location.hash = this.catalogId + '/' + this.selected;
         }
@@ -259,9 +263,11 @@
         if( !this.marksLayer ) return;
 
         var marker = L.marker([mark.data.xy[1], mark.data.xy[0]]);
-        marker.bindPopup(this.markToHtml(mark.data));
+        // marker.bindPopup(this.markToHtml(mark.data));
         marker.on('click', function(){
           this.$.priceItem.edit(mark);
+          this.pendingEdit = true;
+          window.location.hash = this.catalogId + '/' + this.selected + '/edit';
         }.bind(this));
         marker.addTo(this.marksLayer);
 
