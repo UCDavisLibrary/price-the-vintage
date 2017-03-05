@@ -1,3 +1,5 @@
+<link rel="import" href="app-page-item.html">
+
 <dom-module id="app-pages-list" >
   <template>
     <style include="shared-styles"></style>
@@ -32,19 +34,14 @@
     <div loading-state="loaded">
       <iron-list id="list" items="[[pages]]" as="page" grid style="height:100%">
         <template>
-          <div class="grid-item" index$="[[page.id]]" on-click="_select">
-            <paper-material>
-              <iron-image 
-                sizing="cover"
-                src="[[apiHost]]/pages/[[page.id]]/thumbnail" 
-                alt="Catalog Thumbnail Image">
-              </iron-image>
-
-              <div class="detail">
-                <paper-fab icon="create"></paper-fab>
-              </div>
-            </paper-material>
-          </div>
+          <app-page-item 
+            class="grid-item"
+            active="[[active]]"
+            catalog-id$="[[catalogId]]" 
+            page="[[page]]" 
+            api-host="[[apiHost]]"
+            on-click="_select">
+          </app-page-item>
         </template>
       </iron-list>
     </div>
@@ -107,21 +104,21 @@
       },
 
       _onSelectedCatalogUpdate : function(id) {
-        this.selected = id;
+        this.catalogId = id;
         this._getCatalogPages();
       },
 
       _getCatalogPages : function() {
-        if( !this.selected || !this.active ) return;
+        if( !this.catalogId || !this.active ) return;
 
         this.ebEmit('get-catalog-pages', {
-          id: this.selected, 
+          id: this.catalogId, 
           handler: this._onCatalogPagesUpdate.bind(this)
         });
       },
 
       _onCatalogPagesUpdate : function(e) {
-        if( !this.active || e.id !== this.selected ) return;
+        if( !this.active || e.id !== this.catalogId ) return;
 
         this.toggleState(e.state, 'loading-state');
         if( e.state !== 'loaded' ) return;
@@ -137,7 +134,7 @@
       },
 
       _select : function(e) {
-        window.location.hash = this.selected+'/'+e.currentTarget.getAttribute('index');
+        window.location.hash = this.catalogId+'/'+e.currentTarget.page.id;
       }
 
     });

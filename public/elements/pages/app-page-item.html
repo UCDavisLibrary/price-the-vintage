@@ -1,22 +1,20 @@
-<dom-module id="app-catalog-card">
+
+<dom-module id="app-page-item">
   <template>
     <style include="shared-styles"></style>
     <style>
       :host {
         display: block;
+        position: relative;
       }
-
-      paper-material {
-        background :white; 
-        position : relative;
-      }
-
-      h3 {
-        padding: 0 5px;
-      }
-
-      .layout-vertical {
-        height: 100%;
+      .detail {
+        position: absolute;
+        top: -5px;
+        left: -10px;
+        padding: 4px;
+        background-color: #9C27B0;
+        color: white;
+        border-radius: 40px;
       }
 
       paper-material {
@@ -32,53 +30,47 @@
       }
     </style>
 
+
     <paper-material>
-      <div class="layout">
+      <iron-image 
+        class="grid-item"
+        style="padding:0"
+        sizing="cover"
+        src="[[imgUrl]]" 
+        alt="Catalog Thumbnail Image">
+      </iron-image>
 
-        <iron-image 
-          class="grid-item"
-          sizing="cover"
-          src$="[[imgUrl]]" 
-          alt="Catalog Thumbnail Image">
-        </iron-image>
-
-        <div class="flex">
-
-          <div class="layout-vertical">
-            <div class="flex">
-              <h3>[[catalog.title]]</h3>
-            </div>
-            <div>
-              <span hidden$="[[!showUserCount]]">
-                <iron-icon icon="social:group"></iron-icon> [[userCount]]
-              </span>
-            </div>
-          </div>
-          
-        </div>
+      <div class="detail" hidden$="[[!showUserCount]]">
+        <span>
+          <iron-icon icon="social:group"></iron-icon> [[userCount]]
+        </span>
       </div>
     </paper-material>
     
   </template>
   <script>
     Polymer({
-      is: 'app-catalog-card',
+      is: 'app-page-item',
 
       properties : {
         apiHost : {
           type : String,
           value : ''
         },
-        catalog : {
+        catalogId : {
+          type : String,
+          value : ''
+        },
+        page : {
           type : Object,
           value : function() {
             return {};
           },
-          observer : '_onCatalogUpdate'
+          observer : '_onPageUpdate'
         },
         imgUrl : {
           type : String,
-          computed : '_createImgUrl(apiHost, catalog)'
+          computed : '_createImgUrl(apiHost, page)'
         },
         userCount : {
           type : Number,
@@ -96,21 +88,21 @@
 
       behaviors : [EventBusBehavior],
 
-      _createImgUrl : function(apiHost, catalog) {
-        return apiHost + '/catalogs/' + catalog.id + '/thumbnail';
+      _createImgUrl : function(apiHost, page) {
+        return apiHost + '/pages/' + page.id + '/thumbnail';
       },
 
-      _onCatalogUpdate : function() {
-        if( !this.catalog.id ) return;
+      _onPageUpdate : function() {
+        if( !this.page.id ) return;
 
         this.ebEmit('get-user-activity', {
-          id : this.catalog.id,
+          id : this.catalogId + '--' + this.page.id,
           handler : this._onUserActivityUpdate.bind(this)
         })
       },
 
       _onUserActivityUpdate : function(e) {
-        if( e.id+'' !== this.catalog.id+'' ) return;
+        if( e.id+'' !== this.catalogId + '--' + this.page.id ) return;
 
         this.debounce('_onUserActivityUpdate', function(){
           this._onUserActivityUpdateAsync(e);
@@ -121,6 +113,8 @@
         this.userCount = Object.keys(e.users).length;
         this.showUserCount = (this.userCount > 0 ) ? true : false;
       }
+
+      
 
     });
   </script>
