@@ -11,25 +11,27 @@
           bottom:0;
         }
 
+        [state="loaded"] {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom:0;
+        }
+
         [state="loading"] {
           text-align: center;
           margin-top: 100px;
         }
     </style>
 
-    <div style="height:100%" state="loaded">
-      <div></div>
-        <div id="mapid" style="height: 100%;"></div>
-      </div>
-      <div>
-        <app-price-form 
-          id="priceItem" 
-          on-add-mark="_onAddMark" 
-          on-edit-mark="_onEditMark"
-          on-cancel="_onAddCancel">
-        </app-price-form>
-      </div>
-    </div>
+    <div id="map" state="loaded"></div>
+    <app-price-form 
+        id="priceItem" 
+        on-add-mark="_onAddMark" 
+        on-edit-mark="_onEditMark"
+        on-cancel="_onAddCancel">
+      </app-price-form>
 
     <div state="loading">
       <paper-spinner active></paper-spinner>
@@ -70,8 +72,10 @@
       behaviors : [EventBusBehavior, StateToggleBehavior],
 
       ebBind : {
+        'selected-catalog-update' : '_onSelectedCatalogUpdate',
         'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
-        'catalog-page-marks-update' : '_onPageMarksUpdate'
+        'catalog-page-marks-update' : '_onPageMarksUpdate',
+        'app-state-update' : '_onAppStateUpdate'
       },
 
       ready : function() {
@@ -106,6 +110,10 @@
 
         this._reset();
         this._getPageMarks();
+      },
+
+      _onSelectedCatalogUpdate : function(id) {
+        this.catalogId = id;
       },
 
       _getPageMarks : function() {
@@ -147,18 +155,31 @@
         img.src = this.apiHost+'/pages/'+this.selected+'/image';
       },
 
+      _onAppStateUpdate : function(state) {
+        if( !this.active ) return;
+
+        if( !state.editingMark ) {
+          this._showHideControls(true);
+          this.$.priceItem.hide();
+          if( this.addMarker && this.marksLayer ) {
+            this.marksLayer.removeLayer(this.addMarker);
+          }
+        } else {
+          this._showHideControls(false);
+        }
+      },
+
       _redraw: function() {
         if ( !this.bounds ) return
       
         if( this.map ) this.map.remove();
 
-        this.map = L.map(this.$.mapid, {
+        this.map = L.map(this.$.map, {
           crs: L.CRS.Simple,
           minZoom: -2
         });
 
         var map = this.map;
-
 
         // Need to get bounds from image.
         var bounds = this.bounds;
@@ -208,6 +229,8 @@
 
           this.marksLayer.addLayer(layer);
           this.addMarker = layer;
+
+          window.location.hash = this.catalogId + '/' + this.selected + '/edit';
         }.bind(this));
 
         for( var key in this.marks ) {
@@ -218,7 +241,13 @@
       },
 
       _onAddCancel : function() {
-         this.marksLayer.removeLayer(this.addMarker);
+         window.location.hash = this.catalogId + '/' + this.selected;
+      },
+
+      _showHideControls : function(show) {
+        var ele = this.$.map.querySelector('.leaflet-control-container');
+        if( !ele ) return;
+        ele.style.display = show ? 'block' : 'none';
       },
 
       _drawMark : function(mark) {
@@ -272,8 +301,10 @@
 
         this.ebEmit('add-catalog-page-mark', {
           pageId : this.selected,
-          mark : data,
+          mark : data
         });
+
+        window.location.hash = this.catalogId + '/' + this.selected;
       },
 
       _onEditMark : function(e) {
@@ -282,8 +313,10 @@
         this.ebEmit('edit-catalog-page-mark', {
           pageId : this.selected,
           markId : mark.id,
-          mark : mark.data,
+          mark : mark.data
         });
+
+        window.location.hash = this.catalogId + '/' + this.selected;
       },
 
       add_marks_too : function () {

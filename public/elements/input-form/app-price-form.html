@@ -20,27 +20,36 @@
         box-shadow: 0 0 10px rgba(0,0,0,.4);
       }
 
-      #header {
-        height: 35px;
-      }
-
       #body {
         overflow: auto;
       }
+
+      .space { 
+        width: 25px;
+      }
+
+      paper-toggle-button {
+        --paper-toggle-button-checked-button-color: var(--primary-color);
+      }
     </style>
 
-    <div id="header" class="layout center">
-      <paper-icon-button icon="arrow-back" hidden$="[[!showBackBtn]]" on-click="_back"></paper-icon-button>
-      <h2 class="flex">Edit Mark</h2>
-      <paper-icon-button icon="close" on-click="_cancel"></paper-icon-button>
-    </div>
-
     <div id="body">
-      <iron-pages selected="[[currentStep]]" attr-for-selected="step">
-        <app-price-type step="type" on-next="_onNext"></app-price-type>
-        <app-price-section id="section" step="section" on-next="_onNext"></app-price-section>
-        <app-price-spirit id="spirit" step="spirit" on-complete="_onComplete" on-cancel="_cancel"></app-price-spirit>
-        <app-price-wine id="wine" step="wine" on-complete="_onComplete" on-cancel="_cancel"></app-price-wine>
+      <div class="layout center">
+        <div>Spirit</div>
+        <div>
+          <paper-toggle-button id="typeInput" checked on-change="_setType"></paper-toggle-button>
+        </div>
+        <div>Wine</div>
+        <div class="space"></div>
+        <div class="flex">
+          <paper-input label="Page Section" id="sectionInput"></paper-input>
+        </div>
+      </div>
+
+
+      <iron-pages selected="[[type]]" attr-for-selected="id">
+        <app-price-spirit id="spirit" on-complete="_onComplete" on-cancel="_cancel"></app-price-spirit>
+        <app-price-wine id="wine" on-complete="_onComplete" on-cancel="_cancel"></app-price-wine>
       </iron-pages>
     </div>
 
@@ -50,9 +59,9 @@
       is: 'app-price-form',
 
       properties : {
-        currentStep : {
+        type : {
           type : String,
-          value : 'type'
+          value : 'wine'
         }
       },
 
@@ -61,53 +70,31 @@
         this._resize();
       },
 
+      _setType : function(e) {
+        if( this.$.typeInput.checked ) {
+          this.type = 'wine';
+        } else {
+          this.type = 'spirit';
+        }
+      },
+
       _resize : function() {
         var h = Math.floor(window.innerHeight * 0.5);
         this.style.maxHeight = h+'px';
-        this.$.body.style.maxHeight = (h-35)+'px';
+        this.$.body.style.maxHeight =  h+'px';
       },
 
       _reset : function() {
-        this.currentStep = 'type';
-        this.type = '';
-        this.section = '';
-        this.showBackBtn = false;
-        this.$.section.reset();
+        this.type = 'wine';
         this.$.spirit.reset();
         this.$.wine.reset();
       },
 
-      _back : function() {
-        switch(this.currentStep) {
-          case 'wine':
-          case 'spirit':
-            this.currentStep = 'section'
-            break;
-          default:
-            this._reset();
-        }
-      },
-
-      _onNext : function(e) {
-        var step = e.currentTarget.getAttribute('step');
-        this.showBackBtn = true;
-
-        switch(step) {
-          case 'type':
-            this.type = e.detail;
-            this.currentStep = 'section';
-            break;
-          case 'section':
-            this.section = e.detail;
-            this.currentStep = this.type;
-            break;
-        }
-      },
 
       _onComplete : function(e) {
         var data = e.detail;
         data.type = this.type;
-        data.section = this.section;
+        data.section = this.$.sectionInput.value;
 
         if( this.editMode ) {
           data.xy = this.editMark.data.xy;
@@ -144,7 +131,9 @@
         this._reset();
         this.editMode = true;
         this.editMark = mark;
-        this.$.section.edit(mark.data.section);
+        
+        this.$.sectionInput.value = mark.data.section;
+        this.type = mark.data.type;
 
         if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
         else this.$.spirit.edit(mark.data);

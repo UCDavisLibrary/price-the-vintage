@@ -3,7 +3,7 @@
     <style>
       :host {
         display: block;
-        height: 100vh;
+        height: 100%;
         position: relative;
       }
 
@@ -15,6 +15,11 @@
         --paper-header-panel-shadow: {
           z-index: 600;
         }
+      }
+
+      iron-pages {
+        height: 100%;
+        position: relative;
       }
     </style>
 
@@ -86,11 +91,15 @@
         for( var i = parts.length-1; i >= 0; i-- ) {
           if( !parts[i] ) parts.splice(i);
         }
-        
 
         parts.forEach(this._parseRoute.bind(this));
 
-        this.ebEmit('update-app-state', {state: {section: this.route.section}});
+        this.ebEmit('update-app-state', {
+          state: {
+            section: this.route.section,
+            editingMark: this.route.edit
+          }
+        });
         this.ebEmit('set-user-activity', {
           catalogId : this.route.catalog,
           pageId : this.route.page

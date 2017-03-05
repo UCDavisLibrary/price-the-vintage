@@ -1,6 +1,7 @@
 <link rel="import" href="app-header-list.html">
 <link rel="import" href="app-header-catalogs.html">
 <link rel="import" href="app-header-page.html">
+<link rel="import" href="app-header-editing.html">
 
 <dom-module id="app-header">
   <template>
@@ -21,6 +22,7 @@
           <app-header-list section="list"></app-header-list>
           <app-header-catalogs section="catalog"></app-header-catalogs>
           <app-header-page section="page"></app-header-page>
+          <app-header-editing section="editing"></app-header-editing>
         </iron-pages>
 
       </div>
@@ -41,7 +43,11 @@
       },
 
       _onAppStateUpdate : function(e) {
-        this.section = e.section;
+        if( e.editingMark ) {
+          this.section = 'editing';
+        } else {
+          this.section = e.section;
+        }
       }
     });
   </script>

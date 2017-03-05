@@ -1,0 +1,41 @@
+
+<dom-module id="app-header-editing">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <div class="layout center">
+      <paper-icon-button icon="close" on-click="_cancelEdit"></paper-icon-button>
+      <h2 class="flex">Edit Mark</h2>
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-header-editing',
+
+      behaviors : [EventBusBehavior],
+
+      ebBind : {
+        'selected-catalog-update' : '_onSelectedCatalogUpdate',
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+      },
+
+      _onSelectedCatalogUpdate : function(id) {
+        this.catalogId = id;
+      },
+
+      _onSelectedCatalogPageUpdate : function(id) {
+        this.pageId = id;
+      },
+
+      _cancelEdit : function() {
+        window.location.hash = this.catalogId + '/' + this.pageId;
+      }
+    });
+  </script>
+</dom-module>

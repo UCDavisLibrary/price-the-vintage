@@ -47,7 +47,8 @@
     "event-bus-behavior": "jrmerz/event-bus-behavior",
     "state-toggle-behavior": "jrmerz/state-toggle-behavior",
     "leaflet": "^1.0.3",
-    "leaflet-draw": "leaflet.draw#^0.4.9"
+    "leaflet-draw": "leaflet.draw#^0.4.9",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#^1.3.0"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
