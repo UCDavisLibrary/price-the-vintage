@@ -1,0 +1,62 @@
+<dom-module id="app-login-popup">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        color: black;
+      }
+
+      [aggie] {
+        color: #002855
+      }
+
+      img {
+        width: 32px;
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+
+    </style>
+
+    <paper-dialog id="dialog">
+      <h2>Login <paper-icon-button style="float:right" icon="close" on-click="hide"></paper-icon-button></h2>
+
+      <div>
+        <paper-button on-click="loginWithGoogle" aggie raised>
+          <img src="/images/AggieLogo.png" /> UC Davis
+        </paper-button>
+        <div>UC Davis accounts are managed through Google.  You will be sent to a Google Account selection screen.  Please
+          enter your full @ucdavis.edu.  You will then be redirected to UC Davis to login.
+        </div>
+      </div>
+
+      <div>
+        <paper-button on-click="loginWithGoogle" raised>Google</paper-button>
+      </div>
+
+    </paper-dialog>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-login-popup',
+
+      behaviors : [EventBusBehavior],
+
+      show : function() {
+        this.$.dialog.open();
+      },
+
+      hide : function() {
+        this.$.dialog.close();
+      },
+
+      loginWithGoogle : function() {
+        this.ebEmit('auth-login-google');
+      }
+    });
+  </script>
+</dom-module>

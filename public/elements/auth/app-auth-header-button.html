@@ -55,6 +55,8 @@
     <div state="notLoggedIn">
       <paper-icon-button on-click="_login" icon="social:person"></paper-icon-button>
     </div>
+
+    <app-login-popup id="popup"></app-login-popup>
     
   </template>
   <script>
@@ -88,7 +90,7 @@
       },
 
       _login : function() {
-        this.ebEmit('auth-login-google');
+        this.$.popup.show();
       },
 
       _toggleLogout : function() {

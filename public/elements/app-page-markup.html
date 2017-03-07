@@ -74,13 +74,16 @@
       ebBind : {
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
         'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'interested-party-request' : '_onInterestedPartyRequest',
         'catalog-page-marks-update' : '_onPageMarksUpdate',
-        'app-state-update' : '_onAppStateUpdate'
+        'app-state-update' : '_onAppStateUpdate',
+        'auth-update' : '_onAuthUpdate'
       },
 
       ready : function() {
         this._getApi();
         this.ebEmit('get-app-state', {handler: this._onAppStateUpdate.bind(this)});
+        this.ebEmit('get-auth-state',{handler: this._onAuthUpdate.bind(this)})
       },
 
       _getApi : function() {
@@ -107,9 +110,22 @@
         }, 50);
       },
 
+      _onInterestedPartyRequest : function() {
+        if( this.active && this.selected ) {
+          this.ebEmit(
+            'interested-party-response',
+            {
+              id : this.selected,
+              types : ['markup']
+            }
+          );
+        }
+      },
+
       _onSelectedCatalogPageUpdate : function(id) {
         this.selected = id;
 
+        this.toggleState('loading');
         this._reset();
         this._getPageMarks();
       },
@@ -137,6 +153,10 @@
 
         this.marks[e.id] = e;
         this._drawMark(e);
+      },
+
+      _onAuthUpdate : function(e) {
+        this.user = e;
       },
 
       _reset : function() {
@@ -232,6 +252,12 @@
 
         var drawControl = new L.Control.Draw(options);
         map.addControl(drawControl);
+
+        map.on(L.Draw.Event.DRAWSTART, function (e) {
+          if( this.user && this.user.user && this.user.user.isAnonymous ) {
+            alert('Reminder, You are making marks as an anonymously.');
+          }
+        }.bind(this));
 
 
         map.on(L.Draw.Event.CREATED, function (e) {

@@ -36,7 +36,7 @@
         <template>
           <app-page-item 
             class="grid-item"
-            active="[[active]]"
+            active$="[[active]]"
             catalog-id$="[[catalogId]]" 
             page="[[page]]" 
             api-host="[[apiHost]]"
@@ -91,6 +91,7 @@
 
       _onActive : function() {
         if( !this.active ) return;
+        
         this._getCatalogPages();
         this._updateListSize();
       },

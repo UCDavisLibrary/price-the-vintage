@@ -65,6 +65,11 @@
       is: 'app-catalog-card',
 
       properties : {
+        active : {
+          type : Boolean,
+          value : false,
+          observer : '_onUpdate'
+        },
         apiHost : {
           type : String,
           value : ''
@@ -74,7 +79,7 @@
           value : function() {
             return {};
           },
-          observer : '_onCatalogUpdate'
+          observer : '_onUpdate'
         },
         imgUrl : {
           type : String,
@@ -91,7 +96,8 @@
       },
 
       ebBind : {
-        'user-activity-update' : '_onUserActivityUpdate'
+        'user-activity-update' : '_onUserActivityUpdate',
+        'interested-party-request' : '_onInterestedPartyRequest'
       },
 
       behaviors : [EventBusBehavior],
@@ -100,13 +106,34 @@
         return apiHost + '/catalogs/' + catalog.id + '/thumbnail';
       },
 
-      _onCatalogUpdate : function() {
+      _onUpdate : function() {
+        if( !this.catalog ) return;
+        if( !this.catalog.id ) return;
+
+        this.debounce('_onUpdateAsync', function(){
+          this._onUpdateAsync();
+        }.bind(this), 50);
+      },
+
+      _onUpdateAsync : function() {
         if( !this.catalog.id ) return;
 
         this.ebEmit('get-user-activity', {
           id : this.catalog.id,
           handler : this._onUserActivityUpdate.bind(this)
         })
+      },
+
+      _onInterestedPartyRequest : function() {
+        if( this.active && this.catalog && this.catalog.id  ) {
+          this.ebEmit(
+            'interested-party-response',
+            {
+              id : this.catalog.id,
+              types : ['activity']
+            }
+          );
+        }
       },
 
       _onUserActivityUpdate : function(e) {
