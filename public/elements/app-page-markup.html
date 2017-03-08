@@ -234,7 +234,7 @@
         var markup = this.$.priceItem;
         // var PriceMarker = L.Icon.Default;
 
-        var style = 'background: #9C27B0; color: white; border-radius: 20px 20px 0 20px; top: -32px; left: -32px';
+        var style = 'box-shadow: 0 0 8px black; background: #9C27B0; color: white; border-radius: 20px 20px 0 20px; top: -32px; left: -32px';
 
         var myIcon = L.divIcon({html: '<paper-icon-button icon="device:gps-fixed" style="'+style+'"></paper-icon-button'});
         // you can set .my-div-icon styles in CSS
@@ -301,7 +301,7 @@
 
         // var marker = L.marker([mark.data.xy[1], mark.data.xy[0]]);
 
-        var style = 'border-radius: 20px 20px 0 20px; top: -32px; left: -32px;';
+        var style = 'box-shadow: 0 0 8px black; border-radius: 20px 20px 0 20px; top: -32px; left: -32px;';
         if( this.user && (this.user.user.uid === mark.data.user) ) {
           style += 'background: #9C27B0; color: white;';
         } else {
