@@ -11,6 +11,11 @@
           bottom:0;
         }
 
+        .leaflet-div-icon {
+          border: none !important;
+          background: transparent !important;
+        }
+
         [state="loaded"] {
           position: absolute;
           left: 0;
@@ -227,7 +232,13 @@
         map.addLayer(this.marksLayer);
 
         var markup = this.$.priceItem;
-        var PriceMarker = L.Icon.Default;
+        // var PriceMarker = L.Icon.Default;
+
+        var style = 'background: #9C27B0; color: white; border-radius: 20px 20px 0 20px; top: -32px; left: -32px';
+
+        var myIcon = L.divIcon({html: '<paper-icon-button icon="device:gps-fixed" style="'+style+'"></paper-icon-button'});
+        // you can set .my-div-icon styles in CSS
+        // var PriceMarker = L.marker([50.505, 30.57], {icon: myIcon})
 
         // this.marks.data.forEach(function(mark) {
         //   // TODO
@@ -241,7 +252,7 @@
             circle: false, // Turns off this drawing tool
             rectangle: false,
             marker: {
-              icon: new PriceMarker()
+              icon: myIcon
             }
           },
           edit: {
@@ -288,7 +299,18 @@
       _drawMark : function(mark) {
         if( !this.marksLayer ) return;
 
-        var marker = L.marker([mark.data.xy[1], mark.data.xy[0]]);
+        // var marker = L.marker([mark.data.xy[1], mark.data.xy[0]]);
+
+        var style = 'border-radius: 20px 20px 0 20px; top: -32px; left: -32px;';
+        if( this.user && (this.user.user.uid === mark.data.user) ) {
+          style += 'background: #9C27B0; color: white;';
+        } else {
+          style += 'background: #4CAF50; color: white;';
+        }
+
+        var myIcon = L.divIcon({html: '<paper-icon-button icon="device:gps-fixed" style="'+style+'"></paper-icon-button'});
+        var marker = L.marker([mark.data.xy[1], mark.data.xy[0]], {icon: myIcon})
+
         // marker.bindPopup(this.markToHtml(mark.data));
         marker.on('click', function(){
           this.$.priceItem.edit(mark);
