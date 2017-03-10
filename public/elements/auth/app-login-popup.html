@@ -8,7 +8,14 @@
       }
 
       [aggie] {
-        color: #002855
+        color: #002855;
+        border: 1px solid #002855;
+        margin-bottom: 0;
+      }
+
+      [google] {
+        color: white;
+        background-color: #ed4f32;
       }
 
       img {
@@ -19,24 +26,39 @@
         margin-top: 0;
       }
 
+      paper-button {
+        text-align: center;
+        display: block;
+        margin: 15px 10%;
+        text-transform: none;
+      }
+
+      .help {
+        padding: 5px;
+        color: #888;
+        font-size: 12px;
+        margin-bottom: 15px;
+
+      }
+
     </style>
 
     <paper-dialog id="dialog">
       <h2>Login <paper-icon-button style="float:right" icon="close" on-click="hide"></paper-icon-button></h2>
 
-      <div>
-        <paper-button on-click="loginWithGoogle" aggie raised>
-          <img src="/images/AggieLogo.png" /> UC Davis
-        </paper-button>
-        <div>UC Davis accounts are managed through Google.  You will be sent to a Google Account selection screen.  Please
-          enter your full @ucdavis.edu.  You will then be redirected to UC Davis to login.
+      <paper-button on-click="loginWithUCD" aggie>
+        <div style="display:inline-block">
+          <div class="layout center">
+            <img src="/images/AggieLogo.png" /> 
+            <div>UC Davis via Google</div>
+          </div>
         </div>
+      </paper-button>
+      <div class="help">UC Davis accounts are managed through Google.  You will be sent to a Google Account selection screen.  Please select or 
+        enter your full @ucdavis.edu.  You will then be redirected to UC Davis to login.
       </div>
 
-      <div>
-        <paper-button on-click="loginWithGoogle" raised>Google</paper-button>
-      </div>
-
+      <paper-button on-click="loginWithGoogle" Google>Google</paper-button>
     </paper-dialog>
 
   </template>
@@ -56,6 +78,10 @@
 
       loginWithGoogle : function() {
         this.ebEmit('auth-login-google');
+      },
+
+      loginWithUCD : function() {
+        this.ebEmit('auth-login-ucd');
       }
     });
   </script>

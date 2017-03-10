@@ -66,6 +66,13 @@ var MarkBehavior = {
       this.mapMakers[key] = this._drawMark(this.marks[key]);
     }
 
+    // hack
+    var controls = this.$.map.querySelectorAll('.leaflet-control, .leaflet-top, .leaflet-bottom');
+    debugger;
+    for( var i = 0; i < controls.length; i++ ) {
+      controls[i].style.zIndex = 20;
+    }
+
     this._updateMapSize();
   },
 
