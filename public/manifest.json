@@ -1,0 +1,26 @@
+{
+  "name": "Price the Vintage",
+  "short_name": "Vintage",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#7B1FA2",
+  "background_color": "#9C27B0",
+  "description": "Price wine catalogs",
+  "icons": [{
+    "src": "images/wine-icon-32.png",
+    "sizes": "32x32",
+    "type": "image/png"
+  },{
+    "src": "images/wine-icon-96.png",
+    "sizes": "96x96",
+    "type": "image/png"
+  },{
+    "src": "images/wine-icon-144.png",
+    "sizes": "144x144",
+    "type": "image/png"
+  },{
+    "src": "images/wine-icon-144.png",
+    "sizes": "144x144",
+    "type": "image/png"
+  }]
+}
