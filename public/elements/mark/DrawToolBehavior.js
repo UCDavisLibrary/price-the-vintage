@@ -58,6 +58,7 @@ var MarkBehavior = {
 
 
     this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
+    this.map.on(L.Draw.Event.DRAWSTOP, this._onDrawToolDrawStop.bind(this));
     this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
 
     this.mapMakers = {};
@@ -90,6 +91,10 @@ var MarkBehavior = {
         }
       );
     }.bind(this));
+  },
+
+  _onDrawToolDrawStop : function() {
+    this.ebEmit('remove-temp-catalog-page-mark', {pageId: this.selected});
   },
 
   _onDrawToolCreated : function (e) {

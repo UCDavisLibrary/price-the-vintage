@@ -345,8 +345,8 @@
       },
 
       _removeTmpMark : function() {
-        this._selectMarker();
         this.ebEmit('remove-temp-catalog-page-mark', {pageId: this.selected});
+        this._selectMarker();
       }
 
     });

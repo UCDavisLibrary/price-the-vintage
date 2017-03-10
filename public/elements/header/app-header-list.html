@@ -6,19 +6,55 @@
       :host {
         display: block;
       }
+
+      #searchContainer {
+        margin: 0 10%;
+        position: absolute;
+        background-color: white;
+        color: black;
+        padding: 10px;
+        z-index: 10;
+        top: 65px;
+        width: 80%;
+      }
+      
+      paper-input {
+        --paper-input-container-color: white;
+        --paper-input-container-focus-color: white;
+        --paper-input-container-input-color: white;
+        color: white;
+      }
     </style>
 
     <div class="layout center">
-      <h2 class="flex">Price the Vintage</h2>
+      <div class="flex">
+        <h2 hidden$="[[searching]]">Price the Vintage</h2>
+        <paper-input id="input" label="Search Catalogs" hidden$="[[!searching]]"></paper-input>
+      </div>
       <div>
-        <paper-icon-button state="list" icon="search" on-click="search"></paper-icon-button>
+        <paper-icon-button state="list" icon="search" on-click="_toggleSearch"></paper-icon-button>
       </div>
     </div>
+
+    <paper-material id="searchContainer" hidden$="[[!searching]]">
+      Searching...
+    </paper-material>
     
   </template>
   <script>
     Polymer({
-      is: 'app-header-list'
+      is: 'app-header-list',
+
+      properties : {
+        searching : {
+          type : Boolean,
+          value : false
+        }
+      },
+
+      _toggleSearch : function(){
+        this.searching = !this.searching;
+      }
     });
   </script>
 </dom-module>
