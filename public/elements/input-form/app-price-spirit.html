@@ -1,30 +1,111 @@
 <dom-module id="app-price-spirit">
   <template>
+    <style include="shared-styles"></style>
     <style>
       :host {
         display: block;
       }
+      
+      .buttons {
+        text-align: center;
+        padding: 15px;
+      }
+
+      .accept {
+        background-color: var(--primary-color);
+        color: white;
+      }
     </style>
 
-    <div>Spirit stuff goes here</div>
+    <div id="body">
+
+      <div class="layout section">
+        <div class="flex" style="padding-right:10px">
+          <paper-input always-float-label id="name" label="Spirit Name" value="" type="string" ></paper-input>
+        </div>
+        <div>
+          <div class="section" >Spirit Type</div>
+          <select value="" id="spiritType" >
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+
+      <div class="layout flex-horizontal section">
+        <div class="flex"></div>
+
+          <paper-input always-float-label id="price" label="Bottle Price" value="" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
+            <div prefix>$</div>
+          </paper-input>
+
+          <paper-input always-float-label id="casePrice" label="Case Price" value="" type="number" min="0" step="0.01">
+            <div prefix>$</div>
+          </paper-input>
+      </div>
+
+      <div class="container layout center">
+
+        <div class="flex" style="padding-right: 10px">
+          <paper-input always-float-label id="size" label="Bottle Size" value="" type="number" min="0" step="0.01"></paper-input>
+        </div>
+
+        <div class="flex">
+          <paper-input always-float-label id="country" label="Country" value=""></paper-input>
+        </div>
+      </div>
+      
+      <div class="buttons">
+        <paper-button class="accept" on-click="_accept" raised>Save</paper-button>
+      </div>
+
+    </div>
 
   </template>
   <script>
     Polymer({
       is: 'app-price-spirit',
 
-      _next : function() {
-        this.fire('next', this.$.input.value);
+      properties: {
+        pageId : {
+          type : String,
+          value : null,
+        }
       },
 
-
       reset : function() {
-
+        this.$.spiritType.value = '';
+        this.$.size.value = '';
+        this.$.name.value = '';
+        this.$.price.value = '';
+        this.$.country.value = '';
+        this.$.casePrice.value = '';
       },
 
       edit : function(data) {
-
+        this.$.spiritType.value = data.spiritType || '';
+        this.$.size.value = data.size || '';
+        this.$.name.value = data.name || '';
+        this.$.country.value = data.country || '';
+        this.$.price.value = data.price || '';
+        this.$.casePrice.value = data.casePrice || '';
       },
+
+      _cancel : function() {
+        this.fire('cancel');
+      },
+
+      _accept : function() {
+        var data = {
+          spiritType : this.$.spiritType.value,
+          size : this.$.size.value,
+          name : this.$.name.value,
+          country : this.$.country.value,
+          price : this.$.price.value,
+          casePrice : this.$.casePrice.value,
+        };
+
+        this.fire('complete', data);
+      }
     });
   </script>
 </dom-module>

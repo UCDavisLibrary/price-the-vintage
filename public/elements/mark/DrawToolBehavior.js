@@ -13,6 +13,10 @@ var MarkBehavior = {
     }
   },
 
+  ready : function() {
+    this.bufferedEvents = new BufferedEvents();
+  },
+
   _getBaseMarkerStyle : function() {
     return {
       'position' : 'relative',
@@ -56,7 +60,6 @@ var MarkBehavior = {
     this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
     this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
 
-
     this.mapMakers = {};
     for( var key in this.marks ) {
       this.mapMakers[key] = this._drawMark(this.marks[key]);
@@ -72,12 +75,20 @@ var MarkBehavior = {
   },
 
   _onDrawToolDrawStart :  function(e){
+    if( this.userState && this.userState.user.isAnonymous ) {
+      alert('Reminder, you are creating marks as an anonymous user.');
+    }
+
     // only a small hack...
     this.drawControl._toolbars.draw._modes.marker.handler._mouseMarker.on('move', function(e) {
-      this.ebEmit('update-temp-catalog-page-mark', {
+      // only send one event every 100ms
+      this.bufferedEvents.emit(
+        'update-temp-catalog-page-mark', 
+        {
           pageId : this.selected,
           xy : [e.latlng.lng, e.latlng.lat]
-      });
+        }
+      );
     }.bind(this));
   },
 

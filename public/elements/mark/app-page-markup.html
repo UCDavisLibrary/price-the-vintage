@@ -111,6 +111,7 @@
         if( !this.active ) {
           if( this.addMarker && this.drawTool ) {
             this._removeTmpMark();
+            this.addMarker = null;
             this.drawTool.disable();
             this.drawTool.enable();
           }
@@ -229,6 +230,7 @@
 
         if( !this.active ) return;
 
+        // there is no /edit stub in url, set map mode to default
         if( !state.editingMark ) {
           this._showHideControls(true);
           this.$.priceItem.hide();
@@ -237,17 +239,25 @@
           }
           this.addMarker = null;
           this._removeTmpMark();
+
+        // the draw tool has fired a create mark event.  This marker has
+        // been set as pendingLayer
         } else if( this.pendingLayer ) {
           this._showHideControls(false);
           this.$.priceItem.show(this.pendingLayer._latlng);
           this.marksLayer.addLayer(this.pendingLayer);
           this.addMarker = this.pendingLayer;
+          this._selectMarker(this.addMarker);
           this.pendingLayer = null;
+
+        // user has clicked a mark to edit
         } else if( this.pendingEdit ) {
           this._showHideControls(false);
           this.pendingEdit = false;
-        } else {
 
+        // there is a /edit stub in url, but no action required (proly refresh),
+        // set to normal (non-edit) mode;
+        } else {
           window.location.hash = this.catalogId + '/' + this.selected;
         }
       },
@@ -278,11 +288,13 @@
 
         marker.mark = mark;
         marker.on('click', function(){
+          if( this.addMarker ) return alert('You must finish or cancel creating new mark.');
           if( mark.data.isTemp ) {
-            return alert('User is currently creating new mark');
+            return alert('User is currently creating new mark.');
           }
 
           this.$.priceItem.edit(mark);
+          this._selectMarker(marker);
           this.pendingEdit = true;
           window.location.hash = this.catalogId + '/' + this.selected + '/edit';
         }.bind(this));
@@ -290,6 +302,17 @@
         marker.addTo(this.marksLayer);
 
         return marker;
+      },
+
+      _selectMarker : function(marker) {
+        if( this.selectedMarker && this.selectedMarker._icon ) {
+          this.selectedMarker._icon.firstChild.style.border = 'none';
+        }
+
+        this.selectedMarker = marker;
+        if( marker ) {
+          this.selectedMarker._icon.firstChild.style.border = '2px solid #FF9800';
+        }
       },
 
       _onAddCancel : function() {
@@ -322,6 +345,7 @@
       },
 
       _removeTmpMark : function() {
+        this._selectMarker();
         this.ebEmit('remove-temp-catalog-page-mark', {pageId: this.selected});
       }
 
