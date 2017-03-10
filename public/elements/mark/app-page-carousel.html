@@ -1,0 +1,147 @@
+<dom-module id="app-page-carousel">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        height: 160px;
+        background-color: white;
+        padding: 0 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+
+      [loading-state="loaded"] {
+        white-space: nowrap;
+      }
+    </style>
+
+    <div id="root" loading-state="loaded">
+      <template is="dom-repeat" items="[[pages]]" as="page" style="height:80px">
+          <app-page-item 
+            style="display:inline-block"
+            class="grid-item"
+            active$="[[active]]"
+            catalog-id$="[[catalogId]]" 
+            page="[[page]]" 
+            api-host="[[apiHost]]"
+            on-click="_select">
+          </app-page-item>
+      </template>
+    </div>
+
+    <div loading-state="loading">
+      <paper-spinner active></paper-spinner>
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-page-carousel',
+
+      properties: {
+        catalogId: {
+          type: String,
+          value : ''
+        },
+        active: {
+          type: Boolean,
+          value: false,
+          observer : '_onActive'
+        },
+        apiHost : {
+          type : String,
+          value : ''
+        }
+      },
+
+      behaviors : [EventBusBehavior, StateToggleBehavior],
+
+      ebBind : {
+        'selected-catalog-update' : '_onSelectedCatalogUpdate',
+        'catalog-pages-update' : '_onCatalogPagesUpdate',
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'catalog-update' : '_updateScroll'
+      },
+
+      ready : function() {
+        this.toggleState('loading', 'loading-state');
+        this._getApi();
+      },
+
+      _onActive : function() {
+        if( !this.active ) return;
+        
+        this.ebEmit('get-selected-catalog-page', {handler: this._onSelectedCatalogPageUpdate.bind(this)});
+        this._getCatalogPages();
+      },
+
+      _getApi : function() {
+        this.ebEmit('get-api-host', {
+          handler : function(host) {
+            this.apiHost = host;
+          }.bind(this)
+        });
+      },
+
+      _onSelectedCatalogPageUpdate : function(pageId) {
+        this.selected = pageId;
+        this._updateScroll();
+      },
+
+      _updateScroll : function() {
+        if( !this.pages || !this.selected ) return;
+
+        var currentPage;
+        for( var i = 0; i < this.pages.length; i++ ) {
+          if( this.selected === this.pages[i].id+'' ) {
+            currentPage = this.pages[i];
+            break;
+          }
+        }
+
+        if( currentPage ) {
+          var hw = Math.floor(window.innerWidth / 2);
+          var position = 130*currentPage.page;
+
+          if( position > hw ) {
+            this.scrollLeft = position - hw;
+          } else {
+            this.scrollLeft = 0;
+          }
+
+          console.log(currentPage.page, hw, position, this.scrollLeft);
+        }
+      },
+
+      _onSelectedCatalogUpdate : function(id) {
+        this.catalogId = id;
+        this._getCatalogPages();
+      },
+
+      _getCatalogPages : function() {
+        if( !this.catalogId || !this.active ) return;
+
+        this.ebEmit('get-catalog-pages', {
+          id: this.catalogId, 
+          handler: this._onCatalogPagesUpdate.bind(this)
+        });
+      },
+
+      _onCatalogPagesUpdate : function(e) {
+        if( !this.active || e.id !== this.catalogId ) return;
+
+        this.toggleState(e.state, 'loading-state');
+        if( e.state !== 'loaded' ) return;
+
+        this.pages = e.payload.data;
+        this._updateScroll();
+      },
+
+      _select : function(e) {
+        window.location.hash = this.catalogId+'/'+e.currentTarget.page.id;
+      }
+
+    });
+  </script>
+</dom-module>

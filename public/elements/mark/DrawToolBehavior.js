@@ -70,6 +70,10 @@ var MarkBehavior = {
   },
 
   _showHideControls : function(show) {
+    if( this.$.carousel ) {
+      this.$.carousel.style.display = show ? 'block' : 'none';
+    }
+
     var ele = this.$.map.querySelector('.leaflet-control-container');
     if( !ele ) return;
     ele.style.display = show ? 'block' : 'none';

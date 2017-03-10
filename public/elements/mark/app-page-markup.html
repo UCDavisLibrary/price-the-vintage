@@ -1,4 +1,5 @@
 <script src="DrawToolBehavior.js"></script>
+<link rel="import" href="app-page-carousel.html">
 
 <dom-module id="app-page-markup">
   <template>
@@ -30,7 +31,19 @@
           text-align: center;
           margin-top: 100px;
         }
+
+        #carousel {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+        }
     </style>
+
+    <paper-material id="carousel">
+      <app-page-carousel active="[[active]]"></app-page-carousel>
+    </paper-material>
 
     <div id="map" state="loaded"></div>
     <app-price-form 
