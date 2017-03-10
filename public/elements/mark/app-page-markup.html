@@ -1,3 +1,5 @@
+<script src="DrawToolBehavior.js"></script>
+
 <dom-module id="app-page-markup">
   <template>
     <style include="shared-styles"></style>
@@ -64,6 +66,12 @@
             return {};
           }
         },
+        mapMarkers : {
+          type : Object,
+          value : function() {
+            return {};
+          }
+        },
         map: {
           type: Object,
           value: null
@@ -74,7 +82,7 @@
         }
       },
 
-      behaviors : [EventBusBehavior, StateToggleBehavior],
+      behaviors : [EventBusBehavior, StateToggleBehavior, MarkBehavior],
 
       ebBind : {
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
@@ -100,7 +108,14 @@
       },
 
       _onActive : function() {
-        if( !this.active ) return;
+        if( !this.active ) {
+          if( this.addMarker && this.drawTool ) {
+            this._removeTmpMark();
+            this.drawTool.disable();
+            this.drawTool.enable();
+          }
+          return;
+        }
 
         this._onAppStateUpdate();
         this._getPageMarks();
@@ -116,18 +131,20 @@
       },
 
       _onInterestedPartyRequest : function() {
-        if( this.active && this.selected ) {
-          this.ebEmit(
-            'interested-party-response',
-            {
-              id : this.selected,
-              types : ['markup']
-            }
-          );
-        }
+        if( !this.active || !this.selected ) return;
+
+        this.ebEmit(
+          'interested-party-response',
+          {
+            id : this.selected,
+            types : ['markup']
+          }
+        );
       },
 
       _onSelectedCatalogPageUpdate : function(id) {
+        if( this.selected ) this._removeTmpMark();
+
         this.selected = id;
 
         this.toggleState('loading');
@@ -154,14 +171,35 @@
 
       _onPageMarksUpdate : function(e) {
         if( !this.active || e.pageId !== this.selected ) return;
+
+        if( e.deleted ) {
+          if( this.marks[e.id] ) {
+            delete this.marks[e.id];
+          }
+          if( this.mapMarkers[e.id] ) {
+            this.marksLayer.removeLayer(this.mapMarkers[e.id]);
+            delete this.mapMarkers[e.id];
+          }
+          return;
+        }
+
         if( e.state !== 'loaded' ) return;
 
         this.marks[e.id] = e;
-        this._drawMark(e);
+
+        if( this.mapMarkers[e.id] ) {
+          if( e.data.isTemp && this._isMyMark(e) ) {
+            return; // don't draw my temp marks
+          }
+
+          this.mapMarkers[e.id].setLatLng([e.data.xy[1], e.data.xy[0]]);
+        } else {
+          this.mapMarkers[e.id] = this._drawMark(e);
+        }
       },
 
       _onAuthUpdate : function(e) {
-        this.user = e;
+        this.userState = e;
       },
 
       _reset : function() {
@@ -197,6 +235,8 @@
           if( this.addMarker && this.marksLayer ) {
             this.marksLayer.removeLayer(this.addMarker);
           }
+          this.addMarker = null;
+          this._removeTmpMark();
         } else if( this.pendingLayer ) {
           this._showHideControls(false);
           this.$.priceItem.show(this.pendingLayer._latlng);
@@ -207,155 +247,58 @@
           this._showHideControls(false);
           this.pendingEdit = false;
         } else {
+
           window.location.hash = this.catalogId + '/' + this.selected;
         }
       },
 
-      _redraw: function() {
-        if ( !this.bounds ) return
-      
-        if( this.map ) this.map.remove();
-
-        this.map = L.map(this.$.map, {
-          crs: L.CRS.Simple,
-          minZoom: -2
-        });
-
-        var map = this.map;
-
-        // Need to get bounds from image.
-        var bounds = this.bounds;
-        var image = L.imageOverlay(this.apiHost+'/pages/'+this.selected+'/image', bounds).addTo(map);
-        map.fitBounds(bounds);
-
-        this.marksLayer = new L.FeatureGroup();
-        map.addLayer(this.marksLayer);
-
-        var markup = this.$.priceItem;
-        // var PriceMarker = L.Icon.Default;
-
-        var style = 'box-shadow: 0 0 8px black; background: #9C27B0; color: white; border-radius: 20px 20px 0 20px; top: -32px; left: -32px';
-
-        var myIcon = L.divIcon({html: '<paper-icon-button icon="device:gps-fixed" style="'+style+'"></paper-icon-button'});
-        // you can set .my-div-icon styles in CSS
-        // var PriceMarker = L.marker([50.505, 30.57], {icon: myIcon})
-
-        // this.marks.data.forEach(function(mark) {
-        //   // TODO
-        // });
-
-        var options = {
-          position: 'topright',
-          draw: {
-            polyline:false,
-            polygon: false,
-            circle: false, // Turns off this drawing tool
-            rectangle: false,
-            marker: {
-              icon: myIcon
-            }
-          },
-          edit: {
-            featureGroup: this.marksLayer, 
-            remove: false
-          }
-        };
-
-        var drawControl = new L.Control.Draw(options);
-        map.addControl(drawControl);
-
-        map.on(L.Draw.Event.DRAWSTART, function (e) {
-          if( this.user && this.user.user && this.user.user.isAnonymous ) {
-            alert('Reminder, You are making marks as an anonymously.');
-          }
-        }.bind(this));
-
-
-        map.on(L.Draw.Event.CREATED, function (e) {
-          var type = e.layerType,
-              layer = e.layer;
-
-          this.pendingLayer = layer;
-          window.location.hash = this.catalogId + '/' + this.selected + '/edit';
-        }.bind(this));
-
-        for( var key in this.marks ) {
-          this._drawMark(this.marks[key]);
+      _isMyMark : function(mark) {
+        if( this.userState && (this.userState.user.uid === mark.data.user) ) {
+          return true;
         }
-
-        this._updateMapSize();
-      },
-
-      _onAddCancel : function() {
-         window.location.hash = this.catalogId + '/' + this.selected;
-      },
-
-      _showHideControls : function(show) {
-        var ele = this.$.map.querySelector('.leaflet-control-container');
-        if( !ele ) return;
-        ele.style.display = show ? 'block' : 'none';
+        return false;
       },
 
       _drawMark : function(mark) {
         if( !this.marksLayer ) return;
 
-        // var marker = L.marker([mark.data.xy[1], mark.data.xy[0]]);
+        var style;
+        if( this._isMyMark(mark) ) {
+          if( mark.data.isTemp ) return; // don't draw our own tmp marks
 
-        var style = 'box-shadow: 0 0 8px black; border-radius: 20px 20px 0 20px; top: -32px; left: -32px;';
-        if( this.user && (this.user.user.uid === mark.data.user) ) {
-          style += 'background: #9C27B0; color: white;';
+          style = this._getMarkBtnStyle();
         } else {
-          style += 'background: #4CAF50; color: white;';
+          style = this._getMarkBtnStyle(true);
         }
 
-        var myIcon = L.divIcon({html: '<paper-icon-button icon="device:gps-fixed" style="'+style+'"></paper-icon-button'});
-        var marker = L.marker([mark.data.xy[1], mark.data.xy[0]], {icon: myIcon})
+        var btn = this._getMarkBtn(style, mark);
 
-        // marker.bindPopup(this.markToHtml(mark.data));
+        var myIcon = L.divIcon({html: btn});
+        var marker = L.marker([mark.data.xy[1], mark.data.xy[0]], {icon: myIcon});
+
+        marker.mark = mark;
         marker.on('click', function(){
+          if( mark.data.isTemp ) {
+            return alert('User is currently creating new mark');
+          }
+
           this.$.priceItem.edit(mark);
           this.pendingEdit = true;
           window.location.hash = this.catalogId + '/' + this.selected + '/edit';
         }.bind(this));
+
         marker.addTo(this.marksLayer);
 
         return marker;
       },
 
-      markToHtml : function(mark) {
-        var html="<div class=\"price_popup\">";
-        var items=[
-          'brandname',
-          'otherdesignation',
-          'vintage_date',
-          'country',
-          'bottlesize',
-          'type',
-          'color',
-          'region',
-          'perprice',
-          'caseprice'];
-
-        var label={
-          country:'Country',
-          otherdesignation:"Other Designation",
-          brandname:"Brand Name",
-          vintage_date:"Vintage",
-          region:"Wine Region",
-          bottlesize:"Bottle Size",
-          perprice:"Bottle Price",
-          caseprice:"Case Price"
-        };
-        items.forEach(function(i) {
-          if (mark[i]) {
-            html+="<b>"+((label[i])?label[i]:i)+":</b>  "+mark[i]+"<br/>";
-          }
-        });
-        html+="</div>";
-        return html;
+      _onAddCancel : function() {
+        this._removeTmpMark();
+        window.location.hash = this.catalogId + '/' + this.selected;
       },
 
       _onAddMark : function(e) {
+        this._removeTmpMark();
         var data = e.detail;
 
         this.ebEmit('add-catalog-page-mark', {
@@ -378,9 +321,9 @@
         window.location.hash = this.catalogId + '/' + this.selected;
       },
 
-      add_marks_too : function () {
-        console.log("Also Add Marks")
-      },
+      _removeTmpMark : function() {
+        this.ebEmit('remove-temp-catalog-page-mark', {pageId: this.selected});
+      }
 
     });
   </script>
