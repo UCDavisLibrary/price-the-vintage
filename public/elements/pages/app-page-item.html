@@ -19,6 +19,17 @@
         border-radius: 40px;
       }
 
+      .markDetail {
+        position: absolute;
+        bottom: -5px;
+        left: -10px;
+        padding: 4px;
+        background-color: white;
+        color: var(--default-primary-color);
+        border-radius: 40px;
+      }
+
+
       paper-material {
         transition: transform 200ms linear, box-shadow 200ms linear, border 200ms linear;
         border: 2px solid white;
@@ -53,6 +64,12 @@
           <iron-icon icon="social:group"></iron-icon> [[userCount]]
         </span>
       </div>
+
+      <div class="markDetail" hidden$="[[!showMarkCount]]">
+        <span>
+          <iron-icon icon="device:gps-fixed"></iron-icon> [[markCount]]
+        </span>
+      </div>
     </paper-material>
     
   </template>
@@ -85,11 +102,21 @@
           type : String,
           computed : '_createImgUrl(apiHost, page)'
         },
+
         userCount : {
           type : Number,
           value : 0
         },
         showUserCount : {
+          type : Boolean,
+          value : false
+        },
+        
+        markCount : {
+          type : Number,
+          value : 0
+        },
+        showMarkCount : {
           type : Boolean,
           value : false
         }
@@ -98,7 +125,8 @@
       ebBind : {
         'user-activity-update' : '_onUserActivityUpdate',
         'interested-party-request' : '_onInterestedPartyRequest',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'page-metadata-update' : '_onMetadataUpdate'
       },
 
       behaviors : [EventBusBehavior],
@@ -124,7 +152,25 @@
           handler : function(e) {
             this._onUserActivityUpdate(e);
           }.bind(this)
-        })
+        });
+
+        this.ebEmit(
+          'get-page-metadata', 
+          {
+            id : this.page.id,
+            handler: this._onMetadataUpdate.bind(this)
+          }
+        );
+      },
+
+      _onMetadataUpdate : function(e) {
+        if( e.state !== 'loaded' || e.id !== this.page.id ) return;
+
+        this.metadata = e.payload || {};
+        this.markCount = this.metadata.markCount || 0;
+
+        if( this.markCount > 0 ) this.showMarkCount = true;
+        else this.showMarkCount = false;
       },
 
       _onSelectedCatalogPageUpdate : function(selectedPageId) {

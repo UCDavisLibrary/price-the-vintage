@@ -91,16 +91,16 @@ var MarkBehavior = {
     }
 
     // only a small hack...
-    this.drawControl._toolbars.draw._modes.marker.handler._mouseMarker.on('move', function(e) {
-      // only send one event every 100ms
-      this.bufferedEvents.emit(
-        'update-temp-catalog-page-mark', 
-        {
-          pageId : this.selected,
-          xy : [e.latlng.lng, e.latlng.lat]
-        }
-      );
-    }.bind(this));
+    // this.drawControl._toolbars.draw._modes.marker.handler._mouseMarker.on('move', function(e) {
+    //   // only send one event every 100ms
+    //   this.bufferedEvents.emit(
+    //     'update-temp-catalog-page-mark', 
+    //     {
+    //       pageId : this.selected,
+    //       xy : [e.latlng.lng, e.latlng.lat]
+    //     }
+    //   );
+    // }.bind(this));
   },
 
   _onDrawToolDrawStop : function() {
@@ -110,6 +110,14 @@ var MarkBehavior = {
   _onDrawToolCreated : function (e) {
     var type = e.layerType,
         layer = e.layer;
+    
+    this.bufferedEvents.emit(
+      'update-temp-catalog-page-mark', 
+      {
+        pageId : this.selected,
+        xy : [e.layer._latlng.lng, e.layer._latlng.lat]
+      }
+    );
 
     this.pendingLayer = layer;
     window.location.hash = this.catalogId + '/' + this.selected + '/edit';
