@@ -18,8 +18,11 @@
       }
 
       iron-pages {
-        height: 100%;
-        position: relative;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
       }
     </style>
 
@@ -27,6 +30,7 @@
       <paper-toolbar>
         <app-header class="flex"></app-header>
       </paper-toolbar>
+
 
       <iron-pages 
         selected="[[selectedSection]]" 
@@ -37,6 +41,7 @@
         <app-pages-list section="catalog"></app-pages-list>
         <app-page-markup section="page"></app-page-markup>
       </iron-pages>
+
     </paper-header-panel>
 
   </template>
