@@ -69,7 +69,7 @@ var MarkBehavior = {
     // hack
     var controls = this.$.map.querySelectorAll('.leaflet-control, .leaflet-top, .leaflet-bottom');
     for( var i = 0; i < controls.length; i++ ) {
-      controls[i].style.zIndex = 20;
+      controls[i].style.zIndex = 500;
     }
 
     this._updateMapSize();
