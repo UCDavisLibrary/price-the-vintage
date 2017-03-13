@@ -50,7 +50,8 @@
         id="priceItem" 
         on-add-mark="_onAddMark" 
         on-edit-mark="_onEditMark"
-        on-cancel="_onAddCancel">
+        on-cancel="_onAddCancel"
+        on-delete="_onDeleteMark">
       </app-price-form>
 
     <div state="loading">
@@ -330,6 +331,17 @@
 
       _onAddCancel : function() {
         this._removeTmpMark();
+        window.location.hash = this.catalogId + '/' + this.selected;
+      },
+
+      _onDeleteMark : function(e) {
+        var mark = e.detail;
+
+        this.ebEmit('delete-catalog-page-mark', {
+          pageId : this.selected,
+          markId : mark.id
+        });
+
         window.location.hash = this.catalogId + '/' + this.selected;
       },
 

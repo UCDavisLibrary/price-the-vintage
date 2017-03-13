@@ -191,7 +191,14 @@
             'interested-party-response',
             {
               id : this._getActivityPageId(),
-              types : ['activity']
+              types : ['activity', 'pages']
+            }
+          );
+          this.ebEmit(
+            'interested-party-response',
+            {
+              id : this.page.id,
+              types : ['pages']
             }
           );
         }

@@ -3,14 +3,18 @@ const admin = require('firebase-admin');
 
 admin.initializeApp(functions.config().firebase);
 
-exports.updatePageMarkCount = functions.database.ref('/price-the-vintage/marks/{pageId}/{markId}')
+exports.updatePageMarkCount = functions.database.ref('/price-the-vintage/marks/{pageId}')
     .onWrite(event => {
 
       var response = new Promise((resolve, reject) => {
 
-        event.data.ref.parent.once('value').then((ref) => {
+        event.data.ref.once('value').then((ref) => {
             const data = ref.val();
-            const count = Object.keys(data).length;
+            var count = 0;
+
+            if( data ) {
+              count = Object.keys(data).length;
+            }
 
             console.log('Setting page count', event.params.pageId, count);
 
