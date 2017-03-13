@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "./build/build.sh"
+    "watch": "./build/build.sh",
+    "init" : "npm install && rm ./node_modules/app && ln -s ../lib ./node_modules/app"
   },
   "author": "Justin Merz <jrmerz@gmail.com>",
   "license": "ISC",
