@@ -14,6 +14,10 @@
       [loading-state="loaded"] {
         white-space: nowrap;
       }
+
+      #root {
+        text-align: center;
+      }
     </style>
 
     <div id="root" loading-state="loaded">
@@ -67,6 +71,7 @@
       ready : function() {
         this.toggleState('loading', 'loading-state');
         this._getApi();
+        this.animateScroll = new AnimateScroll();
       },
 
       _onActive : function() {
@@ -102,13 +107,21 @@
 
         if( currentPage ) {
           var hw = Math.floor(window.innerWidth / 2);
-          var position = 130*currentPage.page;
+          var position = 130 * currentPage.page;
+
+          var start = this.scrollLeft;
+          var stop;
 
           if( position > hw ) {
-            this.scrollLeft = position - hw;
+            stop = position - hw + 95;
           } else {
-            this.scrollLeft = 0;
+            stop = 0;
           }
+
+          this.animateScroll.run(start, stop, 300, function(scroll){
+            this.scrollLeft = scroll;
+          }.bind(this));
+
         }
       },
 

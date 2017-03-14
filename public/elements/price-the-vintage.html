@@ -105,6 +105,9 @@
             editingMark: this.route.edit
           }
         });
+
+        this.ebEmit('select-catalog-page', {id: this.route.page});
+
         this.ebEmit('set-user-activity', {
           catalogId : this.route.catalog,
           pageId : this.route.page
@@ -121,7 +124,6 @@
           case 1:
             this.route.section = 'page';
             this.route.page = value;
-            this.ebEmit('select-catalog-page', {id: value});
             break;
           case 2:
             if( value === 'edit') this.route.edit = true;

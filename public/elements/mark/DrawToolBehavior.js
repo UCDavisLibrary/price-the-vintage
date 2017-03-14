@@ -141,6 +141,7 @@ var MarkBehavior = {
     if( mark && mark.data.isTemp ) {
       return '<app-icon-spinner icon="settings" spin style="'+style+'; padding: 8px"></app-icon-spinner>'
     }
+    // device:gps-fixed
     return '<paper-icon-button icon="device:gps-fixed" style="'+style+'"></paper-icon-button>';
   }
 }

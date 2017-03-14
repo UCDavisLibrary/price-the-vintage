@@ -29,6 +29,16 @@
         border-radius: 40px;
       }
 
+      .details {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        padding: 4px;
+        background-color: rgba(156, 39, 176, .9);
+        color: white;
+      }
+
 
       paper-material {
         transition: transform 200ms linear, box-shadow 200ms linear, border 200ms linear;
@@ -52,14 +62,14 @@
 
     <paper-material id="root">
       <iron-image 
-        class="grid-item"
+        class="grid-item-img"
         style="padding:0"
         sizing="cover"
         src="[[imgUrl]]" 
         alt="Catalog Thumbnail Image">
       </iron-image>
 
-      <div class="detail" hidden$="[[!showUserCount]]">
+      <!--<div class="detail" hidden$="[[!showUserCount]]">
         <span>
           <iron-icon icon="social:group"></iron-icon> [[userCount]]
         </span>
@@ -67,9 +77,20 @@
 
       <div class="markDetail" hidden$="[[!showMarkCount]]">
         <span>
-          <iron-icon icon="device:gps-fixed"></iron-icon> [[markCount]]
+          <iron-icon icon="gps:fixed"></iron-icon> [[markCount]]
         </span>
+      </div>-->
+
+      <div class="layout center details" hidden$="[[!showDetails]]">
+        <div hidden$="[[!showUserCount]]">
+          <iron-icon icon="social:group"></iron-icon> [[userCount]]
+        </div>
+        <div class="flex"></div>
+        <div hidden$="[[!showMarkCount]]">
+          <iron-icon icon="device:gps-fixed"></iron-icon> [[markCount]]
+        </div>
       </div>
+
     </paper-material>
     
   </template>
@@ -119,6 +140,11 @@
         showMarkCount : {
           type : Boolean,
           value : false
+        },
+        showDetails : {
+          type : Boolean,
+          value : false,
+          computed : '_showDetails(showUserCount, showMarkCount)'
         }
       },
 
@@ -133,6 +159,10 @@
 
       _createImgUrl : function(apiHost, page) {
         return apiHost + '/pages/' + page.id + '/thumbnail';
+      },
+
+      _showDetails : function(showUserCount, showMarkCount) {
+        return showUserCount || showMarkCount;
       },
 
       _onUpdate : function() {
