@@ -7,22 +7,56 @@
         display: block;
       }
 
-      h2 {
+      #voteCount {
         text-align: center;
         margin:0;
         padding:0;
       }
+      h2 {
+        margin-top: 0;
+        text-transform: capitalize;
+      }
       .voting {
+        color: #888;
+      }
+      .voting.voted {
         color: var(--default-primary-color);
+      }
+
+      paper-icon-button {
+        width: 56px;
+        height: 56px;
+      }
+
+      table {
+        font-size: 16px;
+        width: 100%;
       }
     </style>
 
     <div class="layout">
-      <div id="display" class="flex"></div>
-      <div class="voting">
-        <div><paper-icon-button icon="expand-less" on-click="_upVote"></paper-icon-button></div>
-        <h2>[[count]]</h2>
-        <div><paper-icon-button icon="expand-more" on-click="_downVote"></paper-icon-button></div>
+      <div class="flex">
+        <h2 style="text-align: left">[[currentType]]</h2>
+        <div id="table"></div>
+      </div>
+      <div class="voting" hidden$="[[!showVoting]]">
+        <div>
+          <paper-icon-button 
+            id="upVote" 
+            class="voting" 
+            icon="expand-less" 
+            on-click="_upVote">
+          </paper-icon-button>
+        </div>
+        <h2 id="voteCount" class="voting">[[count]]</h2>
+        <div>
+          <paper-icon-button 
+            id="downVote" 
+            class="voting"  
+            icon="expand-more" 
+            on-click="_downVote">
+          </paper-icon-button>
+        </div>
       </div>
     </div>
 
@@ -43,30 +77,123 @@
         count : {
           type : Number,
           value : 0
+        },
+        userState : {
+          type : Object,
+          value : function() {
+            return {}
+          }
+        },
+        showVoting : {
+          type : Boolean,
+          value : false
+        }
+      },
+
+      labels : {
+        wine: {
+          color     : 'Wine Color',
+          wineType  : 'Wine Type',
+          size      : 'Bottle Size',
+          name      : 'Name',
+          producer  : 'Producer',
+          price     : 'Price per Bottle',
+          casePrice : 'Price per Case'
+        },
+        spirit : {
+          name      : 'Name',
+          producer  : 'Producer',
+          price     : 'Price per Bottle',
+          casePrice : 'Price per Case'
         }
       },
       
+      behaviors : [EventBusBehavior],
+
+      ebBind : {
+        'catalog-page-marks-update' : '_onPageMarksUpdate',
+        'auth-update' : '_onAuthUpdate'
+      },
+
+      ready : function() {
+        this.ebEmit('get-auth-state',{handler: this._onAuthUpdate.bind(this)});
+      },
+
+      _onAuthUpdate : function(e) {
+        this.userState = e;
+
+        if( this.userState.user && this.userState.user.uid && !this.userState.user.isAnonymmous ) {
+          this.showVoting = true;
+        } else {
+          this.showVoting = false;
+        }
+      },
+
+      _onPageMarksUpdate : function(e) {
+        if( this.mark.id !== e.id ) return;
+        this.show(e);
+      },
+
       _upVote : function() {
-        this.count++;
+        this._vote('up');
       },
 
       _downVote : function() {
-        this.count--;
+        this._vote('down');
+      },
+
+      _vote : function(value) {
+        this.ebEmit(
+          'vote-catalog-page-mark',
+          {
+            markId : this.mark.id,
+            pageId : this.mark.pageId,
+            vote : value
+          }
+        );
       },
 
       show : function(mark) {
         this.count = 0;
-        this.mark = mark.data;
+        this.mark = mark;
 
-        var html = '';
-        for( var key in this.mark ) {
-          var type = typeof this.mark[key];
-          if( type === 'string' || type === 'number' ) {
-            html += '<div><b>'+key+'</b>:  '+this.mark[key]+'</div>';
+        this.currentType = this.mark.data.type;
+
+        var html = '<table class="style-scope app-price-comment-form">';
+        for( var key in this.labels[this.currentType] ) {
+          if( this.mark.data[key] ) {
+            html += '<tr><td style="font-weight:bold">'+this.labels[this.currentType][key]+'</td><td>'+this.mark.data[key]+'</td></tr>';
+          }
+        }
+        this.$.table.innerHTML = html+'</table>';
+
+        var eles = this.querySelectorAll('.voting');
+        for( var i = 0; i < eles.length; i++ ) {
+          eles[i].classList.remove('voted');
+        }
+
+        var votes = this.mark.data.votes;
+        var user = this.userState.user || {};
+        this.userVote = '';
+
+        if( votes ) {
+          for( var key in votes ) {
+            if( user.uid === key ) {
+              this.userVote = votes[key];
+            }
+            if( votes[key] === 'up' ) this.count++;
+            else if( votes[key] === 'down' ) this.count--;
           }
         }
 
-        this.$.display.innerHTML = html;
+        if( this.userVote ) {
+          this.$.voteCount.classList.add('voted');
+          if( this.userVote === 'up' ) {
+            this.$.upVote.classList.add('voted');
+          } else if( this.userVote === 'down' ) {
+            this.$.downVote.classList.add('voted');
+          }
+        }
       }
     });
   </script>
