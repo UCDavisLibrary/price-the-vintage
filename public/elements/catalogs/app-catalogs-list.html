@@ -82,8 +82,7 @@
               class="grid-card" 
               active="[[active]]"
               catalog="[[catalog]]"
-              api-host="[[apiHost]]"
-              on-click="_select" >
+              api-host="[[apiHost]]">
             </app-catalog-card>
             
           </template>
@@ -164,10 +163,6 @@
         this.debounce('_updateListSize', function(){
           this.$.list.fire('iron-resize');
         }, 50);
-      },
-
-      _select : function(e) {
-        window.location.hash = e.currentTarget.catalog.id;
       }
 
     });

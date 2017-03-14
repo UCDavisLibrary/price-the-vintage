@@ -140,7 +140,7 @@
       },
 
       _onCatalogPagesUpdate : function(e) {
-        if( !this.active || e.id !== this.catalogId ) return;
+        if( !this.active || e.id+'' !== this.catalogId+'' ) return;
 
         this.toggleState(e.state, 'loading-state');
         if( e.state !== 'loaded' ) return;

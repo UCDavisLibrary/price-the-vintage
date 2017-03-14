@@ -127,8 +127,8 @@
         var page = e.payload.data[0];
         window.location.hash = this.catalogId+'/'+page.id;
 
-        // this.pages = e.payload.data;
-        // this._updateListSize();
+        this.pages = e.payload.data;
+        this._updateListSize();
       },
 
       _updateListSize : function() {

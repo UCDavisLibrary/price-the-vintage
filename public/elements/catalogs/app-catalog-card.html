@@ -30,32 +30,45 @@
       iron-icon {
         color: var(--light-primary-color);
       }
+
+      #loading {
+        text-align: center;
+        height: 148px;
+      }
+      #loading paper-spinner {
+        padding: 25px;
+      }
     </style>
 
     <paper-material>
-      <div class="layout">
+      <div hidden$="[[loading]]">
+        <div class="layout">
 
-        <iron-image 
-          class="grid-card-img"
-          sizing="cover"
-          src$="[[imgUrl]]" 
-          alt="Catalog Thumbnail Image">
-        </iron-image>
+          <iron-image 
+            class="grid-card-img"
+            sizing="cover"
+            src$="[[imgUrl]]" 
+            alt="Catalog Thumbnail Image">
+          </iron-image>
 
-        <div class="flex">
+          <div class="flex">
 
-          <div class="layout-vertical">
-            <div class="flex">
-              <h3>[[catalog.title]]</h3>
+            <div class="layout-vertical">
+              <div class="flex">
+                <h3>[[catalog.title]]</h3>
+              </div>
+              <div>
+                <span hidden$="[[!showUserCount]]">
+                  <iron-icon icon="social:group"></iron-icon> [[userCount]]
+                </span>
+              </div>
             </div>
-            <div>
-              <span hidden$="[[!showUserCount]]">
-                <iron-icon icon="social:group"></iron-icon> [[userCount]]
-              </span>
-            </div>
+            
           </div>
-          
         </div>
+      </div>
+      <div id="loading" hidden$="[[!loading]]">
+        <paper-spinner active></paper-spinner>
       </div>
     </paper-material>
     
@@ -92,12 +105,21 @@
         showUserCount : {
           type : Boolean,
           value : false
+        },
+        loading: {
+          type : Boolean,
+          value : false
         }
+      },
+
+      listeners: {
+        click : '_select'
       },
 
       ebBind : {
         'user-activity-update' : '_onUserActivityUpdate',
-        'interested-party-request' : '_onInterestedPartyRequest'
+        'interested-party-request' : '_onInterestedPartyRequest',
+        'catalog-pages-update' : '_onCatalogPagesUpdate'
       },
 
       behaviors : [EventBusBehavior],
@@ -122,6 +144,30 @@
           id : this.catalog.id,
           handler : this._onUserActivityUpdate.bind(this)
         })
+      },
+
+      _onCatalogPagesUpdate : function(e) {
+        if( !this.active || e.id+'' !== this.catalog.id+'' ) return;
+
+        if( e.state !== 'loaded' ) return;
+        this.loading = false;
+
+        if( e.payload.data.length === 0 ) {
+          return alert('This catalog has no pages :(');
+        }
+
+        var page = e.payload.data[0];
+        window.location.hash = this.catalog.id+'/'+page.id;
+      },
+
+      _select : function(e) {
+        if( !this.catalog.id ) return;
+        this.loading = true;
+
+        this.ebEmit('get-catalog-pages', {
+          id: this.catalog.id,
+          handler:  this._onCatalogPagesUpdate.bind(this)
+        });
       },
 
       _onInterestedPartyRequest : function() {
