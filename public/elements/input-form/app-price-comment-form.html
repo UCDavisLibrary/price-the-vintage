@@ -1,0 +1,73 @@
+
+<dom-module id="app-price-comment-form">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      h2 {
+        text-align: center;
+        margin:0;
+        padding:0;
+      }
+      .voting {
+        color: var(--default-primary-color);
+      }
+    </style>
+
+    <div class="layout">
+      <div id="display" class="flex"></div>
+      <div class="voting">
+        <div><paper-icon-button icon="expand-less" on-click="_upVote"></paper-icon-button></div>
+        <h2>[[count]]</h2>
+        <div><paper-icon-button icon="expand-more" on-click="_downVote"></paper-icon-button></div>
+      </div>
+    </div>
+
+    <paper-input label="comment"></paper-input>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-price-comment-form',
+
+      properties : {
+        mark : {
+          type : Object,
+          value : function() {
+            return {};
+          }
+        },
+        count : {
+          type : Number,
+          value : 0
+        }
+      },
+      
+      _upVote : function() {
+        this.count++;
+      },
+
+      _downVote : function() {
+        this.count--;
+      },
+
+      show : function(mark) {
+        this.count = 0;
+        this.mark = mark.data;
+
+        var html = '';
+        for( var key in this.mark ) {
+          var type = typeof this.mark[key];
+          if( type === 'string' || type === 'number' ) {
+            html += '<div><b>'+key+'</b>:  '+this.mark[key]+'</div>';
+          }
+        }
+
+        this.$.display.innerHTML = html;
+      }
+    });
+  </script>
+</dom-module>

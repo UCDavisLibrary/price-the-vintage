@@ -256,7 +256,7 @@
         // been set as pendingLayer
         } else if( this.pendingLayer ) {
           this._showHideControls(false);
-          this.$.priceItem.show(this.pendingLayer._latlng);
+          this.$.priceItem.create(this.pendingLayer._latlng);
           this.marksLayer.addLayer(this.pendingLayer);
           this.addMarker = this.pendingLayer;
           this._selectMarker(this.addMarker);

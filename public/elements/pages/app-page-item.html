@@ -243,6 +243,8 @@
       },
 
       _onUserActivityUpdateAsync : function(e) {
+        var activeUsers = e.users;
+
         this.userCount = Object.keys(e.users).length;
         this.showUserCount = (this.userCount > 0 ) ? true : false;
       },

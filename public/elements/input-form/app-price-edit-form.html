@@ -1,0 +1,138 @@
+
+<dom-module id="app-price-edit-form">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .space { 
+        width: 25px;
+      }
+
+      paper-toggle-button {
+        --paper-toggle-button-checked-button-color: var(--primary-color);
+      }
+
+      #delete {
+        text-align: right;
+      }
+    </style>
+
+    <div class="layout center">
+      <div>Spirit</div>
+      <div>
+        <paper-toggle-button id="typeInput" checked on-change="_setType"></paper-toggle-button>
+      </div>
+      <div>Wine</div>
+      <div class="space"></div>
+      <div class="flex">
+        <paper-input label="Page Section" id="sectionInput" always-float-label></paper-input>
+      </div>
+    </div>
+
+
+    <iron-pages selected="[[type]]" attr-for-selected="id">
+      <app-price-spirit 
+        id="spirit" 
+        on-complete="_onComplete" 
+        on-cancel="_cancel">
+      </app-price-spirit>
+
+      <app-price-wine 
+        id="wine" 
+        on-complete="_onComplete" 
+        on-cancel="_cancel">
+      </app-price-wine>
+    </iron-pages>
+
+    <div id="delete">
+      <paper-icon-button icon="delete" on-click="_delete"></paper-icon-button>
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-price-edit-form',
+
+      _setType : function(e) {
+        if( this.$.typeInput.checked ) {
+          this.type = 'wine';
+        } else {
+          this.type = 'spirit';
+        }
+      },
+
+      _reset : function() {
+        this.type = 'wine';
+        this.$.spirit.reset();
+        this.$.wine.reset();
+        this.$.delete.style.display = 'none';
+      },
+
+      _delete : function() {
+        if( !confirm('Are you sure you want to delete this mark?!') ) return;
+        this.fire('delete', this.editMark);
+        this.hide();
+      },
+
+      _onComplete : function(e) {
+        var data = e.detail;
+        data.type = this.type;
+        data.section = this.$.sectionInput.value;
+
+        if( this.editMode ) {
+          data.xy = this.editMark.data.xy;
+        } else {
+          data.xy = [this.ll.lng, this.ll.lat];
+        }
+
+        if( data.casePrice ) {
+          data.casePrice = parseFloat(data.casePrice);
+        }
+        if( data.price ) {
+          data.price = parseFloat(data.price);
+        }
+        if( data.year ) {
+          data.year = parseInt(data.year);
+        }
+
+        if( !this.editMode ) {
+          this.fire('add-mark', data);
+        } else {
+          this.editMark.data = data;
+          this.fire('edit-mark', this.editMark);
+        }
+      },
+
+      _cancel : function() {
+        this.fire('cancel');
+      },
+
+      edit : function(mark) {
+        this._reset();
+        this.editMode = true;
+        this.editMark = mark;
+        
+        this.$.sectionInput.value = mark.data.section;
+        this.type = mark.data.type;
+
+        this.$.typeInput.checked = (this.type === 'wine') ? true : false;
+
+        if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
+        else this.$.spirit.edit(mark.data);
+
+        if( this.userState && mark.data.user === this.userState.user.uid ) {
+          this.$.delete.style.display = 'block';
+        }
+      },
+
+      create : function(ll) {
+        this.ll = ll;
+        this.editMode = false;
+        this._reset();
+      }
+    });
+  </script>
+</dom-module>
