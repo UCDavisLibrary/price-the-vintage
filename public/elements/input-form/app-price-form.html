@@ -40,6 +40,7 @@
         <iron-pages selected="[[type]]" attr-for-selected="id">
           <app-price-edit-form
             id="edit" 
+            add-space="[[addSpace]]"
             on-complete="_onComplete" 
             on-cancel="_cancel">
           </app-price-edit-form>
@@ -62,7 +63,11 @@
         type : {
           type : String,
           value : 'edit'
-        }
+        },
+        addSpace : {
+          type : Boolean,
+          value : false
+        } 
       },
 
       behaviors : [EventBusBehavior],
@@ -87,8 +92,12 @@
 
       _resize : function() {
         var h = Math.floor(window.innerHeight * 0.5);
+
         this.style.maxHeight = h+'px';
         this.$.body.style.maxHeight =  h+'px';
+
+        var maxFormSize = 72 * 7;
+        // TODO;
       },
 
       _onComplete : function() {

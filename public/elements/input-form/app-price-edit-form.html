@@ -20,7 +20,7 @@
       }
     </style>
 
-    <div class="layout center">
+    <div class="layout center row-form">
       <div>Spirit</div>
       <div>
         <paper-toggle-button id="typeInput" checked on-change="_setType"></paper-toggle-button>
@@ -34,17 +34,19 @@
 
 
     <iron-pages selected="[[type]]" attr-for-selected="id">
-      <app-price-spirit 
+      <app-price-edit-spirit 
         id="spirit" 
+        add-space="[[addSpace]]"
         on-complete="_onComplete" 
         on-cancel="_cancel">
-      </app-price-spirit>
+      </app-price-edit-spirit>
 
-      <app-price-wine 
+      <app-price-edit-wine 
         id="wine" 
+        add-space="[[addSpace]]"
         on-complete="_onComplete" 
         on-cancel="_cancel">
-      </app-price-wine>
+      </app-price-edit-wine>
     </iron-pages>
 
     <div id="delete">
@@ -55,6 +57,13 @@
   <script>
     Polymer({
       is: 'app-price-edit-form',
+
+      properties : {
+        addSpace : {
+          type : Boolean,
+          value : false
+        }
+      },
 
       _setType : function(e) {
         if( this.$.typeInput.checked ) {

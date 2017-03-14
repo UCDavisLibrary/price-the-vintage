@@ -1,4 +1,4 @@
-<dom-module id="app-price-wine">
+<dom-module id="app-price-edit-wine">
   <template>
     <style include="shared-styles"></style>
     <style>
@@ -10,17 +10,13 @@
         color: black;
       }
 
-      paper-input[type^=number] {
-        width: 120px;
-      }
-
       h2 {
         margin: 0;
         font-weight: 200;
       }
 
       .buttons {
-        text-align: center;
+        text-align: right;
         padding: 15px;
       }
 
@@ -29,14 +25,98 @@
         color: white;
       }
 
-      .section {
-        padding-top: 10px;
-      }
     </style>
 
     <div id="body">
 
-      <div class="layout section">
+      <div class="form-row layout center">
+        <div class="flex" style="padding-right: 10px">
+          <div>Wine Type</div>
+          <select value="Still" id="wineType" >
+            <option value="Still">Still</option>
+            <option value="Sparkling">Sparkling</option>
+            <option value="Fortified">Fortified</option>
+          </select>
+        </div>
+
+        <div class="flex">
+          <div>Wine Color</div>
+          <select value="Red" id="color" >
+            <option value="Red">Red Wine</option>
+            <option value="White">White Wine</option>
+            <option value="Rose">Rose</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <paper-input always-float-label id="name" label="Name" placeholder="Hint text" type="string" ></paper-input>
+      </div>
+
+      <div class="form-row">
+        <paper-input always-float-label id="producer" label="Producer" placeholder="Hint text" type="string" ></paper-input>
+      </div>
+
+      <div class="form-row">
+        <div>Bottle Size</div>
+        <select value="Standard" id="size">
+          <option value="Standard">Standard</option>
+          <option value="Split">Split</option>
+          <option value="Piccolo">Piccolo</option>
+          <option value="Pony">Pony</option>
+          <option value="Split">Split</option>
+          <option value="Quarter Bottle">Quarter Bottle</option>
+          <option value="Snipe">Snipe</option>
+          <option value="Quarter">Quarter</option>
+          <option value="Chopine">Chopine</option>
+          <option value="Demi">Demi</option>
+          <option value="Half Bottle">Half Bottle</option>
+          <option value="Tenth">Tenth</option>
+          <option value="Jennie">Jennie</option>
+          <option value="Demie">Demie</option>
+          <option value="Pinte">Pinte</option>
+          <option value="Clavelin">Clavelin</option>
+          <option value="Standard">Standard</option>
+          <option value="Fifth">Fifth</option>
+          <option value="Litre">Litre</option>
+          <option value="Magnum">Magnum</option>
+          <option value="Marie Jeanne">Marie Jeanne</option>
+          <option value="Jeroboam">Jeroboam</option>
+          <option value="Rehoboam">Rehoboam</option>
+          <option value="McKenzie">McKenzie</option>
+          <option value="Imperial">Imperial</option>
+          <option value="Methuselah">Methuselah</option>
+          <option value="Salmanazar">Salmanazar</option>
+          <option value="Balthazar">Balthazar</option>
+          <option value="Nebuchadnezzar">Nebuchadnezzar</option>
+          <option value="Melchior">Melchior</option>
+          <option value="Solomon">Solomon</option>
+          <option value="Sovereign">Sovereign</option>
+          <option value="Primat">Primat</option>
+          <option value="Goliath">Goliath</option>
+          <option value="Melchizedek">Melchizedek</option>
+          <option value="Midas">Midas</option>
+          <option value="Tenths">Tenths</option>
+          <option value="Pint">Pint</option>
+          <option value="Quar">Quart</option>
+        </select>
+      </div>
+
+      <div class="layout form-row">
+        <div class="flex">
+          <paper-input always-float-label id="price" label="Price per Bottle" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
+            <div prefix>$</div>
+          </paper-input>
+        </div>
+
+        <div class="flex">
+          <paper-input always-float-label id="casePrice" label="Price per Case" type="number" min="0" step="0.01">
+            <div prefix>$</div>
+          </paper-input>
+        </div>
+      </div>
+
+      <!--<div class="layout form-row">
         <div class="flex" style="padding-right:10px">
           <paper-input always-float-label id="name" label="Wine Name" value="" type="string" ></paper-input>
         </div>
@@ -45,7 +125,7 @@
         </div>
       </div>
 
-      <div class="layout flex-horizontal section">
+      <div class="layout flex-horizontal form-row">
         <div class="flex"></div>
 
           <paper-input always-float-label id="price" label="Bottle Price" value="" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
@@ -57,10 +137,10 @@
           </paper-input>
       </div>
 
-      <div class="container layout center">
+      <div class="form-row layout center">
 
         <div class="flex" style="padding-right: 10px">
-          <div class="section">Wine Color</div>
+          <div>Wine Color</div>
           <select value="Red" id="color" >
             <option value="Red">Red Wine</option>
             <option value="White">White Wine</option>
@@ -69,7 +149,7 @@
         </div>
 
         <div class="flex" style="padding-right: 10px">
-          <div class="section" >Wine Type</div>
+          <div>Wine Type</div>
           <select value="Still" id="wineType" >
             <option value="Still">Still</option>
             <option value="Sparkling">Sparkling</option>
@@ -78,7 +158,7 @@
         </div>
 
         <div class="flex">
-          <div class="section">Bottle Size</div>
+          <div>Bottle Size</div>
           <select value="Standard" id="size">
             <option value="Standard">Standard</option>
             <option value="Split">Split</option>
@@ -121,9 +201,10 @@
             <option value="Quar">Quart</option>
           </select>
         </div>
-      </div>
+      </div>-->
       
       <div class="buttons">
+        <paper-button on-click="_cancel">Cancel</paper-button>
         <paper-button class="accept" on-click="_accept" raised>Save</paper-button>
       </div>
 
@@ -133,7 +214,7 @@
 
   <script>
     Polymer({
-      is: 'app-price-wine',
+      is: 'app-price-edit-wine',
       
       properties: {
         pageId : {
@@ -143,21 +224,37 @@
       },
 
       reset : function() {
+        // this.$.color.value = 'Red';
+        // this.$.wineType.value = 'Still';
+        // this.$.size.value = 'Standard';
+        // this.$.name.value = '';
+        // this.$.year.value = '';
+        // this.$.price.value = '';
+        // this.$.casePrice.value = '';
+
         this.$.color.value = 'Red';
         this.$.wineType.value = 'Still';
         this.$.size.value = 'Standard';
         this.$.name.value = '';
-        this.$.year.value = '';
+        this.$.producer.value = '';
         this.$.price.value = '';
         this.$.casePrice.value = '';
       },
 
       edit : function(data) {
+        // this.$.color.value = data.color || 'Red';
+        // this.$.wineType.value = data.wineType || 'Still';
+        // this.$.size.value = data.size || 'Standard';
+        // this.$.name.value = data.name || '';
+        // this.$.year.value = data.year || '';
+        // this.$.price.value = data.price || '';
+        // this.$.casePrice.value = data.casePrice || '';
+        
         this.$.color.value = data.color || 'Red';
         this.$.wineType.value = data.wineType || 'Still';
         this.$.size.value = data.size || 'Standard';
         this.$.name.value = data.name || '';
-        this.$.year.value = data.year || '';
+        this.$.producer.value = data.producer || '';
         this.$.price.value = data.price || '';
         this.$.casePrice.value = data.casePrice || '';
       },
@@ -167,12 +264,22 @@
       },
 
       _accept : function() {
+        // var data = {
+        //   color: this.$.color.value,
+        //   wineType : this.$.wineType.value,
+        //   size : this.$.size.value,
+        //   name : this.$.name.value,
+        //   year : this.$.year.value,
+        //   price : this.$.price.value,
+        //   casePrice : this.$.casePrice.value,
+        // };
+        
         var data = {
           color: this.$.color.value,
           wineType : this.$.wineType.value,
           size : this.$.size.value,
           name : this.$.name.value,
-          year : this.$.year.value,
+          producer : this.$.producer.value,
           price : this.$.price.value,
           casePrice : this.$.casePrice.value,
         };

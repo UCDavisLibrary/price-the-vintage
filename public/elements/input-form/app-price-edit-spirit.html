@@ -1,4 +1,4 @@
-<dom-module id="app-price-spirit">
+<dom-module id="app-price-edit-spirit">
   <template>
     <style include="shared-styles"></style>
     <style>
@@ -7,7 +7,7 @@
       }
       
       .buttons {
-        text-align: center;
+        text-align: right;
         padding: 15px;
       }
 
@@ -19,19 +19,47 @@
 
     <div id="body">
 
-      <div class="layout section">
+      <div class="form-row">
+        <paper-input always-float-label id="name" placeholder="Hint text" label="Name" type="string" ></paper-input>
+      </div>
+
+      <div class="form-row">
+        <paper-input always-float-label id="producer" placeholder="Hint text" label="Producer" type="string" ></paper-input>
+      </div>
+
+      <div class="layout flex-horizontal form-row">
+        <div class="flex">
+          <paper-input always-float-label id="price" label="Price per Bottle" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
+            <div prefix>$</div>
+          </paper-input>
+        </div>
+
+        <div class="flex">
+          <paper-input always-float-label id="casePrice" label="Price per Case" type="number" min="0" step="0.01">
+            <div prefix>$</div>
+          </paper-input>
+        </div>
+      </div>
+
+      <!--<div hidden$="[[!addSpace]]">-->
+      <div>
+        <div class="form-row"></div>
+        <div class="form-row"></div>
+      </div>
+
+      <!--<div class="layout form-row">
         <div class="flex" style="padding-right:10px">
           <paper-input always-float-label id="name" label="Spirit Name" value="" type="string" ></paper-input>
         </div>
         <div>
-          <div class="section" >Spirit Type</div>
+          <div>Spirit Type</div>
           <select value="" id="spiritType" >
             <option value=""></option>
           </select>
         </div>
       </div>
 
-      <div class="layout flex-horizontal section">
+      <div class="layout flex-horizontal form-row">
         <div class="flex"></div>
 
           <paper-input always-float-label id="price" label="Bottle Price" value="" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
@@ -43,7 +71,7 @@
           </paper-input>
       </div>
 
-      <div class="container layout center">
+      <div class="form-row layout center">
 
         <div class="flex" style="padding-right: 10px">
           <paper-input always-float-label id="size" label="Bottle Size" value="" type="number" min="0" step="0.01"></paper-input>
@@ -52,9 +80,10 @@
         <div class="flex">
           <paper-input always-float-label id="country" label="Country" value=""></paper-input>
         </div>
-      </div>
+      </div>-->
       
       <div class="buttons">
+        <paper-button on-click="_cancel">Cancel</paper-button>
         <paper-button class="accept" on-click="_accept" raised>Save</paper-button>
       </div>
 
@@ -63,29 +92,43 @@
   </template>
   <script>
     Polymer({
-      is: 'app-price-spirit',
+      is: 'app-price-edit-spirit',
 
       properties: {
         pageId : {
           type : String,
           value : null,
+        },
+        addSpace : {
+          type : Boolean,
+          value : false
         }
       },
 
       reset : function() {
-        this.$.spiritType.value = '';
-        this.$.size.value = '';
+        // this.$.spiritType.value = '';
+        // this.$.size.value = '';
+        // this.$.name.value = '';
+        // this.$.price.value = '';
+        // this.$.country.value = '';
+        // this.$.casePrice.value = '';
+
         this.$.name.value = '';
         this.$.price.value = '';
-        this.$.country.value = '';
         this.$.casePrice.value = '';
+        this.$.producer.value = '';
       },
 
       edit : function(data) {
-        this.$.spiritType.value = data.spiritType || '';
-        this.$.size.value = data.size || '';
+        // this.$.spiritType.value = data.spiritType || '';
+        // this.$.size.value = data.size || '';
+        // this.$.name.value = data.name || '';
+        // this.$.country.value = data.country || '';
+        // this.$.price.value = data.price || '';
+        // this.$.casePrice.value = data.casePrice || '';
+
         this.$.name.value = data.name || '';
-        this.$.country.value = data.country || '';
+        this.$.producer.value = data.producer || '';
         this.$.price.value = data.price || '';
         this.$.casePrice.value = data.casePrice || '';
       },
@@ -95,13 +138,20 @@
       },
 
       _accept : function() {
+        // var data = {
+        //   spiritType : this.$.spiritType.value,
+        //   size : this.$.size.value,
+        //   name : this.$.name.value,
+        //   country : this.$.country.value,
+        //   price : this.$.price.value,
+        //   casePrice : this.$.casePrice.value,
+        // };
+
         var data = {
-          spiritType : this.$.spiritType.value,
-          size : this.$.size.value,
-          name : this.$.name.value,
-          country : this.$.country.value,
-          price : this.$.price.value,
-          casePrice : this.$.casePrice.value,
+           name : this.$.name.value,
+           producer : this.$.producer.value,
+           price : this.$.price.value,
+           casePrice : this.$.casePrice.value,
         };
 
         this.fire('complete', data);
