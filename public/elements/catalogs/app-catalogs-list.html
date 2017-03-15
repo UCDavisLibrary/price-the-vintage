@@ -1,4 +1,5 @@
 <link rel="import" href="app-catalog-card.html">
+<link rel="import" href="app-catalogs-search-results.html">
 
 <dom-module id="app-catalogs-list" >
   <template>
@@ -63,7 +64,17 @@
           text-align: center;
           margin-top: 100px;
         }
+
+        app-catalogs-search-results {
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          z-index: 50;
+        }
       </style>
+
+      <app-catalogs-search-results></app-catalogs-search-results>
 
       <div loading-state="loaded">
         <iron-list id="list" items="[[results]]" as="catalog" grid style="height:100%">

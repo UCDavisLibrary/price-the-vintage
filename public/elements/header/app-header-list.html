@@ -23,6 +23,9 @@
         --paper-input-container-focus-color: white;
         --paper-input-container-input-color: white;
         color: white;
+        --paper-input-container : {
+          margin: 0;
+        }
       }
 
       paper-dialog {
@@ -40,10 +43,17 @@
     <div class="layout center">
       <div class="flex">
         
-        <h2 hidden$="[[searching]]">
+        <h2 hidden$="[[searchBoxActive]]">
           Price the Vintage
         </h2>
-        <paper-input id="input" label="Search Catalogs" hidden$="[[!searching]]"></paper-input>
+        <paper-input 
+          id="input" 
+          always-float-label
+          label="Search Catalogs" 
+          hidden$="[[!searchBoxActive]]"
+          on-keyup="_search">
+        </paper-input>
+
       </div>
       <div>
         <paper-icon-button state="list" icon="search" on-click="_toggleSearch"></paper-icon-button>
@@ -67,25 +77,44 @@
       </div>
     </paper-dialog>
 
-
-    <paper-material id="searchContainer" hidden$="[[!searching]]">
-      Searching...
-    </paper-material>
-    
   </template>
   <script>
     Polymer({
       is: 'app-header-list',
 
       properties : {
-        searching : {
+        searchBoxActive : {
           type : Boolean,
           value : false
         }
       },
 
+      behaviors : [EventBusBehavior],
+
       _toggleSearch : function(){
-        this.searching = !this.searching;
+        this.searchBoxActive = !this.searchBoxActive;
+
+        this.ebEmit('update-app-state', {
+          state: {
+            searchBoxActive : this.searchBoxActive
+          }
+        });
+      },
+
+      _search : function() {
+        this.ebEmit('update-app-state', {
+          state: {
+            searching : true
+          }
+        });
+
+        setTimeout(function(){
+          this.ebEmit('update-app-state', {
+            state: {
+              searching : false
+            }
+          });
+        }.bind(this), 2000);
       },
 
       _showHelp : function() {

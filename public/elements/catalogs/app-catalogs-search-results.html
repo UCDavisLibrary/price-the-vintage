@@ -1,0 +1,73 @@
+
+<dom-module id="app-catalogs-search-results">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        background-color: white;
+        padding: 10px;
+        box-shadow: 0 0 5px black;
+      }
+      #toggleText {
+        color: var(--secondary-text-color);
+      }
+    </style>
+    <div class="layout center">
+      <paper-toggle-button on-click="_search"></paper-toggle-button>
+      <div id="toggleText">Show only catalogs that need marking</div>
+    </div>
+
+    <div style="padding: 10px 0">
+      <div state="loading" style="text-align: center">
+        <paper-spinner active></paper-spinner>
+      </div>
+      <div state="loaded" style="text-align: center">
+        Found 1,000,000 results!
+      </div>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-catalogs-search-results',
+
+      behaviors : [EventBusBehavior, StateToggleBehavior],
+
+      ebBind : {
+        'search-catalogs-update' : '_onCatalogsSearchUpdate',
+        'app-state-update' : '_onAppStateUpdate'
+      },
+
+      _search : function() {
+        this.ebEmit('update-app-state', {
+          state: {
+            searching : true
+          }
+        });
+
+        setTimeout(function(){
+          this.ebEmit('update-app-state', {
+            state: {
+              searching : false
+            }
+          });
+        }.bind(this), 2000);
+      },
+
+      _onCatalogsSearchUpdate : function(e) {
+        // TODO;
+      },
+
+      _onAppStateUpdate : function(e) {
+        if( e.searching ) {
+          this.toggleState('loading');
+        } else {
+          this.toggleState('loaded');
+        }
+
+        this.style.display = e.searchBoxActive ? 'block' : 'none';
+      }
+    });
+  </script>
+</dom-module>
