@@ -4,11 +4,9 @@
     <style>
       :host {
         display: block;
-        height: 160px;
+        overflow: hidden;
         background-color: white;
-        padding: 0 10px;
-        overflow-x: auto;
-        overflow-y: hidden;
+        height: 160px;
       }
 
       [loading-state="loaded"] {
@@ -16,22 +14,128 @@
       }
 
       #root {
-        text-align: center;
+        height: 160px;
       }
+
+      #scrollPanel {
+        text-align: center;
+        padding: 0 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+
+      .nav {
+        padding: 3px;
+      }
+
+      .nav {
+        padding: 3px;
+        box-shadow: 0 0 5px #333;
+        z-index: 5;
+      }
+
+      .nav paper-icon-button {
+        color: var(--default-primary-color);
+        margin-top: 55px;
+      }
+
+      .nav paper-icon-button[disabled] {
+        color: var(--disabled-text-color);
+        margin-top: 55px;
+      }
+
+      paper-fab {
+        background-color: white;
+        color: var(--default-primary-color);
+      }
+
+      paper-fab.disabled {
+        background-color: white;
+        color: var(--disabled-text-color);
+      }
+
+      #nextBtn {
+        z-index: 5;
+        position: absolute;
+        top: 55px;
+        right: 5px;
+      }
+
+      #previousBtn {
+        z-index: 5;
+        position: absolute;
+        top: 55px;
+        left: 5px;
+      }
+
     </style>
 
-    <div id="root" loading-state="loaded">
-      <template is="dom-repeat" items="[[pages]]" as="page" style="height:80px">
-          <app-page-item 
-            style="display:inline-block"
-            class="grid-item"
-            active$="[[active]]"
-            catalog-id$="[[catalogId]]" 
-            page="[[page]]" 
-            api-host="[[apiHost]]"
-            on-click="_select">
-          </app-page-item>
-      </template>
+    <!--<div loading-state="loaded" id="root">
+      <div class="layout">
+
+        <div class="nav">
+          <paper-icon-button 
+            icon="arrow-back" 
+            id="previousBtn" 
+            on-click="_previous">
+          </paper-icon-button>
+        </div>
+
+        <div class="flex" id="scrollPanel">
+          <div>
+            <template is="dom-repeat" items="[[pages]]" as="page" style="height:80px">
+                <app-page-item 
+                  style="display:inline-block"
+                  class="grid-item"
+                  active$="[[active]]"
+                  catalog-id$="[[catalogId]]" 
+                  page="[[page]]" 
+                  api-host="[[apiHost]]"
+                  on-click="_select">
+                </app-page-item>
+            </template>
+          </div>
+        </div>
+
+        <div class="nav">
+          <paper-icon-button 
+            icon="arrow-forward" 
+            id="nextBtn" 
+            on-click="_next">
+          </paper-icon-button>
+        </div>
+
+      </div>
+    </div>-->
+
+    <div loading-state="loaded" id="root">
+        <paper-fab 
+          icon="arrow-back" 
+          id="previousBtn" 
+          on-click="_previous">
+        </paper-fab>
+
+        <div id="scrollPanel">
+          <div>
+            <template is="dom-repeat" items="[[pages]]" as="page" style="height:80px">
+                <app-page-item 
+                  style="display:inline-block"
+                  class="grid-item"
+                  active$="[[active]]"
+                  catalog-id$="[[catalogId]]" 
+                  page="[[page]]" 
+                  api-host="[[apiHost]]"
+                  on-click="_select">
+                </app-page-item>
+            </template>
+          </div>
+        </div>
+
+        <paper-fab 
+          icon="arrow-forward" 
+          id="nextBtn" 
+          on-click="_next">
+        </paper-fab>
     </div>
 
     <div loading-state="loading">
@@ -92,6 +196,7 @@
       _onSelectedCatalogPageUpdate : function(pageId) {
         this.selected = pageId;
         this._updateScroll();
+        this._updateButtons();
       },
 
       _updateScroll : function() {
@@ -106,10 +211,10 @@
         }
 
         if( currentPage ) {
-          var hw = Math.floor(window.innerWidth / 2);
+          var hw = Math.floor( window.innerWidth / 2);
           var position = 130 * currentPage.page;
 
-          var start = this.scrollLeft;
+          var start = this.$.scrollPanel.scrollLeft;
           var stop;
 
           if( position > hw ) {
@@ -119,7 +224,7 @@
           }
 
           this.animateScroll.run(start, stop, 300, function(scroll){
-            this.scrollLeft = scroll;
+            this.$.scrollPanel.scrollLeft = scroll;
           }.bind(this));
 
         }
@@ -128,6 +233,7 @@
       _onSelectedCatalogUpdate : function(id) {
         this.catalogId = id;
         this._getCatalogPages();
+        this._updateButtons();
       },
 
       _getCatalogPages : function() {
@@ -146,7 +252,64 @@
         if( e.state !== 'loaded' ) return;
 
         this.pages = e.payload.data;
+        this._updateButtons();
         this._updateScroll();
+      },
+
+      _pagesUpdate : function(e) {
+        if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;
+
+        this.pages = e.payload.data;
+        this._updateButtons();
+      },
+
+      _getPageNumber : function() {
+        if( !this.pages ) return -1;
+
+        for( var i = 0; i < this.pages.length; i++ ) {
+          if( this.pages[i].id+'' === this.selected ) {
+            return this.pages[i].page;
+          }
+        }
+      },
+
+      _getPageIdFromPageNumber : function(page) {
+        if( !this.pages ) return -1;
+
+        for( var i = 0; i < this.pages.length; i++ ) {
+          if( this.pages[i].page === page ) {
+            return this.pages[i].id;
+          }
+        }
+      },
+
+      _updateButtons : function() {
+        var page = this._getPageNumber();
+        
+        this.$.previousBtn.classList.remove('disabled');
+        this.$.nextBtn.classList.remove('disabled');
+        
+        if( page === 0 ) {
+          this.$.previousBtn.classList.add('disabled');
+        }
+
+        if( this.pages && page === this.pages.length-1 ) {
+          this.$.nextBtn.classList.add('disabled');
+        }
+      },
+
+      _previous : function(e) {
+        if( e.currentTarget.classList.contains('disabled') ) return;
+        var page = this._getPageNumber()-1;
+        page = this._getPageIdFromPageNumber(page);
+        window.location.hash = this.catalogId+'/'+page;
+      },
+
+      _next : function(e) {
+        if( e.currentTarget.classList.contains('disabled') ) return;
+        var page = this._getPageNumber()+1;
+        page = this._getPageIdFromPageNumber(page);
+        window.location.hash = this.catalogId+'/'+page;
       },
 
       _select : function(e) {

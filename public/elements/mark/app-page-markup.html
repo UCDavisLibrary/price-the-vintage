@@ -187,7 +187,14 @@
       _onPageMarksUpdate : function(e) {
         if( !this.active || e.pageId !== this.selected ) return;
 
-        if( e.state !== 'loaded' ) {
+        var remove = false;
+        if( e.state !== 'loaded' || e.deleted ) {
+          remove = true;
+        } else if ( e.data.isTemp && e.data.updated < (Date.now() - (1000 * 60 * 10) ) ) {
+          remove = true;
+        }
+
+        if( remove ) {
           if( this.marks[e.id] ) {
             delete this.marks[e.id];
           }

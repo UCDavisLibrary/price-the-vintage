@@ -12,6 +12,19 @@
         overflow: hidden;
         display: block;
       }
+
+      paper-dialog {
+        color: black;
+      }
+
+      paper-dialog .panel {
+        padding: 5px;
+        margin-top: 15px;
+      }
+
+      paper-button {
+        color: var(--default-primary-color);
+      }
     </style>
 
     <table style="width: 100%">
@@ -23,13 +36,44 @@
           <h2 class="overflow" id="title">[[title]]</h2>
         </td>
         <td style="text-align: right">
-          <paper-icon-button icon="arrow-back" id="previousBtn" on-click="_previous"></paper-icon-button>
-          <paper-icon-button icon="arrow-forward" id="nextBtn" on-click="_next"></paper-icon-button>
+          <paper-icon-button icon="info" on-click="_showHelp"></paper-icon-button>
+          <!--<paper-icon-button icon="arrow-back" id="previousBtn" on-click="_previous"></paper-icon-button>
+          <paper-icon-button icon="arrow-forward" id="nextBtn" on-click="_next"></paper-icon-button>-->
         </td>
       </tr>
     </table>
 
     
+    <paper-dialog modal id="helpPopup">
+      <h2>Ready to Price the Vintage?  Here's how:</h2>
+
+      <div class="layout panel">
+        <div>
+          <img src="/images/help/zoom.png" />
+        </div>
+        <div class="flex" style="padding: 0 10px">
+          The magnification tools on the elft allow you to zoom in and out of the catalog page you're on.  Use the able of contents at the bottom of the screen to go to the other pages in this catalog.
+        </div>
+      </div>
+
+      <div class="layout panel">
+        <div>
+          <img src="/images/help/marker.png" />
+        </div>
+        <div class="flex" style="padding: 0 10px">
+          Use the marker tool on the right to place a mark on the <b>top left</b> corner of an entry in the catalog.  Then fill out the form that comes up to help use identify the essential information.
+        </div>
+      </div>
+
+      <div style="text-align: center" class="panel">
+        <img src="/images/help/overview.png" style="max-width: 75%" />
+      </div>
+
+      <div class="buttons">
+        <paper-button on-click="_hideHelp">Got it</paper-button>
+      </div>
+    </paper-dialog>
+
   </template>
   <script>
     Polymer({
@@ -39,9 +83,9 @@
 
       ebBind : {
         'catalog-update' : '_updateTitle',
-        'catalog-pages-update' : '_pagesUpdate',
-        'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+        // 'catalog-pages-update' : '_pagesUpdate',
+        'selected-catalog-update' : '_onSelectedCatalogUpdate'
+        // 'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
       },
 
       ready : function() {
@@ -51,6 +95,14 @@
 
       _resize : function() {
         this.$.title.style.width = (window.innerWidth - 212) + 'px';
+      },
+
+      _showHelp : function() {
+        this.$.helpPopup.open();
+      },
+
+      _hideHelp : function() {
+        this.$.helpPopup.close();
       },
 
       _onSelectedCatalogPageUpdate : function(id) {
@@ -66,64 +118,64 @@
           handler : this._updateTitle.bind(this)
         });
 
-        this.ebEmit('get-catalog-pages', {
-          id : id,
-          handler : this._pagesUpdate.bind(this)
-        });
+        // this.ebEmit('get-catalog-pages', {
+        //   id : id,
+        //   handler : this._pagesUpdate.bind(this)
+        // });
       },
 
-      _pagesUpdate : function(e) {
-        if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;
+      // _pagesUpdate : function(e) {
+      //   if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;
 
-        this.pages = e.payload.data;
-        this._updateButtons();
-      },
+      //   this.pages = e.payload.data;
+      //   this._updateButtons();
+      // },
 
-      _getPageNumber : function() {
-        if( !this.pages ) return -1;
+      // _getPageNumber : function() {
+      //   if( !this.pages ) return -1;
 
-        for( var i = 0; i < this.pages.length; i++ ) {
-          if( this.pages[i].id+'' === this.page ) {
-            return this.pages[i].page;
-          }
-        }
-      },
+      //   for( var i = 0; i < this.pages.length; i++ ) {
+      //     if( this.pages[i].id+'' === this.page ) {
+      //       return this.pages[i].page;
+      //     }
+      //   }
+      // },
 
-      _getPageIdFromPageNumber : function(page) {
-        if( !this.pages ) return -1;
+      // _getPageIdFromPageNumber : function(page) {
+      //   if( !this.pages ) return -1;
 
-        for( var i = 0; i < this.pages.length; i++ ) {
-          if( this.pages[i].page === page ) {
-            return this.pages[i].id;
-          }
-        }
-      },
+      //   for( var i = 0; i < this.pages.length; i++ ) {
+      //     if( this.pages[i].page === page ) {
+      //       return this.pages[i].id;
+      //     }
+      //   }
+      // },
 
-      _updateButtons : function() {
-        var page = this._getPageNumber();
+      // _updateButtons : function() {
+      //   var page = this._getPageNumber();
         
-        this.$.previousBtn.removeAttribute('disabled');
-        this.$.nextBtn.removeAttribute('disabled');
+      //   this.$.previousBtn.removeAttribute('disabled');
+      //   this.$.nextBtn.removeAttribute('disabled');
         
-        if( page === 0 ) {
-          this.$.previousBtn.setAttribute('disabled', 'disabled');
-        }
-        if( this.pages && page === this.pages.length-1 ) {
-          this.$.nextBtn.setAttribute('disabled', 'disabled');
-        }
-      },
+      //   if( page === 0 ) {
+      //     this.$.previousBtn.setAttribute('disabled', 'disabled');
+      //   }
+      //   if( this.pages && page === this.pages.length-1 ) {
+      //     this.$.nextBtn.setAttribute('disabled', 'disabled');
+      //   }
+      // },
 
-      _previous : function() {
-        var page = this._getPageNumber()-1;
-        page = this._getPageIdFromPageNumber(page);
-        window.location.hash = this.catalog+'/'+page;
-      },
+      // _previous : function() {
+      //   var page = this._getPageNumber()-1;
+      //   page = this._getPageIdFromPageNumber(page);
+      //   window.location.hash = this.catalog+'/'+page;
+      // },
 
-      _next : function() {
-        var page = this._getPageNumber()+1;
-        page = this._getPageIdFromPageNumber(page);
-        window.location.hash = this.catalog+'/'+page;
-      },
+      // _next : function() {
+      //   var page = this._getPageNumber()+1;
+      //   page = this._getPageIdFromPageNumber(page);
+      //   window.location.hash = this.catalog+'/'+page;
+      // },
 
       _updateTitle : function(e) {
         if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;

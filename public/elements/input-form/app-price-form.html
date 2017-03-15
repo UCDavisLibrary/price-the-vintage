@@ -41,12 +41,15 @@
           <app-price-edit-form
             id="edit" 
             add-space="[[addSpace]]"
+            user-state="[[userState]]"
             on-complete="_onComplete" 
+            on-delete="_cancel"
             on-cancel="_cancel">
           </app-price-edit-form>
 
           <app-price-comment-form 
             id="comment" 
+            user-state="[[userState]]"
             on-complete="_onComplete" 
             on-cancel="_cancel">
           </app-price-comment-form>
@@ -67,7 +70,13 @@
         addSpace : {
           type : Boolean,
           value : false
-        } 
+        },
+        userState : {
+          type : Object,
+          value : function() {
+            return {}
+          }
+        }
       },
 
       behaviors : [EventBusBehavior],

@@ -178,11 +178,16 @@
 
         if( votes ) {
           for( var key in votes ) {
+            // TODO: remove
+            if( typeof votes[key] === 'string' ) continue;
+
+            // TODO: load user factor, so we know what to score.
+
             if( user.uid === key ) {
-              this.userVote = votes[key];
+              this.userVote = votes[key].type;
             }
-            if( votes[key] === 'up' ) this.count++;
-            else if( votes[key] === 'down' ) this.count--;
+            if( votes[key].type === 'up' ) this.count += votes[key].factor || 1;
+            else if( votes[key].type === 'down' ) this.count -= votes[key].factor || 1;
           }
         }
 
