@@ -24,17 +24,49 @@
         --paper-input-container-input-color: white;
         color: white;
       }
+
+      paper-dialog {
+        color: black;
+      }
+
+      paper-dialog img {
+        background: var(--default-primary-color);
+        padding: 10px;
+        border-radius: 10px;
+        margin-right: 20px;
+      }
     </style>
 
     <div class="layout center">
       <div class="flex">
-        <h2 hidden$="[[searching]]">Price the Vintage</h2>
+        
+        <h2 hidden$="[[searching]]">
+          Price the Vintage
+        </h2>
         <paper-input id="input" label="Search Catalogs" hidden$="[[!searching]]"></paper-input>
       </div>
       <div>
         <paper-icon-button state="list" icon="search" on-click="_toggleSearch"></paper-icon-button>
       </div>
+      <div>
+        <paper-icon-button icon="info" on-click="_showHelp"></paper-icon-button>
+      </div>
     </div>
+
+    <paper-dialog modal id="popup">
+      <div class="layout center">
+        <img src="/images/wine-icon-32.png" /> 
+        <h1>Price the Vintage</h1>
+      </div>
+      <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
+      
+      <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
+
+      <div class="buttons">
+        <paper-button on-click="_hideHelp">OK</paper-button>
+      </div>
+    </paper-dialog>
+
 
     <paper-material id="searchContainer" hidden$="[[!searching]]">
       Searching...
@@ -54,6 +86,14 @@
 
       _toggleSearch : function(){
         this.searching = !this.searching;
+      },
+
+      _showHelp : function() {
+        this.$.popup.open();
+      },
+
+      _hideHelp : function() {
+        this.$.popup.close();
       }
     });
   </script>
