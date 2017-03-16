@@ -1,5 +1,7 @@
 language: node_js
 node_js:
-  - "6"
+- '6'
 before_install:
-  - openssl aes-256-cbc -K $encrypted_0a6446eb3ae3_key -iv $encrypted_0a6446eb3ae3_key -in super_secret.txt.enc -out super_secret.txt -d
+- openssl aes-256-cbc -K $encrypted_77ecc3c28ae8_key -iv $encrypted_77ecc3c28ae8_iv
+  -in lib/config/ucd-library-apps.json.enc -out lib/config/ucd-library-apps-firebase-adminsdk-vrtjx-8eef33af91.json
+  -d
