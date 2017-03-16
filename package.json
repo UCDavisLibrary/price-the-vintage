@@ -6,12 +6,13 @@
   "scripts": {
     "test": "mocha tests",
     "watch": "./build/build.sh",
-    "init" : "npm install && rm ./node_modules/app && ln -s ../lib ./node_modules/app"
+    "init": "npm install && rm ./node_modules/app && ln -s ../lib ./node_modules/app"
   },
   "author": "Justin Merz <jrmerz@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "firebase": "^3.7.0",
+    "firebase-admin": "^4.1.3",
     "redux": "^3.6.0",
     "redux-observers": "^2.0.1",
     "superagent": "^3.5.0",

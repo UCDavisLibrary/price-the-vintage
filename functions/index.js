@@ -11,7 +11,7 @@ exports.updatePageMarkCount = functions.database.ref('/price-the-vintage/marks/{
         var oldMark = event.data.previous.val();
 
         // tmp marks are noop here.
-        if( mark.isTemp ) return resolve();
+        if( mark && mark.isTemp ) return resolve();
 
         event.data.ref.parent.once('value').then((ref) => {
             const data = ref.val();

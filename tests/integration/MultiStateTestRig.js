@@ -20,7 +20,11 @@ class MultiStateTestRig {
 
     config.eventBus.on(config.updateEvent, this.test);
 
-    var total = Object.keys(this.tests).length;
+    var total = 0;
+
+    if( config.updateEvent ) {
+      total = Object.keys(this.tests).length;
+    }
     if( !config.noHandler ) {
       total++;
     }
@@ -41,7 +45,7 @@ class MultiStateTestRig {
    * @param {object} e 
    */
   test(e) {
-    assert.notEqual(this.tests[e.state], undefined);
+    assert.notEqual(this.tests[e.state], undefined, `No defined test for state: ${e.state}`);
     this.tests[e.state](e);
     this.responses.complete();
   }
