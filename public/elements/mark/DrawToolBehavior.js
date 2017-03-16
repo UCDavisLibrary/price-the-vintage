@@ -61,9 +61,9 @@ var MarkBehavior = {
     this.map.on(L.Draw.Event.DRAWSTOP, this._onDrawToolDrawStop.bind(this));
     this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
 
-    this.mapMakers = {};
+    this.mapMarkers = {};
     for( var key in this.marks ) {
-      this.mapMakers[key] = this._drawMark(this.marks[key]);
+      this.mapMarkers[key] = this._drawMark(this.marks[key]);
     }
 
     // hack

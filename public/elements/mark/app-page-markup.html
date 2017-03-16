@@ -187,21 +187,8 @@
       _onPageMarksUpdate : function(e) {
         if( !this.active || e.pageId !== this.selected ) return;
 
-        var remove = false;
         if( e.state !== 'loaded' || e.deleted ) {
-          remove = true;
-        } else if ( e.data.isTemp && e.data.updated < (Date.now() - (1000 * 60 * 10) ) ) {
-          remove = true;
-        }
-
-        if( remove ) {
-          if( this.marks[e.id] ) {
-            delete this.marks[e.id];
-          }
-          if( this.mapMarkers[e.id] ) {
-            this.marksLayer.removeLayer(this.mapMarkers[e.id]);
-            delete this.mapMarkers[e.id];
-          }
+          this._removeMark(e.id);
           return;
         }
 
@@ -215,6 +202,17 @@
           this.mapMarkers[e.id].setLatLng([e.data.xy[1], e.data.xy[0]]);
         } else {
           this.mapMarkers[e.id] = this._drawMark(e);
+        }
+      },
+
+      _removeMark : function(id) {
+        if( this.marks[id] ) {
+          delete this.marks[id];
+        }
+
+        if( this.mapMarkers[id] ) {
+          this.marksLayer.removeLayer(this.mapMarkers[id]);
+          delete this.mapMarkers[id];
         }
       },
 
@@ -289,7 +287,7 @@
       },
 
       _drawMark : function(mark) {
-        if( !this.marksLayer ) return;
+        if( !this.marksLayer ) return null;
 
         var style;
         if( this._isMyMark(mark) ) {
