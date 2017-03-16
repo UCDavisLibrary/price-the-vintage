@@ -1,6 +1,44 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
+    ".read": "false",
+    ".write": "false",
+
+    "price-the-vintage" : {
+      "activity" : {
+        "$resourceid" : {
+          ".read" : "true",
+          "$userid" : {
+            ".validate": "newData.isNumber()",
+            ".write" : "$userid === auth.uid"
+          }
+        }
+      },
+      "marks" : {
+        "$pageid" : {
+          ".read" : "true",
+          "$markid" : {
+            ".write" : "!data.exists() || data.child('user').val() === auth.uid",
+            "votes" : {
+              "$userid" : {
+                ".write" : "$userid === auth.uid",
+                ".validate" : "newData.child('type').isString() && !newData.child('factor').exists() "
+              }
+            }
+          }
+        }
+      },
+      "users" : {
+        "$userid" : {
+          "activity" : {
+            ".read" : "$userid === auth.uid",
+            "$resourceid" : {
+              ".write" : "$userid === auth.uid",
+              ".validate": "newData.isNumber()"
+            }
+          }
+        }
+      }
+    }
+
   }
 }
