@@ -9,6 +9,7 @@ var controller = require('app/controllers/activity');
 describe('Integration: Firebase - Activity', function() {
 
   before((done) => {
+    this.timeout(5000);
     waitForFBConnection(done);
   });
 
