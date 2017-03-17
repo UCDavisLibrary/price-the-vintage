@@ -39,7 +39,7 @@ var MarkBehavior = {
     });
 
     L.imageOverlay(
-      this.apiHost+'/pages/'+this.selected+'/image', 
+      this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id,
       this.bounds
     ).addTo(this.map);
     

@@ -103,6 +103,7 @@
         'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
         'interested-party-request' : '_onInterestedPartyRequest',
         'catalog-page-marks-update' : '_onPageMarksUpdate',
+        'catalog-pages-update' : '_onCatalogPagesUpdate',
         'app-state-update' : '_onAppStateUpdate',
         'auth-update' : '_onAuthUpdate'
       },
@@ -169,6 +170,26 @@
 
       _onSelectedCatalogUpdate : function(id) {
         this.catalogId = id;
+        this._getCatalogPages();
+      },
+
+      _getCatalogPages : function() {
+        if( !this.selected || !this.active ) return;
+
+        this.ebEmit('get-catalog-pages', {
+          id: this.catalogId, 
+          handler: this._onCatalogPagesUpdate.bind(this)
+        });
+      },
+
+      _onCatalogPagesUpdate : function(e) {
+        if( !this.active || e.id !== this.catalogId ) return;
+
+        this.toggleState(e.state, 'loading-state');
+        if( e.state !== 'loaded' ) return;
+
+        this.pages = e.payload;
+        this._reset();
       },
 
       _getPageMarks : function() {
@@ -222,7 +243,17 @@
 
       _reset : function() {
         this.marks = {};
-        if( !this.selected ) return;
+        this.selectedPage = null;
+        if( !this.selected || !this.pages ) return;
+
+        for( var i = 0; i < this.pages.length; i++ ) {
+          if( this.pages[i].page_id === this.selected ) {
+            this.selectedPage = this.pages[i];
+            break;
+          }
+        }
+
+        if( !this.selectedPage ) return;
 
         var img = new Image();
         img.onload = function() {
@@ -235,7 +266,7 @@
           this._redraw();
         }.bind(this);
 
-        img.src = this.apiHost+'/pages/'+this.selected+'/image';
+        img.src = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id;
       },
 
       _onAppStateUpdate : function(state) {

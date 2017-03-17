@@ -158,7 +158,7 @@
       behaviors : [EventBusBehavior],
 
       _createImgUrl : function(apiHost, page) {
-        return apiHost + '/pages/' + page.id + '/thumbnail';
+        return apiHost + '/media?select=thumbnail_png&media_id=eq.' + page.media_id;
       },
 
       _showDetails : function(showUserCount, showMarkCount) {
@@ -167,7 +167,7 @@
 
       _onUpdate : function() {
         if( !this.page ) return;
-        if( !this.page.id ) return;
+        if( !this.page.page_id ) return;
 
         this.ebEmit('get-selected-catalog-page', {handler: this._onSelectedCatalogPageUpdate.bind(this)});
 
@@ -178,7 +178,7 @@
 
       _onUpdateAsync : function() {
         this.ebEmit('get-user-activity', {
-          id : this._getActivityPageId(),
+          id : this.page.page_id,
           handler : function(e) {
             this._onUserActivityUpdate(e);
           }.bind(this)
@@ -187,14 +187,14 @@
         this.ebEmit(
           'get-page-metadata', 
           {
-            id : this.page.id,
+            id : this.page.page_id,
             handler: this._onMetadataUpdate.bind(this)
           }
         );
       },
 
       _onMetadataUpdate : function(e) {
-        if( e.state !== 'loaded' || e.id !== this.page.id ) return;
+        if( e.state !== 'loaded' || e.id !== this.page.page_id ) return;
 
         this.metadata = e.payload || {};
         this.markCount = this.metadata.markCount || 0;
@@ -205,7 +205,7 @@
 
       _onSelectedCatalogPageUpdate : function(selectedPageId) {
         if( this.active && this.page && this.$.root ) {
-          if( this.page.id+'' == selectedPageId ) {
+          if( this.page.page_id+'' == selectedPageId ) {
             this.$.root.classList.add('selected');
           } else {
             this.$.root.classList.remove('selected');
@@ -216,18 +216,18 @@
       },
 
       _onInterestedPartyRequest : function() {
-        if( this.active && this.catalogId && this.page && this.page.id  ) {
+        if( this.active && this.catalogId && this.page && this.page.page_id  ) {
           this.ebEmit(
             'interested-party-response',
             {
-              id : this._getActivityPageId(),
+              id : this.page.page_id,
               types : ['activity', 'pages']
             }
           );
           this.ebEmit(
             'interested-party-response',
             {
-              id : this.page.id,
+              id : this.page.page_id,
               types : ['pages']
             }
           );
@@ -235,7 +235,7 @@
       },
 
       _onUserActivityUpdate : function(e) {
-        if( e.id+'' !== this.catalogId + '--' + this.page.id ) return;
+        if( e.id !== this.page.page_id ) return;
 
         this.debounce('_onUserActivityUpdate', function(){
           this._onUserActivityUpdateAsync(e);
@@ -247,13 +247,7 @@
 
         this.userCount = Object.keys(e.users).length;
         this.showUserCount = (this.userCount > 0 ) ? true : false;
-      },
-
-      _getActivityPageId : function() {
-        return this.catalogId + '--' + this.page.id;
       }
-
-      
 
     });
   </script>

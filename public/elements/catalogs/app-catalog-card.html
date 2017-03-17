@@ -125,12 +125,12 @@
       behaviors : [EventBusBehavior],
 
       _createImgUrl : function(apiHost, catalog) {
-        return apiHost + '/catalogs/' + catalog.id + '/thumbnail';
+        return apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
       },
 
       _onUpdate : function() {
         if( !this.catalog ) return;
-        if( !this.catalog.id ) return;
+        if( !this.catalog.catalog_id ) return;
 
         this.debounce('_onUpdateAsync', function(){
           this._onUpdateAsync();
@@ -138,44 +138,44 @@
       },
 
       _onUpdateAsync : function() {
-        if( !this.catalog.id ) return;
+        if( !this.catalog.catalog_id ) return;
 
         this.ebEmit('get-user-activity', {
-          id : this.catalog.id,
+          id : this.catalog.catalog_id,
           handler : this._onUserActivityUpdate.bind(this)
         })
       },
 
       _onCatalogPagesUpdate : function(e) {
-        if( !this.active || e.id+'' !== this.catalog.id+'' ) return;
+        if( !this.active || e.id+'' !== this.catalog.catalog_id+'' ) return;
 
         if( e.state !== 'loaded' ) return;
         this.loading = false;
 
-        if( e.payload.data.length === 0 ) {
+        if( e.payload.length === 0 ) {
           return alert('This catalog has no pages :(');
         }
 
-        var page = e.payload.data[0];
-        window.location.hash = this.catalog.id+'/'+page.id;
+        var page = e.payload[0];
+        window.location.hash = this.catalog.catalog_id+'/'+page.page_id;
       },
 
       _select : function(e) {
-        if( !this.catalog.id ) return;
+        if( !this.catalog.catalog_id ) return;
         this.loading = true;
 
         this.ebEmit('get-catalog-pages', {
-          id: this.catalog.id,
+          id: this.catalog.catalog_id,
           handler:  this._onCatalogPagesUpdate.bind(this)
         });
       },
 
       _onInterestedPartyRequest : function() {
-        if( this.active && this.catalog && this.catalog.id  ) {
+        if( this.active && this.catalog && this.catalog.catalog_id  ) {
           this.ebEmit(
             'interested-party-response',
             {
-              id : this.catalog.id,
+              id : this.catalog.catalog_id,
               types : ['activity']
             }
           );
@@ -183,7 +183,7 @@
       },
 
       _onUserActivityUpdate : function(e) {
-        if( e.id+'' !== this.catalog.id+'' ) return;
+        if( e.id+'' !== this.catalog.catalog_id+'' ) return;
 
         this.debounce('_onUserActivityUpdate', function(){
           this._onUserActivityUpdateAsync(e);
