@@ -19,14 +19,14 @@ describe('Integration: Firebase - Activity', function() {
         tests : {
           loaded : function(e) {
             assert.equal(e.state, 'loaded');
-            assert.equal(e.id, '_test_--_test_');
+            assert.equal(e.id, '_test_');
             assert.equal(typeof e.users, 'object');
             assert.equal(Object.keys(e.users).length, 0);
           }
         },
         event : 'get-user-activity',
         eventPayload : {
-          id : '_test_--_test_'
+          id : '_test_'
         },
         next : next,
         eventBus : eventBus
@@ -36,11 +36,12 @@ describe('Integration: Firebase - Activity', function() {
 
   describe('set-user-activity', function() {
     it('should let me set my user activity', function(next) {
+      this.timeout(5000);
       new MultiStateTestRig({
         tests : {
           loaded : function(e) {
             assert.equal(e.state, 'loaded');
-            assert.equal(e.id, '_test_--_test_');
+            assert.equal(e.id, '_test_');
             assert.equal(typeof e.users, 'object');
             assert.equal(Object.keys(e.users).length, 1);
           }
@@ -62,7 +63,7 @@ describe('Integration: Firebase - Activity', function() {
         tests : {
           loaded : function(e) {
             assert.equal(e.state, 'loaded');
-            assert.equal(e.id, '_test_--_test_');
+            assert.equal(e.id, '_test_');
             assert.equal(typeof e.users, 'object');
             assert.equal(Object.keys(e.users).length, 1);
             assert.notEqual(e.users._test_, undefined);
@@ -70,7 +71,7 @@ describe('Integration: Firebase - Activity', function() {
         },
         event : 'get-user-activity',
         eventPayload : {
-          id : '_test_--_test_'
+          id : '_test_'
         },
         next : next,
         eventBus : eventBus

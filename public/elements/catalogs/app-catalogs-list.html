@@ -141,7 +141,12 @@
       },
 
       _load : function() {
-        this.ebEmit('search-catalogs', {handler: this._onCatalogsSearchUpdate.bind(this)});
+        this.ebEmit(
+          'search-catalogs', 
+          {
+            handler: this._onCatalogsSearchUpdate.bind(this)
+          }
+        );
       },
 
       _getApi : function() {

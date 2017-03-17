@@ -17,10 +17,9 @@ describe('Integration: Service - Catalogs', function() {
           loaded : function(e) {
             assert.equal(e.state, 'loaded');
             assert.equal(typeof e.results, 'object');
-            assert.equal(typeof e.results.meta, 'object');
-            assert.equal(e.results.meta.offset, 0);
-            assert.equal(e.results.meta.error, null);
-            assert.equal(Array.isArray(e.results.data), true);
+            assert.equal(typeof e.results.results, 'object');
+            assert.equal(e.results.start, 0);
+            assert.equal(Array.isArray(e.results.results), true);
           }
         },
         event : 'search-catalogs',

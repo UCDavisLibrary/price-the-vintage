@@ -89,6 +89,10 @@
         }
       },
 
+      ebBind : {
+        'search-catalogs-update' : '_onCatalogsSearchUpdate'
+      },
+
       behaviors : [EventBusBehavior],
 
       _toggleSearch : function(){
@@ -108,13 +112,35 @@
           }
         });
 
-        setTimeout(function(){
-          this.ebEmit('update-app-state', {
-            state: {
-              searching : false
+        this.debounce('_search', this._searchAsync.bind(this), 300);
+      },
+
+      _searchAsync : function() {
+        this.ebEmit('update-app-state', {
+          state: {
+            searchText : this.$.input.value
+          }
+        });
+
+        this.ebEmit(
+          'search-catalogs', 
+          {
+            handler: this._onCatalogsSearchUpdate.bind(this),
+            query : {
+              q : this.$.input.value
             }
-          });
-        }.bind(this), 2000);
+          }
+        );
+      },
+
+      _onCatalogsSearchUpdate : function(e) {
+        if( e.state !== 'loaded' ) return;
+        
+        this.ebEmit('update-app-state', {
+          state: {
+            searching : false
+          }
+        });
       },
 
       _showHelp : function() {

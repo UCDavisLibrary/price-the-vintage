@@ -13,17 +13,17 @@
         color: var(--secondary-text-color);
       }
     </style>
-    <div class="layout center">
+    <!--<div class="layout center">
       <paper-toggle-button on-click="_search"></paper-toggle-button>
       <div id="toggleText">Show only catalogs that need marking</div>
-    </div>
+    </div>-->
 
     <div style="padding: 10px 0">
       <div state="loading" style="text-align: center">
         <paper-spinner active></paper-spinner>
       </div>
       <div state="loaded" style="text-align: center">
-        Found 1,000,000 results!
+        Matched [[total]] catalogs.
       </div>
     </div>
 
@@ -31,6 +31,13 @@
   <script>
     Polymer({
       is: 'app-catalogs-search-results',
+
+      properties : {
+        total : {
+          type : Number,
+          value : 0
+        }
+      },
 
       behaviors : [EventBusBehavior, StateToggleBehavior],
 
@@ -40,23 +47,24 @@
       },
 
       _search : function() {
-        this.ebEmit('update-app-state', {
-          state: {
-            searching : true
-          }
-        });
+        // this.ebEmit('update-app-state', {
+        //   state: {
+        //     searching : true
+        //   }
+        // });
 
-        setTimeout(function(){
-          this.ebEmit('update-app-state', {
-            state: {
-              searching : false
-            }
-          });
-        }.bind(this), 2000);
+        // setTimeout(function(){
+        //   this.ebEmit('update-app-state', {
+        //     state: {
+        //       searching : false
+        //     }
+        //   });
+        // }.bind(this), 2000);
       },
 
       _onCatalogsSearchUpdate : function(e) {
-        // TODO;
+        if( e.state !== 'loaded' ) return;
+        this.total = e.results.total;
       },
 
       _onAppStateUpdate : function(e) {
