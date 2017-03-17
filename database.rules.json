@@ -2,7 +2,7 @@
   "rules": {
     ".read": "false",
     ".write": "false",
-
+    
     "price-the-vintage" : {
       "activity" : {
         "$resourceid" : {
@@ -27,6 +27,11 @@
           }
         }
       },
+      "pages" : {
+        "$pageid" : {
+          ".read" : "true"
+        }
+      },
       "users" : {
         "$userid" : {
           "activity" : {
@@ -35,10 +40,16 @@
               ".write" : "$userid === auth.uid",
               ".validate": "newData.isNumber()"
             }
+          },
+          "tempMarks" : {
+            ".read" : "$userid === auth.uid",
+            "$resourceid" : {
+              ".write" : "$userid === auth.uid"
+            }
           }
         }
       }
     }
-
+    
   }
 }
