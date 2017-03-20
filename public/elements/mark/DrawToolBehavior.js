@@ -13,10 +13,6 @@ var MarkBehavior = {
     }
   },
 
-  ready : function() {
-    this.bufferedEvents = new BufferedEvents();
-  },
-
   _getBaseMarkerStyle : function() {
     return {
       'position' : 'relative',
@@ -56,9 +52,7 @@ var MarkBehavior = {
     this.drawControl = new L.Control.Draw(this.drawToolOptions);
     this.map.addControl(this.drawControl);
 
-
     this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
-    this.map.on(L.Draw.Event.DRAWSTOP, this._onDrawToolDrawStop.bind(this));
     this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
 
     this.mapMarkers = {};
@@ -92,15 +86,11 @@ var MarkBehavior = {
     }
   },
 
-  _onDrawToolDrawStop : function() {
-    this.ebEmit('remove-temp-catalog-page-mark', {pageId: this.selected});
-  },
-
   _onDrawToolCreated : function (e) {
     var type = e.layerType,
         layer = e.layer;
     
-    this.bufferedEvents.emit(
+    this.ebEmit(
       'update-temp-catalog-page-mark', 
       {
         pageId : this.selected,
