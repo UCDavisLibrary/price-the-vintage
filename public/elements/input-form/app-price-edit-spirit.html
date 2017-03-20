@@ -24,7 +24,7 @@
       </div>
 
       <div class="form-row">
-        <paper-input always-float-label id="producer" placeholder="Hint text" label="Producer" type="string" ></paper-input>
+        <paper-input always-float-label id="country" placeholder="Hint text" label="Country" type="string" ></paper-input>
       </div>
 
       <div class="layout flex-horizontal form-row">
@@ -39,6 +39,10 @@
             <div prefix>$</div>
           </paper-input>
         </div>
+      </div>
+
+      <div class="form-row">
+        <paper-input always-float-label id="spiritType" placeholder="Hint text" label="Spirit Type" type="string" ></paper-input>
       </div>
 
       <!--<div hidden$="[[!addSpace]]">-->
@@ -116,7 +120,8 @@
         this.$.name.value = '';
         this.$.price.value = '';
         this.$.casePrice.value = '';
-        this.$.producer.value = '';
+        this.$.country.value = '';
+        this.$.spiritType.value = '';
       },
 
       edit : function(data) {
@@ -128,7 +133,8 @@
         // this.$.casePrice.value = data.casePrice || '';
 
         this.$.name.value = data.name || '';
-        this.$.producer.value = data.producer || '';
+        this.$.spiritType.value = data.spiritType || '';
+        this.$.country.value = data.country || '';
         this.$.price.value = data.price || '';
         this.$.casePrice.value = data.casePrice || '';
       },
@@ -149,7 +155,8 @@
 
         var data = {
            name : this.$.name.value,
-           producer : this.$.producer.value,
+           spiritType : this.$.spiritType.value,
+           country : this.$.country.value,
            price : this.$.price.value,
            casePrice : this.$.casePrice.value,
         };

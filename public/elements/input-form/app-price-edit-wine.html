@@ -50,7 +50,14 @@
       </div>
 
       <div class="form-row">
-        <paper-input always-float-label id="name" label="Name" placeholder="Hint text" type="string" ></paper-input>
+        <div class="layout form-row">
+          <div class="flex" style="padding-right:10px">
+            <paper-input always-float-label id="name" label="Name" type="string" ></paper-input>
+          </div>
+          <div>
+            <paper-input always-float-label id="year" label="Vintage (year)" type="number" ></paper-input>
+          </div>
+        </div>
       </div>
 
       <div class="form-row">
@@ -58,8 +65,12 @@
       </div>
 
       <div class="form-row">
-        <div>Bottle Size</div>
-        <select value="Standard" id="size">
+        <paper-input always-float-label id="country" label="Country" placeholder="Hint text" type="string" ></paper-input>
+      </div>
+
+      <div class="form-row">
+        <div>Bottle Type</div>
+        <select value="Standard" id="bottleType">
           <option value="Standard">Standard</option>
           <option value="Split">Split</option>
           <option value="Piccolo">Piccolo</option>
@@ -116,14 +127,7 @@
         </div>
       </div>
 
-      <!--<div class="layout form-row">
-        <div class="flex" style="padding-right:10px">
-          <paper-input always-float-label id="name" label="Wine Name" value="" type="string" ></paper-input>
-        </div>
-        <div>
-          <paper-input always-float-label id="year" label="Vintage (year)" value="" type="number" ></paper-input>
-        </div>
-      </div>
+      <!--
 
       <div class="layout flex-horizontal form-row">
         <div class="flex"></div>
@@ -234,11 +238,13 @@
 
         this.$.color.value = 'Red';
         this.$.wineType.value = 'Still';
-        this.$.size.value = 'Standard';
+        this.$.bottleType.value = 'Standard';
         this.$.name.value = '';
         this.$.producer.value = '';
         this.$.price.value = '';
         this.$.casePrice.value = '';
+        this.$.year.value = '';
+        this.$.country.value = '';
       },
 
       edit : function(data) {
@@ -252,11 +258,13 @@
         
         this.$.color.value = data.color || 'Red';
         this.$.wineType.value = data.wineType || 'Still';
-        this.$.size.value = data.size || 'Standard';
+        this.$.bottleType.value = data.bottleType || 'Standard';
         this.$.name.value = data.name || '';
         this.$.producer.value = data.producer || '';
         this.$.price.value = data.price || '';
         this.$.casePrice.value = data.casePrice || '';
+        this.$.country.value = data.country || '';
+        this.$.year.value = data.year || '';
       },
 
       _cancel : function() {
@@ -277,11 +285,13 @@
         var data = {
           color: this.$.color.value,
           wineType : this.$.wineType.value,
-          size : this.$.size.value,
+          bottleType : this.$.bottleType.value,
           name : this.$.name.value,
           producer : this.$.producer.value,
           price : this.$.price.value,
           casePrice : this.$.casePrice.value,
+          country : this.$.country.value,
+          year : this.$.year.value
         };
 
         this.fire('complete', data);

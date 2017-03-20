@@ -174,8 +174,6 @@
       },
 
       _getCatalogPages : function() {
-        if( !this.selected || !this.active ) return;
-
         this.ebEmit('get-catalog-pages', {
           id: this.catalogId, 
           handler: this._onCatalogPagesUpdate.bind(this)
@@ -183,7 +181,7 @@
       },
 
       _onCatalogPagesUpdate : function(e) {
-        if( !this.active || e.id !== this.catalogId ) return;
+        if( e.id !== this.catalogId ) return;
 
         this.toggleState(e.state, 'loading-state');
         if( e.state !== 'loaded' ) return;
@@ -206,8 +204,7 @@
       },
 
       _onPageMarksUpdate : function(e) {
-        if( !this.active || e.pageId !== this.selected ) return;
-
+        if( e.pageId !== this.selected ) return;
         if( e.state !== 'loaded' || e.deleted ) {
           this._removeMark(e.id);
           return;
@@ -242,8 +239,14 @@
       },
 
       _reset : function() {
-        this.marks = {};
         this.selectedPage = null;
+
+        for( var key in this.marks ) {
+          if( this.marks[key].pageId !== this.selected ) {
+            delete this.marks[key];
+          }
+        }
+
         if( !this.selected || !this.pages ) return;
 
         for( var i = 0; i < this.pages.length; i++ ) {
@@ -256,6 +259,10 @@
         if( !this.selectedPage ) return;
 
         var img = new Image();
+        var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id;
+
+        if( this.currentImg == url ) return;
+
         img.onload = function() {
           this.bounds = [
             [0,0],
@@ -266,7 +273,8 @@
           this._redraw();
         }.bind(this);
 
-        img.src = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id;
+        this.currentImg = url;
+        img.src = url;
       },
 
       _onAppStateUpdate : function(state) {

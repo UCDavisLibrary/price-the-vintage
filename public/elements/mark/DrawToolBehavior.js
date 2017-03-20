@@ -63,6 +63,7 @@ var MarkBehavior = {
 
     this.mapMarkers = {};
     for( var key in this.marks ) {
+      if( this.mapMarkers[key] ) continue;
       this.mapMarkers[key] = this._drawMark(this.marks[key]);
     }
 
@@ -89,18 +90,6 @@ var MarkBehavior = {
     if( this.userState && this.userState.user.isAnonymous ) {
       alert('Reminder, you are creating marks as an anonymous user.');
     }
-
-    // only a small hack...
-    // this.drawControl._toolbars.draw._modes.marker.handler._mouseMarker.on('move', function(e) {
-    //   // only send one event every 100ms
-    //   this.bufferedEvents.emit(
-    //     'update-temp-catalog-page-mark', 
-    //     {
-    //       pageId : this.selected,
-    //       xy : [e.latlng.lng, e.latlng.lat]
-    //     }
-    //   );
-    // }.bind(this));
   },
 
   _onDrawToolDrawStop : function() {
