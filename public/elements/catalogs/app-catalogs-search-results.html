@@ -13,10 +13,19 @@
         color: var(--secondary-text-color);
       }
     </style>
+
+    <div class="layout center">
+      <div>Contains</div>
+      <paper-toggle-button id="typeToggle" on-change="_search"></paper-toggle-button>
+      <div>Exact match</div>
+    </div>
+
     <!--<div class="layout center">
       <paper-toggle-button on-click="_search"></paper-toggle-button>
       <div id="toggleText">Show only catalogs that need marking</div>
     </div>-->
+
+
 
     <div style="padding: 10px 0">
       <div state="loading" style="text-align: center">
@@ -47,19 +56,32 @@
       },
 
       _search : function() {
-        // this.ebEmit('update-app-state', {
-        //   state: {
-        //     searching : true
-        //   }
-        // });
+        this.ebEmit('update-app-state', {
+          state: {
+            searching : true
+          }
+        });
 
-        // setTimeout(function(){
-        //   this.ebEmit('update-app-state', {
-        //     state: {
-        //       searching : false
-        //     }
-        //   });
-        // }.bind(this), 2000);
+        this.debounce('_search', this._searchAsync.bind(this), 50);
+      },
+
+      _searchAsync : function() {
+        this.ebEmit('update-app-state', {
+          state: {
+            searchExact : this.$.typeToggle.checked
+          }
+        });
+
+        this.ebEmit(
+          'search-catalogs', 
+          {
+            handler: this._onCatalogsSearchUpdate.bind(this),
+            query : {
+              q : this.searchText,
+              exact : this.$.typeToggle.checked
+            }
+          }
+        );
       },
 
       _onCatalogsSearchUpdate : function(e) {
@@ -68,6 +90,7 @@
       },
 
       _onAppStateUpdate : function(e) {
+        this.searchText = e.searchText;
         if( e.searching ) {
           this.toggleState('loading');
         } else {

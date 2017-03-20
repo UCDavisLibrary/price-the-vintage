@@ -86,11 +86,18 @@
         searchBoxActive : {
           type : Boolean,
           value : false
+        },
+        appState : {
+          type : Object,
+          value : function() {
+            return {}
+          }
         }
       },
 
       ebBind : {
-        'search-catalogs-update' : '_onCatalogsSearchUpdate'
+        'search-catalogs-update' : '_onCatalogsSearchUpdate',
+        'app-state-update' : '_onAppStateUpdate'
       },
 
       behaviors : [EventBusBehavior],
@@ -127,7 +134,8 @@
           {
             handler: this._onCatalogsSearchUpdate.bind(this),
             query : {
-              q : this.$.input.value
+              q : this.$.input.value,
+              exact : this.appState.searchExact
             }
           }
         );
@@ -141,6 +149,10 @@
             searching : false
           }
         });
+      },
+
+      _onAppStateUpdate : function(e) {
+        this.appState = e;
       },
 
       _showHelp : function() {
