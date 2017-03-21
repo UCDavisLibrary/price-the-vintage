@@ -36,8 +36,8 @@ var EventLoopBehavior = (function() {
     var handle = options.handle || function(){ return true };
 
     var fn = function(payload) {
-      payload = payload || 
-                (options.payload && options.payload.call(ele)) ||  
+      payload = (options.payload && options.payload.call(ele, payload || {})) ||  
+                payload ||
                 {};
 
       // set handler to null of false if you don't want to do anything
@@ -47,6 +47,11 @@ var EventLoopBehavior = (function() {
         } else if( elObj.resp ) { // default thing to do is bind to response
           payload.handler = elObj.resp.bind(ele);
         }
+      }
+
+      if( !options.event ) {
+        console.warn(ele.nodeName+' EventLoopBehavior: '+name+' did not provide a request event');
+        return;
       }
 
       ele.ebEmit(options.event, payload);
@@ -80,6 +85,11 @@ var EventLoopBehavior = (function() {
         options.handler.call(ele, e);
       }, options.debounce !== undefined ? options.debounce : 25);
     }.bind(ele);
+
+    if( !options.event ) {
+      console.warn(ele.nodeName+' EventLoopBehavior: '+name+' did not provide a response event');
+      return;
+    }
 
     ele.getEventBus().on(options.event, elObj.resp);
   }

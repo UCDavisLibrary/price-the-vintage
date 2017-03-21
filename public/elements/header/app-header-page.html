@@ -37,8 +37,6 @@
         </td>
         <td style="text-align: right">
           <paper-icon-button icon="info" on-click="_showHelp"></paper-icon-button>
-          <!--<paper-icon-button icon="arrow-back" id="previousBtn" on-click="_previous"></paper-icon-button>
-          <paper-icon-button icon="arrow-forward" id="nextBtn" on-click="_next"></paper-icon-button>-->
         </td>
       </tr>
     </table>
@@ -76,16 +74,40 @@
 
   </template>
   <script>
+
+(function(){
+
+    var CatalogEventLoop = {
+      req : {
+        event : 'get-catalog',
+        payload : function() {
+          return {id: this.catalog}
+        }
+      },
+
+      resp : {
+        event : 'catalog-update',
+        handle : function(e) {
+          return (e.state === 'loaded' && e.id === this.catalog)
+        },
+        handler : function(e) {
+          this.catalogData = e.payload;
+          this.title = this.catalogData.title;
+        }
+      }
+    };
+
     Polymer({
       is: 'app-header-page',
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior],
 
       ebBind : {
-        'catalog-update' : '_updateTitle',
-        // 'catalog-pages-update' : '_pagesUpdate',
         'selected-catalog-update' : '_onSelectedCatalogUpdate'
-        // 'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+      },
+
+      eventLoops : {
+        catalog : CatalogEventLoop
       },
 
       ready : function() {
@@ -105,82 +127,9 @@
         this.$.helpPopup.close();
       },
 
-      _onSelectedCatalogPageUpdate : function(id) {
-        this.page = id;
-        this._updateButtons();
-      },
-
       _onSelectedCatalogUpdate : function(id) {
         this.catalog = id;
-
-        this.ebEmit('get-catalog', {
-          id : id,
-          handler : this._updateTitle.bind(this)
-        });
-
-        // this.ebEmit('get-catalog-pages', {
-        //   id : id,
-        //   handler : this._pagesUpdate.bind(this)
-        // });
-      },
-
-      // _pagesUpdate : function(e) {
-      //   if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;
-
-      //   this.pages = e.payload.data;
-      //   this._updateButtons();
-      // },
-
-      // _getPageNumber : function() {
-      //   if( !this.pages ) return -1;
-
-      //   for( var i = 0; i < this.pages.length; i++ ) {
-      //     if( this.pages[i].id+'' === this.page ) {
-      //       return this.pages[i].page;
-      //     }
-      //   }
-      // },
-
-      // _getPageIdFromPageNumber : function(page) {
-      //   if( !this.pages ) return -1;
-
-      //   for( var i = 0; i < this.pages.length; i++ ) {
-      //     if( this.pages[i].page === page ) {
-      //       return this.pages[i].id;
-      //     }
-      //   }
-      // },
-
-      // _updateButtons : function() {
-      //   var page = this._getPageNumber();
-        
-      //   this.$.previousBtn.removeAttribute('disabled');
-      //   this.$.nextBtn.removeAttribute('disabled');
-        
-      //   if( page === 0 ) {
-      //     this.$.previousBtn.setAttribute('disabled', 'disabled');
-      //   }
-      //   if( this.pages && page === this.pages.length-1 ) {
-      //     this.$.nextBtn.setAttribute('disabled', 'disabled');
-      //   }
-      // },
-
-      // _previous : function() {
-      //   var page = this._getPageNumber()-1;
-      //   page = this._getPageIdFromPageNumber(page);
-      //   window.location.hash = this.catalog+'/'+page;
-      // },
-
-      // _next : function() {
-      //   var page = this._getPageNumber()+1;
-      //   page = this._getPageIdFromPageNumber(page);
-      //   window.location.hash = this.catalog+'/'+page;
-      // },
-
-      _updateTitle : function(e) {
-        if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;
-        this.catalogData = e.payload;
-        this.title = this.catalogData.title;
+        this.eventLoop.catalog.req();
       },
 
       _back : function() {
@@ -188,5 +137,7 @@
       }
 
     });
+
+})();
   </script>
 </dom-module>

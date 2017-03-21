@@ -64,6 +64,51 @@
     
   </template>
   <script>
+
+(function(){
+
+    var AuthStateEventLoop = {
+      req : {
+        event : 'get-auth-state',
+      },
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.userState = e;
+
+          if( this.userState.user && this.userState.user.uid && !this.userState.user.isAnonymmous ) {
+            this.showVoting = true;
+          } else {
+            this.showVoting = false;
+          }
+        }
+      }
+    };
+
+    var MarkVotingEventLoop = {
+      req : {
+        event : 'vote-catalog-page-mark',
+        payload : function(vote) {
+          return {
+            markId : this.mark.id,
+            pageId : this.mark.pageId,
+            vote : vote
+          }
+        },
+        handler : false
+      },
+
+      resp : {
+        event : 'catalog-page-marks-update',
+        handle : function(e) {
+          return (this.mark.id === e.id);
+        },
+        handler : function(e) {
+          this.show(e);
+        }
+      }
+    };
+
     Polymer({
       is: 'app-price-comment-form',
 
@@ -107,31 +152,16 @@
           casePrice : 'Price per Case'
         }
       },
-      
-      behaviors : [EventBusBehavior],
 
-      ebBind : {
-        'catalog-page-marks-update' : '_onPageMarksUpdate',
-        'auth-update' : '_onAuthUpdate'
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        authState : AuthStateEventLoop,
+        markVoting : MarkVotingEventLoop
       },
 
       ready : function() {
-        this.ebEmit('get-auth-state',{handler: this._onAuthUpdate.bind(this)});
-      },
-
-      _onAuthUpdate : function(e) {
-        this.userState = e;
-
-        if( this.userState.user && this.userState.user.uid && !this.userState.user.isAnonymmous ) {
-          this.showVoting = true;
-        } else {
-          this.showVoting = false;
-        }
-      },
-
-      _onPageMarksUpdate : function(e) {
-        if( this.mark.id !== e.id ) return;
-        this.show(e);
+        this.eventLoop.authState.req();
       },
 
       _upVote : function() {
@@ -143,14 +173,7 @@
       },
 
       _vote : function(value) {
-        this.ebEmit(
-          'vote-catalog-page-mark',
-          {
-            markId : this.mark.id,
-            pageId : this.mark.pageId,
-            vote : value
-          }
-        );
+        this.eventLoop.markVoting.req(value);
       },
 
       show : function(mark) {
@@ -201,5 +224,7 @@
         }
       }
     });
+
+})();
   </script>
 </dom-module>

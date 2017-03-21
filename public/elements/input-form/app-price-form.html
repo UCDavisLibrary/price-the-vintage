@@ -59,6 +59,22 @@
 
   </template>
   <script>
+
+(function(){
+
+    var AuthStateEventLoop = {
+      req : {
+        event : 'get-auth-state',
+      },
+
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.userState = e;
+        }
+      }
+    };
+
     Polymer({
       is: 'app-price-form',
 
@@ -79,24 +95,16 @@
         }
       },
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior],
 
-      ebBind : {
-        'auth-update' : '_onAuthUpdate'
+      eventLoops : {
+        authState : AuthStateEventLoop
       },
 
       ready : function() {
         window.addEventListener('resize', this._resize.bind(this));
-        this._getAuthState();
+        this.eventLoop.authState.req();
         this._resize();
-      },
-
-      _getAuthState : function() {
-        this.ebEmit('get-auth-state',{handler: this._onAuthUpdate.bind(this)})
-      },
-
-      _onAuthUpdate : function(e) {
-        this.userState = e;
       },
 
       _resize : function() {
@@ -142,5 +150,7 @@
         this.style.display = 'none';
       }
     });
+
+})();
   </script>
 </dom-module>

@@ -60,6 +60,117 @@
 
   </template>
   <script>
+
+(function() {
+
+    var AuthStateEventLoop = {
+      req : {event: 'get-auth-state'},
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.userState = e;
+        }
+      }
+    };
+
+    var AppStateEventLoop = {
+      req : {event: 'get-app-state'},
+      resp : {
+        event : 'app-state-update',
+        handler : function(e) {
+          this._renderAppState(e);
+        }
+      }
+    };
+
+    var CatalogPagesEventLoop = {
+      req : {
+        event : 'get-catalog-pages',
+        payload : function() {
+          return {id: this.catalogId}
+        }
+      },
+      resp : {
+        event : 'catalog-pages-update',
+        handle : function(e) {
+          if( e.id !== this.catalogId ) return false;
+
+          this.toggleState(e.state, 'loading-state');
+          return (e.state === 'loaded')
+        },
+        handler : function(e) {
+          this.pages = e.payload;
+          this._reset();
+        }
+      }
+    }
+
+
+    var PageMarksEventLoop = {
+      req : {
+        event : 'get-catalog-page-marks',
+        payload : function() {
+          return {id: this.selected};
+        },
+        handle : function() {
+          return (this.selected && this.active)
+        },
+        handler : function(marks) {
+          console.log(marks);
+          marks.forEach(this.eventLoop.pageMarks.resp.bind(this));
+        }
+      },
+      resp : {
+        event : 'catalog-page-marks-update',
+        handle : function(e) {
+          if( e.pageId !== this.selected ) return false;
+          return true;
+        },
+        handler : function(e) {
+          if( e.state !== 'loaded' || e.deleted ) {
+            this._removeMark(e.id);
+            return false;
+          }
+
+          this.marks[e.id] = e;
+
+          if( this.mapMarkers[e.id] ) {
+            if( e.data.isTemp && this._isMyMark(e) ) {
+              return; // don't draw my temp marks
+            }
+
+            this.mapMarkers[e.id].setLatLng([e.data.xy[1], e.data.xy[0]]);
+          } else {
+            this.mapMarkers[e.id] = this._drawMark(e);
+          }
+        }
+      }
+    }
+
+    // this loop is actually backward :)  but that is how we want it
+    // the services are actually pulling us.
+    var InterestedPartyEventLoop = {
+      req : {
+        event : 'interested-party-response',
+        payload : function() {
+          return {
+            id : this.selected,
+            types : ['markup']
+          }
+        }
+      },
+
+      resp : {
+        event : 'interested-party-request',
+        interested : function() {
+          return (this.active && this.selected);
+        },
+        handler : function() {
+          this.eventLoop.interestedParty.req();
+        }
+      }
+    };
+
     Polymer({
 
       is: 'app-page-markup',
@@ -96,22 +207,26 @@
         }
       },
 
-      behaviors : [EventBusBehavior, StateToggleBehavior, MarkBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior, MarkBehavior],
+
+      eventLoops : {
+        authState : AuthStateEventLoop,
+        appState : AppStateEventLoop,
+        catalogPages : CatalogPagesEventLoop,
+        pageMarks : PageMarksEventLoop,
+        interestedParty : InterestedPartyEventLoop
+      },
 
       ebBind : {
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
-        'interested-party-request' : '_onInterestedPartyRequest',
-        'catalog-page-marks-update' : '_onPageMarksUpdate',
-        'catalog-pages-update' : '_onCatalogPagesUpdate',
-        'app-state-update' : '_onAppStateUpdate',
-        'auth-update' : '_onAuthUpdate'
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
       },
 
       ready : function() {
         this._getApi();
-        this.ebEmit('get-app-state', {handler: this._onAppStateUpdate.bind(this)});
-        this.ebEmit('get-auth-state',{handler: this._onAuthUpdate.bind(this)})
+        
+        this.eventLoop.authState.req();
+        this.eventLoop.appState.req();
       },
 
       _getApi : function() {
@@ -133,8 +248,8 @@
           return;
         }
 
-        this._onAppStateUpdate();
-        this._getPageMarks();
+        this._renderAppState();
+        this.eventLoop.pageMarks.req();
         this._updateMapSize();
       },
 
@@ -146,18 +261,6 @@
         }, 50);
       },
 
-      _onInterestedPartyRequest : function() {
-        if( !this.active || !this.selected ) return;
-
-        this.ebEmit(
-          'interested-party-response',
-          {
-            id : this.selected,
-            types : ['markup']
-          }
-        );
-      },
-
       _onSelectedCatalogPageUpdate : function(id) {
         if( this.selected ) this._removeTmpMark();
 
@@ -165,62 +268,12 @@
 
         this.toggleState('loading');
         this._reset();
-        this._getPageMarks();
+        this.eventLoop.pageMarks.req();
       },
 
       _onSelectedCatalogUpdate : function(id) {
         this.catalogId = id;
-        this._getCatalogPages();
-      },
-
-      _getCatalogPages : function() {
-        this.ebEmit('get-catalog-pages', {
-          id: this.catalogId, 
-          handler: this._onCatalogPagesUpdate.bind(this)
-        });
-      },
-
-      _onCatalogPagesUpdate : function(e) {
-        if( e.id !== this.catalogId ) return;
-
-        this.toggleState(e.state, 'loading-state');
-        if( e.state !== 'loaded' ) return;
-
-        this.pages = e.payload;
-        this._reset();
-      },
-
-      _getPageMarks : function() {
-        if( !this.selected || !this.active ) return;
-
-        this.ebEmit('get-catalog-page-marks', {
-          id: this.selected, 
-          handler: this._onPageMarksLoad.bind(this)
-        });
-      },
-
-      _onPageMarksLoad : function(marks) {
-        marks.forEach(this._onPageMarksUpdate.bind(this));
-      },
-
-      _onPageMarksUpdate : function(e) {
-        if( e.pageId !== this.selected ) return;
-        if( e.state !== 'loaded' || e.deleted ) {
-          this._removeMark(e.id);
-          return;
-        }
-
-        this.marks[e.id] = e;
-
-        if( this.mapMarkers[e.id] ) {
-          if( e.data.isTemp && this._isMyMark(e) ) {
-            return; // don't draw my temp marks
-          }
-
-          this.mapMarkers[e.id].setLatLng([e.data.xy[1], e.data.xy[0]]);
-        } else {
-          this.mapMarkers[e.id] = this._drawMark(e);
-        }
+        this.eventLoop.catalogPages.req();
       },
 
       _removeMark : function(id) {
@@ -232,10 +285,6 @@
           this.marksLayer.removeLayer(this.mapMarkers[id]);
           delete this.mapMarkers[id];
         }
-      },
-
-      _onAuthUpdate : function(e) {
-        this.userState = e;
       },
 
       _reset : function() {
@@ -277,7 +326,7 @@
         img.src = url;
       },
 
-      _onAppStateUpdate : function(state) {
+      _renderAppState : function(state) {
         if( state ) {
           this.currentState = state;
         } else {
@@ -417,5 +466,7 @@
       }
 
     });
+
+})();
   </script>
 </dom-module>

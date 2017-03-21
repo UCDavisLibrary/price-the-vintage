@@ -166,47 +166,7 @@
 
       _search : function() {
         this.eventLoop.searchCatalogs.req();
-        // this.ebEmit('update-app-state', {
-        //   state: {
-        //     searching : true
-        //   }
-        // });
-
-        // this.debounce('_search', this._searchAsync.bind(this), 300);
       },
-
-      // _searchAsync : function() {
-      //   this.ebEmit('update-app-state', {
-      //     state: {
-      //       searchText : this.$.input.value
-      //     }
-      //   });
-
-      //   this.ebEmit(
-      //     'search-catalogs', 
-      //     {
-      //       handler: this._onCatalogsSearchUpdate.bind(this),
-      //       query : {
-      //         q : this.$.input.value,
-      //         exact : this.appState.searchExact
-      //       }
-      //     }
-      //   );
-      // },
-
-      // _onCatalogsSearchUpdate : function(e) {
-      //   if( e.state !== 'loaded' ) return;
-        
-      //   this.ebEmit('update-app-state', {
-      //     state: {
-      //       searching : false
-      //     }
-      //   });
-      // },
-
-      // _onAppStateUpdate : function(e) {
-      //   this.appState = e;
-      // },
 
       _showHelp : function() {
         this.$.popup.open();

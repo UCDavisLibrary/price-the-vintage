@@ -70,44 +70,6 @@
 
     </style>
 
-    <!--<div loading-state="loaded" id="root">
-      <div class="layout">
-
-        <div class="nav">
-          <paper-icon-button 
-            icon="arrow-back" 
-            id="previousBtn" 
-            on-click="_previous">
-          </paper-icon-button>
-        </div>
-
-        <div class="flex" id="scrollPanel">
-          <div>
-            <template is="dom-repeat" items="[[pages]]" as="page" style="height:80px">
-                <app-page-item 
-                  style="display:inline-block"
-                  class="grid-item"
-                  active$="[[active]]"
-                  catalog-id$="[[catalogId]]" 
-                  page="[[page]]" 
-                  api-host="[[apiHost]]"
-                  on-click="_select">
-                </app-page-item>
-            </template>
-          </div>
-        </div>
-
-        <div class="nav">
-          <paper-icon-button 
-            icon="arrow-forward" 
-            id="nextBtn" 
-            on-click="_next">
-          </paper-icon-button>
-        </div>
-
-      </div>
-    </div>-->
-
     <div loading-state="loaded" id="root">
         <paper-fab 
           icon="arrow-back" 
@@ -138,12 +100,58 @@
         </paper-fab>
     </div>
 
-    <div loading-state="loading">
+    <div loading-state="loading" style="text-align: center; padding: 15px">
       <paper-spinner active></paper-spinner>
     </div>
     
   </template>
   <script>
+
+(function() {
+
+    var SelectedCatalogPageEventLoop = {
+      req : {event: 'get-selected-catalog-page'},
+      resp : {
+        event: 'selected-catalog-page-update',
+        handler : function(pageId) {
+          this.selected = pageId;
+
+          this._updateScroll();
+          this._updateButtons();
+        }
+      }
+    };
+
+
+    var CatalogPagesEventLoop = {
+      req : {
+        event : 'get-catalog-pages',
+        handle : function() {
+          return (this.active && this.catalogId)
+        },
+        payload : function() {
+          return {
+            id : this.catalogId
+          }
+        }
+      },
+      resp : {
+        event: 'catalog-pages-update',
+        handle : function(e) {
+          if( !this.active || e.id !== this.catalogId ) return false;
+
+          this.toggleState(e.state, 'loading-state');
+          return (e.state === 'loaded')
+        },
+        handler : function(e) {
+          this.pages = e.payload;
+          this.pageOffset = this.pages[0].page;
+          this._updateButtons();
+          this._updateScroll();
+        }
+      }
+    };
+
     Polymer({
       is: 'app-page-carousel',
 
@@ -163,12 +171,15 @@
         }
       },
 
-      behaviors : [EventBusBehavior, StateToggleBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
+
+      eventLoops : {
+        selectedCatalogPage : SelectedCatalogPageEventLoop,
+        catalogPages : CatalogPagesEventLoop
+      },
 
       ebBind : {
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'catalog-pages-update' : '_onCatalogPagesUpdate',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
         'catalog-update' : '_updateScroll'
       },
 
@@ -180,9 +191,9 @@
 
       _onActive : function() {
         if( !this.active ) return;
-        
-        this.ebEmit('get-selected-catalog-page', {handler: this._onSelectedCatalogPageUpdate.bind(this)});
-        this._getCatalogPages();
+
+        this.eventLoop.selectedCatalogPage.req();
+        this.eventLoop.catalogPages.req();
       },
 
       _getApi : function() {
@@ -232,38 +243,10 @@
 
       _onSelectedCatalogUpdate : function(id) {
         this.catalogId = id;
-        this._getCatalogPages();
+
+        this.eventLoop.catalogPages.req();
         this._updateButtons();
       },
-
-      _getCatalogPages : function() {
-        if( !this.catalogId || !this.active ) return;
-
-        this.ebEmit('get-catalog-pages', {
-          id: this.catalogId, 
-          handler: this._onCatalogPagesUpdate.bind(this)
-        });
-      },
-
-      _onCatalogPagesUpdate : function(e) {
-        if( !this.active || e.id !== this.catalogId ) return;
-
-        this.toggleState(e.state, 'loading-state');
-        if( e.state !== 'loaded' ) return;
-
-        this.pages = e.payload;
-        this.pageOffset = this.pages[0].page;
-        this._updateButtons();
-        this._updateScroll();
-      },
-
-      // _pagesUpdate : function(e) {
-      //   if( e.state !== 'loaded' || e.id !== this.catalog ) return;
-
-      //   this.pages = e.payload.data;
-      //   this.pageOffset = this.pages[0].page;
-      //   this._updateButtons();
-      // },
 
       _getPageNumber : function() {
         if( !this.pages ) return -1;
@@ -319,5 +302,7 @@
       }
 
     });
+
+})();
   </script>
 </dom-module>
