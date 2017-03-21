@@ -116,7 +116,6 @@
           return (this.selected && this.active)
         },
         handler : function(marks) {
-          console.log(marks);
           marks.forEach(this.eventLoop.pageMarks.resp.bind(this));
         }
       },
