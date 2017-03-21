@@ -27,13 +27,33 @@
 
   </template>
   <script>
+
+(function() {
+
+    var CatalogEventLoop = {
+      req : {
+        event : 'get-catalog',
+        payload : function() {
+          return {id: this.catalog}
+        }
+      },
+      resp : {
+        event : 'catalog-update',
+        handle : function(e) {
+          return (e.state === 'loaded' && e.id === this.catalog)
+        },
+        handler : function(e) {
+          this.title = e.payload.title;
+        }
+      }
+    };
+
     Polymer({
       is: 'app-header-catalogs',
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior],
 
       ebBind : {
-        'catalog-update' : '_updateTitle',
         'selected-catalog-update' : '_onSelectedCatalogUpdate'
       },
 
@@ -48,22 +68,13 @@
 
       _onSelectedCatalogUpdate : function(id) {
         this.catalog = id;
-
-        this.ebEmit('get-catalog', {
-          id : id,
-          handler : this._updateTitle.bind(this)
-        });
-      },
-
-       _updateTitle : function(e) {
-        if( e.state !== 'loaded' || e.id+'' !== this.catalog+'' ) return;
-        this.title = e.payload.title;
+        this.eventLoop.catalog.req();
       },
 
       _back : function() {
         window.location.hash = '';
       }
-
     });
+});
   </script>
 </dom-module>

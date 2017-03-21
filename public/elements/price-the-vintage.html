@@ -1,3 +1,8 @@
+<!--
+`price-the-vintage` is the main application element.  Controls paging based on appState.
+Parses URL on hash change and sets appState.
+-->
+
 <dom-module id="price-the-vintage">
   <template>
     <style>
@@ -51,32 +56,36 @@
       is: 'price-the-vintage',
 
       properties : {
+        /**
+         * Controls the iron list selected page
+         **/
         selectedSection : {
           type : String,
           value : ''
         }
       },
 
-      behaviors : [EventBusBehavior],
 
-      ebBind : {
-        'app-state-update' : '_onAppStateUpdate'
+      eventLoops : {
+
+        appState : {
+          req : {event : 'get-app-state'},
+          resp : {
+            event : 'app-state-update',
+            handler : function(e) {
+              this.selectedSection = e.section;
+            }
+          }
+        }
+
       },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
 
       ready : function() {
         window.addEventListener('hashchange', this._setPageAndAppState.bind(this));
         this._setPageAndAppState();
-        // this._getAppState();
-      },
-
-      _getAppState : function() {
-        this.ebEmit('get-app-state', {handler: this._onAppStateUpdate.bind(this)});
-      },
-
-      _onAppStateUpdate : function(e) {
-        this.debounce('_onAppStateUpdate', function(){
-          this.selectedSection = e.section;
-        }, 25);
+        this.eventLoop.appState.req();
       },
 
       _setPageAndAppState : function() {

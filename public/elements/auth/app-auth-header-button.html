@@ -60,6 +60,22 @@
     
   </template>
   <script>
+
+(function() {
+
+    var AuthStateEventLoop = {
+      req : {
+        event : 'get-auth-state'
+      },
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.auth = e;
+          this.toggleState(e.state);
+        }
+      }
+    }
+
     Polymer({
       is: "app-auth-header-button",
 
@@ -70,19 +86,15 @@
         }
       },
 
-      behaviors : [EventBusBehavior, StateToggleBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
 
-      ebBind : {
-        'auth-update' : '_onAuthUpdate'
+      eventLoops : {
+        authState : AuthStateEventLoop
       },
 
       ready : function() {
         this.toggleState('pending');
-        this._getAuthState();
-      },
-
-      _getAuthState : function() {
-        this.ebEmit('get-auth-state',{handler: this._onAuthUpdate.bind(this)})
+        this.eventLoop.authState.req();
       },
 
       _logout : function() {
@@ -95,13 +107,10 @@
 
       _toggleLogout : function() {
         this.$.logout.style.display = (this.$.logout.style.display === 'block') ? 'none' : 'block';
-      },
-
-      _onAuthUpdate : function(e) {
-        this.auth = e;
-        this.toggleState(e.state);
       }
 
     });
+
+})();
   </script>
 </dom-module>

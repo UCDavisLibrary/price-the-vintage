@@ -74,6 +74,96 @@
     
   </template>
   <script>
+(function() {
+    /**
+     * Event Loop Definitions
+     **/
+    var UserActivityEventLoop = {
+      req : {
+        event : 'get-user-activity',
+        handle : function() {
+          if( !this.catalog ) return false;
+          return this.catalog.catalog_id ? true : false
+        },
+        payload : function() {
+          return {id: this.catalog.catalog_id};
+        },
+        debounce : 50
+      },
+
+      resp : {
+        event : 'user-activity-update',
+        handle : function(e) {
+          return e.id === this.catalog.catalog_id;
+        },
+        handler : function(e) {
+          this.userCount = Object.keys(e.users).length;
+          this.showUserCount = (this.userCount > 0 ) ? true : false;
+        }
+      }
+    }
+  
+    var CatalogPageEventLoop = {
+      req : {
+        event : 'get-catalog-pages',
+        handle : function() {
+          var trigger = false;
+          if( this.catalog && this.catalog.catalog_id ) {
+            this.loading = true;
+            trigger = true;
+          }
+          return trigger;
+        },
+        payload : function() {
+          return {id: this.catalog.catalog_id}
+        }
+      },
+
+      resp : {
+        event : 'catalog-pages-update',
+        handle : function(e) {
+          return (this.active && 
+                  e.id === this.catalog.catalog_id && 
+                  e.state === 'loaded')
+        },
+        handler : function(e) {
+          this.loading = false;
+
+          if( e.payload.length === 0 ) {
+            return alert('This catalog has no pages :(');
+          }
+
+          var page = e.payload[0];
+          window.location.hash = this.catalog.catalog_id+'/'+page.page_id;
+        }
+      }
+    };
+
+    // this loop is actually backward :)  but that is how we want it
+    // the services are actually pulling us.
+    var InterestedPartyEventLoop = {
+      req : {
+        event : 'interested-party-response',
+        payload : function() {
+          return {
+            id : this.catalog.catalog_id,
+            types : ['activity']
+          }
+        }
+      },
+
+      resp : {
+        event : 'interested-party-request',
+        interested : function() {
+          return (this.active && this.catalog && this.catalog.catalog_id);
+        },
+        handler : function() {
+          this.eventLoop.interestedParty.req();
+        }
+      }
+    };
+
+
     Polymer({
       is: 'app-catalog-card',
 
@@ -116,85 +206,27 @@
         click : '_select'
       },
 
-      ebBind : {
-        'user-activity-update' : '_onUserActivityUpdate',
-        'interested-party-request' : '_onInterestedPartyRequest',
-        'catalog-pages-update' : '_onCatalogPagesUpdate'
+      eventLoops : {
+        userActivity : UserActivityEventLoop,
+        catalogPages : CatalogPageEventLoop,
+        interestedParty : InterestedPartyEventLoop
       },
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior],
 
       _createImgUrl : function(apiHost, catalog) {
         return apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
       },
 
       _onUpdate : function() {
-        if( !this.catalog ) return;
-        if( !this.catalog.catalog_id ) return;
-
-        this.debounce('_onUpdateAsync', function(){
-          this._onUpdateAsync();
-        }.bind(this), 50);
-      },
-
-      _onUpdateAsync : function() {
-        if( !this.catalog.catalog_id ) return;
-
-        this.ebEmit('get-user-activity', {
-          id : this.catalog.catalog_id,
-          handler : this._onUserActivityUpdate.bind(this)
-        })
-      },
-
-      _onCatalogPagesUpdate : function(e) {
-        if( !this.active || e.id+'' !== this.catalog.catalog_id+'' ) return;
-
-        if( e.state !== 'loaded' ) return;
-        this.loading = false;
-
-        if( e.payload.length === 0 ) {
-          return alert('This catalog has no pages :(');
-        }
-
-        var page = e.payload[0];
-        window.location.hash = this.catalog.catalog_id+'/'+page.page_id;
+        this.getEventLoop().userActivity.req();
       },
 
       _select : function(e) {
-        if( !this.catalog.catalog_id ) return;
-        this.loading = true;
-
-        this.ebEmit('get-catalog-pages', {
-          id: this.catalog.catalog_id,
-          handler:  this._onCatalogPagesUpdate.bind(this)
-        });
-      },
-
-      _onInterestedPartyRequest : function() {
-        if( this.active && this.catalog && this.catalog.catalog_id  ) {
-          this.ebEmit(
-            'interested-party-response',
-            {
-              id : this.catalog.catalog_id,
-              types : ['activity']
-            }
-          );
-        }
-      },
-
-      _onUserActivityUpdate : function(e) {
-        if( e.id+'' !== this.catalog.catalog_id+'' ) return;
-
-        this.debounce('_onUserActivityUpdate', function(){
-          this._onUserActivityUpdateAsync(e);
-        }, 200);
-      },
-
-      _onUserActivityUpdateAsync : function(e) {
-        this.userCount = Object.keys(e.users).length;
-        this.showUserCount = (this.userCount > 0 ) ? true : false;
+        this.eventLoop.catalogPages.req();
       }
-
     });
+
+})();
   </script>
 </dom-module>

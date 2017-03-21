@@ -79,6 +79,58 @@
 
   </template>
   <script>
+
+(function() {
+
+    var SearchCatalogsEventLoop = {
+      req : {
+        event : 'search-catalogs',
+        handle : function() {
+          this.eventLoop.appState.req({
+            state: {
+              searching : true,
+              searchText : this.$.input.value
+            }
+          });
+        },
+        payload : function() {
+          return {
+            query : {
+              q : this.$.input.value,
+              exact : this.appState.searchExact
+            }
+          }
+        },
+        debounce : 500
+      },
+
+      resp : {
+        event : 'search-catalogs-update',
+        handle : function(e) {
+          return e.state === 'loaded'
+        },
+        handler : function(e) {
+          this.eventLoop.appState.req({
+            state: {
+              searching : false
+            }
+          });
+        }
+      }
+    };
+
+    var AppStateEventLoop = {
+      req : {
+        event : 'update-app-state'
+      },
+      resp : {
+        event : 'app-state-update',
+        handler : function(e) {
+          this.appState = e;
+        }
+      }
+    }
+
     Polymer({
       is: 'app-header-list',
 
@@ -95,17 +147,17 @@
         }
       },
 
-      ebBind : {
-        'search-catalogs-update' : '_onCatalogsSearchUpdate',
-        'app-state-update' : '_onAppStateUpdate'
+      eventLoops : {
+        searchCatalogs : SearchCatalogsEventLoop,
+        appState : AppStateEventLoop
       },
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior],
 
       _toggleSearch : function(){
         this.searchBoxActive = !this.searchBoxActive;
 
-        this.ebEmit('update-app-state', {
+        this.eventLoop.appState.req({
           state: {
             searchBoxActive : this.searchBoxActive
           }
@@ -113,47 +165,48 @@
       },
 
       _search : function() {
-        this.ebEmit('update-app-state', {
-          state: {
-            searching : true
-          }
-        });
+        this.eventLoop.searchCatalogs.req();
+        // this.ebEmit('update-app-state', {
+        //   state: {
+        //     searching : true
+        //   }
+        // });
 
-        this.debounce('_search', this._searchAsync.bind(this), 300);
+        // this.debounce('_search', this._searchAsync.bind(this), 300);
       },
 
-      _searchAsync : function() {
-        this.ebEmit('update-app-state', {
-          state: {
-            searchText : this.$.input.value
-          }
-        });
+      // _searchAsync : function() {
+      //   this.ebEmit('update-app-state', {
+      //     state: {
+      //       searchText : this.$.input.value
+      //     }
+      //   });
 
-        this.ebEmit(
-          'search-catalogs', 
-          {
-            handler: this._onCatalogsSearchUpdate.bind(this),
-            query : {
-              q : this.$.input.value,
-              exact : this.appState.searchExact
-            }
-          }
-        );
-      },
+      //   this.ebEmit(
+      //     'search-catalogs', 
+      //     {
+      //       handler: this._onCatalogsSearchUpdate.bind(this),
+      //       query : {
+      //         q : this.$.input.value,
+      //         exact : this.appState.searchExact
+      //       }
+      //     }
+      //   );
+      // },
 
-      _onCatalogsSearchUpdate : function(e) {
-        if( e.state !== 'loaded' ) return;
+      // _onCatalogsSearchUpdate : function(e) {
+      //   if( e.state !== 'loaded' ) return;
         
-        this.ebEmit('update-app-state', {
-          state: {
-            searching : false
-          }
-        });
-      },
+      //   this.ebEmit('update-app-state', {
+      //     state: {
+      //       searching : false
+      //     }
+      //   });
+      // },
 
-      _onAppStateUpdate : function(e) {
-        this.appState = e;
-      },
+      // _onAppStateUpdate : function(e) {
+      //   this.appState = e;
+      // },
 
       _showHelp : function() {
         this.$.popup.open();
@@ -163,5 +216,6 @@
         this.$.popup.close();
       }
     });
+})();
   </script>
 </dom-module>

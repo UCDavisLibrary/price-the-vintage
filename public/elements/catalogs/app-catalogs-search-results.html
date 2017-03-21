@@ -28,9 +28,9 @@
 
 
     <div style="padding: 10px 0">
-      <div state="loading" style="text-align: center">
+      <!--<div state="loading" style="text-align: center">
         <paper-spinner active></paper-spinner>
-      </div>
+      </div>-->
       <div state="loaded" style="text-align: center">
         Matched [[total]] catalogs.
       </div>
@@ -38,6 +38,42 @@
 
   </template>
   <script>
+
+(function() {
+
+    var SearchCatalogsEventLoop = {
+      req : {
+        event : 'search-catalogs',
+        handle : function() {
+          this.ebEmit('update-app-state', {
+            state: {
+              searching : true,
+              searchExact : this.$.typeToggle.checked
+            }
+          });
+        },
+        payload : function() {
+          return {
+            query : {
+              q : this.searchText,
+              exact : this.$.typeToggle.checked
+            }
+          }
+        },
+        debounce : 50
+      },
+
+      resp : {
+        event : 'search-catalogs-update',
+        handle : function(e) {
+          return e.state === 'loaded'
+        },
+        handler : function(e) {
+          this.total = e.results.total;
+        }
+      }
+    };
+
     Polymer({
       is: 'app-catalogs-search-results',
 
@@ -48,49 +84,23 @@
         }
       },
 
-      behaviors : [EventBusBehavior, StateToggleBehavior],
+      eventLoops : {
+        searchCatalogs : SearchCatalogsEventLoop
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
 
       ebBind : {
-        'search-catalogs-update' : '_onCatalogsSearchUpdate',
         'app-state-update' : '_onAppStateUpdate'
       },
 
       _search : function() {
-        this.ebEmit('update-app-state', {
-          state: {
-            searching : true
-          }
-        });
-
-        this.debounce('_search', this._searchAsync.bind(this), 50);
-      },
-
-      _searchAsync : function() {
-        this.ebEmit('update-app-state', {
-          state: {
-            searchExact : this.$.typeToggle.checked
-          }
-        });
-
-        this.ebEmit(
-          'search-catalogs', 
-          {
-            handler: this._onCatalogsSearchUpdate.bind(this),
-            query : {
-              q : this.searchText,
-              exact : this.$.typeToggle.checked
-            }
-          }
-        );
-      },
-
-      _onCatalogsSearchUpdate : function(e) {
-        if( e.state !== 'loaded' ) return;
-        this.total = e.results.total;
+        this.eventLoop.searchCatalogs.req();
       },
 
       _onAppStateUpdate : function(e) {
         this.searchText = e.searchText;
+
         if( e.searching ) {
           this.toggleState('loading');
         } else {
@@ -100,5 +110,7 @@
         this.style.display = e.searchBoxActive ? 'block' : 'none';
       }
     });
+
+})();
   </script>
 </dom-module>
