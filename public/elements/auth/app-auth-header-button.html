@@ -41,7 +41,8 @@
     <div state="pending">...</div>
     
     <div state="loggedIn">
-      <img src="[[auth.user.photoURL]]" on-click="_toggleLogout" />
+      <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]" on-click="_toggleLogout"></paper-icon-button>
+      <img src="[[auth.user.photoURL]]" hidden$="[[!hasPhoto]]" on-click="_toggleLogout" />
 
       <div id="logout">
         <div>[[auth.user.email]]</div>
@@ -53,7 +54,7 @@
     </div>
 
     <div state="notLoggedIn">
-      <paper-icon-button on-click="_login" icon="social:person"></paper-icon-button>
+      <paper-icon-button on-click="_login" icon="power-settings-new"></paper-icon-button>
     </div>
 
     <app-login-popup id="popup"></app-login-popup>
@@ -71,6 +72,22 @@
         event : 'auth-update',
         handler : function(e) {
           this.auth = e;
+
+          this.hasPhoto = false;
+          if( this.auth.user ) {
+
+            if( this.auth.state === 'loggedIn' ) {
+              if( !this.auth.user.isAnonymous && !this.auth.user.emailVerified ){
+                this.$.popup.show();
+                this.$.popup.handleLogin(this.auth.user);
+              }
+            }
+
+            if( this.auth.user && this.auth.user.photoURL ) {
+              this.hasPhoto = true;
+            }
+          }
+
           this.toggleState(e.state);
         }
       }
