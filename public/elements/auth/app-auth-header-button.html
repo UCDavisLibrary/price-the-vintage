@@ -41,14 +41,20 @@
     <div state="pending">...</div>
     
     <div state="loggedIn">
-      <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]" on-click="_toggleLogout"></paper-icon-button>
-      <img src="[[auth.user.photoURL]]" hidden$="[[!hasPhoto]]" on-click="_toggleLogout" />
+      <span hidden$="[[auth.user.isAnonymous]]">
+        <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]" on-click="_toggleLogout"></paper-icon-button>
+        <img src="[[auth.user.photoURL]]" hidden$="[[!hasPhoto]]" on-click="_toggleLogout" />
+      </span>
+      <img src="/images/incognito.png" hidden$="[[!auth.user.isAnonymous]]" on-click="_toggleLogout" />
 
       <div id="logout">
-        <div>[[auth.user.email]]</div>
+        <div>[[username]]</div>
         <div style="white-space: nowrap; color: blue">
-          <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
-          <a on-click="_logout">Logout</a>
+          <div>
+            <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
+            <a on-click="_logout">Logout</a>
+          </div>
+          <div hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></div>
         </div>
       </div>
     </div>
@@ -72,23 +78,7 @@
         event : 'auth-update',
         handler : function(e) {
           this.auth = e;
-
-          this.hasPhoto = false;
-          if( this.auth.user ) {
-
-            if( this.auth.state === 'loggedIn' ) {
-              if( !this.auth.user.isAnonymous && !this.auth.user.emailVerified ){
-                this.$.popup.show();
-                this.$.popup.handleLogin(this.auth.user);
-              }
-            }
-
-            if( this.auth.user && this.auth.user.photoURL ) {
-              this.hasPhoto = true;
-            }
-          }
-
-          this.toggleState(e.state);
+          this._renderAuthState();
         }
       }
     }
@@ -104,6 +94,10 @@
       },
 
       behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
+
+      ebBind : {
+        'ui-show-login-popup' : '_login'
+      },
 
       eventLoops : {
         authState : AuthStateEventLoop
@@ -122,8 +116,34 @@
         this.$.popup.show();
       },
 
+      _switch : function() {
+        this._logout();
+        this._login();
+      },
+
       _toggleLogout : function() {
         this.$.logout.style.display = (this.$.logout.style.display === 'block') ? 'none' : 'block';
+      },
+
+      _renderAuthState : function() {
+        this.hasPhoto = false;
+        if( this.auth.user ) {
+
+          if( this.auth.state === 'loggedIn' ) {
+            if( !this.auth.user.isAnonymous && !this.auth.user.emailVerified ){
+              this.$.popup.show();
+              this.$.popup.handleLogin(this.auth.user);
+            }
+          }
+
+          if( this.auth.user && this.auth.user.photoURL ) {
+            this.hasPhoto = true;
+          }
+
+          this.username = this.auth.user.email || 'Anonymous';
+        }
+
+        this.toggleState(this.auth.state);
       }
 
     });

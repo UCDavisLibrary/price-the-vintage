@@ -1,4 +1,7 @@
-
+<!--
+  Used by the map markers to show a spinning icon.  Nothing super special here
+  Just a iron-icon wrapper with CSS animation for continuous spin.
+-->
 <dom-module id="app-icon-spinner">
   <template>
     <style>
@@ -41,10 +44,17 @@
       is: 'app-icon-spinner',
 
       properties : {
+        /**
+         * Icon name to be applied to iron-icon.
+         **/
         icon : {
           type : String,
           value : ''
         },
+
+        /**
+         * Should the icon spin?
+         **/
         spin : {
           type : Boolean,
           value : false

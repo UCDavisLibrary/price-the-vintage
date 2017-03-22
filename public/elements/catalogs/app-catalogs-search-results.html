@@ -1,4 +1,7 @@
-
+<!--
+  Overlay that shows just under the header bar when the user is search.
+  Shows total matches as well as provides search options.
+-->
 <dom-module id="app-catalogs-search-results">
   <template>
     <style include="shared-styles"></style>
@@ -25,8 +28,6 @@
       <div id="toggleText">Show only catalogs that need marking</div>
     </div>-->
 
-
-
     <div style="padding: 10px 0">
       <div state="loaded" style="text-align: center">
         Matched [[total]] catalogs.
@@ -38,9 +39,16 @@
 
 (function() {
 
+    /**
+     * Wire up the search event loop
+     **/
     var SearchCatalogsEventLoop = {
       req : {
         event : 'search-catalogs',
+        /**
+         * Before we search, start the search send event to set 
+         * current options, and set the app state to searching
+         **/
         handle : function() {
           this.ebEmit('update-app-state', {
             state: {
@@ -49,6 +57,9 @@
             }
           });
         },
+        /**
+         * Actually send the search
+         **/
         payload : function() {
           return {
             query : {
@@ -57,11 +68,15 @@
             }
           }
         },
+        // only trigger this every 50ms, max
         debounce : 50
       },
 
       resp : {
         event : 'search-catalogs-update',
+        /**
+         * We only need to handle the 'loaded' search state
+         **/
         handle : function(e) {
           return e.state === 'loaded'
         },

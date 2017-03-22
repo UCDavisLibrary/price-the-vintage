@@ -1,6 +1,10 @@
 <link rel="import" href="app-catalog-card.html">
 <link rel="import" href="app-catalogs-search-results.html">
 
+<!--
+  This is the main catalog list view.  Contains a list of catalog cards as well as 
+  the bottom (popup) section of the search results.
+-->
 <dom-module id="app-catalogs-list" >
   <template>
       <style include="shared-styles"></style>
@@ -74,6 +78,7 @@
         }
       </style>
 
+      <!-- This is the popup section of the catalog search results -->
       <app-catalogs-search-results></app-catalogs-search-results>
 
       <div loading-state="loaded">
@@ -103,6 +108,10 @@
   <script>
 (function(){
 
+    /**
+     * Setup event handlers for search and when a search completes.  The only
+     * time this element asks to start a search is when element is active.
+     **/
     var SearchCatalogsEventLoop = {
       req : {event : 'search-catalogs'},
       resp : {
@@ -123,27 +132,38 @@
       is: 'app-catalogs-list',
 
       properties: {
+        /**
+         * Standard active flag
+         **/
         active: {
           type: Boolean,
           value: false,
           observer : '_onActive'
         },
+        /**
+         * Current list of catalog results
+         **/
         results : {
           type : Array,
           value : function() {
             return []
           }
         },
+        /**
+         * Host api from the config file
+         **/
         apiHost : {
           type : String,
           value : ''
         }
       },
 
+      // wire up event loop for search
       eventLoops : {
         searchCatalogs : SearchCatalogsEventLoop
       },
 
+      // just listen for app state updates
       ebBind : {
         'app-state-update' : '_onAppStateUpdate'
       },
@@ -151,17 +171,24 @@
       behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
 
       ready : function() {
+        // start of in the loading UI state
         this.toggleState('loading', 'loading-state');
-        this._getApi();
+        // grab the api host from config file.
+        this._getApiHost();
       },
 
       _onActive : function() {
         if( !this.active ) return;
 
+        // on active, start a catalog search for current search state
         this.eventLoop.searchCatalogs.req();
+        // update our list size in case screen has changed while hidden.
         this._updateListSize();
       },
 
+      /**
+       * When update state changes, just set the UI state
+       **/
       _onAppStateUpdate : function(e) {
         if( e.searching ) {
           this.toggleState('loading', 'loading-state');
@@ -170,7 +197,10 @@
         }
       },
 
-      _getApi : function() {
+      /**
+       * Request the api load handler
+       **/
+      _getApiHost : function() {
         this.ebEmit('get-api-host', {
           handler : function(host) {
             this.apiHost = host;
@@ -178,6 +208,9 @@
         });
       },
 
+      /**
+       * Resize the card grid
+       **/
       _updateListSize : function() {
         this.$.list.fire('iron-resize');
       }

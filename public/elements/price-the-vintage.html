@@ -52,6 +52,22 @@ Parses URL on hash change and sets appState.
   </template>
 
   <script>
+
+(function(){
+
+    /**
+     *  Listen for and request application state event handlers.
+     **/
+    var AppStateEventLoop = {
+      req : {event : 'get-app-state'},
+      resp : {
+        event : 'app-state-update',
+        handler : function(e) {
+          this.selectedSection = e.section;
+        }
+      }
+    };
+
     Polymer({
       is: 'price-the-vintage',
 
@@ -65,30 +81,28 @@ Parses URL on hash change and sets appState.
         }
       },
 
-
+      /**
+       * Setup event loop for application state
+       **/
       eventLoops : {
-
-        appState : {
-          req : {event : 'get-app-state'},
-          resp : {
-            event : 'app-state-update',
-            handler : function(e) {
-              this.selectedSection = e.section;
-            }
-          }
-        }
-
+        appState : AppStateEventLoop
       },
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
       ready : function() {
+        // listen for has changes to update app state
         window.addEventListener('hashchange', this._setPageAndAppState.bind(this));
+        // trigger update of app state on first load
         this._setPageAndAppState();
-        this.eventLoop.appState.req();
       },
 
+      /**
+       * Set application state from url hash.  Cause the polymer app-route
+       * still falls short in some areas and is a mess to implement. 
+       **/
       _setPageAndAppState : function() {
+        // default route information
         this.route = {
           section : 'list',
           catalog : '',
@@ -96,18 +110,22 @@ Parses URL on hash change and sets appState.
           edit : false
         }
 
+        // split up the hash state
         var parts = window
           .location
           .hash
           .replace(/#/,'')
           .split('/');
         
+        // remove any empty spots
         for( var i = parts.length-1; i >= 0; i-- ) {
           if( !parts[i] ) parts.splice(i);
         }
 
+        // parse app state information based on location in hash route
         parts.forEach(this._parseRoute.bind(this));
 
+        // set the current app state
         this.ebEmit('update-app-state', {
           state: {
             section: this.route.section,
@@ -115,14 +133,20 @@ Parses URL on hash change and sets appState.
           }
         });
 
+        // set the selected catalog (this may be empty)
         this.ebEmit('select-catalog-page', {id: this.route.page});
 
+        // set the user activity, ie which catalog and page the user
+        // is currently viewing (this may be empty as well).
         this.ebEmit('set-user-activity', {
           catalogId : this.route.catalog,
           pageId : this.route.page
         });
       },
 
+      /**
+       * Parse an individual route section
+       **/
       _parseRoute : function(value, index) {
         switch(index) {
           case 0:
@@ -140,6 +164,8 @@ Parses URL on hash change and sets appState.
       }
       
     });
+
+})();
   </script>
 
 </dom-module>

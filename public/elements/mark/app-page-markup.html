@@ -69,6 +69,7 @@
         event : 'auth-update',
         handler : function(e) {
           this.userState = e;
+          this._renderMarkControls();
         }
       }
     };
@@ -417,6 +418,18 @@
         if( marker ) {
           this.selectedMarker._icon.firstChild.style.border = '2px solid #FF9800';
         }
+      },
+
+      _renderMarkControls : function() {
+        if( !this.drawControl ) return;
+
+        if( !this.userState ) {
+          return this.drawControl._container.style.display = 'none';
+        } else if ( this.userState.state === 'notLoggedIn' ) {
+          return this.drawControl._container.style.display = 'none';
+        }
+
+        this.drawControl._container.style.display = 'block';
       },
 
       _onAddCancel : function() {

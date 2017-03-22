@@ -68,6 +68,7 @@ var MarkBehavior = {
     }
 
     this._updateMapSize();
+    this._renderMarkControls();
   },
 
   _showHideControls : function(show) {
@@ -81,8 +82,9 @@ var MarkBehavior = {
   },
 
   _onDrawToolDrawStart :  function(e){
-    if( this.userState && this.userState.user.isAnonymous ) {
+    if( this.userState && this.userState.user.isAnonymous && !this.isAnonymousAlertShow ) {
       alert('Reminder, you are creating marks as an anonymous user.');
+      this.isAnonymousAlertShow = true;
     }
   },
 
