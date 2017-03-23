@@ -83,6 +83,16 @@
       }
     }
 
+    var AppStateEventLoop = {
+      req : {event: 'get-app-state'},
+      resp : {
+        event : 'app-state-update',
+        handler : function(e) {
+          this.appState = e;
+        }
+      }
+    };
+
     Polymer({
       is: "app-auth-header-button",
 
@@ -96,20 +106,35 @@
       behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
 
       ebBind : {
-        'ui-show-login-popup' : '_login'
+        'ui-show-login-popup' : '_login',
+        'selected-catalog-update' : '_onSelectedCatalogUpdate',
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
       },
 
       eventLoops : {
-        authState : AuthStateEventLoop
+        authState : AuthStateEventLoop,
+        appState : AppStateEventLoop
       },
 
       ready : function() {
         this.toggleState('pending');
         this.eventLoop.authState.req();
+        this.eventLoop.appState.req();
+      },
+
+      _onSelectedCatalogUpdate : function(id) {
+        this.catalogId = id;
+      },
+
+      _onSelectedCatalogPageUpdate : function(id) {
+        this.pageId = id;
       },
 
       _logout : function() {
         this.ebEmit('auth-logout');
+        if( this.appState.editingMark ) {
+          window.location.hash = this.catalogId + '/' + this.pageId;
+        }
       },
 
       _login : function() {
