@@ -41,8 +41,8 @@
       .help {
         padding: 5px;
         color: #888;
+        margin: 0 10% 15px 10%;
         font-size: 12px;
-        margin-bottom: 15px;
       }
 
       a {
@@ -55,7 +55,7 @@
     <paper-dialog id="dialog" modal>
       <iron-pages selected="[[page]]" attr-for-selected="id">
         <div id="login">
-          <h2>Login <paper-icon-button style="float:right" icon="close" on-click="hide"></paper-icon-button></h2>
+          <h2 style="margin-bottom: 50px;">Login <paper-icon-button style="float:right" icon="close" on-click="hide"></paper-icon-button></h2>
 
           <paper-button on-click="loginWithUCD" aggie>
             <div style="display:inline-block">
@@ -71,7 +71,6 @@
 
           <paper-button on-click="loginWithGoogle" google>Google</paper-button>
 
-          <paper-button on-click="loginAnonymous" anonymous>Anonymous</paper-button>
 
           <div style="margin: 25px 12%">
 
@@ -161,11 +160,6 @@
       _logout : function() {
         this.hide();
         this.ebEmit('auth-logout');
-      },
-
-      loginAnonymous : function() {
-        this.ebEmit('auth-login-anonymous');
-        this.hide();
       },
 
       loginWithGoogle : function() {

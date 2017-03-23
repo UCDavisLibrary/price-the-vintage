@@ -45,7 +45,7 @@
         <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]" on-click="_toggleLogout"></paper-icon-button>
         <img src="[[auth.user.photoURL]]" hidden$="[[!hasPhoto]]" on-click="_toggleLogout" />
       </span>
-      <img src="/images/incognito.png" hidden$="[[!auth.user.isAnonymous]]" on-click="_toggleLogout" />
+      <paper-icon-button on-click="_login" icon="power-settings-new" hidden$="[[!auth.user.isAnonymous]]" ></paper-icon-button>
 
       <div id="logout">
         <div>[[username]]</div>
@@ -131,6 +131,7 @@
       },
 
       _logout : function() {
+        this.$.logout.style.display = 'none';
         this.ebEmit('auth-logout');
         if( this.appState.editingMark ) {
           window.location.hash = this.catalogId + '/' + this.pageId;
