@@ -46,6 +46,7 @@ exports.updatePageMarkCount = functions.database.ref('/price-the-vintage/marks/{
 function bookkeeping(mark, oldMark, params, resolve, reject) {
 
   getScore(mark, oldMark, params, (score) => {
+
     var search = {
       pageId : params.pageId,
       created : mark.created || Date.now(),
@@ -61,7 +62,7 @@ function bookkeeping(mark, oldMark, params, resolve, reject) {
 
         admin
           .database()
-          .ref(`/price-the-vintage/search-marks/${params.markId}`)
+          .ref(`/price-the-vintage/pending-marks/${params.markId}`)
           .set(search)
           .then((snapshot) => {
             resolve();
@@ -74,7 +75,7 @@ function bookkeeping(mark, oldMark, params, resolve, reject) {
 
 function getScore(mark, oldMark, params, callback) {
   // this is a new mark
-  if( !oldMark ) return 0;
+  if( !oldMark ) return callback(0);
 
   var currentVotes = mark.votes || {};
   var oldVotes = oldMark.votes || {};
@@ -103,7 +104,6 @@ function getScore(mark, oldMark, params, callback) {
     .once('value')
     .then((snapshot) => {
       var scoreFactor = snapshot.val() || 1;
-
       newVote.factor = scoreFactor;
 
       // save the users score factor with the mark
