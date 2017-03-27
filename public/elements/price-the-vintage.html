@@ -97,11 +97,45 @@ Parses URL on hash change and sets appState.
         this._setPageAndAppState();
       },
 
+      _isAuthRedirect : function() {
+        var hash = '?'+window.location.hash.replace(/^#/,'');
+
+        if( this._getParamByName('access_token', hash) && 
+            this._getParamByName('id_token', hash) ) {
+
+            this.ebEmit('continue-login-auth0', 
+              { 
+                hash : window.location.hash, 
+                handler : function() {
+                  window.location.hash = '';
+                }
+              });
+            return true;
+        }
+        return false;
+      },
+
+      _getParamByName : function(name, url) {
+          if (!url) {
+            url = window.location.href;
+          }
+          name = name.replace(/[\[\]]/g, "\\$&");
+          var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+              results = regex.exec(url);
+          if (!results) return null;
+          if (!results[2]) return '';
+          return decodeURIComponent(results[2].replace(/\+/g, " "));
+      },
+
       /**
        * Set application state from url hash.  Cause the polymer app-route
        * still falls short in some areas and is a mess to implement. 
        **/
       _setPageAndAppState : function() {
+        // are we in the middle of auth0 redirect?
+        // if so, ignore this.
+        if( this._isAuthRedirect() ) return;
+
         // default route information
         this.route = {
           section : 'list',

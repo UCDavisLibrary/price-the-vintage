@@ -43,7 +43,7 @@
     <div state="loggedIn">
       <span hidden$="[[auth.user.isAnonymous]]">
         <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]" on-click="_toggleLogout"></paper-icon-button>
-        <img src="[[auth.user.photoURL]]" hidden$="[[!hasPhoto]]" on-click="_toggleLogout" />
+        <img src="[[photo]]" hidden$="[[!hasPhoto]]" on-click="_toggleLogout" />
       </span>
       <paper-icon-button on-click="_login" icon="power-settings-new" hidden$="[[!auth.user.isAnonymous]]" ></paper-icon-button>
 
@@ -132,14 +132,19 @@
 
       _logout : function() {
         this.$.logout.style.display = 'none';
+
+        localStorage.removeItem('auth0-profile');
         this.ebEmit('auth-logout');
         if( this.appState.editingMark ) {
           window.location.hash = this.catalogId + '/' + this.pageId;
         }
       },
 
+      // _login : function() {
+      //   this.$.popup.show();
+      // },
       _login : function() {
-        this.$.popup.show();
+        this.ebEmit('login-auth0');
       },
 
       _switch : function() {
@@ -153,6 +158,7 @@
 
       _renderAuthState : function() {
         this.hasPhoto = false;
+
         if( this.auth.user ) {
 
           if( this.auth.state === 'loggedIn' ) {
@@ -163,6 +169,7 @@
           }
 
           if( this.auth.user && this.auth.user.photoURL ) {
+            this.photo = this.auth.user.photoURL;
             this.hasPhoto = true;
           }
 

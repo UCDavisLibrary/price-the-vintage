@@ -221,7 +221,7 @@
         this.user
             .reload()
             .then(function(user) {
-              if( !this.user.emailVerified ) {
+              if( !this.user.emailVerified && !this.user.email_verified ) {
                 alert('Email is still not verified.  You can send another verification email if required.');
               }
 
@@ -230,7 +230,7 @@
       },
 
       handleLogin : function(user, isCreate) {
-        if( user.emailVerified ) {
+        if( user.emailVerified || user.email_verified ) {
           return this.$.dialog.close();
         }
 
