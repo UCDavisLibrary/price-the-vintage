@@ -1,0 +1,72 @@
+
+<dom-module id="app-admin-interface">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    
+  </template>
+  <script>
+
+(function(){
+
+    var AuthStateEventLoop = {
+      req : {
+        event : 'get-auth-state'
+      },
+      resp : {
+        event : 'auth-update',
+        handle : function(e) {
+          if( e.state === 'pending' ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this.auth = e;
+          this._onAuthUpdate();
+        }
+      }
+    }
+
+    Polymer({
+      is: 'app-admin-interface',
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        authState : AuthStateEventLoop
+      },
+
+      ready : function() {
+        this.eventLoop.authState.req();
+
+        this._getPendingMarks();
+      },
+
+      _onAuthUpdate : function() {
+        if( this.auth.state === 'notLoggedIn' || !this.auth.user ) {
+          window.location = '/';
+          return;
+        } else if( !this.auth.user.roles ) {
+          window.location = '/';
+          return;
+        } else if( this.auth.user.roles.indexOf('admin') === -1 ) {
+          window.location = '/';
+          return;
+        }
+      },
+
+      _getPendingMarks : function() {
+        this.ebEmit('get-pending-marks', {
+          handler : function(err, marks) {
+            console.log(err, marks);
+          }
+        })
+      }
+
+    });
+
+})();
+  </script>
+</dom-module>

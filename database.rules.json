@@ -27,6 +27,9 @@
           }
         }
       },
+      "pending-marks" : {
+        ".read" : "true"
+      },
       "pages" : {
         "$pageid" : {
           ".read" : "true"
