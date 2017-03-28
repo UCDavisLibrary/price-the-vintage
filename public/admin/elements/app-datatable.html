@@ -1,0 +1,156 @@
+<dom-module id="app-datatable">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        margin-top: 15px;
+      }
+      :host([loading]) paper-progress {
+        display: block
+      }
+      paper-progress {
+        display: none;
+        width: 100%;
+      }
+      #noResults {
+        display : none;
+        padding: 20px;
+        font-size: 15px;
+        text-align: center;
+      }
+      #table {
+        width: 100%;
+      }
+    </style>
+
+    <paper-progress indeterminate></paper-progress>
+
+    <div id="noResults">
+      No Results
+    </div>
+
+    <table id="table">
+      <thead id="head"></thead>
+      <tbody id="body"></tbody>
+    </table>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-datatable',
+
+      behaviors : [Polymer.Templatizer],
+
+      properties : {
+        header : {
+          type : Array,
+          observer : 'render',
+          value : function() {
+            return [];
+          }
+        },
+        data : {
+          type : Array,
+          observer : 'render'
+        },
+        loading : {
+          type : Boolean,
+          value : false,
+          reflectToAttribute : true
+        }
+      },
+
+      observers: [
+        'render(data.*)',
+        'render(header.*)'
+      ],
+
+      ready : function() {
+        this.template = null;
+        this.timer = -1;
+      },
+
+      attached : function() {
+        this.template = Polymer.dom(this).querySelector('template');
+        Polymer.dom(this.root).appendChild(this.template);
+        this.templatize(this.template);
+      },
+
+      render : function() {
+        this.debounce('render', function(){
+          this._render();
+        }, 100);
+      },
+
+      _render : function() {
+        this.$.body.innerHTML = '';
+
+        if( !this.data ) return this.renderNoResults();
+        if( this.data.length === 0 ) return this.renderNoResults();
+
+        this.$.table.style.display = 'table';
+        this.$.noResults.style.display = 'none';
+
+        if( !this.template  ) {
+          return;
+        }
+
+        // render header
+        var row = document.createElement('tr');
+        var th;
+        for( var i = 0; i < this.header.length; i++ ) {
+          th = document.createElement('th');
+          th.innerHTML = this.header[i];
+          row.appendChild(th);
+        }
+        this.$.head.innerHTML = '';
+        Polymer.dom(this.$.head).appendChild(row);
+
+        if( !this.data ) return;
+        for( var i = 0; i < this.data.length; i++ ) {
+          this.renderRow(this.data[i], i);
+        }
+      },
+
+      renderNoResults : function() {
+        this.$.table.style.display = 'none';
+        this.$.noResults.style.display = 'block';
+      },
+
+      renderRow : function(data, index) {
+        var clone = this.stamp({item: data});
+
+        var actions = clone.root.querySelectorAll('[trigger]');
+        for( var i = 0; i < actions.length; i++ ) {
+          actions[i].addEventListener('click', function(e){
+            this.triggerActionEvent(e.currentTarget, data, index);
+          }.bind(this));
+        }
+
+        // HACK for styles
+        if( this.parentElement ) {
+          var eles = clone.root.querySelectorAll('*');
+          for( var i = 0; i < eles.length; i++ ) {
+            eles[i].classList.remove(this.parentElement.nodeName.toLowerCase());
+            eles[i].classList.add('style-scope');
+            eles[i].classList.add('app-datatable');
+          }
+        }
+
+        Polymer.dom(this.$.body).appendChild(clone.root);
+      },
+
+      triggerActionEvent : function(ele, data, index) {
+        this.fire(ele.getAttribute('trigger'),
+          {
+            element : ele,
+            data : data,
+            index : index
+          }
+        );
+      }
+
+    });
+  </script>
+</dom-module>

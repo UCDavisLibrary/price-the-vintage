@@ -1,0 +1,141 @@
+<link rel="import" href="app-page-icon.html">
+
+<dom-module id="app-review-marks">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <paper-material style="overflow-x:auto">
+      <app-datatable 
+        id="datatable" 
+        on-flag="onFlag"
+        loading="[[loading]]"
+        header="[[header]]" 
+        data="[[marks]]">
+        <template>
+          <tr>
+            <td>
+              <app-page-icon 
+                api-host$="[[apiHost]]"
+                page-id="[[item.pageId]]">
+              </app-page-icon>
+            </td>
+            <td>[[item.createdStr]]</td>
+            <td>[[item.updatedStr]]</td>
+            <td>[[item.score]]</td>
+            <td style="white-space:nowrap">
+              <paper-icon-button icon="create" trigger="flag"></paper-icon-button>
+            </td>
+          </tr>
+        </template>
+      </app-datatable>
+    </paper-material>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-review-marks',
+
+      properties : {
+        active : {
+          type : Boolean,
+          value : false,
+          observer : '_onActive'
+        },
+        marks : {
+          type : Array,
+          value : []
+        },
+
+        loading : {
+          type : Boolean,
+          value : false
+        },
+
+        sort : {
+          type : String,
+          value : 'score'
+        },
+
+        /**
+         * The firebase pagging api is horrid.  You have to keep track of this
+         * id, to know where to start from.
+         **/
+        lastMarkId : {
+          type : String,
+          value : ''
+        },
+
+        hostApi : {
+          type : String,
+          value : ''
+        },
+
+        header : {
+          type : Array,
+          value : function() {
+            return ['Page', 'Created', 'Updated', 'Score', ''];
+          }
+        }
+      },
+
+      behaviors : [EventBusBehavior],
+      
+      ready : function() {
+        this._getApiHost();
+      },
+
+      _onActive : function() {
+        if( !this.active ) return;
+        this._getPendingMarks();
+      },
+
+      _getPendingMarks : function() {
+        this.loading = true;
+
+        this.ebEmit('get-pending-marks', {
+          handler : this._onMarksLoad.bind(this)
+        });
+      },
+
+      _onMarksLoad : function(err, marks) {
+        this.loading = false;
+
+        if( err ) {
+          this.marks = [];
+          console.error(err);
+          return alert('Failed to load user marks')
+        }
+
+        var arr = [];
+        for( var id in marks ) {
+          marks[id].id = id;
+          marks[id].createdStr = new Date(marks[id].created).toISOString();
+          marks[id].updatedStr = new Date(marks[id].updated).toISOString();
+          arr.push(marks[id]);
+        }
+
+        arr.sort(function(a, b){
+          if( a[this.sort] < b[this.sort] ) return 1;
+          if( a[this.sort] > b[this.sort] ) return 1;
+          return 0;
+        }.bind(this));
+
+        this.marks = arr;
+      },
+
+      _getApiHost : function() {
+        this.ebEmit('get-api-host', {
+          handler : function(host) {
+            this.apiHost = host;
+          }.bind(this)
+        });
+      },
+
+      
+    });
+  </script>
+</dom-module>

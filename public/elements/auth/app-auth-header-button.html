@@ -54,6 +54,7 @@
             <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
             <a on-click="_logout">Logout</a>
           </div>
+          <div hidden$="[[!isAdmin]]"><a href="/admin">Admin Interface</a></div>
           <div hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></div>
         </div>
       </div>
@@ -100,6 +101,11 @@
         user : {
           type : Object,
           value : null
+        },
+
+        isAdmin : {
+          type : Boolean,
+          value : false
         }
       },
 
@@ -158,6 +164,7 @@
 
       _renderAuthState : function() {
         this.hasPhoto = false;
+        this.isAdmin = false;
 
         if( this.auth.user ) {
 
@@ -168,9 +175,13 @@
             }
           }
 
-          if( this.auth.user && this.auth.user.photoURL ) {
+          if( this.auth.user.photoURL ) {
             this.photo = this.auth.user.photoURL;
             this.hasPhoto = true;
+          }
+
+          if( this.auth.user.roles  && this.auth.user.roles.indexOf('admin') > -1 ) {
+            this.isAdmin = true;
           }
 
           this.username = this.auth.user.email || 'Anonymous';

@@ -1,0 +1,73 @@
+
+<dom-module id="app-page-icon">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    test
+  </template>
+  <script>
+
+(function(){
+  
+    var GetPageEventLoop = {
+      req : {
+        event : 'get-page',
+        payload : function() {
+          return {id: this.pageId}
+        }
+      },
+
+      resp : {
+        event : 'catalog-page-update',
+        handle : function(e) {
+          if( e.state !== 'loaded' || e.id !== this.pageId ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this._renderImage(e);
+        }
+      }
+    };
+
+    Polymer({
+      is: 'app-page-icon',
+
+      properties : {
+        pageId : {
+          type : String,
+          value : '',
+          observer : '_render'
+        },
+        apiHost : {
+          type : String,
+          value : ''
+        },
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        getPage : GetPageEventLoop
+      },
+
+      ready : function() {
+        this._render();
+      },
+
+      _render : function() {
+        if( !this.pageId || !this.eventLoop ) return;
+        this.eventLoop.getPage.req();
+      },
+
+      _renderImage : function(e) {
+        this.page = e;
+        this.innerHTML = '<img src="'+this.apiHost+'/media?select=thumbnail_png&media_id=eq.'+this.page.payload.media_id+'" />';
+      }
+    });
+
+})();
+  </script>
+</dom-module>

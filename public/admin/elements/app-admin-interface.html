@@ -7,6 +7,11 @@
       }
     </style>
     
+
+    <iron-pages selected="{{selected}}" selected-attribute="active">
+      <app-review-marks page="reviewMarks"></app-review-marks>
+    </iron-pages>
+
   </template>
   <script>
 
@@ -32,6 +37,13 @@
     Polymer({
       is: 'app-admin-interface',
 
+      properties : {
+        selected : {
+          type : Number,
+          value : 0
+        }
+      },
+
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
       eventLoops : {
@@ -40,8 +52,6 @@
 
       ready : function() {
         this.eventLoop.authState.req();
-
-        this._getPendingMarks();
       },
 
       _onAuthUpdate : function() {
@@ -55,14 +65,6 @@
           window.location = '/';
           return;
         }
-      },
-
-      _getPendingMarks : function() {
-        this.ebEmit('get-pending-marks', {
-          handler : function(err, marks) {
-            console.log(err, marks);
-          }
-        })
       }
 
     });
