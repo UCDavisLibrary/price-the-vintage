@@ -180,6 +180,8 @@
         this.count = 0;
         this.mark = mark;
 
+        this.ebEmit('ui-mark-comment-start', mark);
+
         this.currentType = this.mark.data.type;
 
         var html = '<table class="style-scope app-price-comment-form">';

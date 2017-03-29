@@ -100,16 +100,12 @@ Parses URL on hash change and sets appState.
       _isAuthRedirect : function() {
         var hash = '?'+window.location.hash.replace(/^#/,'');
 
-        if( this._getParamByName('access_token', hash) && 
-            this._getParamByName('id_token', hash) ) {
+        // crap..
+        if( this._getParamByName('error', hash) || 
+            (this._getParamByName('access_token', hash) && 
+            this._getParamByName('id_token', hash)) ) {
 
-            this.ebEmit('continue-login-auth0', 
-              { 
-                hash : window.location.hash, 
-                handler : function() {
-                  window.location.hash = '';
-                }
-              });
+            this.ebEmit('continue-login-auth0', {hash : window.location.hash});
             return true;
         }
         return false;

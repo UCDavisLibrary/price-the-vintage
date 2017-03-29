@@ -128,7 +128,8 @@
       edit : function(mark) {
         if( this.userState && 
             this.userState.user &&
-            mark.data.user === this.userState.user.uid ) {
+            (this.userState.user.isAdmin || 
+            mark.data.user === this.userState.user.uid) ) {
           
           this.type = 'edit';
           this.$.edit.edit(mark);

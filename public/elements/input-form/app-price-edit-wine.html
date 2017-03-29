@@ -209,7 +209,7 @@
       
       <div class="buttons">
         <paper-button on-click="_cancel">Cancel</paper-button>
-        <paper-button class="accept" on-click="_accept" raised>Save</paper-button>
+        <paper-button class="accept" on-click="_save" raised>Save</paper-button>
       </div>
 
     </div>
@@ -224,7 +224,22 @@
         pageId : {
           type : String,
           value : null,
+        },
+        active : {
+          type : Boolean,
+          value : false
         }
+      },
+      
+      behaviors : [EventBusBehavior],
+
+      ebBind : {
+        'ui-save-mark' : '_onHeaderSaveEvent'
+      },
+
+      _onHeaderSaveEvent : function() {
+        if( !this.active ) return;
+        this._save();
       },
 
       reset : function() {
@@ -271,7 +286,7 @@
         this.fire('cancel');
       },
 
-      _accept : function() {
+      _save : function() {
         // var data = {
         //   color: this.$.color.value,
         //   wineType : this.$.wineType.value,

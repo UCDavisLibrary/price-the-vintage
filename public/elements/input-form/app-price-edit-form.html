@@ -14,10 +14,6 @@
       paper-toggle-button {
         --paper-toggle-button-checked-button-color: var(--primary-color);
       }
-
-      #delete {
-        text-align: right;
-      }
     </style>
 
     <div class="layout center row-form">
@@ -33,7 +29,7 @@
     </div>
 
 
-    <iron-pages selected="[[type]]" attr-for-selected="id">
+    <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
       <app-price-edit-spirit 
         id="spirit" 
         add-space="[[addSpace]]"
@@ -48,10 +44,6 @@
         on-cancel="_cancel">
       </app-price-edit-wine>
     </iron-pages>
-
-    <div id="delete">
-      <paper-icon-button icon="delete" on-click="_delete"></paper-icon-button>
-    </div>
     
   </template>
   <script>
@@ -71,6 +63,13 @@
         }
       },
 
+      ebBind : {
+        'ui-delete-mark' : '_delete',
+        'ui-admin-approve-mark' : '_approve',
+      },
+
+      behaviors : [EventBusBehavior],
+
       _setType : function(e) {
         if( this.$.typeInput.checked ) {
           this.type = 'wine';
@@ -83,7 +82,10 @@
         this.type = 'wine';
         this.$.spirit.reset();
         this.$.wine.reset();
-        this.$.delete.style.display = 'none';
+      },
+
+      _approve : function() {
+        alert('Mark approved.  (not really)');
       },
 
       _delete : function() {
@@ -98,6 +100,8 @@
 
         if( this.editMode ) {
           data.xy = this.editMark.data.xy;
+          data.created = this.editMark.data.created;
+          data.user = this.editMark.data.user;
         } else {
           data.xy = [this.ll.lng, this.ll.lat];
         }
@@ -126,6 +130,9 @@
 
       edit : function(mark) {
         this._reset();
+
+        this.ebEmit('ui-mark-edit-start', mark);
+
         this.editMode = true;
         this.editMark = mark;
         
@@ -136,10 +143,6 @@
 
         if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
         else this.$.spirit.edit(mark.data);
-
-        if( this.userState && mark.data.user === this.userState.user.uid ) {
-          this.$.delete.style.display = 'block';
-        }
       },
 
       create : function(ll) {
