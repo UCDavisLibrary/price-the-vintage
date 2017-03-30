@@ -36452,6 +36452,15 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     for( var key in this.marks ) {
       if( this.mapMarkers[key] ) continue;
       this.mapMarkers[key] = this._drawMark(this.marks[key]);
+
+      if( this.currentState.editMarkId ) {
+        if( this.currentState.editMarkId === key) {
+          this.$.priceItem.edit(this.marks[key]);
+          this._selectMarker(this.mapMarkers[key], key);
+        } else if( this.mapMarkers[key] ) {
+          this.mapMarkers[key]._icon.style.display = 'none';
+        }
+      }
     }
 
     // hack
@@ -36644,6 +36653,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             this._removeMark(e.id);
             return false;
           }
+
+          
 
           this.marks[e.id] = e;
 
@@ -37119,7 +37130,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       resp : {
         event : 'catalog-page-marks-update',
         handle : function(e) {
-          return (this.mark.id === e.id);
+          return (this.mark.id === e.id && e.state === 'loaded');
         },
         handler : function(e) {
           this.show(e);

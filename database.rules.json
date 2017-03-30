@@ -28,6 +28,7 @@
         }
       },
       "pending-marks" : {
+        ".indexOn": ["updated"],
         ".read" : "true"
       },
       "pages" : {
