@@ -143,6 +143,16 @@
           } else {
             this.mapMarkers[e.id] = this._drawMark(e);
           }
+
+          if( this.currentState.editMarkId ) {
+            if( this.currentState.editMarkId === e.id ) {
+              this.$.priceItem.edit(this.marks[this.currentState.editMarkId]);
+              this._selectMarker(this.mapMarkers[this.currentState.editMarkId], this.currentState.editMarkId);
+            } else {
+              debugger;
+              this.mapMarkers[e.id]._icon.style.display = 'none';
+            }
+          }
         }
       }
     }
@@ -344,10 +354,12 @@
           }
           this.addMarker = null;
           this._removeTmpMark();
+          this._selectMarker();
 
         // the draw tool has fired a create mark event.  This marker has
         // been set as pendingLayer
-        } else if( this.pendingLayer ) {
+      } else if( this.pendingLayer ) {
+
           this._showHideControls(false);
           this.$.priceItem.create(this.pendingLayer._latlng);
           this.marksLayer.addLayer(this.pendingLayer);
@@ -356,9 +368,14 @@
           this.pendingLayer = null;
 
         // user has clicked a mark to edit
-        } else if( this.pendingEdit ) {
+        } else if( state.editMarkId ) {
+
           this._showHideControls(false);
-          this.pendingEdit = false;
+
+          if( this.marks[state.editMarkId] ) {
+            this.$.priceItem.edit(this.marks[state.editMarkId]);
+            this._selectMarker(this.mapMarkers[state.editMarkId], state.editMarkId);
+          }
 
         // there is a /edit stub in url, but no action required (proly refresh),
         // set to normal (non-edit) mode;
@@ -397,11 +414,7 @@
           if( mark.data.isTemp ) {
             return alert('User is currently creating new mark.');
           }
-
-          this.$.priceItem.edit(mark);
-          this._selectMarker(marker);
-          this.pendingEdit = true;
-          window.location.hash = this.catalogId + '/' + this.selected + '/edit';
+          window.location.hash = this.catalogId + '/' + this.selected + '/edit/' + mark.id;
         }.bind(this));
 
         marker.addTo(this.marksLayer);
@@ -409,7 +422,7 @@
         return marker;
       },
 
-      _selectMarker : function(marker) {
+      _selectMarker : function(marker, id) {
         if( this.selectedMarker && this.selectedMarker._icon ) {
           this.selectedMarker._icon.firstChild.style.border = 'none';
         }
@@ -417,6 +430,24 @@
         this.selectedMarker = marker;
         if( marker ) {
           this.selectedMarker._icon.firstChild.style.border = '2px solid #FF9800';
+        }
+
+        if( marker ) {
+          for( var key in this.mapMarkers ) {
+            if( !this.mapMarkers[key] ) continue;
+
+            if( key === id ) {
+              this.mapMarkers[key]._icon.style.display = 'block';
+            } else {
+              this.mapMarkers[key]._icon.style.display = 'none';
+            }
+          }
+        } else {
+          for( var key in this.mapMarkers ) {
+            if( !this.mapMarkers[key] ) continue;
+
+            this.mapMarkers[key]._icon.style.display = 'block';
+          }
         }
       },
 

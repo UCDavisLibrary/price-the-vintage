@@ -137,7 +137,8 @@ Parses URL on hash change and sets appState.
           section : 'list',
           catalog : '',
           page : '',
-          edit : false
+          edit : false,
+          editMarkId : ''
         }
 
         // split up the hash state
@@ -159,7 +160,8 @@ Parses URL on hash change and sets appState.
         this.ebEmit('update-app-state', {
           state: {
             section: this.route.section,
-            editingMark: this.route.edit
+            editingMark: this.route.edit,
+            editMarkId : this.route.editMarkId
           }
         });
 
@@ -190,6 +192,12 @@ Parses URL on hash change and sets appState.
             break;
           case 2:
             if( value === 'edit') this.route.edit = true;
+            break;
+          case 3:
+            if( this.route.edit ) {
+              this.route.editMarkId = value;
+            }
+            break;
         }
       }
       

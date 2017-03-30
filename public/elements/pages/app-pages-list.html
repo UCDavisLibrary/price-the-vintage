@@ -124,10 +124,11 @@
         this.toggleState(e.state, 'loading-state');
         if( e.state !== 'loaded' ) return;
 
-        var page = e.payload.data[0];
+        // var page = e.payload.data[0];
+        var page = e.payload[0];
         window.location.hash = this.catalogId+'/'+page.id;
 
-        this.pages = e.payload.data;
+        this.pages = e.payload;
         this._updateListSize();
       },
 
