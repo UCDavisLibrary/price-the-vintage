@@ -2,7 +2,7 @@ var admin = require('firebase-admin');
 var firebaseWrapper = require('app/firebase');
 var redux = require('app/redux/store');
 var config = require('app/config').firebase;
-var serviceAccount = require('app/config/ucd-library-apps-firebase-adminsdk-vrtjx-8eef33af91');
+var serviceAccount = require('app/config/price-the-vintage-firebase-adminsdk');
 
 /**
  * Inject admin firebase in place of client (Oauth) verion

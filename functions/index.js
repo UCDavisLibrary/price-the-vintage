@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 
 admin.initializeApp(functions.config().firebase);
 
-exports.updatePageMarkCount = functions.database.ref('/price-the-vintage/marks/{pageId}/{markId}')
+exports.updatePageMarkCount = functions.database.ref('/marks/{pageId}/{markId}')
     .onWrite(event => {
 
       var response = new Promise((resolve, reject) => {
@@ -27,14 +27,14 @@ exports.updatePageMarkCount = functions.database.ref('/price-the-vintage/marks/{
 
             admin
               .database()
-              .ref(`/price-the-vintage/pages/${event.params.pageId}/markCount`)
+              .ref(`/pages/${event.params.pageId}/markCount`)
               .set(count)
               .then(() => {
                 // mark has been deleted
                 if( !mark ) {
                   admin
                     .database()
-                    .ref(`/price-the-vintage/pending-marks/${event.params.markId}`)
+                    .ref(`/pending-marks/${event.params.markId}`)
                     .set(null)
                     .then(resolve)
                     .catch(reject);
@@ -64,13 +64,13 @@ function bookkeeping(mark, oldMark, params, resolve, reject) {
 
     admin
       .database()
-      .ref(`/price-the-vintage/users/${mark.user}/marks/${params.markId}`)
+      .ref(`/users/${mark.user}/marks/${params.markId}`)
       .set(search)
       .then((snapshot) => {
 
         admin
           .database()
-          .ref(`/price-the-vintage/pending-marks/${params.markId}`)
+          .ref(`/pending-marks/${params.markId}`)
           .set(search)
           .then((snapshot) => {
             resolve();
@@ -108,7 +108,7 @@ function getScore(mark, oldMark, params, callback) {
 
   admin
     .database()
-    .ref(`/price-the-vintage/users/${newVoteUser}/scoreFactor`)
+    .ref(`/users/${newVoteUser}/scoreFactor`)
     .once('value')
     .then((snapshot) => {
       var scoreFactor = snapshot.val() || 1;
@@ -117,7 +117,7 @@ function getScore(mark, oldMark, params, callback) {
       // save the users score factor with the mark
       admin
         .database()
-        .ref(`/price-the-vintage/marks/${params.pageId}/${params.markId}/votes/${newVoteUser}/factor`)
+        .ref(`/marks/${params.pageId}/${params.markId}/votes/${newVoteUser}/factor`)
         .set(scoreFactor)
         .then(() => {
           callback(calcScore(currentVotes));

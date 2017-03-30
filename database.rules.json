@@ -2,58 +2,56 @@
   "rules": {
     ".read": "false",
     ".write": "false",
-    
-    "price-the-vintage" : {
-      "activity" : {
-        "$resourceid" : {
-          ".read" : "true",
-          "$userid" : {
-            ".validate": "newData.isNumber()",
-            ".write" : "$userid === auth.uid"
-          }
-        }
-      },
-      "marks" : {
-        "$pageid" : {
-          ".read" : "true",
-          "$markid" : {
-            ".write" : "!data.exists() || data.child('user').val() === auth.uid || auth.token.isAdmin === true",
-            "votes" : {
-              "$userid" : {
-                ".write" : "$userid === auth.uid",
-                ".validate" : "newData.child('type').isString() && !newData.child('factor').exists() "
-              }
-            }
-          }
-        }
-      },
-      "pending-marks" : {
-        ".indexOn": ["updated"],
-        ".read" : "true"
-      },
-      "pages" : {
-        "$pageid" : {
-          ".read" : "true"
-        }
-      },
-      "users" : {
+
+    "activity" : {
+      "$resourceid" : {
+        ".read" : "true",
         "$userid" : {
-          "activity" : {
-            ".read" : "$userid === auth.uid",
-            "$resourceid" : {
+          ".validate": "newData.isNumber()",
+          ".write" : "$userid === auth.uid"
+        }
+      }
+    },
+    "marks" : {
+      "$pageid" : {
+        ".read" : "true",
+        "$markid" : {
+          ".write" : "!data.exists() || data.child('user').val() === auth.uid || auth.token.isAdmin === true",
+          "votes" : {
+            "$userid" : {
               ".write" : "$userid === auth.uid",
-              ".validate": "newData.isNumber()"
-            }
-          },
-          "tempMarks" : {
-            ".read" : "$userid === auth.uid",
-            "$resourceid" : {
-              ".write" : "$userid === auth.uid"
+              ".validate" : "newData.child('type').isString() && !newData.child('factor').exists() "
             }
           }
         }
       }
+    },
+    "pending-marks" : {
+      ".indexOn": ["updated"],
+      ".read" : "true"
+    },
+    "pages" : {
+      "$pageid" : {
+        ".read" : "true"
+      }
+    },
+    "users" : {
+      "$userid" : {
+        "activity" : {
+          ".read" : "$userid === auth.uid",
+          "$resourceid" : {
+            ".write" : "$userid === auth.uid",
+            ".validate": "newData.isNumber()"
+          }
+        },
+        "tempMarks" : {
+          ".read" : "$userid === auth.uid",
+          "$resourceid" : {
+            ".write" : "$userid === auth.uid"
+          }
+        }
+      }
     }
-    
+
   }
 }
