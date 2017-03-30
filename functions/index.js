@@ -31,7 +31,15 @@ exports.updatePageMarkCount = functions.database.ref('/price-the-vintage/marks/{
               .set(count)
               .then(() => {
                 // mark has been deleted
-                if( !mark ) return resolve();
+                if( !mark ) {
+                  admin
+                    .database()
+                    .ref(`/price-the-vintage/pending-marks/${event.params.markId}`)
+                    .set(null)
+                    .then(resolve)
+                    .catch(reject);
+                  return;
+                }
 
                 bookkeeping(mark, oldMark, event.params, resolve, reject);
               })

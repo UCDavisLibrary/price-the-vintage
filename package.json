@@ -24,6 +24,7 @@
   "devDependencies": {
     "bulkify": "^1.4.2",
     "mocha": "^3.2.0",
+    "vulcanize": "^1.15.4",
     "watchify": "^3.9.0"
   }
 }

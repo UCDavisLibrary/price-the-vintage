@@ -132,6 +132,8 @@
             return false;
           }
 
+          
+
           this.marks[e.id] = e;
 
           if( this.mapMarkers[e.id] ) {
@@ -148,8 +150,7 @@
             if( this.currentState.editMarkId === e.id ) {
               this.$.priceItem.edit(this.marks[this.currentState.editMarkId]);
               this._selectMarker(this.mapMarkers[this.currentState.editMarkId], this.currentState.editMarkId);
-            } else {
-              debugger;
+            } else if( this.mapMarkers[e.id] ) {
               this.mapMarkers[e.id]._icon.style.display = 'none';
             }
           }

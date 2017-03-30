@@ -17,7 +17,7 @@
         "$pageid" : {
           ".read" : "true",
           "$markid" : {
-            ".write" : "!data.exists() || data.child('user').val() === auth.uid",
+            ".write" : "!data.exists() || data.child('user').val() === auth.uid || auth.token.isAdmin === true",
             "votes" : {
               "$userid" : {
                 ".write" : "$userid === auth.uid",

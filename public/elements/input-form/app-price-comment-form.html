@@ -101,7 +101,7 @@
       resp : {
         event : 'catalog-page-marks-update',
         handle : function(e) {
-          return (this.mark.id === e.id);
+          return (this.mark.id === e.id && e.state === 'loaded');
         },
         handler : function(e) {
           this.show(e);
