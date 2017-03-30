@@ -32,13 +32,7 @@ exports.updatePageMarkCount = functions.database.ref('/marks/{pageId}/{markId}')
               .then(() => {
                 // mark has been deleted
                 if( !mark ) {
-                  admin
-                    .database()
-                    .ref(`/pending-marks/${event.params.markId}`)
-                    .set(null)
-                    .then(resolve)
-                    .catch(reject);
-                  return;
+                  return removeMark(oldMark.user, event.params.markId, resolve, reject);
                 }
 
                 bookkeeping(mark, oldMark, event.params, resolve, reject);
@@ -50,6 +44,22 @@ exports.updatePageMarkCount = functions.database.ref('/marks/{pageId}/{markId}')
 
       return response;
     });
+
+function removeMark(userId, markId, resolve, reject) {
+  admin
+    .database()
+    .ref(`/users/${userId}/marks/${markId}`)
+    .set(null)
+    .then((snapshot) => {
+      admin
+        .database()
+        .ref(`/pending-marks/${markId}`)
+        .set(null)
+        .then(resolve)
+        .catch(reject);
+    })
+    .catch(reject);
+}
 
 function bookkeeping(mark, oldMark, params, resolve, reject) {
 
