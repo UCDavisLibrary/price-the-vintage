@@ -38083,19 +38083,53 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         border-radius: 10px;
         margin-right: 20px;
       }
+
+      #outer-input {
+        padding: 0 10px 0 5px;
+      }
+      #input {
+        display: block;
+        padding: 5px;
+        font-size: 22px;
+        width: 100%;
+        background: var(--dark-primary-color);
+        color: white;
+        border: 2px solid white;
+        border-radius: 4px;
+      }
+      #input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: white;
+      }
+      #input::-moz-placeholder { /* Firefox 19+ */
+        color: white;
+      }
+      #input:-ms-input-placeholder { /* IE 10+ */
+        color: white;
+      }
+      #input:-moz-placeholder { /* Firefox 18- */
+        color: white;
+      }
     </style>
 
     <div class="layout center">
+      <div hidden$="[[!searchBoxActive]]">
+        <iron-icon icon="search"></iron-icon>
+      </div>
       <div class="flex">
         
         <h2 hidden$="[[searchBoxActive]]">
           Price the Vintage
         </h2>
-        <paper-input id="input" always-float-label="" label="Search Catalogs" hidden$="[[!searchBoxActive]]" on-keyup="_search">
-        </paper-input>
+
+        <div id="outer-input" hidden$="[[!searchBoxActive]]">
+          <input id="input" on-keyup="_search" placeholder="Search Catalogs">
+        </div>
 
       </div>
-      <div>
+      <div hidden$="[[!searchBoxActive]]">
+        <paper-icon-button state="list" icon="close" on-click="_toggleSearch"></paper-icon-button>
+      </div>
+      <div hidden$="[[searchBoxActive]]">
         <paper-icon-button state="list" icon="search" on-click="_toggleSearch"></paper-icon-button>
       </div>
       <div>
@@ -38196,6 +38230,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _toggleSearch : function(){
         this.searchBoxActive = !this.searchBoxActive;
+
+        if( this.searchBoxActive ) {
+          this.$.input.focus();
+        }
 
         this.eventLoop.appState.req({
           state: {
