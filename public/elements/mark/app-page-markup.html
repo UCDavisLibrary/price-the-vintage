@@ -276,6 +276,7 @@
 
       _onSelectedCatalogPageUpdate : function(id) {
         if( this.selected ) this._removeTmpMark();
+        if( !id ) return;
 
         this.selected = id;
 

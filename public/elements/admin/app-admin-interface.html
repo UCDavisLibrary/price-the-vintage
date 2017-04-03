@@ -29,7 +29,20 @@
         },
         handler : function(e) {
           this.auth = e;
-          this._onAuthUpdate();
+          this._onUpdate();
+        }
+      }
+    }
+
+    var AppStateEventLoop = {
+      req : {
+        event : 'get-app-state'
+      },
+      resp : {
+        event : 'app-state-update',
+        handler : function(e) {
+          this.appState = e;
+          this._onUpdate();
         }
       }
     }
@@ -47,22 +60,27 @@
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
       eventLoops : {
-        authState : AuthStateEventLoop
+        authState : AuthStateEventLoop,
+        appState : AppStateEventLoop
       },
 
       ready : function() {
         this.eventLoop.authState.req();
+        this.eventLoop.appState.req();
       },
 
-      _onAuthUpdate : function() {
+      _onUpdate : function() {
+        this.debounce('_onUpdate', this._onUpdateAsync.bind(this), 100);
+      },
+
+      _onUpdateAsync : function() {
+        if( this.appState.section !== 'admin' ) return;
+
         if( this.auth.state === 'notLoggedIn' || !this.auth.user ) {
-          window.location = '/';
+          window.location.hash = '';
           return;
-        } else if( !this.auth.user.roles ) {
-          window.location = '/';
-          return;
-        } else if( this.auth.user.roles.indexOf('admin') === -1 ) {
-          window.location = '/';
+        } else if( !this.auth.user.isAdmin ) {
+          window.location.hash = '';
           return;
         }
       }

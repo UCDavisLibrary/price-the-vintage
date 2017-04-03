@@ -35045,6 +35045,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       <iron-pages selected="[[selectedSection]]" attr-for-selected="section" selected-attribute="active">
 
+        <app-admin-interface section="admin"></app-admin-interface>
         <app-catalogs-list section="list"></app-catalogs-list>
         <app-pages-list section="catalog"></app-pages-list>
         <app-page-markup section="page"></app-page-markup>
@@ -35071,6 +35072,16 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       }
     };
 
+    var AuthStateEventLoop = {
+      req : {event : 'get-auth-state'},
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.authState = e;
+        }
+      }
+    }
+
     Polymer({
       is: 'price-the-vintage',
 
@@ -35088,7 +35099,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
        * Setup event loop for application state
        **/
       eventLoops : {
-        appState : AppStateEventLoop
+        appState : AppStateEventLoop,
+        authState : AuthStateEventLoop
       },
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
@@ -35098,6 +35110,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         window.addEventListener('hashchange', this._setPageAndAppState.bind(this));
         // trigger update of app state on first load
         this._setPageAndAppState();
+
+        this.eventLoop.authState.req();
       },
 
       _isAuthRedirect : function() {
@@ -35185,6 +35199,22 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       _parseRoute : function(value, index) {
         switch(index) {
           case 0:
+            if( value === 'admin') {
+
+              if( this.authState ) {
+                if( this.authState.state === 'notLoggedIn' || !this.authState.user ) {
+                  window.location.hash = '';
+                  return;
+                } else if( !this.authState.user.isAdmin ) {
+                  window.location.hash = '';
+                  return;
+                }
+              }
+
+              this.route.section = 'admin';
+              return;
+            }
+
             this.route.section = 'catalog';
             this.route.catalog = value;
             this.ebEmit('select-catalog', {id: value});
@@ -37011,6 +37041,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _onSelectedCatalogPageUpdate : function(id) {
         if( this.selected ) this._removeTmpMark();
+        if( !id ) return;
 
         this.selected = id;
 
@@ -37058,7 +37089,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         var img = new Image();
         var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id;
 
-        if( this.currentImg == url ) return;
+        if( this.currentImg == url ) {
+          this.toggleState('loaded');
+          return;
+        }
 
         img.onload = function() {
           this.bounds = [
@@ -38801,7 +38835,32 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 })();
   </script>
 </dom-module>
-<dom-module id="app-header" assetpath="elements/header/">
+<dom-module id="app-header-admin" assetpath="elements/header/">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-icon-button {
+        color: white;
+      }
+    </style>
+
+    <div class="layout center">
+      <h2 class="flex">Admin Interface</h2>
+      <div>
+        <a href="#"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+      </div>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-header-admin',
+    });
+  </script>
+</dom-module><dom-module id="app-header" assetpath="elements/header/">
   <template>
     <style include="shared-styles"></style>
     <style>
@@ -38815,6 +38874,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
         <iron-pages selected="[[section]]" attr-for-selected="section">
 
+          <app-header-admin section="admin"></app-header-admin>
           <app-header-list section="list"></app-header-list>
           <app-header-catalogs section="catalog"></app-header-catalogs>
           <app-header-page section="page"></app-header-page>
@@ -38903,7 +38963,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
             <a on-click="_logout">Logout</a>
           </div>
-          <div hidden$="[[!isAdmin]]"><a href="/admin">Admin Interface</a></div>
+          <div hidden$="[[!isAdmin]]"><a href="/#admin">Admin Interface</a></div>
           <div hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></div>
         </div>
       </div>
@@ -39304,6 +39364,473 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
         this.$.badEmailPass.style.display =  error ? 'block' : 'none';
       }
+    });
+  </script>
+</dom-module>
+<dom-module id="app-admin-interface" assetpath="elements/admin/">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    
+
+    <iron-pages selected="{{selected}}" selected-attribute="active">
+      <app-review-marks page="reviewMarks"></app-review-marks>
+    </iron-pages>
+
+  </template>
+  <script>
+
+(function(){
+
+    var AuthStateEventLoop = {
+      req : {
+        event : 'get-auth-state'
+      },
+      resp : {
+        event : 'auth-update',
+        handle : function(e) {
+          if( e.state === 'pending' ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this.auth = e;
+          this._onUpdate();
+        }
+      }
+    }
+
+    var AppStateEventLoop = {
+      req : {
+        event : 'get-app-state'
+      },
+      resp : {
+        event : 'app-state-update',
+        handler : function(e) {
+          this.appState = e;
+          this._onUpdate();
+        }
+      }
+    }
+
+    Polymer({
+      is: 'app-admin-interface',
+
+      properties : {
+        selected : {
+          type : Number,
+          value : 0
+        }
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        authState : AuthStateEventLoop,
+        appState : AppStateEventLoop
+      },
+
+      ready : function() {
+        this.eventLoop.authState.req();
+        this.eventLoop.appState.req();
+      },
+
+      _onUpdate : function() {
+        this.debounce('_onUpdate', this._onUpdateAsync.bind(this), 100);
+      },
+
+      _onUpdateAsync : function() {
+        if( this.appState.section !== 'admin' ) return;
+
+        if( this.auth.state === 'notLoggedIn' || !this.auth.user ) {
+          window.location.hash = '';
+          return;
+        } else if( !this.auth.user.isAdmin ) {
+          window.location.hash = '';
+          return;
+        }
+      }
+
+    });
+
+})();
+  </script>
+</dom-module>
+<dom-module id="app-page-icon" assetpath="elements/admin/">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    test
+  </template>
+  <script>
+
+(function(){
+  
+    var GetPageEventLoop = {
+      req : {
+        event : 'get-page',
+        payload : function() {
+          return {id: this.pageId}
+        }
+      },
+
+      resp : {
+        event : 'catalog-page-update',
+        handle : function(e) {
+          if( e.state !== 'loaded' || e.id !== this.pageId ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this._renderImage(e);
+        }
+      }
+    };
+
+    Polymer({
+      is: 'app-page-icon',
+
+      properties : {
+        pageId : {
+          type : String,
+          value : '',
+          observer : '_render'
+        },
+        apiHost : {
+          type : String,
+          value : ''
+        },
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        getPage : GetPageEventLoop
+      },
+
+      ready : function() {
+        this._render();
+      },
+
+      _render : function() {
+        if( !this.pageId || !this.eventLoop ) return;
+        this.eventLoop.getPage.req();
+      },
+
+      _renderImage : function(e) {
+        this.page = e;
+        this.innerHTML = '<img src="'+this.apiHost+'/media?select=thumbnail_png&media_id=eq.'+this.page.payload.media_id+'" />';
+      }
+    });
+
+})();
+  </script>
+</dom-module>
+<dom-module id="app-review-marks" assetpath="elements/admin/">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <paper-material style="overflow-x:auto">
+      <app-datatable id="datatable" on-inspect="onInspect" on-approve="onApprove" loading="[[loading]]" header="[[header]]" data="[[marks]]">
+        <template>
+          <tr>
+            <td>
+              <app-page-icon api-host$="[[apiHost]]" page-id="[[item.pageId]]">
+              </app-page-icon>
+            </td>
+            <td>[[item.createdStr]]</td>
+            <td>[[item.updatedStr]]</td>
+            <td>[[item.score]]</td>
+            <td style="white-space:nowrap">
+              <paper-icon-button icon="create" trigger="inspect"></paper-icon-button>
+              <paper-icon-button icon="check" trigger="approve"></paper-icon-button>
+            </td>
+          </tr>
+        </template>
+      </app-datatable>
+    </paper-material>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-review-marks',
+
+      properties : {
+        active : {
+          type : Boolean,
+          value : false,
+          observer : '_onActive'
+        },
+        marks : {
+          type : Array,
+          value : []
+        },
+
+        loading : {
+          type : Boolean,
+          value : false
+        },
+
+        sort : {
+          type : String,
+          value : 'score'
+        },
+
+        /**
+         * The firebase pagging api is horrid.  You have to keep track of this
+         * id, to know where to start from.
+         **/
+        lastMarkId : {
+          type : String,
+          value : ''
+        },
+
+        hostApi : {
+          type : String,
+          value : ''
+        },
+
+        header : {
+          type : Array,
+          value : function() {
+            return ['Page', 'Created', 'Updated', 'Score', ''];
+          }
+        }
+      },
+
+      behaviors : [EventBusBehavior],
+      
+      ready : function() {
+        this._getApiHost();
+      },
+
+      _onActive : function() {
+        if( !this.active ) return;
+        this._getPendingMarks();
+      },
+
+      _getPendingMarks : function() {
+        this.loading = true;
+
+        this.ebEmit('get-pending-marks', {
+          handler : this._onMarksLoad.bind(this)
+        });
+      },
+
+      _onMarksLoad : function(err, marks) {
+        this.loading = false;
+
+        if( err ) {
+          this.marks = [];
+          console.error(err);
+          return alert('Failed to load user marks')
+        }
+
+        var arr = [];
+        for( var id in marks ) {
+          marks[id].id = id;
+          marks[id].createdStr = new Date(marks[id].created).toISOString();
+          marks[id].updatedStr = new Date(marks[id].updated).toISOString();
+          arr.push(marks[id]);
+        }
+
+        arr.sort(function(a, b){
+          if( a[this.sort] < b[this.sort] ) return 1;
+          if( a[this.sort] > b[this.sort] ) return 1;
+          return 0;
+        }.bind(this));
+
+        this.marks = arr;
+      },
+
+      _getApiHost : function() {
+        this.ebEmit('get-api-host', {
+          handler : function(host) {
+            this.apiHost = host;
+          }.bind(this)
+        });
+      },
+
+      onApprove : function(e) {
+        alert('Mark approved (not really)');
+      },
+
+      onInspect : function(e) {
+        var mark = e.detail.data;
+
+        this.ebEmit('get-page', {
+          id : mark.pageId,
+          handler : function(e) {
+            window.location = '/#'+e.payload.catalog_id+'/'+mark.pageId+'/edit/'+mark.id;
+          }
+        });
+      }
+
+      
+    });
+  </script>
+</dom-module>
+<dom-module id="app-datatable" assetpath="elements/admin/">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        margin-top: 15px;
+      }
+      :host([loading]) paper-progress {
+        display: block
+      }
+      paper-progress {
+        display: none;
+        width: 100%;
+      }
+      #noResults {
+        display : none;
+        padding: 20px;
+        font-size: 15px;
+        text-align: center;
+      }
+      #table {
+        width: 100%;
+      }
+    </style>
+
+    <paper-progress indeterminate=""></paper-progress>
+
+    <div id="noResults">
+      No Results
+    </div>
+
+    <table id="table">
+      <thead id="head"></thead>
+      <tbody id="body"></tbody>
+    </table>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-datatable',
+
+      behaviors : [Polymer.Templatizer],
+
+      properties : {
+        header : {
+          type : Array,
+          observer : 'render',
+          value : function() {
+            return [];
+          }
+        },
+        data : {
+          type : Array,
+          observer : 'render'
+        },
+        loading : {
+          type : Boolean,
+          value : false,
+          reflectToAttribute : true
+        }
+      },
+
+      observers: [
+        'render(data.*)',
+        'render(header.*)'
+      ],
+
+      ready : function() {
+        this.template = null;
+        this.timer = -1;
+      },
+
+      attached : function() {
+        this.template = Polymer.dom(this).querySelector('template');
+        Polymer.dom(this.root).appendChild(this.template);
+        this.templatize(this.template);
+      },
+
+      render : function() {
+        this.debounce('render', function(){
+          this._render();
+        }, 100);
+      },
+
+      _render : function() {
+        this.$.body.innerHTML = '';
+
+        if( !this.data ) return this.renderNoResults();
+        if( this.data.length === 0 ) return this.renderNoResults();
+
+        this.$.table.style.display = 'table';
+        this.$.noResults.style.display = 'none';
+
+        if( !this.template  ) {
+          return;
+        }
+
+        // render header
+        var row = document.createElement('tr');
+        var th;
+        for( var i = 0; i < this.header.length; i++ ) {
+          th = document.createElement('th');
+          th.innerHTML = this.header[i];
+          row.appendChild(th);
+        }
+        this.$.head.innerHTML = '';
+        Polymer.dom(this.$.head).appendChild(row);
+
+        if( !this.data ) return;
+        for( var i = 0; i < this.data.length; i++ ) {
+          this.renderRow(this.data[i], i);
+        }
+      },
+
+      renderNoResults : function() {
+        this.$.table.style.display = 'none';
+        this.$.noResults.style.display = 'block';
+      },
+
+      renderRow : function(data, index) {
+        var clone = this.stamp({item: data});
+
+        var actions = clone.root.querySelectorAll('[trigger]');
+        for( var i = 0; i < actions.length; i++ ) {
+          actions[i].addEventListener('click', function(e){
+            this.triggerActionEvent(e.currentTarget, data, index);
+          }.bind(this));
+        }
+
+        // HACK for styles
+        if( this.parentElement ) {
+          var eles = clone.root.querySelectorAll('*');
+          for( var i = 0; i < eles.length; i++ ) {
+            eles[i].classList.remove(this.parentElement.nodeName.toLowerCase());
+            eles[i].classList.add('style-scope');
+            eles[i].classList.add('app-datatable');
+          }
+        }
+
+        Polymer.dom(this.$.body).appendChild(clone.root);
+      },
+
+      triggerActionEvent : function(ele, data, index) {
+        this.fire(ele.getAttribute('trigger'),
+          {
+            element : ele,
+            data : data,
+            index : index
+          }
+        );
+      }
+
     });
   </script>
 </dom-module>

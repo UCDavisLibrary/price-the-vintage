@@ -54,7 +54,7 @@
             <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
             <a on-click="_logout">Logout</a>
           </div>
-          <div hidden$="[[!isAdmin]]"><a href="/admin">Admin Interface</a></div>
+          <div hidden$="[[!isAdmin]]"><a href="/#admin">Admin Interface</a></div>
           <div hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></div>
         </div>
       </div>

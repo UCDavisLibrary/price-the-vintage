@@ -42,6 +42,7 @@ Parses URL on hash change and sets appState.
         attr-for-selected="section" 
         selected-attribute="active">
 
+        <app-admin-interface section="admin"></app-admin-interface>
         <app-catalogs-list section="list"></app-catalogs-list>
         <app-pages-list section="catalog"></app-pages-list>
         <app-page-markup section="page"></app-page-markup>
@@ -68,6 +69,16 @@ Parses URL on hash change and sets appState.
       }
     };
 
+    var AuthStateEventLoop = {
+      req : {event : 'get-auth-state'},
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.authState = e;
+        }
+      }
+    }
+
     Polymer({
       is: 'price-the-vintage',
 
@@ -85,7 +96,8 @@ Parses URL on hash change and sets appState.
        * Setup event loop for application state
        **/
       eventLoops : {
-        appState : AppStateEventLoop
+        appState : AppStateEventLoop,
+        authState : AuthStateEventLoop
       },
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
@@ -95,6 +107,8 @@ Parses URL on hash change and sets appState.
         window.addEventListener('hashchange', this._setPageAndAppState.bind(this));
         // trigger update of app state on first load
         this._setPageAndAppState();
+
+        this.eventLoop.authState.req();
       },
 
       _isAuthRedirect : function() {
@@ -182,6 +196,22 @@ Parses URL on hash change and sets appState.
       _parseRoute : function(value, index) {
         switch(index) {
           case 0:
+            if( value === 'admin') {
+
+              if( this.authState ) {
+                if( this.authState.state === 'notLoggedIn' || !this.authState.user ) {
+                  window.location.hash = '';
+                  return;
+                } else if( !this.authState.user.isAdmin ) {
+                  window.location.hash = '';
+                  return;
+                }
+              }
+
+              this.route.section = 'admin';
+              return;
+            }
+
             this.route.section = 'catalog';
             this.route.catalog = value;
             this.ebEmit('select-catalog', {id: value});

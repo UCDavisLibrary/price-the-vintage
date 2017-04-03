@@ -1,0 +1,27 @@
+
+<dom-module id="app-header-admin">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-icon-button {
+        color: white;
+      }
+    </style>
+
+    <div class="layout center">
+      <h2 class="flex">Admin Interface</h2>
+      <div>
+        <a href="#"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+      </div>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-header-admin',
+    });
+  </script>
+</dom-module>

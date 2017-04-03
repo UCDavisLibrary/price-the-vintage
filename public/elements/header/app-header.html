@@ -2,6 +2,7 @@
 <link rel="import" href="app-header-catalogs.html">
 <link rel="import" href="app-header-page.html">
 <link rel="import" href="app-header-editing.html">
+<link rel="import" href="app-header-admin.html">
 
 <dom-module id="app-header">
   <template>
@@ -19,6 +20,7 @@
           selected="[[section]]" 
           attr-for-selected="section">
 
+          <app-header-admin section="admin"></app-header-admin>
           <app-header-list section="list"></app-header-list>
           <app-header-catalogs section="catalog"></app-header-catalogs>
           <app-header-page section="page"></app-header-page>
