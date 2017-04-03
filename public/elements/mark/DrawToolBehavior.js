@@ -70,6 +70,8 @@ var MarkBehavior = {
       }
     }
 
+    L.control.adminControl({ position: 'topright' }).addTo(this.map);
+
     // hack
     var controls = this.$.map.querySelectorAll('.leaflet-control, .leaflet-top, .leaflet-bottom');
     for( var i = 0; i < controls.length; i++ ) {
