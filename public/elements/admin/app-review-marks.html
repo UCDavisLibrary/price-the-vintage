@@ -2,11 +2,33 @@
 
 <dom-module id="app-review-marks">
   <template>
+    <style include="shared-styles"></style>
     <style>
       :host {
         display: block;
       }
+
+      paper-material {
+        margin: 15px;
+        background: white;
+      }
     </style>
+
+    <div style="padding: 15px">
+      <div class="layout bottom">
+        <h3 style="padding-right: 15px">Sort By:</h3>
+        <div class="flex">
+          <select id="sortInput" on-change="_getPendingMarks">
+            <option value="updated.desc">Updated Desc</option>
+            <option value="updated.asc">Updated Asc</option>
+            <option value="created.desc">Created Desc</option>
+            <option value="created.asc">Created Asc</option>
+            <option value="score.desc">Score Desc</option>
+            <option value="score.asc">Score Asc</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
     <paper-material style="overflow-x:auto">
       <app-datatable 
@@ -21,7 +43,7 @@
             <td>
               <app-page-icon 
                 api-host$="[[apiHost]]"
-                page-id="[[item.pageId]]">
+                page-id="[[item.page_id]]">
               </app-page-icon>
             </td>
             <td>[[item.createdStr]]</td>
@@ -86,6 +108,10 @@
 
       behaviors : [EventBusBehavior],
       
+      ebBind : {
+        'pending-mark-search-update' : '_onMarksLoad'
+      },
+
       ready : function() {
         this._getApiHost();
       },
@@ -98,33 +124,29 @@
       _getPendingMarks : function() {
         this.loading = true;
 
-        this.ebEmit('get-pending-marks', {
+        this.ebEmit('pending-mark-search', {
+          params : {
+            order : this.$.sortInput.value
+          },
           handler : this._onMarksLoad.bind(this)
         });
       },
 
-      _onMarksLoad : function(err, marks) {
+      _onMarksLoad : function(e) {
+        if( e.state === 'loading' ) return;
         this.loading = false;
 
-        if( err ) {
+        if( e.state == 'error' ) {
           this.marks = [];
-          console.error(err);
+          console.error(e);
           return alert('Failed to load user marks')
         }
 
-        var arr = [];
-        for( var id in marks ) {
-          marks[id].id = id;
-          marks[id].createdStr = new Date(marks[id].created).toISOString();
-          marks[id].updatedStr = new Date(marks[id].updated).toISOString();
-          arr.push(marks[id]);
-        }
-
-        arr.sort(function(a, b){
-          if( a[this.sort] < b[this.sort] ) return 1;
-          if( a[this.sort] > b[this.sort] ) return 1;
-          return 0;
-        }.bind(this));
+        var arr = e.payload;
+        arr.forEach((mark) => {
+          mark.createdStr = new Date(mark.created).toLocaleString();
+          mark.updatedStr = new Date(mark.updated).toLocaleString();
+        });
 
         this.marks = arr;
       },
@@ -145,9 +167,9 @@
         var mark = e.detail.data;
 
         this.ebEmit('get-page', {
-          id : mark.pageId,
+          id : mark.page_id,
           handler : function(e) {
-            window.location = '/#'+e.payload.catalog_id+'/'+mark.pageId+'/edit/'+mark.id;
+            window.location = '/#'+e.payload.catalog_id+'/'+mark.page_id+'/edit/'+mark.mark_id;
           }
         });
       }
