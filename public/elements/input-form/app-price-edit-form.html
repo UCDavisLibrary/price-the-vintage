@@ -85,7 +85,17 @@
       },
 
       _approve : function() {
-        alert('Mark approved.  (not really)');
+        this.ebEmit('admin-approve-mark', {
+          pageId : this.editMark.pageId,
+          markId : this.editMark.id,
+          handler : function(error, success) {
+            if( error ) {
+              console.error(error);
+              return alert('Failed to approve mark :(');
+            }
+            this.fire('cancel');
+          }.bind(this)
+        });
       },
 
       _delete : function() {

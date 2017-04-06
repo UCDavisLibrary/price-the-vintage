@@ -6,11 +6,8 @@
         display: block;
       }
     </style>
-    
 
-    <iron-pages selected="{{selected}}" selected-attribute="active">
-      <app-review-marks page="reviewMarks"></app-review-marks>
-    </iron-pages>
+    <app-review-marks page="reviewMarks" active$="[[active]]"></app-review-marks>
 
   </template>
   <script>
@@ -51,6 +48,10 @@
       is: 'app-admin-interface',
 
       properties : {
+        active : {
+          type : Boolean,
+          value : false,
+        },
         selected : {
           type : Number,
           value : 0

@@ -232,12 +232,15 @@
 
       ebBind : {
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'approved-catalog-page-marks-update' : '_onApprovedMarksUpdate'
       },
 
       ready : function() {
         this._getApi();
         
+        this.approvedMarks = {};
+
         this.eventLoop.authState.req();
         this.eventLoop.appState.req();
       },
@@ -398,6 +401,21 @@
         return false;
       },
 
+      _onApprovedMarksUpdate : function(e) {
+        if( e.state !== 'loaded' ) return;
+
+        e.payload.forEach(function(mark){
+          this.marks[mark.markId] = {
+            state : 'loaded',
+            pageId : mark.pageId,
+            id : mark.markId,
+            data : mark
+          };
+
+          this._drawMark(this.marks[mark.markId]);
+        }.bind(this));
+      },
+
       _drawMark : function(mark) {
         if( !this.marksLayer ) return null;
 
@@ -417,6 +435,7 @@
 
         marker.mark = mark;
         marker.on('click', function(){
+          if( mark.data.approved ) return;
           if( this.addMarker ) return alert('You must finish or cancel creating new mark.');
           if( mark.data.isTemp ) {
             return alert('User is currently creating new mark.');

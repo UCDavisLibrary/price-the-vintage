@@ -122,6 +122,7 @@
       },
 
       _getPendingMarks : function() {
+        if( !this.active ) return;
         this.loading = true;
 
         this.ebEmit('pending-mark-search', {
@@ -141,6 +142,8 @@
           console.error(e);
           return alert('Failed to load user marks')
         }
+
+        if( e.state !== 'loaded' ) return;
 
         var arr = e.payload;
         arr.forEach((mark) => {

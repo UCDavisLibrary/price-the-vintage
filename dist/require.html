@@ -36767,9 +36767,12 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
   _getMarkBtn : function(style, mark) {
     if( mark && mark.data.isTemp ) {
-      return '<app-icon-spinner icon="settings" spin style="'+style+'; padding: 8px"></app-icon-spinner>'
+      return '<app-icon-spinner icon="settings" spin style="'+style+'; padding: 8px"></app-icon-spinner>';
     }
-    // device:gps-fixed
+    if( mark && mark.data.approved ) {
+      return '<paper-icon-button icon="check" style="'+style+'"></paper-icon-button>';
+    }
+
     return '<paper-icon-button icon="device:gps-fixed" style="'+style+'"></paper-icon-button>';
   }
 }</script>
@@ -36997,12 +37000,15 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       ebBind : {
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'approved-catalog-page-marks-update' : '_onApprovedMarksUpdate'
       },
 
       ready : function() {
         this._getApi();
         
+        this.approvedMarks = {};
+
         this.eventLoop.authState.req();
         this.eventLoop.appState.req();
       },
@@ -37163,6 +37169,21 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         return false;
       },
 
+      _onApprovedMarksUpdate : function(e) {
+        if( e.state !== 'loaded' ) return;
+
+        e.payload.forEach(function(mark){
+          this.marks[mark.markId] = {
+            state : 'loaded',
+            pageId : mark.pageId,
+            id : mark.markId,
+            data : mark
+          };
+
+          this._drawMark(this.marks[mark.markId]);
+        }.bind(this));
+      },
+
       _drawMark : function(mark) {
         if( !this.marksLayer ) return null;
 
@@ -37182,6 +37203,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
         marker.mark = mark;
         marker.on('click', function(){
+          if( mark.data.approved ) return;
           if( this.addMarker ) return alert('You must finish or cancel creating new mark.');
           if( mark.data.isTemp ) {
             return alert('User is currently creating new mark.');
@@ -37586,7 +37608,17 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _approve : function() {
-        alert('Mark approved.  (not really)');
+        this.ebEmit('admin-approve-mark', {
+          pageId : this.editMark.pageId,
+          markId : this.editMark.id,
+          handler : function(error, success) {
+            if( error ) {
+              console.error(error);
+              return alert('Failed to approve mark :(');
+            }
+            this.fire('cancel');
+          }.bind(this)
+        });
       },
 
       _delete : function() {
@@ -39374,11 +39406,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         display: block;
       }
     </style>
-    
 
-    <iron-pages selected="{{selected}}" selected-attribute="active">
-      <app-review-marks page="reviewMarks"></app-review-marks>
-    </iron-pages>
+    <app-review-marks page="reviewMarks" active$="[[active]]"></app-review-marks>
 
   </template>
   <script>
@@ -39419,6 +39448,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       is: 'app-admin-interface',
 
       properties : {
+        active : {
+          type : Boolean,
+          value : false,
+        },
         selected : {
           type : Number,
           value : 0
@@ -39645,6 +39678,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _getPendingMarks : function() {
+        if( !this.active ) return;
         this.loading = true;
 
         this.ebEmit('pending-mark-search', {
@@ -39664,6 +39698,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           console.error(e);
           return alert('Failed to load user marks')
         }
+
+        if( e.state !== 'loaded' ) return;
 
         var arr = e.payload;
         arr.forEach((mark) => {
