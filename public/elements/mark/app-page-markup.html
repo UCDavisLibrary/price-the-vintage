@@ -404,7 +404,13 @@
       _onApprovedMarksUpdate : function(e) {
         if( e.state !== 'loaded' ) return;
 
+        // TODO: double check page id === selected
+
         e.payload.forEach(function(mark){
+          if( this.mamapMarkersrks[mark.markId] && this.marksLayer ) {
+            this.marksLayer.removeLayer(this.mapMarkers[id]);
+          }
+
           this.marks[mark.markId] = {
             state : 'loaded',
             pageId : mark.pageId,
@@ -412,7 +418,7 @@
             data : mark
           };
 
-          this._drawMark(this.marks[mark.markId]);
+          this.mapMarkers[id] = this._drawMark(this.marks[mark.markId]);
         }.bind(this));
       },
 
