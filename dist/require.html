@@ -34971,6 +34971,11 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       .grid-card-img {
         display: block;
         background-color: #ddd;
+        background-size: cover;
+        /*background-size: auto 200px; on day*/
+        background-position: center center;
+        background-repeat: no-repeat;
+        
         width: 118px;
         height: 148px;
       }
@@ -35245,6 +35250,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     <style include="shared-styles"></style>
     <style>
       :host {
+        cursor: pointer;
         display: block;
       }
 
@@ -35265,7 +35271,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         transition: transform 200ms linear, box-shadow 200ms linear;
       }
       paper-material:hover {
-        box-shadow: 0px -2px 15px #9C27B0;
+        box-shadow: 0px -1px 10px #9C27B0;
         transform: translateY(5px);
       }
 
@@ -35286,8 +35292,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       <div hidden$="[[loading]]">
         <div class="layout">
 
-          <iron-image class="grid-card-img" sizing="cover" src$="[[imgUrl]]" alt="Catalog Thumbnail Image">
-          </iron-image>
+          <div class="grid-card-img" id="img" alt="Catalog Thumbnail Image"></div>
+
+          <!--<iron-image 
+            class="grid-card-img"
+            sizing="cover"
+            src$="[[imgUrl]]" 
+            alt="Catalog Thumbnail Image">
+          </iron-image>-->
 
           <div class="flex">
 
@@ -35424,7 +35436,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         },
         imgUrl : {
           type : String,
-          computed : '_createImgUrl(apiHost, catalog)'
+          computed : '_createImgUrl(apiHost, catalog)',
+          observer : '_setImgUrl'
         },
         userCount : {
           type : Number,
@@ -35454,6 +35467,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _createImgUrl : function(apiHost, catalog) {
         return apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
+      },
+
+      _setImgUrl : function() {
+        this.$.img.style.backgroundImage = 'url('+this.imgUrl+')';
       },
 
       _onUpdate : function() {
@@ -37172,7 +37189,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       _onApprovedMarksUpdate : function(e) {
         if( e.state !== 'loaded' ) return;
 
+        // TODO: double check page id === selected
+
         e.payload.forEach(function(mark){
+          if( this.mamapMarkersrks[mark.markId] && this.marksLayer ) {
+            this.marksLayer.removeLayer(this.mapMarkers[id]);
+          }
+
           this.marks[mark.markId] = {
             state : 'loaded',
             pageId : mark.pageId,
@@ -37180,7 +37203,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             data : mark
           };
 
-          this._drawMark(this.marks[mark.markId]);
+          this.mapMarkers[id] = this._drawMark(this.marks[mark.markId]);
         }.bind(this));
       },
 
