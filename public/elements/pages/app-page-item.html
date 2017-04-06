@@ -87,7 +87,7 @@
         </div>
         <div class="flex"></div>
         <div hidden$="[[!showMarkCount]]">
-          <iron-icon icon="device:gps-fixed"></iron-icon> [[markCount]]
+          <iron-icon icon="check"></iron-icon> [[page.marks]]
         </div>
       </div>
 
@@ -151,8 +151,8 @@
       ebBind : {
         'user-activity-update' : '_onUserActivityUpdate',
         'interested-party-request' : '_onInterestedPartyRequest',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
-        'page-metadata-update' : '_onMetadataUpdate'
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+        // 'page-metadata-update' : '_onMetadataUpdate'
       },
 
       behaviors : [EventBusBehavior],
@@ -169,6 +169,8 @@
         if( !this.page ) return;
         if( !this.page.page_id ) return;
 
+        this.showMarkCount = (this.page.marks > 0);
+
         this.ebEmit('get-selected-catalog-page', {handler: this._onSelectedCatalogPageUpdate.bind(this)});
 
         this.debounce('_onUpdateAsync', function() {
@@ -184,24 +186,24 @@
           }.bind(this)
         });
 
-        this.ebEmit(
-          'get-page-metadata', 
-          {
-            id : this.page.page_id,
-            handler: this._onMetadataUpdate.bind(this)
-          }
-        );
+        // this.ebEmit(
+        //   'get-page-metadata', 
+        //   {
+        //     id : this.page.page_id,
+        //     handler: this._onMetadataUpdate.bind(this)
+        //   }
+        // );
       },
 
-      _onMetadataUpdate : function(e) {
-        if( e.state !== 'loaded' || e.id !== this.page.page_id ) return;
+      // _onMetadataUpdate : function(e) {
+      //   if( e.state !== 'loaded' || e.id !== this.page.page_id ) return;
 
-        this.metadata = e.payload || {};
-        this.markCount = this.metadata.markCount || 0;
+      //   this.metadata = e.payload || {};
+      //   this.markCount = this.metadata.markCount || 0;
 
-        if( this.markCount > 0 ) this.showMarkCount = true;
-        else this.showMarkCount = false;
-      },
+      //   if( this.markCount > 0 ) this.showMarkCount = true;
+      //   else this.showMarkCount = false;
+      // },
 
       _onSelectedCatalogPageUpdate : function(selectedPageId) {
         if( this.active && this.page && this.$.root ) {
@@ -221,16 +223,17 @@
             'interested-party-response',
             {
               id : this.page.page_id,
-              types : ['activity', 'pages']
+              types : ['activity']
+              // types : ['activity', 'pages']
             }
           );
-          this.ebEmit(
-            'interested-party-response',
-            {
-              id : this.page.page_id,
-              types : ['pages']
-            }
-          );
+          // this.ebEmit(
+          //   'interested-party-response',
+          //   {
+          //     id : this.page.page_id,
+          //     types : ['pages']
+          //   }
+          // );
         }
       },
 
