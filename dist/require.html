@@ -35863,7 +35863,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         color: white;
       }
 
-
       paper-material {
         transition: transform 200ms linear, box-shadow 200ms linear, border 200ms linear;
         border: 2px solid white;
@@ -35970,7 +35969,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         showDetails : {
           type : Boolean,
           value : false,
-          computed : '_showDetails(showUserCount, showMarkCount)'
+          computed : '_showDetails(showUserCount, showMarkCount, showNotEditable)'
         }
       },
 
@@ -35987,8 +35986,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         return apiHost + '/media?select=thumbnail_png&media_id=eq.' + page.media_id;
       },
 
-      _showDetails : function(showUserCount, showMarkCount) {
-        return showUserCount || showMarkCount;
+      _showDetails : function(showUserCount, showMarkCount, showNotEditable) {
+        return showUserCount || showMarkCount || showNotEditable;
       },
 
       _onUpdate : function() {
@@ -36720,10 +36719,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     this.drawToolOptions.draw.marker.icon = myIcon;
 
     this.drawControl = new L.Control.Draw(this.drawToolOptions);
-    this.map.addControl(this.drawControl);
 
-    this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
-    this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
+    if( this.selectedPage.editable ) {
+      this.map.addControl(this.drawControl);
+
+      this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
+      this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
+    }
 
     this.mapMarkers = {};
     for( var key in this.marks ) {
@@ -37287,6 +37289,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _renderMarkControls : function() {
         if( !this.drawControl ) return;
+        if( !this.drawControl._container ) return;
 
         if( !this.userState ) {
           return this.drawControl._container.style.display = 'none';
