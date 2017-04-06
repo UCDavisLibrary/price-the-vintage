@@ -37192,8 +37192,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         // TODO: double check page id === selected
 
         e.payload.forEach(function(mark){
-          if( this.mamapMarkersrks[mark.markId] && this.marksLayer ) {
-            this.marksLayer.removeLayer(this.mapMarkers[id]);
+          if( this.mapMarkers[mark.markId] && this.marksLayer ) {
+            this.marksLayer.removeLayer(this.mapMarkers[mark.markId]);
           }
 
           this.marks[mark.markId] = {
@@ -37203,7 +37203,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             data : mark
           };
 
-          this.mapMarkers[id] = this._drawMark(this.marks[mark.markId]);
+          this.mapMarkers[mark.markId] = this._drawMark(this.marks[mark.markId]);
         }.bind(this));
       },
 
