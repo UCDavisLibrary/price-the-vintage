@@ -50,10 +50,13 @@ var MarkBehavior = {
     this.drawToolOptions.draw.marker.icon = myIcon;
 
     this.drawControl = new L.Control.Draw(this.drawToolOptions);
-    this.map.addControl(this.drawControl);
 
-    this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
-    this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
+    if( this.selectedPage.editable ) {
+      this.map.addControl(this.drawControl);
+
+      this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
+      this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
+    }
 
     this.mapMarkers = {};
     for( var key in this.marks ) {

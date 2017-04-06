@@ -35908,6 +35908,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         <div hidden$="[[!showMarkCount]]">
           <iron-icon icon="check"></iron-icon> [[page.marks]]
         </div>
+        <div hidden$="[[!showNotEditable]]">
+          <iron-icon icon="block"></iron-icon>
+        </div>
       </div>
 
     </paper-material>
@@ -35951,6 +35954,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           type : Boolean,
           value : false
         },
+        showNotEditable : {
+          type : Boolean,
+          value : false
+        },
         
         markCount : {
           type : Number,
@@ -35988,7 +35995,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         if( !this.page ) return;
         if( !this.page.page_id ) return;
 
-        this.showMarkCount = (this.page.marks > 0);
+        if( !this.page.editable ) {
+          this.showMarkCount = false;
+          this.showNotEditable = true;
+        } else {
+          this.showNotEditable = false;
+          this.showMarkCount = (this.page.marks > 0);
+        }
+
 
         this.ebEmit('get-selected-catalog-page', {handler: this._onSelectedCatalogPageUpdate.bind(this)});
 
@@ -36541,7 +36555,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       </div>
       <div style="margin-top: 5px">
         <a class="btn" on-click="_setIgnore">
-          <iron-icon icon="notification:do-not-disturb"></iron-icon>
+          <iron-icon icon="block"></iron-icon>
         </a>
       </div>
     </div>

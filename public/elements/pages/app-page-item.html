@@ -39,7 +39,6 @@
         color: white;
       }
 
-
       paper-material {
         transition: transform 200ms linear, box-shadow 200ms linear, border 200ms linear;
         border: 2px solid white;
@@ -89,6 +88,9 @@
         <div hidden$="[[!showMarkCount]]">
           <iron-icon icon="check"></iron-icon> [[page.marks]]
         </div>
+        <div hidden$="[[!showNotEditable]]">
+          <iron-icon icon="block"></iron-icon>
+        </div>
       </div>
 
     </paper-material>
@@ -132,6 +134,10 @@
           type : Boolean,
           value : false
         },
+        showNotEditable : {
+          type : Boolean,
+          value : false
+        },
         
         markCount : {
           type : Number,
@@ -144,7 +150,7 @@
         showDetails : {
           type : Boolean,
           value : false,
-          computed : '_showDetails(showUserCount, showMarkCount)'
+          computed : '_showDetails(showUserCount, showMarkCount, showNotEditable)'
         }
       },
 
@@ -161,15 +167,22 @@
         return apiHost + '/media?select=thumbnail_png&media_id=eq.' + page.media_id;
       },
 
-      _showDetails : function(showUserCount, showMarkCount) {
-        return showUserCount || showMarkCount;
+      _showDetails : function(showUserCount, showMarkCount, showNotEditable) {
+        return showUserCount || showMarkCount || showNotEditable;
       },
 
       _onUpdate : function() {
         if( !this.page ) return;
         if( !this.page.page_id ) return;
 
-        this.showMarkCount = (this.page.marks > 0);
+        if( !this.page.editable ) {
+          this.showMarkCount = false;
+          this.showNotEditable = true;
+        } else {
+          this.showNotEditable = false;
+          this.showMarkCount = (this.page.marks > 0);
+        }
+
 
         this.ebEmit('get-selected-catalog-page', {handler: this._onSelectedCatalogPageUpdate.bind(this)});
 

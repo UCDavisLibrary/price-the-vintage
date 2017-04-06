@@ -485,6 +485,7 @@
 
       _renderMarkControls : function() {
         if( !this.drawControl ) return;
+        if( !this.drawControl._container ) return;
 
         if( !this.userState ) {
           return this.drawControl._container.style.display = 'none';
