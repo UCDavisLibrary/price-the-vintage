@@ -87,7 +87,7 @@ var MarkBehavior = {
       this.$.carousel.style.display = show ? 'block' : 'none';
     }
 
-    var ele = this.$.map.querySelector('.leaflet-control-container');
+    var ele = this.$.map.querySelector('.leaflet-top.leaflet-right');
     if( !ele ) return;
     ele.style.display = show ? 'block' : 'none';
   },
