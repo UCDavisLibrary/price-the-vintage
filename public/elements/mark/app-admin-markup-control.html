@@ -60,7 +60,7 @@
 
       <div class="buttons">
         <paper-button on-click="_hideIgnore">Cancel</paper-button>
-        <paper-button on-click="_hideIgnore">Ignore Page</paper-button>
+        <paper-button on-click="_toggleIgnore" id="ignoreBtn">Ignore Page</paper-button>
       </div>
     </paper-dialog>
 
@@ -100,6 +100,24 @@
       }
     };
 
+    var SelectedCatalogPageEventLoop = {
+      req : {
+        event: 'get-selected-catalog-page',
+      },
+      resp : {
+        event : 'selected-catalog-page-update',
+        handler : function(id) {
+          this.pageId = id;
+          if( !this.pageId ) return;
+
+          this.ebEmit('get-page', {
+            id : this.pageId,
+            handler : this._onPageUpdate.bind(this)
+          });
+        }
+      }
+    };
+
 
     Polymer({
       is: 'app-admin-markup-control',
@@ -113,8 +131,14 @@
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
+      ebBind : {
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'catalog-page-update' : '_onPageUpdate'
+      },
+
       eventLoops : {
-        authState : AuthStateEventLoop
+        authState : AuthStateEventLoop,
+        selectedPage : SelectedCatalogPageEventLoop
       },
 
       ready : function() {
@@ -125,6 +149,13 @@
         document.body.appendChild(this.$.ignorePopup);
 
         this.eventLoop.authState.req();
+        this.eventLoop.selectedPage.req();
+      },
+
+      _onPageUpdate : function(e) {
+        if( e.state !== 'loaded' ) return;
+        console.log(e);
+        this.page = e;
       },
 
       _setDone : function() {
@@ -136,11 +167,29 @@
       },
 
       _setIgnore : function() {
+        if( this.page.payload.editable ) {
+          this.$.ignoreBtn.innerHTML = 'Ignore Page';
+        } else {
+          this.$.ignoreBtn.innerHTML = 'Undo Ignore Page';
+        }
         this.$.ignorePopup.open();
       },
 
       _hideIgnore : function() {
         this.$.ignorePopup.close();
+      },
+
+      _toggleIgnore : function() {
+        this.ebEmit('admin-ignore-page', {
+          pageId : this.pageId,
+          ignore : this.page.payload.editable,
+          handler : this._onToggleIgnoreComplete.bind(this)
+        });
+      },
+
+      _onToggleIgnoreComplete : function(err, resp) {
+        if( err ) return alert('Failed to update page :(');
+        this._hideIgnore();
       }
     });
 })();

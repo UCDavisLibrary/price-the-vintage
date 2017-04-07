@@ -141,6 +141,13 @@
         this.style.display = 'block';
       },
 
+      view : function(mark) {
+        this.type = 'comment';
+        this.$.comment.show(mark, true);
+
+        this.style.display = 'block';
+      },
+
       create : function(ll) {
         this.type = 'edit';
         this.$.edit.create(ll);

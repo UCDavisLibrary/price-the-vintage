@@ -152,7 +152,8 @@ Parses URL on hash change and sets appState.
           catalog : '',
           page : '',
           edit : false,
-          editMarkId : ''
+          viewMark : false,
+          markId : ''
         }
 
         // split up the hash state
@@ -175,7 +176,8 @@ Parses URL on hash change and sets appState.
           state: {
             section: this.route.section,
             editingMark: this.route.edit,
-            editMarkId : this.route.editMarkId
+            viewingMark: this.route.viewMark,
+            markId : this.route.markId
           }
         });
 
@@ -222,10 +224,11 @@ Parses URL on hash change and sets appState.
             break;
           case 2:
             if( value === 'edit') this.route.edit = true;
+            else if( value === 'view') this.route.viewMark = true;
             break;
           case 3:
-            if( this.route.edit ) {
-              this.route.editMarkId = value;
+            if( this.route.edit || this.route.viewMark ) {
+              this.route.markId = value;
             }
             break;
         }

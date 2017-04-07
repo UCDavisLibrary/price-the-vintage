@@ -148,10 +148,9 @@
             this.mapMarkers[e.id] = this._drawMark(e);
           }
 
-          if( this.currentState.editMarkId ) {
-            if( this.currentState.editMarkId === e.id ) {
-              this.$.priceItem.edit(this.marks[this.currentState.editMarkId]);
-              this._selectMarker(this.mapMarkers[this.currentState.editMarkId], this.currentState.editMarkId);
+          if( this.currentState.markId ) {
+            if( this.currentState.markId === e.id ) {
+              this._selectAndShowPopup(e.id);
             } else if( this.mapMarkers[e.id] ) {
               this.mapMarkers[e.id]._icon.style.display = 'none';
             }
@@ -356,7 +355,7 @@
         if( !this.active ) return;
 
         // there is no /edit stub in url, set map mode to default
-        if( !state.editingMark ) {
+        if( !state.editingMark && !state.viewingMark ) {
           this._showHideControls(true);
           this.$.priceItem.hide();
           if( this.addMarker && this.marksLayer ) {
@@ -378,13 +377,10 @@
           this.pendingLayer = null;
 
         // user has clicked a mark to edit
-        } else if( state.editMarkId ) {
+        } else if( state.markId ) {
 
-          this._showHideControls(false);
-
-          if( this.marks[state.editMarkId] ) {
-            this.$.priceItem.edit(this.marks[state.editMarkId]);
-            this._selectMarker(this.mapMarkers[state.editMarkId], state.editMarkId);
+          if( this.marks[state.markId] ) {
+            this._selectAndShowPopup(state.markId);
           }
 
         // there is a /edit stub in url, but no action required (proly refresh),
@@ -422,6 +418,18 @@
         }.bind(this));
       },
 
+      _selectAndShowPopup : function(id) {
+        this._showHideControls(false);
+        
+        if( this.currentState.viewingMark ) {
+          this.$.priceItem.view(this.marks[id]);
+        } else {
+          this.$.priceItem.edit(this.marks[id]);
+        }
+        
+        this._selectMarker(this.mapMarkers[id], id);
+      },
+
       _drawMark : function(mark) {
         if( !this.marksLayer ) return null;
 
@@ -441,12 +449,16 @@
 
         marker.mark = mark;
         marker.on('click', function(){
-          if( mark.data.approved ) return;
           if( this.addMarker ) return alert('You must finish or cancel creating new mark.');
           if( mark.data.isTemp ) {
             return alert('User is currently creating new mark.');
           }
-          window.location.hash = this.catalogId + '/' + this.selected + '/edit/' + mark.id;
+
+          if( !mark.data.approved ) {
+            window.location.hash = this.catalogId + '/' + this.selected + '/edit/' + mark.id;
+          } else {
+            window.location.hash = this.catalogId + '/' + this.selected + '/view/' + mark.id;
+          }
         }.bind(this));
 
         marker.addTo(this.marksLayer);

@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <paper-input label="comment"></paper-input>
+    <!--<paper-input label="comment"></paper-input>-->
     
   </template>
   <script>
@@ -75,12 +75,7 @@
         event : 'auth-update',
         handler : function(e) {
           this.userState = e;
-
-          if( this.userState.user && this.userState.user.uid && !this.userState.user.isAnonymmous ) {
-            this.showVoting = true;
-          } else {
-            this.showVoting = false;
-          }
+          this._updateShowVoting();
         }
       }
     };
@@ -223,6 +218,19 @@
           } else if( this.userVote === 'down' ) {
             this.$.downVote.classList.add('voted');
           }
+        }
+
+        this._updateShowVoting();
+      },
+
+      _updateShowVoting : function() {
+        if( this.userState.user && 
+            this.userState.user.uid && 
+            !this.userState.user.isAnonymous &&
+            (this.mark && this.mark.data && !this.mark.data.approved ) ) {
+          this.showVoting = true;
+        } else {
+          this.showVoting = false;
         }
       }
     });

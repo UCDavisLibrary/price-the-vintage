@@ -68,18 +68,6 @@
         alt="Catalog Thumbnail Image">
       </iron-image>
 
-      <!--<div class="detail" hidden$="[[!showUserCount]]">
-        <span>
-          <iron-icon icon="social:group"></iron-icon> [[userCount]]
-        </span>
-      </div>
-
-      <div class="markDetail" hidden$="[[!showMarkCount]]">
-        <span>
-          <iron-icon icon="gps:fixed"></iron-icon> [[markCount]]
-        </span>
-      </div>-->
-
       <div class="layout center details" hidden$="[[!showDetails]]">
         <div hidden$="[[!showUserCount]]">
           <iron-icon icon="social:group"></iron-icon> [[userCount]]
@@ -157,8 +145,8 @@
       ebBind : {
         'user-activity-update' : '_onUserActivityUpdate',
         'interested-party-request' : '_onInterestedPartyRequest',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
-        // 'page-metadata-update' : '_onMetadataUpdate'
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'catalog-page-update' : '_onPageUpdate'
       },
 
       behaviors : [EventBusBehavior],
@@ -191,6 +179,14 @@
         }.bind(this), 50);
       },
 
+      _onPageUpdate : function(e) {
+        if( !this.page ) return;
+        if( !this.page.page_id ) return;
+        if( e.state === 'loaded' && this.page.page_id === e.id ) {
+          this.page = e.payload;
+        }
+      },
+
       _onUpdateAsync : function() {
         this.ebEmit('get-user-activity', {
           id : this.page.page_id,
@@ -198,25 +194,8 @@
             this._onUserActivityUpdate(e);
           }.bind(this)
         });
-
-        // this.ebEmit(
-        //   'get-page-metadata', 
-        //   {
-        //     id : this.page.page_id,
-        //     handler: this._onMetadataUpdate.bind(this)
-        //   }
-        // );
       },
 
-      // _onMetadataUpdate : function(e) {
-      //   if( e.state !== 'loaded' || e.id !== this.page.page_id ) return;
-
-      //   this.metadata = e.payload || {};
-      //   this.markCount = this.metadata.markCount || 0;
-
-      //   if( this.markCount > 0 ) this.showMarkCount = true;
-      //   else this.showMarkCount = false;
-      // },
 
       _onSelectedCatalogPageUpdate : function(selectedPageId) {
         if( this.active && this.page && this.$.root ) {
@@ -237,16 +216,8 @@
             {
               id : this.page.page_id,
               types : ['activity']
-              // types : ['activity', 'pages']
             }
           );
-          // this.ebEmit(
-          //   'interested-party-response',
-          //   {
-          //     id : this.page.page_id,
-          //     types : ['pages']
-          //   }
-          // );
         }
       },
 

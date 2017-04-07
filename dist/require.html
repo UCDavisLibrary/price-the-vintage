@@ -35160,7 +35160,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           catalog : '',
           page : '',
           edit : false,
-          editMarkId : ''
+          viewMark : false,
+          markId : ''
         }
 
         // split up the hash state
@@ -35183,7 +35184,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           state: {
             section: this.route.section,
             editingMark: this.route.edit,
-            editMarkId : this.route.editMarkId
+            viewingMark: this.route.viewMark,
+            markId : this.route.markId
           }
         });
 
@@ -35230,10 +35232,11 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             break;
           case 2:
             if( value === 'edit') this.route.edit = true;
+            else if( value === 'view') this.route.viewMark = true;
             break;
           case 3:
-            if( this.route.edit ) {
-              this.route.editMarkId = value;
+            if( this.route.edit || this.route.viewMark ) {
+              this.route.markId = value;
             }
             break;
         }
@@ -35887,18 +35890,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       <iron-image class="grid-item-img" style="padding:0" sizing="cover" src="[[imgUrl]]" alt="Catalog Thumbnail Image">
       </iron-image>
 
-      <!--<div class="detail" hidden$="[[!showUserCount]]">
-        <span>
-          <iron-icon icon="social:group"></iron-icon> [[userCount]]
-        </span>
-      </div>
-
-      <div class="markDetail" hidden$="[[!showMarkCount]]">
-        <span>
-          <iron-icon icon="gps:fixed"></iron-icon> [[markCount]]
-        </span>
-      </div>-->
-
       <div class="layout center details" hidden$="[[!showDetails]]">
         <div hidden$="[[!showUserCount]]">
           <iron-icon icon="social:group"></iron-icon> [[userCount]]
@@ -35976,8 +35967,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       ebBind : {
         'user-activity-update' : '_onUserActivityUpdate',
         'interested-party-request' : '_onInterestedPartyRequest',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
-        // 'page-metadata-update' : '_onMetadataUpdate'
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'catalog-page-update' : '_onPageUpdate'
       },
 
       behaviors : [EventBusBehavior],
@@ -36010,6 +36001,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         }.bind(this), 50);
       },
 
+      _onPageUpdate : function(e) {
+        if( !this.page ) return;
+        if( !this.page.page_id ) return;
+        if( e.state === 'loaded' && this.page.page_id === e.id ) {
+          this.page = e.payload;
+        }
+      },
+
       _onUpdateAsync : function() {
         this.ebEmit('get-user-activity', {
           id : this.page.page_id,
@@ -36017,25 +36016,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             this._onUserActivityUpdate(e);
           }.bind(this)
         });
-
-        // this.ebEmit(
-        //   'get-page-metadata', 
-        //   {
-        //     id : this.page.page_id,
-        //     handler: this._onMetadataUpdate.bind(this)
-        //   }
-        // );
       },
 
-      // _onMetadataUpdate : function(e) {
-      //   if( e.state !== 'loaded' || e.id !== this.page.page_id ) return;
-
-      //   this.metadata = e.payload || {};
-      //   this.markCount = this.metadata.markCount || 0;
-
-      //   if( this.markCount > 0 ) this.showMarkCount = true;
-      //   else this.showMarkCount = false;
-      // },
 
       _onSelectedCatalogPageUpdate : function(selectedPageId) {
         if( this.active && this.page && this.$.root ) {
@@ -36056,16 +36038,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             {
               id : this.page.page_id,
               types : ['activity']
-              // types : ['activity', 'pages']
             }
           );
-          // this.ebEmit(
-          //   'interested-party-response',
-          //   {
-          //     id : this.page.page_id,
-          //     types : ['pages']
-          //   }
-          // );
         }
       },
 
@@ -36581,7 +36555,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       <div class="buttons">
         <paper-button on-click="_hideIgnore">Cancel</paper-button>
-        <paper-button on-click="_hideIgnore">Ignore Page</paper-button>
+        <paper-button on-click="_toggleIgnore" id="ignoreBtn">Ignore Page</paper-button>
       </div>
     </paper-dialog>
 
@@ -36621,6 +36595,24 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       }
     };
 
+    var SelectedCatalogPageEventLoop = {
+      req : {
+        event: 'get-selected-catalog-page',
+      },
+      resp : {
+        event : 'selected-catalog-page-update',
+        handler : function(id) {
+          this.pageId = id;
+          if( !this.pageId ) return;
+
+          this.ebEmit('get-page', {
+            id : this.pageId,
+            handler : this._onPageUpdate.bind(this)
+          });
+        }
+      }
+    };
+
 
     Polymer({
       is: 'app-admin-markup-control',
@@ -36634,8 +36626,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
+      ebBind : {
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'catalog-page-update' : '_onPageUpdate'
+      },
+
       eventLoops : {
-        authState : AuthStateEventLoop
+        authState : AuthStateEventLoop,
+        selectedPage : SelectedCatalogPageEventLoop
       },
 
       ready : function() {
@@ -36646,6 +36644,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         document.body.appendChild(this.$.ignorePopup);
 
         this.eventLoop.authState.req();
+        this.eventLoop.selectedPage.req();
+      },
+
+      _onPageUpdate : function(e) {
+        if( e.state !== 'loaded' ) return;
+        console.log(e);
+        this.page = e;
       },
 
       _setDone : function() {
@@ -36657,11 +36662,29 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _setIgnore : function() {
+        if( this.page.payload.editable ) {
+          this.$.ignoreBtn.innerHTML = 'Ignore Page';
+        } else {
+          this.$.ignoreBtn.innerHTML = 'Undo Ignore Page';
+        }
         this.$.ignorePopup.open();
       },
 
       _hideIgnore : function() {
         this.$.ignorePopup.close();
+      },
+
+      _toggleIgnore : function() {
+        this.ebEmit('admin-ignore-page', {
+          pageId : this.pageId,
+          ignore : this.page.payload.editable,
+          handler : this._onToggleIgnoreComplete.bind(this)
+        });
+      },
+
+      _onToggleIgnoreComplete : function(err, resp) {
+        if( err ) return alert('Failed to update page :(');
+        this._hideIgnore();
       }
     });
 })();
@@ -36732,10 +36755,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       if( this.mapMarkers[key] ) continue;
       this.mapMarkers[key] = this._drawMark(this.marks[key]);
 
-      if( this.currentState.editMarkId ) {
-        if( this.currentState.editMarkId === key) {
-          this.$.priceItem.edit(this.marks[key]);
-          this._selectMarker(this.mapMarkers[key], key);
+      if( this.currentState.markId ) {
+        if( this.currentState.markId === key) {
+          this._selectAndShowPopup(key);
         } else if( this.mapMarkers[key] ) {
           this.mapMarkers[key]._icon.style.display = 'none';
         }
@@ -36952,10 +36974,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             this.mapMarkers[e.id] = this._drawMark(e);
           }
 
-          if( this.currentState.editMarkId ) {
-            if( this.currentState.editMarkId === e.id ) {
-              this.$.priceItem.edit(this.marks[this.currentState.editMarkId]);
-              this._selectMarker(this.mapMarkers[this.currentState.editMarkId], this.currentState.editMarkId);
+          if( this.currentState.markId ) {
+            if( this.currentState.markId === e.id ) {
+              this._selectAndShowPopup(e.id);
             } else if( this.mapMarkers[e.id] ) {
               this.mapMarkers[e.id]._icon.style.display = 'none';
             }
@@ -37160,7 +37181,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         if( !this.active ) return;
 
         // there is no /edit stub in url, set map mode to default
-        if( !state.editingMark ) {
+        if( !state.editingMark && !state.viewingMark ) {
           this._showHideControls(true);
           this.$.priceItem.hide();
           if( this.addMarker && this.marksLayer ) {
@@ -37182,13 +37203,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           this.pendingLayer = null;
 
         // user has clicked a mark to edit
-        } else if( state.editMarkId ) {
+        } else if( state.markId ) {
 
-          this._showHideControls(false);
-
-          if( this.marks[state.editMarkId] ) {
-            this.$.priceItem.edit(this.marks[state.editMarkId]);
-            this._selectMarker(this.mapMarkers[state.editMarkId], state.editMarkId);
+          if( this.marks[state.markId] ) {
+            this._selectAndShowPopup(state.markId);
           }
 
         // there is a /edit stub in url, but no action required (proly refresh),
@@ -37226,6 +37244,18 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         }.bind(this));
       },
 
+      _selectAndShowPopup : function(id) {
+        this._showHideControls(false);
+        
+        if( this.currentState.viewingMark ) {
+          this.$.priceItem.view(this.marks[id]);
+        } else {
+          this.$.priceItem.edit(this.marks[id]);
+        }
+        
+        this._selectMarker(this.mapMarkers[id], id);
+      },
+
       _drawMark : function(mark) {
         if( !this.marksLayer ) return null;
 
@@ -37245,12 +37275,16 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
         marker.mark = mark;
         marker.on('click', function(){
-          if( mark.data.approved ) return;
           if( this.addMarker ) return alert('You must finish or cancel creating new mark.');
           if( mark.data.isTemp ) {
             return alert('User is currently creating new mark.');
           }
-          window.location.hash = this.catalogId + '/' + this.selected + '/edit/' + mark.id;
+
+          if( !mark.data.approved ) {
+            window.location.hash = this.catalogId + '/' + this.selected + '/edit/' + mark.id;
+          } else {
+            window.location.hash = this.catalogId + '/' + this.selected + '/view/' + mark.id;
+          }
         }.bind(this));
 
         marker.addTo(this.marksLayer);
@@ -37403,7 +37437,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       </div>
     </div>
 
-    <paper-input label="comment"></paper-input>
+    <!--<paper-input label="comment"></paper-input>-->
     
   </template>
   <script>
@@ -37418,12 +37452,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         event : 'auth-update',
         handler : function(e) {
           this.userState = e;
-
-          if( this.userState.user && this.userState.user.uid && !this.userState.user.isAnonymmous ) {
-            this.showVoting = true;
-          } else {
-            this.showVoting = false;
-          }
+          this._updateShowVoting();
         }
       }
     };
@@ -37566,6 +37595,19 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           } else if( this.userVote === 'down' ) {
             this.$.downVote.classList.add('voted');
           }
+        }
+
+        this._updateShowVoting();
+      },
+
+      _updateShowVoting : function() {
+        if( this.userState.user && 
+            this.userState.user.uid && 
+            !this.userState.user.isAnonymous &&
+            (this.mark && this.mark.data && !this.mark.data.approved ) ) {
+          this.showVoting = true;
+        } else {
+          this.showVoting = false;
         }
       }
     });
@@ -38354,6 +38396,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this.style.display = 'block';
       },
 
+      view : function(mark) {
+        this.type = 'comment';
+        this.$.comment.show(mark, true);
+
+        this.style.display = 'block';
+      },
+
       create : function(ll) {
         this.type = 'edit';
         this.$.edit.create(ll);
@@ -38812,7 +38861,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
     <div class="layout center">
       <paper-icon-button icon="close" on-click="_cancelEdit"></paper-icon-button>
-      <h2 class="flex">Edit Mark</h2>
+      <h2 class="flex">[[title]]</h2>
       <div>
         <div id="icons">
           <paper-icon-button icon="check" on-click="_approve" hidden$="[[!userState.user.isAdmin]]">
@@ -38850,6 +38899,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           value : function() {
             return {};
           }
+        },
+        title : {
+          type : String,
+          value : ''
         }
       },
 
@@ -38863,11 +38916,20 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         'ui-mark-comment-start' : '_onComment',
         'ui-mark-edit-start' : '_onEdit',
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate'
+        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
+        'app-state-update' : '_onAppStateUpdate'
       },
 
       ready : function() {
         this.eventLoop.authState.req();
+      },
+
+      _onAppStateUpdate : function(e) {
+        if( e.editingMark ) {
+          this.title = 'Edit Mark';
+        } else if( e.viewingMark ) {
+          this.title = 'View Mark';
+        }
       },
 
       _onSelectedCatalogUpdate : function(id) {
@@ -38885,7 +38947,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       _onEdit : function(mark) {
         this.$.icons.style.display = 'block';
         this.$.delete.style.display = 'none';
-        if( this.userState.user && (mark.data.user === this.userState.user.uid || this.userState.user.isAdmin) ) {
+        if( this.userState.user && 
+            ( mark.data.user === this.userState.user.uid ||
+             this.userState.user.isAdmin) ) {
           this.$.delete.style.display = 'inline-block';
         }
       },
@@ -38947,7 +39011,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     <div class="layout center">
       <div class="flex">
 
-        <iron-pages selected="[[section]]" attr-for-selected="section">
+        <iron-pages selected="[[section]]" attr-for-selected="section" selected-attribute="active">
 
           <app-header-admin section="admin"></app-header-admin>
           <app-header-list section="list"></app-header-list>
@@ -38974,7 +39038,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _onAppStateUpdate : function(e) {
-        if( e.editingMark ) {
+        if( e.editingMark || e.viewingMark ) {
           this.section = 'editing';
         } else {
           this.section = e.section;

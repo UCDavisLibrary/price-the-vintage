@@ -63,10 +63,9 @@ var MarkBehavior = {
       if( this.mapMarkers[key] ) continue;
       this.mapMarkers[key] = this._drawMark(this.marks[key]);
 
-      if( this.currentState.editMarkId ) {
-        if( this.currentState.editMarkId === key) {
-          this.$.priceItem.edit(this.marks[key]);
-          this._selectMarker(this.mapMarkers[key], key);
+      if( this.currentState.markId ) {
+        if( this.currentState.markId === key) {
+          this._selectAndShowPopup(key);
         } else if( this.mapMarkers[key] ) {
           this.mapMarkers[key]._icon.style.display = 'none';
         }

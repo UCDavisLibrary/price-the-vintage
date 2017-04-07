@@ -18,7 +18,8 @@
 
         <iron-pages 
           selected="[[section]]" 
-          attr-for-selected="section">
+          attr-for-selected="section"
+          selected-attribute="active">
 
           <app-header-admin section="admin"></app-header-admin>
           <app-header-list section="list"></app-header-list>
@@ -45,7 +46,7 @@
       },
 
       _onAppStateUpdate : function(e) {
-        if( e.editingMark ) {
+        if( e.editingMark || e.viewingMark ) {
           this.section = 'editing';
         } else {
           this.section = e.section;
