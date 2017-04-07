@@ -5,7 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DIST=$DIR/dist
 APP=$DIR/public
 
-CP=("$APP/js" "$APP/images" "$APP/index.html" "$APP/manifest.json")
+CP=("$APP/js" "$APP/images" "$APP/silent-login.html" "$APP/index.html" "$APP/manifest.json")
 
 rm -rf $DIST
 mkdir $DIST

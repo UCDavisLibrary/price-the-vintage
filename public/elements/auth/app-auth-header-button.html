@@ -64,7 +64,7 @@
       <paper-icon-button on-click="_login" icon="power-settings-new"></paper-icon-button>
     </div>
 
-    <app-login-popup id="popup"></app-login-popup>
+
     
   </template>
   <script>
@@ -146,9 +146,6 @@
         }
       },
 
-      // _login : function() {
-      //   this.$.popup.show();
-      // },
       _login : function() {
         this.ebEmit('login-auth0');
       },
@@ -167,13 +164,6 @@
         this.isAdmin = false;
 
         if( this.auth.user ) {
-
-          if( this.auth.state === 'loggedIn' ) {
-            if( !this.auth.user.isAnonymous && !this.auth.user.emailVerified ){
-              this.$.popup.show();
-              this.$.popup.handleLogin(this.auth.user);
-            }
-          }
 
           if( this.auth.user.photoURL ) {
             this.photo = this.auth.user.photoURL;
