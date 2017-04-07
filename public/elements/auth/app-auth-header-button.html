@@ -174,7 +174,7 @@
             this.isAdmin = true;
           }
 
-          this.username = this.auth.user.email || 'Anonymous';
+          this.username = this.auth.user.name || this.auth.user.email || 'Anonymous';
         }
 
         this.toggleState(this.auth.state);

@@ -35114,7 +35114,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         // listen for has changes to update app state
         window.addEventListener('hashchange', this._setPageAndAppState.bind(this));
         // trigger update of app state on first load
-        this._setPageAndAppState();
+        this._setPageAndAppState(null, true);
 
         this.eventLoop.authState.req();
       },
@@ -35129,6 +35129,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
             this.ebEmit('continue-login-auth0', {hash : window.location.hash});
             return true;
+        } else {
+          this.ebEmit('init-auth-renew-auth0');
         }
         return false;
       },
@@ -35149,10 +35151,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
        * Set application state from url hash.  Cause the polymer app-route
        * still falls short in some areas and is a mess to implement. 
        **/
-      _setPageAndAppState : function() {
+      _setPageAndAppState : function(event, firstLoad) {
         // are we in the middle of auth0 redirect?
         // if so, ignore this.
-        if( this._isAuthRedirect() ) return;
+        if( firstLoad && this._isAuthRedirect() ) return;
 
         // default route information
         this.route = {
@@ -36627,7 +36629,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
       ebBind : {
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
         'catalog-page-update' : '_onPageUpdate'
       },
 
@@ -38449,7 +38450,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         color: black;
       }
 
-      paper-dialog img {
+      paper-dialog img[icon] {
         background: var(--default-primary-color);
         padding: 10px;
         border-radius: 10px;
@@ -38511,12 +38512,20 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
     <paper-dialog modal="" id="popup">
       <div class="layout center">
-        <img src="/images/wine-icon-32.png"> 
-        <h1>Price the Vintage</h1>
+        <img icon="" src="/images/wine-icon-32.png"> 
+        <div class="flex">
+        <h1>Price the Vintage <paper-icon-button style="float:right;margin-top: -15px;" on-click="_hideHelp" icon="close"></paper-icon-button></h1>
+        </div>
       </div>
+
       <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
       
       <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
+
+      <div style="text-align: center; padding: 25px 0;">
+        <h3>Powered By</h3>
+        <img src="/images/library.png" style="width:100%; max-width: 350px;">
+      </div>
 
       <div class="buttons">
         <paper-button on-click="_hideHelp">OK</paper-button>
@@ -38599,6 +38608,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      attached : function() {
+        if( !window.localStorage.getItem('first-viewing') ) {
+          this.$.popup.open();
+          window.localStorage.setItem('first-viewing', 'true');
+        } 
+      },
 
       _toggleSearch : function(){
         this.searchBoxActive = !this.searchBoxActive;
@@ -39221,7 +39237,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             this.isAdmin = true;
           }
 
-          this.username = this.auth.user.email || 'Anonymous';
+          this.username = this.auth.user.name || this.auth.user.email || 'Anonymous';
         }
 
         this.toggleState(this.auth.state);

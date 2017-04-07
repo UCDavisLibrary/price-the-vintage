@@ -32,7 +32,7 @@
         color: black;
       }
 
-      paper-dialog img {
+      paper-dialog img[icon] {
         background: var(--default-primary-color);
         padding: 10px;
         border-radius: 10px;
@@ -94,12 +94,20 @@
 
     <paper-dialog modal id="popup">
       <div class="layout center">
-        <img src="/images/wine-icon-32.png" /> 
-        <h1>Price the Vintage</h1>
+        <img icon src="/images/wine-icon-32.png" /> 
+        <div class="flex">
+        <h1>Price the Vintage <paper-icon-button style="float:right;margin-top: -15px;" on-click="_hideHelp" icon="close"></paper-icon-button></h1>
+        </div>
       </div>
+
       <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
       
       <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
+
+      <div style="text-align: center; padding: 25px 0;">
+        <h3>Powered By</h3>
+        <img src="/images/library.png" style="width:100%; max-width: 350px;" />
+      </div>
 
       <div class="buttons">
         <paper-button on-click="_hideHelp">OK</paper-button>
@@ -182,6 +190,13 @@
       },
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      attached : function() {
+        if( !window.localStorage.getItem('first-viewing') ) {
+          this.$.popup.open();
+          window.localStorage.setItem('first-viewing', 'true');
+        } 
+      },
 
       _toggleSearch : function(){
         this.searchBoxActive = !this.searchBoxActive;

@@ -106,7 +106,7 @@ Parses URL on hash change and sets appState.
         // listen for has changes to update app state
         window.addEventListener('hashchange', this._setPageAndAppState.bind(this));
         // trigger update of app state on first load
-        this._setPageAndAppState();
+        this._setPageAndAppState(null, true);
 
         this.eventLoop.authState.req();
       },
@@ -121,6 +121,8 @@ Parses URL on hash change and sets appState.
 
             this.ebEmit('continue-login-auth0', {hash : window.location.hash});
             return true;
+        } else {
+          this.ebEmit('init-auth-renew-auth0');
         }
         return false;
       },
@@ -141,10 +143,10 @@ Parses URL on hash change and sets appState.
        * Set application state from url hash.  Cause the polymer app-route
        * still falls short in some areas and is a mess to implement. 
        **/
-      _setPageAndAppState : function() {
+      _setPageAndAppState : function(event, firstLoad) {
         // are we in the middle of auth0 redirect?
         // if so, ignore this.
-        if( this._isAuthRedirect() ) return;
+        if( firstLoad && this._isAuthRedirect() ) return;
 
         // default route information
         this.route = {
