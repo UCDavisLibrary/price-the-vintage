@@ -233,9 +233,10 @@
       },
 
       _onUpdate : function() {
-        if( !this.catalog ) return;
+        
 
         this.getEventLoop().userActivity.req();
+        if( !this.catalog ) return;
         this.percentComplete = this.catalog.pages_finished+' / '+this.catalog.pages;
       },
 

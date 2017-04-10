@@ -35485,9 +35485,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _onUpdate : function() {
-        if( !this.catalog ) return;
+        
 
         this.getEventLoop().userActivity.req();
+        if( !this.catalog ) return;
         this.percentComplete = this.catalog.pages_finished+' / '+this.catalog.pages;
       },
 
@@ -36539,16 +36540,23 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         height: 22px;
         color: #333;
       }
+      .btn[marked] {
+        background-color: var(--default-primary-color);
+        border: 2px solid rgba(255,255,255,255.2);
+      }
+      .btn[marked] iron-icon {
+        color: white;
+      }
     </style>
     
     <div hidden$="[[!show]]">
       <div>
-        <a class="btn" on-click="_toggleDone">
+        <a class="btn" on-click="_toggleDone" marked$="[[isCompleted]]">
           <iron-icon icon="done-all"></iron-icon>
         </a>
       </div>
       <div style="margin-top: 5px">
-        <a class="btn" on-click="_toggleIgnore">
+        <a class="btn" on-click="_toggleIgnore" marked$="[[!isEditable]]">
           <iron-icon icon="block"></iron-icon>
         </a>
       </div>
@@ -36616,6 +36624,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         show : {
           type : Boolean,
           value : false
+        },
+        isEditable : {
+          type : Boolean,
+          value : true
+        },
+        isCompleted : {
+          type : Boolean,
+          value : false
         }
       },
 
@@ -36638,6 +36654,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       _onPageUpdate : function(e) {
         if( e.state !== 'loaded' ) return;
         this.page = e;
+
+        this.isEditable = this.page.payload.editable;
+        this.isCompleted = this.page.payload.completed;
       },
 
       _toggleDone : function() {
