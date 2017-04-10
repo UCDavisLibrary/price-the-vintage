@@ -145,7 +145,7 @@
         showDetails : {
           type : Boolean,
           value : false,
-          computed : '_showDetails(showUserCount, showMarkCount, showNotEditable)'
+          computed : '_showDetails(showUserCount, showMarkCount, showNotEditable, showCompleted)'
         }
       },
 
@@ -162,8 +162,8 @@
         return apiHost + '/media?select=thumbnail_png&media_id=eq.' + page.media_id;
       },
 
-      _showDetails : function(showUserCount, showMarkCount, showNotEditable) {
-        return showUserCount || showMarkCount || showNotEditable;
+      _showDetails : function(showUserCount, showMarkCount, showNotEditable, showCompleted) {
+        return showUserCount || showMarkCount || showNotEditable || showCompleted;
       },
 
       _onUpdate : function() {

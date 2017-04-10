@@ -51,20 +51,20 @@
 
           <div class="grid-card-img" id="img" alt="Catalog Thumbnail Image"></div>
 
-          <div class="flex">
+          <div class="flex" style="position: relative">
             <h3>[[catalog.title]]</h3>
 
             <div class="align-bottom">
               <div class="layout">
                 <div class="flex">
                   <span hidden$="[[!showUserCount]]">
-                    <iron-icon icon="social:group"></iron-icon> [[userCount]]
+                    <iron-icon icon="social:group"></iron-icon>
+                    <span class="light">[[userCount]]</span>
                   </span>
                 </div>
                 <div style="text-align: right">
                   <iron-icon icon="done-all"></iron-icon>
                   <span class="light">[[percentComplete]]</span>
-                  
                 </div>
               </div>
             </div>
