@@ -1,0 +1,159 @@
+
+<dom-module id="app-page-admin-mark-icon">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 200px;
+        width: 400px;
+      }
+
+      .overflow {
+        height: 200px;
+        width: 400px;
+        overflow: auto;
+      }
+
+      #img {
+        position: relative;
+        height: 200px;
+        width: 800px;
+      }
+
+      #mark {
+        background: red;
+        opacity: .8;
+        box-shadow: 0 0 2px black;
+        width: 12px;
+        height: 12px;
+        border-radius: 12px;
+        top: 14px;
+        left: 14px;
+        position: absolute;
+      }
+    </style>
+
+    <div class="overflow">
+      <div id="img">
+        <div id="mark"></div>
+      </div>
+    </div>
+
+  </template>
+  <script>
+
+(function(){
+  
+    var GetPageEventLoop = {
+      req : {
+        event : 'get-page',
+        payload : function() {
+          return {id: this.mark.page_id}
+        }
+      },
+
+      resp : {
+        event : 'catalog-page-update',
+        handle : function(e) {
+          if( e.state !== 'loaded' || e.id !== this.mark.page_id ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this._renderImage(e);
+        },
+        debounce : 100
+      }
+    };
+
+    var GetMarkEventLoop = {
+      req : {
+        event : 'get-catalog-page-mark',
+        payload : function() {
+          return {
+            markId: this.mark.mark_id,
+            pageId: this.mark.page_id,
+          }
+        }
+      },
+
+      resp : {
+        event : 'catalog-page-marks-update',
+        handle : function(e) {
+          if( e.state !== 'loaded' || e.id !== this.mark.mark_id ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this._markReady(e);
+        },
+        debounce : 100
+      }
+    };
+
+    Polymer({
+      is: 'app-page-admin-mark-icon',
+
+      properties : {
+        mark : {
+          type : Object,
+          observer : '_render',
+          value : function() {
+            return {};
+          }
+        },
+        apiHost : {
+          type : String,
+          value : ''
+        },
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        getPage : GetPageEventLoop,
+        getMark : GetMarkEventLoop
+      },
+
+      ready : function() {
+        this._render();
+      },
+
+      _render : function() {
+        if( !this.mark || !this.eventLoop ) return;
+        this.imgHeight = -1;
+        this.marker = null;
+
+        this.eventLoop.getPage.req();
+        this.eventLoop.getMark.req();
+      },
+
+      _markReady : function(e) {
+        this.marker = e;
+        this._setPosition();
+      },
+
+      _setPosition : function() {
+        if( this.imgHeight !== -1 && this.marker ) {
+          var x = (-1*this.marker.data.xy[0]+20)+'px ';
+          var y = (-1*(this.imgHeight - this.marker.data.xy[1])+20)+'px';
+          this.$.img.style.backgroundPosition = x+y;
+        }
+      },
+
+      _renderImage : function(e) {
+        this.page = e;
+
+        var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.page.payload.media_id;
+        var img = new Image();
+        img.onload = function() {
+          this.imgHeight = img.naturalHeight;
+          this._setPosition();
+        }.bind(this);
+        img.src = url;
+
+        this.$.img.style.backgroundImage = 'url("'+url+'")';
+      }
+    });
+
+})();
+  </script>
+</dom-module>

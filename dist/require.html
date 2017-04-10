@@ -39336,14 +39336,46 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 })();
   </script>
 </dom-module>
-<dom-module id="app-page-icon" assetpath="elements/admin/">
+<dom-module id="app-page-admin-mark-icon" assetpath="elements/admin/">
   <template>
     <style>
       :host {
         display: block;
+        height: 200px;
+        width: 400px;
+      }
+
+      .overflow {
+        height: 200px;
+        width: 400px;
+        overflow: auto;
+      }
+
+      #img {
+        position: relative;
+        height: 200px;
+        width: 800px;
+      }
+
+      #mark {
+        background: red;
+        opacity: .8;
+        box-shadow: 0 0 2px black;
+        width: 12px;
+        height: 12px;
+        border-radius: 12px;
+        top: 14px;
+        left: 14px;
+        position: absolute;
       }
     </style>
-    test
+
+    <div class="overflow">
+      <div id="img">
+        <div id="mark"></div>
+      </div>
+    </div>
+
   </template>
   <script>
 
@@ -39353,14 +39385,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       req : {
         event : 'get-page',
         payload : function() {
-          return {id: this.pageId}
+          return {id: this.mark.page_id}
         }
       },
 
       resp : {
         event : 'catalog-page-update',
         handle : function(e) {
-          if( e.state !== 'loaded' || e.id !== this.pageId ) return false;
+          if( e.state !== 'loaded' || e.id !== this.mark.page_id ) return false;
           return true;
         },
         handler : function(e) {
@@ -39370,14 +39402,40 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       }
     };
 
+    var GetMarkEventLoop = {
+      req : {
+        event : 'get-catalog-page-mark',
+        payload : function() {
+          return {
+            markId: this.mark.mark_id,
+            pageId: this.mark.page_id,
+          }
+        }
+      },
+
+      resp : {
+        event : 'catalog-page-marks-update',
+        handle : function(e) {
+          if( e.state !== 'loaded' || e.id !== this.mark.mark_id ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this._markReady(e);
+        },
+        debounce : 100
+      }
+    };
+
     Polymer({
-      is: 'app-page-icon',
+      is: 'app-page-admin-mark-icon',
 
       properties : {
-        pageId : {
-          type : String,
-          value : '',
-          observer : '_render'
+        mark : {
+          type : Object,
+          observer : '_render',
+          value : function() {
+            return {};
+          }
         },
         apiHost : {
           type : String,
@@ -39388,7 +39446,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
       eventLoops : {
-        getPage : GetPageEventLoop
+        getPage : GetPageEventLoop,
+        getMark : GetMarkEventLoop
       },
 
       ready : function() {
@@ -39396,14 +39455,133 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _render : function() {
-        if( !this.pageId || !this.eventLoop ) return;
+        if( !this.mark || !this.eventLoop ) return;
+        this.imgHeight = -1;
+        this.marker = null;
+
         this.eventLoop.getPage.req();
+        this.eventLoop.getMark.req();
+      },
+
+      _markReady : function(e) {
+        this.marker = e;
+        this._setPosition();
+      },
+
+      _setPosition : function() {
+        if( this.imgHeight !== -1 && this.marker ) {
+          var x = (-1*this.marker.data.xy[0]+20)+'px ';
+          var y = (-1*(this.imgHeight - this.marker.data.xy[1])+20)+'px';
+          this.$.img.style.backgroundPosition = x+y;
+        }
       },
 
       _renderImage : function(e) {
         this.page = e;
-        this.innerHTML = '<img src="'+this.apiHost+'/media?select=thumbnail_png&media_id=eq.'+this.page.payload.media_id+'" />';
+
+        var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.page.payload.media_id;
+        var img = new Image();
+        img.onload = function() {
+          this.imgHeight = img.naturalHeight;
+          this._setPosition();
+        }.bind(this);
+        img.src = url;
+
+        this.$.img.style.backgroundImage = 'url("'+url+'")';
       }
+    });
+
+})();
+  </script>
+</dom-module>
+<dom-module id="app-page-admin-mark-details" assetpath="elements/admin/">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 200px;
+        overflow: auto;
+      }
+    </style>
+    
+  </template>
+  <script>
+
+(function() {
+
+    var GetMarkEventLoop = {
+      req : {
+        event : 'get-catalog-page-mark',
+        payload : function() {
+          return {
+            markId: this.mark.mark_id,
+            pageId: this.mark.page_id,
+          }
+        }
+      },
+
+      resp : {
+        event : 'catalog-page-marks-update',
+        handle : function(e) {
+          if( e.state !== 'loaded' || e.id !== this.mark.mark_id ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this._markReady(e);
+        },
+        debounce : 100
+      }
+    };
+
+    Polymer({
+      is: 'app-page-admin-mark-details',
+
+      properties : {
+        mark : {
+          type : Object,
+          observer : '_render',
+          value : function() {
+            return {};
+          }
+        },
+        apiHost : {
+          type : String,
+          value : ''
+        },
+      },
+
+      ignore : ['user'],
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        getMark : GetMarkEventLoop
+      },
+
+      _render : function() {
+        if( !this.mark || !this.eventLoop ) return;
+        this.eventLoop.getMark.req();
+      },
+
+      _markReady : function(e) {
+        var html = '<table>';
+        for( var key in e.data ) {
+          if( this.ignore.indexOf(key) > -1 ) continue;
+          if( !e.data[key] ) continue;
+          html += '<tr><td style="font-weight:bold">'+key+'</td><td>';
+
+          if( key === 'created' || key === 'updated' ) {
+            html +=  new Date(e.data[key]).toLocaleString();
+          } else if( typeof e.data[key] === 'object' ) {
+            html += JSON.stringify(e.data[key]);
+          } else {
+            html += e.data[key];
+          }
+          html += '</td>';
+        }
+        this.innerHTML = html+'</table>';
+      },
+
     });
 
 })();
@@ -39440,19 +39618,22 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     </div>
 
     <paper-material style="overflow-x:auto">
-      <app-datatable id="datatable" on-inspect="onInspect" on-approve="onApprove" loading="[[loading]]" header="[[header]]" data="[[marks]]">
+      <app-datatable id="datatable" on-inspect="onInspect" on-approve="onApprove" on-delete="onDelete" loading="[[loading]]" header="[[header]]" data="[[marks]]">
         <template>
           <tr>
             <td>
-              <app-page-icon api-host$="[[apiHost]]" page-id="[[item.page_id]]">
-              </app-page-icon>
+              <app-page-admin-mark-icon api-host$="[[apiHost]]" mark="[[item]]" page-id="[[item.page_id]]">
+              </app-page-admin-mark-icon>
             </td>
-            <td>[[item.createdStr]]</td>
-            <td>[[item.updatedStr]]</td>
-            <td>[[item.score]]</td>
+            <td>
+              <app-page-admin-mark-details mark="[[item]]">
+              </app-page-admin-mark-details>
+            </td>
+            <td><h1>[[item.score]]</h1></td>
             <td style="white-space:nowrap">
               <paper-icon-button icon="create" trigger="inspect"></paper-icon-button>
               <paper-icon-button icon="check" trigger="approve"></paper-icon-button>
+              <paper-icon-button icon="delete" trigger="delete"></paper-icon-button>
             </td>
           </tr>
         </template>
@@ -39502,7 +39683,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         header : {
           type : Array,
           value : function() {
-            return ['Page', 'Created', 'Updated', 'Score', ''];
+            return ['Page', 'Data', 'Score', ''];
           }
         }
       },
@@ -39563,8 +39744,37 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         });
       },
 
+      onDelete : function(e) {
+        var mark = e.detail.data;
+        var index = e.detail.index;
+
+        if( !confirm('Are you sure you want to delete this mark?') ) return;
+
+        this.ebEmit('delete-catalog-page-mark', {
+          pageId : mark.page_id,
+          markId : mark.mark_id
+        });
+
+        this.splice('marks', index, 1);
+      },
+
       onApprove : function(e) {
-        alert('Mark approved (not really)');
+        var mark = e.detail.data;
+        var index = e.detail.index;
+
+        if( !confirm('Are you sure you want to approve this mark?') ) return;
+
+        this.ebEmit('admin-approve-mark', {
+          pageId : mark.page_id,
+          markId : mark.mark_id,
+          handler : function(error, success) {
+            if( error ) {
+              console.error(error);
+              return alert('Failed to approve mark :(');
+            }
+            this.splice('marks', index, 1);
+          }.bind(this)
+        });
       },
 
       onInspect : function(e) {

@@ -1,4 +1,5 @@
-<link rel="import" href="app-page-icon.html">
+<link rel="import" href="app-page-admin-mark-icon.html">
+<link rel="import" href="app-page-admin-mark-details.html">
 
 <dom-module id="app-review-marks">
   <template>
@@ -35,23 +36,30 @@
         id="datatable" 
         on-inspect="onInspect"
         on-approve="onApprove"
+        on-delete="onDelete"
         loading="[[loading]]"
         header="[[header]]" 
         data="[[marks]]">
         <template>
           <tr>
             <td>
-              <app-page-icon 
+              <app-page-admin-mark-icon 
                 api-host$="[[apiHost]]"
+                mark="[[item]]"
                 page-id="[[item.page_id]]">
-              </app-page-icon>
+              </app-page-admin-mark-icon>
             </td>
-            <td>[[item.createdStr]]</td>
-            <td>[[item.updatedStr]]</td>
-            <td>[[item.score]]</td>
+            <td>
+              <app-page-admin-mark-details 
+                mark="[[item]]"
+              >
+              </app-page-admin-mark-details>
+            </td>
+            <td><h1>[[item.score]]</h1></td>
             <td style="white-space:nowrap">
               <paper-icon-button icon="create" trigger="inspect"></paper-icon-button>
               <paper-icon-button icon="check" trigger="approve"></paper-icon-button>
+              <paper-icon-button icon="delete" trigger="delete"></paper-icon-button>
             </td>
           </tr>
         </template>
@@ -101,7 +109,7 @@
         header : {
           type : Array,
           value : function() {
-            return ['Page', 'Created', 'Updated', 'Score', ''];
+            return ['Page', 'Data', 'Score', ''];
           }
         }
       },
@@ -162,8 +170,37 @@
         });
       },
 
+      onDelete : function(e) {
+        var mark = e.detail.data;
+        var index = e.detail.index;
+
+        if( !confirm('Are you sure you want to delete this mark?') ) return;
+
+        this.ebEmit('delete-catalog-page-mark', {
+          pageId : mark.page_id,
+          markId : mark.mark_id
+        });
+
+        this.splice('marks', index, 1);
+      },
+
       onApprove : function(e) {
-        alert('Mark approved (not really)');
+        var mark = e.detail.data;
+        var index = e.detail.index;
+
+        if( !confirm('Are you sure you want to approve this mark?') ) return;
+
+        this.ebEmit('admin-approve-mark', {
+          pageId : mark.page_id,
+          markId : mark.mark_id,
+          handler : function(error, success) {
+            if( error ) {
+              console.error(error);
+              return alert('Failed to approve mark :(');
+            }
+            this.splice('marks', index, 1);
+          }.bind(this)
+        });
       },
 
       onInspect : function(e) {

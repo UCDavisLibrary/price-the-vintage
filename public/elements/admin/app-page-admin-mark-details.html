@@ -1,0 +1,94 @@
+
+<dom-module id="app-page-admin-mark-details">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 200px;
+        overflow: auto;
+      }
+    </style>
+    
+  </template>
+  <script>
+
+(function() {
+
+    var GetMarkEventLoop = {
+      req : {
+        event : 'get-catalog-page-mark',
+        payload : function() {
+          return {
+            markId: this.mark.mark_id,
+            pageId: this.mark.page_id,
+          }
+        }
+      },
+
+      resp : {
+        event : 'catalog-page-marks-update',
+        handle : function(e) {
+          if( e.state !== 'loaded' || e.id !== this.mark.mark_id ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this._markReady(e);
+        },
+        debounce : 100
+      }
+    };
+
+    Polymer({
+      is: 'app-page-admin-mark-details',
+
+      properties : {
+        mark : {
+          type : Object,
+          observer : '_render',
+          value : function() {
+            return {};
+          }
+        },
+        apiHost : {
+          type : String,
+          value : ''
+        },
+      },
+
+      ignore : ['user'],
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        getMark : GetMarkEventLoop
+      },
+
+      _render : function() {
+        if( !this.mark || !this.eventLoop ) return;
+        this.eventLoop.getMark.req();
+      },
+
+      _markReady : function(e) {
+        var html = '<table>';
+        for( var key in e.data ) {
+          if( this.ignore.indexOf(key) > -1 ) continue;
+          if( !e.data[key] ) continue;
+          html += '<tr><td style="font-weight:bold">'+key+'</td><td>';
+
+          if( key === 'created' || key === 'updated' ) {
+            html +=  new Date(e.data[key]).toLocaleString();
+          } else if( typeof e.data[key] === 'object' ) {
+            html += JSON.stringify(e.data[key]);
+          } else {
+            html += e.data[key];
+          }
+          html += '</td>';
+        }
+        this.innerHTML = html+'</table>';
+      },
+
+    });
+
+})();
+  </script>
+</dom-module>
