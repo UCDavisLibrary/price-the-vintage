@@ -27,42 +27,16 @@
     
     <div hidden$="[[!show]]">
       <div>
-        <a class="btn" on-click="_setDone">
+        <a class="btn" on-click="_toggleDone">
           <iron-icon icon="done-all"></iron-icon>
         </a>
       </div>
       <div style="margin-top: 5px">
-        <a class="btn" on-click="_setIgnore">
+        <a class="btn" on-click="_toggleIgnore">
           <iron-icon icon="block"></iron-icon>
         </a>
       </div>
     </div>
-
-    <paper-dialog modal id="donePopup">
-      <div class="layout center">
-        <h1>Page Marks Completed</h1>
-      </div>
-
-      <p>Have all entries for this page been marked and approved?</p>
-
-      <div class="buttons">
-        <paper-button on-click="_hideDone">Cancel</paper-button>
-        <paper-button on-click="_hideDone">Completed</paper-button>
-      </div>
-    </paper-dialog>
-
-    <paper-dialog modal id="ignorePopup">
-      <div class="layout center">
-        <h1>Ignore Page</h1>
-      </div>
-
-      <p>This page contains no entries to be marked.</p>
-
-      <div class="buttons">
-        <paper-button on-click="_hideIgnore">Cancel</paper-button>
-        <paper-button on-click="_toggleIgnore" id="ignoreBtn">Ignore Page</paper-button>
-      </div>
-    </paper-dialog>
 
   </template>
   <script>
@@ -141,12 +115,6 @@
       },
 
       ready : function() {
-        this.$.donePopup.parentElement.removeChild(this.$.donePopup);
-        document.body.appendChild(this.$.donePopup);
-        
-        this.$.ignorePopup.parentElement.removeChild(this.$.ignorePopup);
-        document.body.appendChild(this.$.ignorePopup);
-
         this.eventLoop.authState.req();
         this.eventLoop.selectedPage.req();
       },
@@ -156,25 +124,16 @@
         this.page = e;
       },
 
-      _setDone : function() {
-        this.$.donePopup.open();
+      _toggleDone : function() {
+        this.ebEmit('admin-completed-page', {
+          pageId : this.pageId,
+          completed : !this.page.payload.completed,
+          handler : this._onToggleIgnoreComplete.bind(this)
+        });
       },
 
-      _hideDone : function() {
-        this.$.donePopup.close();
-      },
-
-      _setIgnore : function() {
-        if( this.page.payload.editable ) {
-          this.$.ignoreBtn.innerHTML = 'Ignore Page';
-        } else {
-          this.$.ignoreBtn.innerHTML = 'Undo Ignore Page';
-        }
-        this.$.ignorePopup.open();
-      },
-
-      _hideIgnore : function() {
-        this.$.ignorePopup.close();
+      _onToggleDoneComplete : function(err, resp) {
+        if( err ) return alert('Failed to update page :(');
       },
 
       _toggleIgnore : function() {
@@ -187,7 +146,6 @@
 
       _onToggleIgnoreComplete : function(err, resp) {
         if( err ) return alert('Failed to update page :(');
-        this._hideIgnore();
       }
     });
 })();

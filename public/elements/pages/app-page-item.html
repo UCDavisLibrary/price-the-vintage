@@ -79,6 +79,9 @@
         <div hidden$="[[!showNotEditable]]">
           <iron-icon icon="block"></iron-icon>
         </div>
+        <div hidden$="[[!showCompleted]]">
+          <iron-icon icon="done-all"></iron-icon>
+        </div>
       </div>
 
     </paper-material>
@@ -126,6 +129,10 @@
           type : Boolean,
           value : false
         },
+        showCompleted : {
+          type : Boolean,
+          value : false
+        },
         
         markCount : {
           type : Number,
@@ -163,14 +170,17 @@
         if( !this.page ) return;
         if( !this.page.page_id ) return;
 
+        this.showCompleted = false;
+        this.showMarkCount = false;
+        this.showNotEditable = false;
+
         if( !this.page.editable ) {
-          this.showMarkCount = false;
           this.showNotEditable = true;
+        } else if( this.page.completed ) {
+          this.showCompleted = true;
         } else {
-          this.showNotEditable = false;
           this.showMarkCount = (this.page.marks > 0);
         }
-
 
         this.ebEmit('get-selected-catalog-page', {handler: this._onSelectedCatalogPageUpdate.bind(this)});
 

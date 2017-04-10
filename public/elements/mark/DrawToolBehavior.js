@@ -51,7 +51,7 @@ var MarkBehavior = {
 
     this.drawControl = new L.Control.Draw(this.drawToolOptions);
 
-    if( this.selectedPage.editable ) {
+    if( this.selectedPage.editable && !this.selectedPage.completed ) {
       this.map.addControl(this.drawControl);
 
       this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));

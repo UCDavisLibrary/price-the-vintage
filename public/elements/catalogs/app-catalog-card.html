@@ -16,8 +16,12 @@
         padding: 0 5px;
       }
 
-      .layout-vertical {
-        height: 100%;
+      .align-bottom {
+        padding: 5px;
+        position: absolute;
+        left:0;
+        right:0;
+        bottom:0;
       }
 
       paper-material {
@@ -28,7 +32,7 @@
         transform: translateY(5px);
       }
 
-      iron-icon {
+      iron-icon, .light {
         color: var(--light-primary-color);
       }
 
@@ -47,23 +51,21 @@
 
           <div class="grid-card-img" id="img" alt="Catalog Thumbnail Image"></div>
 
-          <!--<iron-image 
-            class="grid-card-img"
-            sizing="cover"
-            src$="[[imgUrl]]" 
-            alt="Catalog Thumbnail Image">
-          </iron-image>-->
-
           <div class="flex">
+            <h3>[[catalog.title]]</h3>
 
-            <div class="layout-vertical">
-              <div class="flex">
-                <h3>[[catalog.title]]</h3>
-              </div>
-              <div>
-                <span hidden$="[[!showUserCount]]">
-                  <iron-icon icon="social:group"></iron-icon> [[userCount]]
-                </span>
+            <div class="align-bottom">
+              <div class="layout">
+                <div class="flex">
+                  <span hidden$="[[!showUserCount]]">
+                    <iron-icon icon="social:group"></iron-icon> [[userCount]]
+                  </span>
+                </div>
+                <div style="text-align: right">
+                  <iron-icon icon="done-all"></iron-icon>
+                  <span class="light">[[percentComplete]]</span>
+                  
+                </div>
               </div>
             </div>
             
@@ -200,6 +202,10 @@
           type : Boolean,
           value : false
         },
+        percentComplete : {
+          type : String,
+          value : '',
+        },
         loading: {
           type : Boolean,
           value : false
@@ -227,7 +233,10 @@
       },
 
       _onUpdate : function() {
+        if( !this.catalog ) return;
+
         this.getEventLoop().userActivity.req();
+        this.percentComplete = this.catalog.pages_finished+' / '+this.catalog.pages;
       },
 
       _select : function(e) {
