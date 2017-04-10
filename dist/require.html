@@ -35268,8 +35268,12 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         padding: 0 5px;
       }
 
-      .layout-vertical {
-        height: 100%;
+      .align-bottom {
+        padding: 5px;
+        position: absolute;
+        left:0;
+        right:0;
+        bottom:0;
       }
 
       paper-material {
@@ -35280,7 +35284,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         transform: translateY(5px);
       }
 
-      iron-icon {
+      iron-icon, .light {
         color: var(--light-primary-color);
       }
 
@@ -35299,23 +35303,21 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
           <div class="grid-card-img" id="img" alt="Catalog Thumbnail Image"></div>
 
-          <!--<iron-image 
-            class="grid-card-img"
-            sizing="cover"
-            src$="[[imgUrl]]" 
-            alt="Catalog Thumbnail Image">
-          </iron-image>-->
-
           <div class="flex">
+            <h3>[[catalog.title]]</h3>
 
-            <div class="layout-vertical">
-              <div class="flex">
-                <h3>[[catalog.title]]</h3>
-              </div>
-              <div>
-                <span hidden$="[[!showUserCount]]">
-                  <iron-icon icon="social:group"></iron-icon> [[userCount]]
-                </span>
+            <div class="align-bottom">
+              <div class="layout">
+                <div class="flex">
+                  <span hidden$="[[!showUserCount]]">
+                    <iron-icon icon="social:group"></iron-icon> [[userCount]]
+                  </span>
+                </div>
+                <div style="text-align: right">
+                  <iron-icon icon="done-all"></iron-icon>
+                  <span class="light">[[percentComplete]]</span>
+                  
+                </div>
               </div>
             </div>
             
@@ -35452,6 +35454,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           type : Boolean,
           value : false
         },
+        percentComplete : {
+          type : String,
+          value : '',
+        },
         loading: {
           type : Boolean,
           value : false
@@ -35479,7 +35485,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _onUpdate : function() {
+        if( !this.catalog ) return;
+
         this.getEventLoop().userActivity.req();
+        this.percentComplete = this.catalog.pages_finished+' / '+this.catalog.pages;
       },
 
       _select : function(e) {
@@ -35903,6 +35912,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         <div hidden$="[[!showNotEditable]]">
           <iron-icon icon="block"></iron-icon>
         </div>
+        <div hidden$="[[!showCompleted]]">
+          <iron-icon icon="done-all"></iron-icon>
+        </div>
       </div>
 
     </paper-material>
@@ -35950,6 +35962,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           type : Boolean,
           value : false
         },
+        showCompleted : {
+          type : Boolean,
+          value : false
+        },
         
         markCount : {
           type : Number,
@@ -35987,14 +36003,17 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         if( !this.page ) return;
         if( !this.page.page_id ) return;
 
+        this.showCompleted = false;
+        this.showMarkCount = false;
+        this.showNotEditable = false;
+
         if( !this.page.editable ) {
-          this.showMarkCount = false;
           this.showNotEditable = true;
+        } else if( this.page.completed ) {
+          this.showCompleted = true;
         } else {
-          this.showNotEditable = false;
           this.showMarkCount = (this.page.marks > 0);
         }
-
 
         this.ebEmit('get-selected-catalog-page', {handler: this._onSelectedCatalogPageUpdate.bind(this)});
 
@@ -36524,42 +36543,16 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     
     <div hidden$="[[!show]]">
       <div>
-        <a class="btn" on-click="_setDone">
+        <a class="btn" on-click="_toggleDone">
           <iron-icon icon="done-all"></iron-icon>
         </a>
       </div>
       <div style="margin-top: 5px">
-        <a class="btn" on-click="_setIgnore">
+        <a class="btn" on-click="_toggleIgnore">
           <iron-icon icon="block"></iron-icon>
         </a>
       </div>
     </div>
-
-    <paper-dialog modal="" id="donePopup">
-      <div class="layout center">
-        <h1>Page Marks Completed</h1>
-      </div>
-
-      <p>Have all entries for this page been marked and approved?</p>
-
-      <div class="buttons">
-        <paper-button on-click="_hideDone">Cancel</paper-button>
-        <paper-button on-click="_hideDone">Completed</paper-button>
-      </div>
-    </paper-dialog>
-
-    <paper-dialog modal="" id="ignorePopup">
-      <div class="layout center">
-        <h1>Ignore Page</h1>
-      </div>
-
-      <p>This page contains no entries to be marked.</p>
-
-      <div class="buttons">
-        <paper-button on-click="_hideIgnore">Cancel</paper-button>
-        <paper-button on-click="_toggleIgnore" id="ignoreBtn">Ignore Page</paper-button>
-      </div>
-    </paper-dialog>
 
   </template>
   <script>
@@ -36638,12 +36631,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       ready : function() {
-        this.$.donePopup.parentElement.removeChild(this.$.donePopup);
-        document.body.appendChild(this.$.donePopup);
-        
-        this.$.ignorePopup.parentElement.removeChild(this.$.ignorePopup);
-        document.body.appendChild(this.$.ignorePopup);
-
         this.eventLoop.authState.req();
         this.eventLoop.selectedPage.req();
       },
@@ -36653,25 +36640,16 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this.page = e;
       },
 
-      _setDone : function() {
-        this.$.donePopup.open();
+      _toggleDone : function() {
+        this.ebEmit('admin-completed-page', {
+          pageId : this.pageId,
+          completed : !this.page.payload.completed,
+          handler : this._onToggleIgnoreComplete.bind(this)
+        });
       },
 
-      _hideDone : function() {
-        this.$.donePopup.close();
-      },
-
-      _setIgnore : function() {
-        if( this.page.payload.editable ) {
-          this.$.ignoreBtn.innerHTML = 'Ignore Page';
-        } else {
-          this.$.ignoreBtn.innerHTML = 'Undo Ignore Page';
-        }
-        this.$.ignorePopup.open();
-      },
-
-      _hideIgnore : function() {
-        this.$.ignorePopup.close();
+      _onToggleDoneComplete : function(err, resp) {
+        if( err ) return alert('Failed to update page :(');
       },
 
       _toggleIgnore : function() {
@@ -36684,7 +36662,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _onToggleIgnoreComplete : function(err, resp) {
         if( err ) return alert('Failed to update page :(');
-        this._hideIgnore();
       }
     });
 })();
@@ -36743,7 +36720,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
     this.drawControl = new L.Control.Draw(this.drawToolOptions);
 
-    if( this.selectedPage.editable ) {
+    if( this.selectedPage.editable && !this.selectedPage.completed ) {
       this.map.addControl(this.drawControl);
 
       this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
