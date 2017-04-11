@@ -1,5 +1,5 @@
 
-<dom-module id="app-price-comment-form">
+<dom-module id="app-price-form-voting">
   <template>
     <style include="shared-styles"></style>
     <style>
@@ -12,12 +12,18 @@
         margin:0;
         padding:0;
       }
-      h2 {
-        margin-top: 0;
-        text-transform: capitalize;
+      h2.label {
+        margin:0;
+        text-align: center;
+        color: var(--default-primary-color);
+      }
+      .outer {
+        margin-left: 15px;
       }
       .voting {
         color: #888;
+        margin-top: 0;
+        text-transform: capitalize;
       }
       .voting.voted {
         color: var(--default-primary-color);
@@ -28,18 +34,10 @@
         height: 56px;
       }
 
-      table {
-        font-size: 16px;
-        width: 100%;
-      }
     </style>
 
-    <div class="layout">
-      <div class="flex">
-        <h2 style="text-align: left">[[currentType]]</h2>
-        <div id="table"></div>
-      </div>
-      <div class="voting" hidden$="[[!showVoting]]">
+    <div class="voting outer" hidden$="[[!showVoting]]">
+      <div>
         <div>
           <paper-icon-button 
             id="upVote" 
@@ -57,11 +55,10 @@
             on-click="_downVote">
           </paper-icon-button>
         </div>
+        <h2 class="label">Vote</h2>
       </div>
     </div>
 
-    <!--<paper-input label="comment"></paper-input>-->
-    
   </template>
   <script>
 
@@ -105,7 +102,7 @@
     };
 
     Polymer({
-      is: 'app-price-comment-form',
+      is: 'app-price-form-voting',
 
       properties : {
         mark : {
@@ -127,24 +124,6 @@
         showVoting : {
           type : Boolean,
           value : false
-        }
-      },
-
-      labels : {
-        wine: {
-          color     : 'Wine Color',
-          wineType  : 'Wine Type',
-          size      : 'Bottle Size',
-          name      : 'Name',
-          producer  : 'Producer',
-          price     : 'Price per Bottle',
-          casePrice : 'Price per Case'
-        },
-        spirit : {
-          name      : 'Name',
-          producer  : 'Producer',
-          price     : 'Price per Bottle',
-          casePrice : 'Price per Case'
         }
       },
 
@@ -174,18 +153,6 @@
       show : function(mark) {
         this.count = 0;
         this.mark = mark;
-
-        this.ebEmit('ui-mark-comment-start', mark);
-
-        this.currentType = this.mark.data.type;
-
-        var html = '<table class="style-scope app-price-comment-form">';
-        for( var key in this.labels[this.currentType] ) {
-          if( this.mark.data[key] ) {
-            html += '<tr><td style="font-weight:bold">'+this.labels[this.currentType][key]+'</td><td>'+this.mark.data[key]+'</td></tr>';
-          }
-        }
-        this.$.table.innerHTML = html+'</table>';
 
         var eles = this.querySelectorAll('.voting');
         for( var i = 0; i < eles.length; i++ ) {

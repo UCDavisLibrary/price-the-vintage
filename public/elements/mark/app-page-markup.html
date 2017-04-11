@@ -41,11 +41,8 @@
           right: 0;
           z-index: 1000;
         }
-
     </style>
 
-
-    
     <paper-material id="carousel">
       <app-page-carousel-search 
         catalog-id="[[catalogId]]" 
@@ -57,8 +54,8 @@
     <div id="map" state="loaded"></div>
     <app-price-form 
       id="priceItem" 
+      page-id="[[selected]]"
       on-add-mark="_onAddMark" 
-      on-edit-mark="_onEditMark"
       on-cancel="_onAddCancel"
       on-delete="_onDeleteMark">
     </app-price-form>
@@ -316,6 +313,9 @@
         for( var key in this.marks ) {
           if( this.marks[key].pageId !== this.selected ) {
             delete this.marks[key];
+            if( this.mapMarkers[key] ) {
+              delete this.mapMarkers[key];
+            }
           }
         }
 
@@ -405,9 +405,7 @@
       },
 
       _onApprovedMarksUpdate : function(e) {
-        if( e.state !== 'loaded' ) return;
-
-        // TODO: double check page id === selected
+        if( e.state !== 'loaded' || e.pageId !== this.selected ) return;
 
         e.payload.forEach(function(mark){
           if( this.mapMarkers[mark.markId] && this.marksLayer ) {
@@ -428,11 +426,7 @@
       _selectAndShowPopup : function(id) {
         this._showHideControls(false);
         
-        if( this.currentState.viewingMark ) {
-          this.$.priceItem.view(this.marks[id]);
-        } else {
-          this.$.priceItem.edit(this.marks[id]);
-        }
+        this.$.priceItem.show(this.marks[id]);
         
         this._selectMarker(this.mapMarkers[id], id);
       },
@@ -533,26 +527,6 @@
 
       _onAddMark : function(e) {
         this._removeTmpMark();
-        var data = e.detail;
-
-        this.ebEmit('add-catalog-page-mark', {
-          pageId : this.selected,
-          mark : data
-        });
-
-        window.location.hash = this.catalogId + '/' + this.selected;
-      },
-
-      _onEditMark : function(e) {
-        var mark = e.detail;
-
-        this.ebEmit('edit-catalog-page-mark', {
-          pageId : this.selected,
-          markId : mark.id,
-          mark : mark.data
-        });
-
-        window.location.hash = this.catalogId + '/' + this.selected;
       },
 
       _removeTmpMark : function() {

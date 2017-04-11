@@ -14,39 +14,89 @@
       paper-toggle-button {
         --paper-toggle-button-checked-button-color: var(--primary-color);
       }
+
+      paper-button[save] {
+        color: white;
+        background-color: var(--default-primary-color);
+      }
     </style>
 
-    <div class="layout center row-form">
-      <div>Spirit</div>
-      <div>
-        <paper-toggle-button id="typeInput" checked on-change="_setType"></paper-toggle-button>
-      </div>
-      <div>Wine</div>
-      <div class="space"></div>
+
+
+
+    <div class="layout">
       <div class="flex">
-        <paper-input label="Page Section" id="sectionInput" always-float-label></paper-input>
+        <div class="layout center row-form">
+          <div>Spirit</div>
+          <div>
+            <paper-toggle-button 
+              id="typeInput" 
+              checked
+              disabled$="[[disabled]]" 
+              on-change="_setType">
+            </paper-toggle-button>
+          </div>
+          <div>Wine</div>
+          <div class="space"></div>
+          <div class="flex">
+            <paper-input 
+              label="Page Section" 
+              disabled$="[[disabled]]"
+              id="sectionInput" 
+              always-float-label>
+            </paper-input>
+          </div>
+        </div>
+
+        <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
+          <app-price-edit-spirit 
+            id="spirit" 
+            disabled$="[[disabled]]"
+            add-space="[[addSpace]]">
+          </app-price-edit-spirit>
+
+          <app-price-edit-wine 
+            id="wine" 
+            disabled$="[[disabled]]"
+            add-space="[[addSpace]]">
+          </app-price-edit-wine>
+        </iron-pages>
+      </div>
+      <div>
+        <app-price-form-voting id="voting"></app-price-form-voting>
       </div>
     </div>
 
-
-    <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
-      <app-price-edit-spirit 
-        id="spirit" 
-        add-space="[[addSpace]]"
-        on-complete="_onComplete" 
-        on-cancel="_cancel">
-      </app-price-edit-spirit>
-
-      <app-price-edit-wine 
-        id="wine" 
-        add-space="[[addSpace]]"
-        on-complete="_onComplete" 
-        on-cancel="_cancel">
-      </app-price-edit-wine>
-    </iron-pages>
+    <div class="buttons" hidden$="[[disabled]]">
+      <div class="layout center">
+        <div hidden$="[[!editMode]]">
+          <paper-icon-button icon="delete" on-click="_delete"></paper-icon-button>
+          <paper-icon-button icon="done" on-click="_approve" hidden$="[[!userState.user.isAdmin]]"></paper-icon-button>
+        </div>
+        <div class="flex"></div>
+        <paper-button on-click="_cancel">Cancel</paper-button>
+        <paper-button save on-click="_save">Save</paper-button>
+      </div>
+    </div>
     
   </template>
   <script>
+
+(function(){
+
+    var AuthStateEventLoop = {
+      req : {
+        event : 'get-auth-state',
+      },
+
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.userState = e;
+        }
+      }
+    };
+
     Polymer({
       is: 'app-price-edit-form',
 
@@ -60,6 +110,14 @@
           value : function() {
             return {}
           }
+        },
+        pageId: {
+          type : String,
+          value : ''
+        },
+        disabled : {
+          type : Boolean,
+          value : false
         }
       },
 
@@ -68,7 +126,15 @@
         'ui-admin-approve-mark' : '_approve',
       },
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        authState : AuthStateEventLoop
+      },
+
+      ready : function() {
+        this.eventLoop.authState.req();
+      },
 
       _setType : function(e) {
         if( this.$.typeInput.checked ) {
@@ -80,6 +146,7 @@
 
       _reset : function() {
         this.type = 'wine';
+        this.$.sectionInput.value = '';
         this.$.spirit.reset();
         this.$.wine.reset();
       },
@@ -103,8 +170,8 @@
         this.fire('delete', this.editMark);
       },
 
-      _onComplete : function(e) {
-        var data = e.detail;
+      _save : function() {
+        var data = this.$[this.type].getData();
         data.type = this.type;
         data.section = this.$.sectionInput.value;
 
@@ -127,18 +194,40 @@
         }
 
         if( !this.editMode ) {
-          this.fire('add-mark', data);
+          this.fire('add-mark');
+          this._onAddMark(data);
         } else {
           this.editMark.data = data;
-          this.fire('edit-mark', this.editMark);
+          this._onEditMark();
         }
+
+        this.fire('cancel');
+      },
+
+      _onAddMark : function(data) {
+        this.ebEmit('add-catalog-page-mark', {
+          pageId : this.pageId,
+          mark : data
+        });
+
+        window.location.hash = this.catalogId + '/' + this.pageId;
+      },
+
+      _onEditMark : function() {
+        this.ebEmit('edit-catalog-page-mark', {
+          pageId : this.pageId,
+          markId : this.editMark.id,
+          mark : this.editMark.data
+        });
+
+        window.location.hash = this.catalogId + '/' + this.pageId;
       },
 
       _cancel : function() {
         this.fire('cancel');
       },
 
-      edit : function(mark) {
+      show : function(mark) {
         this._reset();
 
         this.ebEmit('ui-mark-edit-start', mark);
@@ -153,6 +242,8 @@
 
         if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
         else this.$.spirit.edit(mark.data);
+
+        this.$.voting.show(mark);
       },
 
       create : function(ll) {
@@ -161,5 +252,7 @@
         this._reset();
       }
     });
+
+})();
   </script>
 </dom-module>

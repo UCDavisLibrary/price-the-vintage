@@ -1,4 +1,4 @@
-<link rel="import" href="app-price-comment-form.html">
+<link rel="import" href="app-price-form-voting.html">
 <link rel="import" href="app-price-edit-form.html">
 <link rel="import" href="app-price-edit-wine.html">
 <link rel="import" href="app-price-edit-spirit.html">
@@ -37,23 +37,15 @@
 
     <div id="body">
       <div>
-        <iron-pages selected="[[type]]" attr-for-selected="id">
-          <app-price-edit-form
-            id="edit" 
-            add-space="[[addSpace]]"
-            user-state="[[userState]]"
-            on-complete="_onComplete" 
-            on-delete="_cancel"
-            on-cancel="_cancel">
-          </app-price-edit-form>
-
-          <app-price-comment-form 
-            id="comment" 
-            user-state="[[userState]]"
-            on-complete="_onComplete" 
-            on-cancel="_cancel">
-          </app-price-comment-form>
-        </iron-pages>
+        <app-price-edit-form
+          id="form" 
+          page-id="[[pageId]]"
+          user-state="[[userState]]"
+          disabled$="[[disabled]]"
+          on-complete="_cancel" 
+          on-delete="_cancel"
+          on-cancel="_cancel">
+        </app-price-edit-form>
       </div>
     </div>
 
@@ -79,10 +71,6 @@
       is: 'app-price-form',
 
       properties : {
-        type : {
-          type : String,
-          value : 'edit'
-        },
         addSpace : {
           type : Boolean,
           value : false
@@ -92,6 +80,14 @@
           value : function() {
             return {}
           }
+        },
+        pageId: {
+          type : String,
+          value : ''
+        },
+        disabled : {
+          type : Boolean,
+          value : false
         }
       },
 
@@ -117,40 +113,30 @@
         // TODO;
       },
 
-      _onComplete : function() {
-        this.hide();
-      },
-
       _cancel : function() {
         this.hide();
       },
 
-      edit : function(mark) {
-        if( this.userState && 
+      show : function(mark) {
+        if( !mark.data.approved &&
+            this.userState && 
             this.userState.user &&
             (this.userState.user.isAdmin || 
             mark.data.user === this.userState.user.uid) ) {
           
-          this.type = 'edit';
-          this.$.edit.edit(mark);
+          this.disabled = false;
         } else {
-          this.type = 'comment';
-          this.$.comment.show(mark);
+          this.disabled = true;
         }
 
-        this.style.display = 'block';
-      },
-
-      view : function(mark) {
-        this.type = 'comment';
-        this.$.comment.show(mark, true);
-
+        this.$.form.show(mark);
         this.style.display = 'block';
       },
 
       create : function(ll) {
         this.type = 'edit';
-        this.$.edit.create(ll);
+        this.disabled = false;
+        this.$.form.create(ll);
         this.style.display = 'block';
       },
 

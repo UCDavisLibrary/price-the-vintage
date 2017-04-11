@@ -5,92 +5,71 @@
       :host {
         display: block;
       }
-      
-      .buttons {
-        text-align: right;
-        padding: 15px;
-      }
-
-      .accept {
-        background-color: var(--primary-color);
-        color: white;
-      }
     </style>
 
-    <div id="body">
+    <div class="form-row">
+      <paper-input 
+        always-float-label 
+        id="name" 
+        placeholder="Hint text" 
+        label="Name" 
+        disabled$="[[disabled]]">
+      </paper-input>
+    </div>
 
-      <div class="form-row">
-        <paper-input always-float-label id="name" placeholder="Hint text" label="Name" type="string" ></paper-input>
+    <div class="form-row">
+      <paper-input 
+        always-float-label 
+        id="country" 
+        placeholder="Hint text" 
+        label="Country" 
+        disabled$="[[disabled]]">
+      </paper-input>
+    </div>
+
+    <div class="layout flex-horizontal form-row">
+      <div class="flex">
+        <paper-input 
+          always-float-label 
+          disabled$="[[disabled]]"
+          id="price" 
+          label="Price per Bottle" 
+          type="number" 
+          min="0" 
+          step="0.01" 
+          size="10" 
+          style="padding-right: 10px">
+          <div prefix>$</div>
+        </paper-input>
       </div>
 
-      <div class="form-row">
-        <paper-input always-float-label id="country" placeholder="Hint text" label="Country" type="string" ></paper-input>
+      <div class="flex">
+        <paper-input 
+          always-float-label 
+          disabled$="[[disabled]]"
+          id="casePrice" 
+          label="Price per Case" 
+          type="number" 
+          min="0" 
+          step="0.01">
+          <div prefix>$</div>
+        </paper-input>
       </div>
+    </div>
 
-      <div class="layout flex-horizontal form-row">
-        <div class="flex">
-          <paper-input always-float-label id="price" label="Price per Bottle" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
-            <div prefix>$</div>
-          </paper-input>
-        </div>
+    <div class="form-row">
+      <paper-input 
+        always-float-label 
+        disabled$="[[disabled]]"
+        id="spiritType" 
+        placeholder="Hint text" 
+        label="Spirit Type">
+      </paper-input>
+    </div>
 
-        <div class="flex">
-          <paper-input always-float-label id="casePrice" label="Price per Case" type="number" min="0" step="0.01">
-            <div prefix>$</div>
-          </paper-input>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <paper-input always-float-label id="spiritType" placeholder="Hint text" label="Spirit Type" type="string" ></paper-input>
-      </div>
-
-      <!--<div hidden$="[[!addSpace]]">-->
-      <div>
-        <div class="form-row"></div>
-        <div class="form-row"></div>
-      </div>
-
-      <!--<div class="layout form-row">
-        <div class="flex" style="padding-right:10px">
-          <paper-input always-float-label id="name" label="Spirit Name" value="" type="string" ></paper-input>
-        </div>
-        <div>
-          <div>Spirit Type</div>
-          <select value="" id="spiritType" >
-            <option value=""></option>
-          </select>
-        </div>
-      </div>
-
-      <div class="layout flex-horizontal form-row">
-        <div class="flex"></div>
-
-          <paper-input always-float-label id="price" label="Bottle Price" value="" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
-            <div prefix>$</div>
-          </paper-input>
-
-          <paper-input always-float-label id="casePrice" label="Case Price" value="" type="number" min="0" step="0.01">
-            <div prefix>$</div>
-          </paper-input>
-      </div>
-
-      <div class="form-row layout center">
-
-        <div class="flex" style="padding-right: 10px">
-          <paper-input always-float-label id="size" label="Bottle Size" value="" type="number" min="0" step="0.01"></paper-input>
-        </div>
-
-        <div class="flex">
-          <paper-input always-float-label id="country" label="Country" value=""></paper-input>
-        </div>
-      </div>-->
-      
-      <div class="buttons">
-        <paper-button on-click="_cancel">Cancel</paper-button>
-        <paper-button class="accept" on-click="_save" raised>Save</paper-button>
-      </div>
-
+    <div>
+      <div class="form-row"></div>
+      <div class="form-row"></div>
     </div>
 
   </template>
@@ -107,31 +86,16 @@
           type : Boolean,
           value : false
         },
-        active : {
+        disabled : {
           type : Boolean,
           value : false
         }
       },
 
       behaviors : [EventBusBehavior],
-      
-      ebBind : {
-        'ui-save-mark' : '_onHeaderSaveEvent'
-      },
 
-      _onHeaderSaveEvent : function() {
-        if( !this.active ) return;
-        this._save();
-      },
 
       reset : function() {
-        // this.$.spiritType.value = '';
-        // this.$.size.value = '';
-        // this.$.name.value = '';
-        // this.$.price.value = '';
-        // this.$.country.value = '';
-        // this.$.casePrice.value = '';
-
         this.$.name.value = '';
         this.$.price.value = '';
         this.$.casePrice.value = '';
@@ -140,13 +104,6 @@
       },
 
       edit : function(data) {
-        // this.$.spiritType.value = data.spiritType || '';
-        // this.$.size.value = data.size || '';
-        // this.$.name.value = data.name || '';
-        // this.$.country.value = data.country || '';
-        // this.$.price.value = data.price || '';
-        // this.$.casePrice.value = data.casePrice || '';
-
         this.$.name.value = data.name || '';
         this.$.spiritType.value = data.spiritType || '';
         this.$.country.value = data.country || '';
@@ -154,29 +111,14 @@
         this.$.casePrice.value = data.casePrice || '';
       },
 
-      _cancel : function() {
-        this.fire('cancel');
-      },
-
-      _save : function() {
-        // var data = {
-        //   spiritType : this.$.spiritType.value,
-        //   size : this.$.size.value,
-        //   name : this.$.name.value,
-        //   country : this.$.country.value,
-        //   price : this.$.price.value,
-        //   casePrice : this.$.casePrice.value,
-        // };
-
-        var data = {
+      getData : function() {
+        return {
            name : this.$.name.value,
            spiritType : this.$.spiritType.value,
            country : this.$.country.value,
            price : this.$.price.value,
            casePrice : this.$.casePrice.value,
         };
-
-        this.fire('complete', data);
       }
     });
   </script>

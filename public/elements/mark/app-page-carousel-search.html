@@ -5,7 +5,7 @@
     <style>
       :host {
         display: block;
-        background: rgba(255,255,255,.2);
+        background: rgba(255,255,255,.3);
         transition: background 300ms linear;
       }
 
@@ -18,7 +18,14 @@
         border-top: none;
         border-left: none;
         border-right: none;
-        border-bottom: 1px solid var(--secondary-text-color);
+        border-bottom: 1px solid var(--default-primary-color);
+      }
+      input:focus {
+        outline: none;
+      }
+
+      paper-icon-button {
+        color: var(--default-primary-color);
       }
 
       #overflow {
@@ -37,7 +44,8 @@
     </style>
 
     <div class="layout center">
-      <paper-icon-button icon="search" on-click="toggleActive"></paper-icon-button>
+      <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[active]]"></paper-icon-button>
+      <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!active]]"></paper-icon-button>
       <div id="overflow">
         <input type="text" id="input" placeholder="Search Catalog Pages"  hidden$="active" on-keyup="_search" />
       </div>
@@ -91,7 +99,7 @@
           this.$.input.value = '';
           setTimeout(function() {
             this.$.input.focus();
-          }.bind(this), 300);
+          }.bind(this), 500);
         } else {
           this.ebEmit('ui-clear-search-catalog-pages');
         }
@@ -126,6 +134,13 @@
 
       _onSearchUpdate : function(e) {
         if( e.state !== 'loaded' ) return;
+
+        if( !this.$.input.value ) {
+          this.searching = false;
+          this.showResults = true;
+          return this.ebEmit('ui-clear-search-catalog-pages');
+        }
+
         this.searching = false;
         this.showResults = true;
         this.total = 'Matches: '+e.results.total;

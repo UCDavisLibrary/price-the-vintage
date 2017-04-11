@@ -6,6 +6,9 @@
       :host {
         display: block;
       }
+      paper-icon-button {
+        color: white;
+      }
     </style>
 
     <div class="layout center">
@@ -13,13 +16,9 @@
       <h2 class="flex">[[title]]</h2>
       <div>
         <div id="icons">
-          <paper-icon-button 
-            icon="check" 
-            on-click="_approve" 
-            hidden$="[[!userState.user.isAdmin]]">
-          </paper-icon-button>
-          <paper-icon-button icon="save" on-click="_save"></paper-icon-button>
-          <paper-icon-button icon="delete" id="delete" on-click="_delete"></paper-icon-button>
+
+          <a href="#admin" hidden$="[[!userState.user.isAdmin]]"><paper-icon-button icon="gavel"></paper-icon-button></a>
+
         </div>
       </div>
     </div>
@@ -65,8 +64,6 @@
       },
 
       ebBind : {
-        'ui-mark-comment-start' : '_onComment',
-        'ui-mark-edit-start' : '_onEdit',
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
         'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
         'app-state-update' : '_onAppStateUpdate'
@@ -92,35 +89,11 @@
         this.pageId = id;
       },
 
-      _onComment : function() {
-        this.$.icons.style.display = 'none';
-      },
-
-      _onEdit : function(mark) {
-        this.$.icons.style.display = 'block';
-        this.$.delete.style.display = 'none';
-        if( this.userState.user && 
-            ( mark.data.user === this.userState.user.uid ||
-             this.userState.user.isAdmin) ) {
-          this.$.delete.style.display = 'inline-block';
-        }
-      },
-
       _cancelEdit : function() {
         window.location.hash = this.catalogId + '/' + this.pageId;
       },
 
-      _approve : function() {
-        this.ebEmit('ui-admin-approve-mark');
-      },
 
-      _delete : function() {
-        this.ebEmit('ui-delete-mark');
-      },
-
-      _save : function() {
-        this.ebEmit('ui-save-mark');
-      }
     });
 
 })();

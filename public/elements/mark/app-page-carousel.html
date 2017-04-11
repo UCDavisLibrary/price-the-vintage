@@ -319,8 +319,6 @@
       _searchUpdate : function(e) {
         if( e.state !== 'loaded' ) return;
 
-        console.log(e);
-
         this.pages.forEach(function(page, index) {
           var matched = this._getResultsPageById(e.results.results, page.page_id);
           this.set('pages.'+index+'.noMatch', !matched ? true : false);

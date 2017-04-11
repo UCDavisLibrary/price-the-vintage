@@ -36228,7 +36228,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     <style>
       :host {
         display: block;
-        background: rgba(255,255,255,.2);
+        background: rgba(255,255,255,.3);
         transition: background 300ms linear;
       }
 
@@ -36241,7 +36241,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         border-top: none;
         border-left: none;
         border-right: none;
-        border-bottom: 1px solid var(--secondary-text-color);
+        border-bottom: 1px solid var(--default-primary-color);
+      }
+      input:focus {
+        outline: none;
+      }
+
+      paper-icon-button {
+        color: var(--default-primary-color);
       }
 
       #overflow {
@@ -36260,7 +36267,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     </style>
 
     <div class="layout center">
-      <paper-icon-button icon="search" on-click="toggleActive"></paper-icon-button>
+      <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[active]]"></paper-icon-button>
+      <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!active]]"></paper-icon-button>
       <div id="overflow">
         <input type="text" id="input" placeholder="Search Catalog Pages" hidden$="active" on-keyup="_search">
       </div>
@@ -36314,7 +36322,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           this.$.input.value = '';
           setTimeout(function() {
             this.$.input.focus();
-          }.bind(this), 300);
+          }.bind(this), 500);
         } else {
           this.ebEmit('ui-clear-search-catalog-pages');
         }
@@ -36349,6 +36357,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _onSearchUpdate : function(e) {
         if( e.state !== 'loaded' ) return;
+
+        if( !this.$.input.value ) {
+          this.searching = false;
+          this.showResults = true;
+          return this.ebEmit('ui-clear-search-catalog-pages');
+        }
+
         this.searching = false;
         this.showResults = true;
         this.total = 'Matches: '+e.results.total;
@@ -36661,8 +36676,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _searchUpdate : function(e) {
         if( e.state !== 'loaded' ) return;
-
-        console.log(e);
 
         this.pages.forEach(function(page, index) {
           var matched = this._getResultsPageById(e.results.results, page.page_id);
@@ -37035,11 +37048,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           right: 0;
           z-index: 1000;
         }
-
     </style>
 
-
-    
     <paper-material id="carousel">
       <app-page-carousel-search catalog-id="[[catalogId]]" id="carousel-search">
       </app-page-carousel-search>
@@ -37047,7 +37057,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     </paper-material>
 
     <div id="map" state="loaded"></div>
-    <app-price-form id="priceItem" on-add-mark="_onAddMark" on-edit-mark="_onEditMark" on-cancel="_onAddCancel" on-delete="_onDeleteMark">
+    <app-price-form id="priceItem" page-id="[[selected]]" on-add-mark="_onAddMark" on-cancel="_onAddCancel" on-delete="_onDeleteMark">
     </app-price-form>
 
     <div state="loading">
@@ -37303,6 +37313,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         for( var key in this.marks ) {
           if( this.marks[key].pageId !== this.selected ) {
             delete this.marks[key];
+            if( this.mapMarkers[key] ) {
+              delete this.mapMarkers[key];
+            }
           }
         }
 
@@ -37392,9 +37405,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _onApprovedMarksUpdate : function(e) {
-        if( e.state !== 'loaded' ) return;
-
-        // TODO: double check page id === selected
+        if( e.state !== 'loaded' || e.pageId !== this.selected ) return;
 
         e.payload.forEach(function(mark){
           if( this.mapMarkers[mark.markId] && this.marksLayer ) {
@@ -37415,11 +37426,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       _selectAndShowPopup : function(id) {
         this._showHideControls(false);
         
-        if( this.currentState.viewingMark ) {
-          this.$.priceItem.view(this.marks[id]);
-        } else {
-          this.$.priceItem.edit(this.marks[id]);
-        }
+        this.$.priceItem.show(this.marks[id]);
         
         this._selectMarker(this.mapMarkers[id], id);
       },
@@ -37520,26 +37527,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _onAddMark : function(e) {
         this._removeTmpMark();
-        var data = e.detail;
-
-        this.ebEmit('add-catalog-page-mark', {
-          pageId : this.selected,
-          mark : data
-        });
-
-        window.location.hash = this.catalogId + '/' + this.selected;
-      },
-
-      _onEditMark : function(e) {
-        var mark = e.detail;
-
-        this.ebEmit('edit-catalog-page-mark', {
-          pageId : this.selected,
-          markId : mark.id,
-          mark : mark.data
-        });
-
-        window.location.hash = this.catalogId + '/' + this.selected;
       },
 
       _removeTmpMark : function() {
@@ -37552,7 +37539,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 })();
   </script>
 </dom-module>
-<dom-module id="app-price-comment-form" assetpath="elements/input-form/">
+<dom-module id="app-price-form-voting" assetpath="elements/input-form/">
   <template>
     <style include="shared-styles"></style>
     <style>
@@ -37565,12 +37552,18 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         margin:0;
         padding:0;
       }
-      h2 {
-        margin-top: 0;
-        text-transform: capitalize;
+      h2.label {
+        margin:0;
+        text-align: center;
+        color: var(--default-primary-color);
+      }
+      .outer {
+        margin-left: 15px;
       }
       .voting {
         color: #888;
+        margin-top: 0;
+        text-transform: capitalize;
       }
       .voting.voted {
         color: var(--default-primary-color);
@@ -37581,18 +37574,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         height: 56px;
       }
 
-      table {
-        font-size: 16px;
-        width: 100%;
-      }
     </style>
 
-    <div class="layout">
-      <div class="flex">
-        <h2 style="text-align: left">[[currentType]]</h2>
-        <div id="table"></div>
-      </div>
-      <div class="voting" hidden$="[[!showVoting]]">
+    <div class="voting outer" hidden$="[[!showVoting]]">
+      <div>
         <div>
           <paper-icon-button id="upVote" class="voting" icon="expand-less" on-click="_upVote">
           </paper-icon-button>
@@ -37602,11 +37587,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           <paper-icon-button id="downVote" class="voting" icon="expand-more" on-click="_downVote">
           </paper-icon-button>
         </div>
+        <h2 class="label">Vote</h2>
       </div>
     </div>
 
-    <!--<paper-input label="comment"></paper-input>-->
-    
   </template>
   <script>
 
@@ -37650,7 +37634,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     };
 
     Polymer({
-      is: 'app-price-comment-form',
+      is: 'app-price-form-voting',
 
       properties : {
         mark : {
@@ -37672,24 +37656,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         showVoting : {
           type : Boolean,
           value : false
-        }
-      },
-
-      labels : {
-        wine: {
-          color     : 'Wine Color',
-          wineType  : 'Wine Type',
-          size      : 'Bottle Size',
-          name      : 'Name',
-          producer  : 'Producer',
-          price     : 'Price per Bottle',
-          casePrice : 'Price per Case'
-        },
-        spirit : {
-          name      : 'Name',
-          producer  : 'Producer',
-          price     : 'Price per Bottle',
-          casePrice : 'Price per Case'
         }
       },
 
@@ -37719,18 +37685,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       show : function(mark) {
         this.count = 0;
         this.mark = mark;
-
-        this.ebEmit('ui-mark-comment-start', mark);
-
-        this.currentType = this.mark.data.type;
-
-        var html = '<table class="style-scope app-price-comment-form">';
-        for( var key in this.labels[this.currentType] ) {
-          if( this.mark.data[key] ) {
-            html += '<tr><td style="font-weight:bold">'+this.labels[this.currentType][key]+'</td><td>'+this.mark.data[key]+'</td></tr>';
-          }
-        }
-        this.$.table.innerHTML = html+'</table>';
 
         var eles = this.querySelectorAll('.voting');
         for( var i = 0; i < eles.length; i++ ) {
@@ -37798,31 +37752,75 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       paper-toggle-button {
         --paper-toggle-button-checked-button-color: var(--primary-color);
       }
+
+      paper-button[save] {
+        color: white;
+        background-color: var(--default-primary-color);
+      }
     </style>
 
-    <div class="layout center row-form">
-      <div>Spirit</div>
-      <div>
-        <paper-toggle-button id="typeInput" checked="" on-change="_setType"></paper-toggle-button>
-      </div>
-      <div>Wine</div>
-      <div class="space"></div>
+
+
+
+    <div class="layout">
       <div class="flex">
-        <paper-input label="Page Section" id="sectionInput" always-float-label=""></paper-input>
+        <div class="layout center row-form">
+          <div>Spirit</div>
+          <div>
+            <paper-toggle-button id="typeInput" checked="" disabled$="[[disabled]]" on-change="_setType">
+            </paper-toggle-button>
+          </div>
+          <div>Wine</div>
+          <div class="space"></div>
+          <div class="flex">
+            <paper-input label="Page Section" disabled$="[[disabled]]" id="sectionInput" always-float-label="">
+            </paper-input>
+          </div>
+        </div>
+
+        <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
+          <app-price-edit-spirit id="spirit" disabled$="[[disabled]]" add-space="[[addSpace]]">
+          </app-price-edit-spirit>
+
+          <app-price-edit-wine id="wine" disabled$="[[disabled]]" add-space="[[addSpace]]">
+          </app-price-edit-wine>
+        </iron-pages>
+      </div>
+      <div>
+        <app-price-form-voting id="voting"></app-price-form-voting>
       </div>
     </div>
 
-
-    <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
-      <app-price-edit-spirit id="spirit" add-space="[[addSpace]]" on-complete="_onComplete" on-cancel="_cancel">
-      </app-price-edit-spirit>
-
-      <app-price-edit-wine id="wine" add-space="[[addSpace]]" on-complete="_onComplete" on-cancel="_cancel">
-      </app-price-edit-wine>
-    </iron-pages>
+    <div class="buttons" hidden$="[[disabled]]">
+      <div class="layout center">
+        <div hidden$="[[!editMode]]">
+          <paper-icon-button icon="delete" on-click="_delete"></paper-icon-button>
+          <paper-icon-button icon="done" on-click="_approve" hidden$="[[!userState.user.isAdmin]]"></paper-icon-button>
+        </div>
+        <div class="flex"></div>
+        <paper-button on-click="_cancel">Cancel</paper-button>
+        <paper-button save="" on-click="_save">Save</paper-button>
+      </div>
+    </div>
     
   </template>
   <script>
+
+(function(){
+
+    var AuthStateEventLoop = {
+      req : {
+        event : 'get-auth-state',
+      },
+
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.userState = e;
+        }
+      }
+    };
+
     Polymer({
       is: 'app-price-edit-form',
 
@@ -37836,6 +37834,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           value : function() {
             return {}
           }
+        },
+        pageId: {
+          type : String,
+          value : ''
+        },
+        disabled : {
+          type : Boolean,
+          value : false
         }
       },
 
@@ -37844,7 +37850,15 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         'ui-admin-approve-mark' : '_approve',
       },
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        authState : AuthStateEventLoop
+      },
+
+      ready : function() {
+        this.eventLoop.authState.req();
+      },
 
       _setType : function(e) {
         if( this.$.typeInput.checked ) {
@@ -37856,6 +37870,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _reset : function() {
         this.type = 'wine';
+        this.$.sectionInput.value = '';
         this.$.spirit.reset();
         this.$.wine.reset();
       },
@@ -37879,8 +37894,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this.fire('delete', this.editMark);
       },
 
-      _onComplete : function(e) {
-        var data = e.detail;
+      _save : function() {
+        var data = this.$[this.type].getData();
         data.type = this.type;
         data.section = this.$.sectionInput.value;
 
@@ -37903,18 +37918,40 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         }
 
         if( !this.editMode ) {
-          this.fire('add-mark', data);
+          this.fire('add-mark');
+          this._onAddMark(data);
         } else {
           this.editMark.data = data;
-          this.fire('edit-mark', this.editMark);
+          this._onEditMark();
         }
+
+        this.fire('cancel');
+      },
+
+      _onAddMark : function(data) {
+        this.ebEmit('add-catalog-page-mark', {
+          pageId : this.pageId,
+          mark : data
+        });
+
+        window.location.hash = this.catalogId + '/' + this.pageId;
+      },
+
+      _onEditMark : function() {
+        this.ebEmit('edit-catalog-page-mark', {
+          pageId : this.pageId,
+          markId : this.editMark.id,
+          mark : this.editMark.data
+        });
+
+        window.location.hash = this.catalogId + '/' + this.pageId;
       },
 
       _cancel : function() {
         this.fire('cancel');
       },
 
-      edit : function(mark) {
+      show : function(mark) {
         this._reset();
 
         this.ebEmit('ui-mark-edit-start', mark);
@@ -37929,6 +37966,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
         if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
         else this.$.spirit.edit(mark.data);
+
+        this.$.voting.show(mark);
       },
 
       create : function(ll) {
@@ -37937,6 +37976,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this._reset();
       }
     });
+
+})();
   </script>
 </dom-module>
 <dom-module id="app-price-edit-wine" assetpath="elements/input-form/">
@@ -37946,213 +37987,108 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       :host {
         display: block;
       }
-
-      paper-input {
-        color: black;
-      }
-
-      h2 {
-        margin: 0;
-        font-weight: 200;
-      }
-
-      .buttons {
-        text-align: right;
-        padding: 15px;
-      }
-
-      .accept {
-        background-color: var(--primary-color);
-        color: white;
-      }
-
     </style>
 
-    <div id="body">
-
-      <div class="form-row layout center">
-        <div class="flex" style="padding-right: 10px">
-          <div>Wine Type</div>
-          <select value="Still" id="wineType">
-            <option value="Still">Still</option>
-            <option value="Sparkling">Sparkling</option>
-            <option value="Fortified">Fortified</option>
-          </select>
-        </div>
-
-        <div class="flex">
-          <div>Wine Color</div>
-          <select value="Red" id="color">
-            <option value="Red">Red Wine</option>
-            <option value="White">White Wine</option>
-            <option value="Rose">Rose</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="layout form-row">
-          <div class="flex" style="padding-right:10px">
-            <paper-input always-float-label="" id="name" label="Name" type="string"></paper-input>
-          </div>
-          <div>
-            <paper-input always-float-label="" id="year" label="Vintage (year)" type="number"></paper-input>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <paper-input always-float-label="" id="producer" label="Producer" placeholder="Hint text" type="string"></paper-input>
-      </div>
-
-      <div class="form-row">
-        <paper-input always-float-label="" id="country" label="Country" placeholder="Hint text" type="string"></paper-input>
-      </div>
-
-      <div class="form-row">
-        <div>Bottle Type</div>
-        <select value="Standard" id="bottleType">
-          <option value="Standard">Standard</option>
-          <option value="Split">Split</option>
-          <option value="Piccolo">Piccolo</option>
-          <option value="Pony">Pony</option>
-          <option value="Split">Split</option>
-          <option value="Quarter Bottle">Quarter Bottle</option>
-          <option value="Snipe">Snipe</option>
-          <option value="Quarter">Quarter</option>
-          <option value="Chopine">Chopine</option>
-          <option value="Demi">Demi</option>
-          <option value="Half Bottle">Half Bottle</option>
-          <option value="Tenth">Tenth</option>
-          <option value="Jennie">Jennie</option>
-          <option value="Demie">Demie</option>
-          <option value="Pinte">Pinte</option>
-          <option value="Clavelin">Clavelin</option>
-          <option value="Standard">Standard</option>
-          <option value="Fifth">Fifth</option>
-          <option value="Litre">Litre</option>
-          <option value="Magnum">Magnum</option>
-          <option value="Marie Jeanne">Marie Jeanne</option>
-          <option value="Jeroboam">Jeroboam</option>
-          <option value="Rehoboam">Rehoboam</option>
-          <option value="McKenzie">McKenzie</option>
-          <option value="Imperial">Imperial</option>
-          <option value="Methuselah">Methuselah</option>
-          <option value="Salmanazar">Salmanazar</option>
-          <option value="Balthazar">Balthazar</option>
-          <option value="Nebuchadnezzar">Nebuchadnezzar</option>
-          <option value="Melchior">Melchior</option>
-          <option value="Solomon">Solomon</option>
-          <option value="Sovereign">Sovereign</option>
-          <option value="Primat">Primat</option>
-          <option value="Goliath">Goliath</option>
-          <option value="Melchizedek">Melchizedek</option>
-          <option value="Midas">Midas</option>
-          <option value="Tenths">Tenths</option>
-          <option value="Pint">Pint</option>
-          <option value="Quar">Quart</option>
+    <div class="form-row layout center">
+      <div class="flex" style="padding-right: 10px">
+        <div>Wine Type</div>
+        <select value="Still" id="wineType" disabled$="[[disabled]]">
+          <option value="Still">Still</option>
+          <option value="Sparkling">Sparkling</option>
+          <option value="Fortified">Fortified</option>
         </select>
       </div>
 
+      <div class="flex">
+        <div>Wine Color</div>
+        <select value="Red" id="color" disabled$="[[disabled]]">
+          <option value="Red">Red Wine</option>
+          <option value="White">White Wine</option>
+          <option value="Rose">Rose</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
       <div class="layout form-row">
-        <div class="flex">
-          <paper-input always-float-label="" id="price" label="Price per Bottle" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
-            <div prefix="">$</div>
+        <div class="flex" style="padding-right:10px">
+          <paper-input disabled$="[[disabled]]" always-float-label="" id="name" label="Name" type="string">
           </paper-input>
         </div>
-
-        <div class="flex">
-          <paper-input always-float-label="" id="casePrice" label="Price per Case" type="number" min="0" step="0.01">
-            <div prefix="">$</div>
+        <div>
+          <paper-input disabled$="[[disabled]]" always-float-label="" id="year" label="Vintage (year)" type="number">
           </paper-input>
         </div>
       </div>
+    </div>
 
-      <!--
+    <div class="form-row">
+      <paper-input disabled$="[[disabled]]" always-float-label="" id="producer" label="Producer" placeholder="Hint text">
+      </paper-input>
+    </div>
 
-      <div class="layout flex-horizontal form-row">
-        <div class="flex"></div>
+    <div class="form-row">
+      <paper-input always-float-label="" disabled$="[[disabled]]" id="country" label="Country" placeholder="Hint text">
+      </paper-input>
+    </div>
 
-          <paper-input always-float-label id="price" label="Bottle Price" value="" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
-            <div prefix>$</div>
-          </paper-input>
+    <div class="form-row">
+      <div>Bottle Type</div>
+      <select value="Standard" id="bottleType" disabled$="[[disabled]]">
+        <option value="Standard">Standard</option>
+        <option value="Split">Split</option>
+        <option value="Piccolo">Piccolo</option>
+        <option value="Pony">Pony</option>
+        <option value="Split">Split</option>
+        <option value="Quarter Bottle">Quarter Bottle</option>
+        <option value="Snipe">Snipe</option>
+        <option value="Quarter">Quarter</option>
+        <option value="Chopine">Chopine</option>
+        <option value="Demi">Demi</option>
+        <option value="Half Bottle">Half Bottle</option>
+        <option value="Tenth">Tenth</option>
+        <option value="Jennie">Jennie</option>
+        <option value="Demie">Demie</option>
+        <option value="Pinte">Pinte</option>
+        <option value="Clavelin">Clavelin</option>
+        <option value="Standard">Standard</option>
+        <option value="Fifth">Fifth</option>
+        <option value="Litre">Litre</option>
+        <option value="Magnum">Magnum</option>
+        <option value="Marie Jeanne">Marie Jeanne</option>
+        <option value="Jeroboam">Jeroboam</option>
+        <option value="Rehoboam">Rehoboam</option>
+        <option value="McKenzie">McKenzie</option>
+        <option value="Imperial">Imperial</option>
+        <option value="Methuselah">Methuselah</option>
+        <option value="Salmanazar">Salmanazar</option>
+        <option value="Balthazar">Balthazar</option>
+        <option value="Nebuchadnezzar">Nebuchadnezzar</option>
+        <option value="Melchior">Melchior</option>
+        <option value="Solomon">Solomon</option>
+        <option value="Sovereign">Sovereign</option>
+        <option value="Primat">Primat</option>
+        <option value="Goliath">Goliath</option>
+        <option value="Melchizedek">Melchizedek</option>
+        <option value="Midas">Midas</option>
+        <option value="Tenths">Tenths</option>
+        <option value="Pint">Pint</option>
+        <option value="Quar">Quart</option>
+      </select>
+    </div>
 
-          <paper-input always-float-label id="casePrice" label="Case Price" value="" type="number" min="0" step="0.01">
-            <div prefix>$</div>
-          </paper-input>
+    <div class="layout form-row">
+      <div class="flex">
+        <paper-input disabled$="[[disabled]]" always-float-label="" id="price" label="Price per Bottle" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
+          <div prefix="">$</div>
+        </paper-input>
       </div>
 
-      <div class="form-row layout center">
-
-        <div class="flex" style="padding-right: 10px">
-          <div>Wine Color</div>
-          <select value="Red" id="color" >
-            <option value="Red">Red Wine</option>
-            <option value="White">White Wine</option>
-            <option value="Rose">Rose</option>
-          </select>
-        </div>
-
-        <div class="flex" style="padding-right: 10px">
-          <div>Wine Type</div>
-          <select value="Still" id="wineType" >
-            <option value="Still">Still</option>
-            <option value="Sparkling">Sparkling</option>
-            <option value="Fortified">Fortified</option>
-          </select>
-        </div>
-
-        <div class="flex">
-          <div>Bottle Size</div>
-          <select value="Standard" id="size">
-            <option value="Standard">Standard</option>
-            <option value="Split">Split</option>
-            <option value="Piccolo">Piccolo</option>
-            <option value="Pony">Pony</option>
-            <option value="Split">Split</option>
-            <option value="Quarter Bottle">Quarter Bottle</option>
-            <option value="Snipe">Snipe</option>
-            <option value="Quarter">Quarter</option>
-            <option value="Chopine">Chopine</option>
-            <option value="Demi">Demi</option>
-            <option value="Half Bottle">Half Bottle</option>
-            <option value="Tenth">Tenth</option>
-            <option value="Jennie">Jennie</option>
-            <option value="Demie">Demie</option>
-            <option value="Pinte">Pinte</option>
-            <option value="Clavelin">Clavelin</option>
-            <option value="Standard">Standard</option>
-            <option value="Fifth">Fifth</option>
-            <option value="Litre">Litre</option>
-            <option value="Magnum">Magnum</option>
-            <option value="Marie Jeanne">Marie Jeanne</option>
-            <option value="Jeroboam">Jeroboam</option>
-            <option value="Rehoboam">Rehoboam</option>
-            <option value="McKenzie">McKenzie</option>
-            <option value="Imperial">Imperial</option>
-            <option value="Methuselah">Methuselah</option>
-            <option value="Salmanazar">Salmanazar</option>
-            <option value="Balthazar">Balthazar</option>
-            <option value="Nebuchadnezzar">Nebuchadnezzar</option>
-            <option value="Melchior">Melchior</option>
-            <option value="Solomon">Solomon</option>
-            <option value="Sovereign">Sovereign</option>
-            <option value="Primat">Primat</option>
-            <option value="Goliath">Goliath</option>
-            <option value="Melchizedek">Melchizedek</option>
-            <option value="Midas">Midas</option>
-            <option value="Tenths">Tenths</option>
-            <option value="Pint">Pint</option>
-            <option value="Quar">Quart</option>
-          </select>
-        </div>
-      </div>-->
-      
-      <div class="buttons">
-        <paper-button on-click="_cancel">Cancel</paper-button>
-        <paper-button class="accept" on-click="_save" raised="">Save</paper-button>
+      <div class="flex">
+        <paper-input disabled$="[[disabled]]" always-float-label="" id="casePrice" label="Price per Case" type="number" min="0" step="0.01">
+          <div prefix="">$</div>
+        </paper-input>
       </div>
-
     </div>
 
   </template>
@@ -38166,7 +38102,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           type : String,
           value : null,
         },
-        active : {
+        disabled : {
           type : Boolean,
           value : false
         }
@@ -38174,24 +38110,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       
       behaviors : [EventBusBehavior],
 
-      ebBind : {
-        'ui-save-mark' : '_onHeaderSaveEvent'
-      },
-
-      _onHeaderSaveEvent : function() {
-        if( !this.active ) return;
-        this._save();
-      },
-
       reset : function() {
-        // this.$.color.value = 'Red';
-        // this.$.wineType.value = 'Still';
-        // this.$.size.value = 'Standard';
-        // this.$.name.value = '';
-        // this.$.year.value = '';
-        // this.$.price.value = '';
-        // this.$.casePrice.value = '';
-
         this.$.color.value = 'Red';
         this.$.wineType.value = 'Still';
         this.$.bottleType.value = 'Standard';
@@ -38204,14 +38123,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       edit : function(data) {
-        // this.$.color.value = data.color || 'Red';
-        // this.$.wineType.value = data.wineType || 'Still';
-        // this.$.size.value = data.size || 'Standard';
-        // this.$.name.value = data.name || '';
-        // this.$.year.value = data.year || '';
-        // this.$.price.value = data.price || '';
-        // this.$.casePrice.value = data.casePrice || '';
-        
         this.$.color.value = data.color || 'Red';
         this.$.wineType.value = data.wineType || 'Still';
         this.$.bottleType.value = data.bottleType || 'Standard';
@@ -38223,22 +38134,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this.$.year.value = data.year || '';
       },
 
-      _cancel : function() {
-        this.fire('cancel');
-      },
-
-      _save : function() {
-        // var data = {
-        //   color: this.$.color.value,
-        //   wineType : this.$.wineType.value,
-        //   size : this.$.size.value,
-        //   name : this.$.name.value,
-        //   year : this.$.year.value,
-        //   price : this.$.price.value,
-        //   casePrice : this.$.casePrice.value,
-        // };
-        
-        var data = {
+      getData : function() {
+        return {
           color: this.$.color.value,
           wineType : this.$.wineType.value,
           bottleType : this.$.bottleType.value,
@@ -38249,8 +38146,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           country : this.$.country.value,
           year : this.$.year.value
         };
-
-        this.fire('complete', data);
       }
     });
   </script>
@@ -38261,92 +38156,40 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       :host {
         display: block;
       }
-      
-      .buttons {
-        text-align: right;
-        padding: 15px;
-      }
-
-      .accept {
-        background-color: var(--primary-color);
-        color: white;
-      }
     </style>
 
-    <div id="body">
+    <div class="form-row">
+      <paper-input always-float-label="" id="name" placeholder="Hint text" label="Name" disabled$="[[disabled]]">
+      </paper-input>
+    </div>
 
-      <div class="form-row">
-        <paper-input always-float-label="" id="name" placeholder="Hint text" label="Name" type="string"></paper-input>
+    <div class="form-row">
+      <paper-input always-float-label="" id="country" placeholder="Hint text" label="Country" disabled$="[[disabled]]">
+      </paper-input>
+    </div>
+
+    <div class="layout flex-horizontal form-row">
+      <div class="flex">
+        <paper-input always-float-label="" disabled$="[[disabled]]" id="price" label="Price per Bottle" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
+          <div prefix="">$</div>
+        </paper-input>
       </div>
 
-      <div class="form-row">
-        <paper-input always-float-label="" id="country" placeholder="Hint text" label="Country" type="string"></paper-input>
+      <div class="flex">
+        <paper-input always-float-label="" disabled$="[[disabled]]" id="casePrice" label="Price per Case" type="number" min="0" step="0.01">
+          <div prefix="">$</div>
+        </paper-input>
       </div>
+    </div>
 
-      <div class="layout flex-horizontal form-row">
-        <div class="flex">
-          <paper-input always-float-label="" id="price" label="Price per Bottle" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
-            <div prefix="">$</div>
-          </paper-input>
-        </div>
+    <div class="form-row">
+      <paper-input always-float-label="" disabled$="[[disabled]]" id="spiritType" placeholder="Hint text" label="Spirit Type">
+      </paper-input>
+    </div>
 
-        <div class="flex">
-          <paper-input always-float-label="" id="casePrice" label="Price per Case" type="number" min="0" step="0.01">
-            <div prefix="">$</div>
-          </paper-input>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <paper-input always-float-label="" id="spiritType" placeholder="Hint text" label="Spirit Type" type="string"></paper-input>
-      </div>
-
-      <!--<div hidden$="[[!addSpace]]">-->
-      <div>
-        <div class="form-row"></div>
-        <div class="form-row"></div>
-      </div>
-
-      <!--<div class="layout form-row">
-        <div class="flex" style="padding-right:10px">
-          <paper-input always-float-label id="name" label="Spirit Name" value="" type="string" ></paper-input>
-        </div>
-        <div>
-          <div>Spirit Type</div>
-          <select value="" id="spiritType" >
-            <option value=""></option>
-          </select>
-        </div>
-      </div>
-
-      <div class="layout flex-horizontal form-row">
-        <div class="flex"></div>
-
-          <paper-input always-float-label id="price" label="Bottle Price" value="" type="number" min="0" step="0.01" size="10" style="padding-right: 10px">
-            <div prefix>$</div>
-          </paper-input>
-
-          <paper-input always-float-label id="casePrice" label="Case Price" value="" type="number" min="0" step="0.01">
-            <div prefix>$</div>
-          </paper-input>
-      </div>
-
-      <div class="form-row layout center">
-
-        <div class="flex" style="padding-right: 10px">
-          <paper-input always-float-label id="size" label="Bottle Size" value="" type="number" min="0" step="0.01"></paper-input>
-        </div>
-
-        <div class="flex">
-          <paper-input always-float-label id="country" label="Country" value=""></paper-input>
-        </div>
-      </div>-->
-      
-      <div class="buttons">
-        <paper-button on-click="_cancel">Cancel</paper-button>
-        <paper-button class="accept" on-click="_save" raised="">Save</paper-button>
-      </div>
-
+    <div>
+      <div class="form-row"></div>
+      <div class="form-row"></div>
     </div>
 
   </template>
@@ -38363,31 +38206,16 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           type : Boolean,
           value : false
         },
-        active : {
+        disabled : {
           type : Boolean,
           value : false
         }
       },
 
       behaviors : [EventBusBehavior],
-      
-      ebBind : {
-        'ui-save-mark' : '_onHeaderSaveEvent'
-      },
 
-      _onHeaderSaveEvent : function() {
-        if( !this.active ) return;
-        this._save();
-      },
 
       reset : function() {
-        // this.$.spiritType.value = '';
-        // this.$.size.value = '';
-        // this.$.name.value = '';
-        // this.$.price.value = '';
-        // this.$.country.value = '';
-        // this.$.casePrice.value = '';
-
         this.$.name.value = '';
         this.$.price.value = '';
         this.$.casePrice.value = '';
@@ -38396,13 +38224,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       edit : function(data) {
-        // this.$.spiritType.value = data.spiritType || '';
-        // this.$.size.value = data.size || '';
-        // this.$.name.value = data.name || '';
-        // this.$.country.value = data.country || '';
-        // this.$.price.value = data.price || '';
-        // this.$.casePrice.value = data.casePrice || '';
-
         this.$.name.value = data.name || '';
         this.$.spiritType.value = data.spiritType || '';
         this.$.country.value = data.country || '';
@@ -38410,29 +38231,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this.$.casePrice.value = data.casePrice || '';
       },
 
-      _cancel : function() {
-        this.fire('cancel');
-      },
-
-      _save : function() {
-        // var data = {
-        //   spiritType : this.$.spiritType.value,
-        //   size : this.$.size.value,
-        //   name : this.$.name.value,
-        //   country : this.$.country.value,
-        //   price : this.$.price.value,
-        //   casePrice : this.$.casePrice.value,
-        // };
-
-        var data = {
+      getData : function() {
+        return {
            name : this.$.name.value,
            spiritType : this.$.spiritType.value,
            country : this.$.country.value,
            price : this.$.price.value,
            casePrice : this.$.casePrice.value,
         };
-
-        this.fire('complete', data);
       }
     });
   </script>
@@ -38470,13 +38276,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
     <div id="body">
       <div>
-        <iron-pages selected="[[type]]" attr-for-selected="id">
-          <app-price-edit-form id="edit" add-space="[[addSpace]]" user-state="[[userState]]" on-complete="_onComplete" on-delete="_cancel" on-cancel="_cancel">
-          </app-price-edit-form>
-
-          <app-price-comment-form id="comment" user-state="[[userState]]" on-complete="_onComplete" on-cancel="_cancel">
-          </app-price-comment-form>
-        </iron-pages>
+        <app-price-edit-form id="form" page-id="[[pageId]]" user-state="[[userState]]" disabled$="[[disabled]]" on-complete="_cancel" on-delete="_cancel" on-cancel="_cancel">
+        </app-price-edit-form>
       </div>
     </div>
 
@@ -38502,10 +38303,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       is: 'app-price-form',
 
       properties : {
-        type : {
-          type : String,
-          value : 'edit'
-        },
         addSpace : {
           type : Boolean,
           value : false
@@ -38515,6 +38312,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           value : function() {
             return {}
           }
+        },
+        pageId: {
+          type : String,
+          value : ''
+        },
+        disabled : {
+          type : Boolean,
+          value : false
         }
       },
 
@@ -38540,40 +38345,30 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         // TODO;
       },
 
-      _onComplete : function() {
-        this.hide();
-      },
-
       _cancel : function() {
         this.hide();
       },
 
-      edit : function(mark) {
-        if( this.userState && 
+      show : function(mark) {
+        if( !mark.data.approved &&
+            this.userState && 
             this.userState.user &&
             (this.userState.user.isAdmin || 
             mark.data.user === this.userState.user.uid) ) {
           
-          this.type = 'edit';
-          this.$.edit.edit(mark);
+          this.disabled = false;
         } else {
-          this.type = 'comment';
-          this.$.comment.show(mark);
+          this.disabled = true;
         }
 
-        this.style.display = 'block';
-      },
-
-      view : function(mark) {
-        this.type = 'comment';
-        this.$.comment.show(mark, true);
-
+        this.$.form.show(mark);
         this.style.display = 'block';
       },
 
       create : function(ll) {
         this.type = 'edit';
-        this.$.edit.create(ll);
+        this.disabled = false;
+        this.$.form.create(ll);
         this.style.display = 'block';
       },
 
@@ -38936,6 +38731,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           <h2 class="overflow" id="title">[[title]]</h2>
         </td>
         <td style="text-align: right">
+          <a href="#admin" hidden$="[[!userState.user.isAdmin]]" style="color:white"><paper-icon-button icon="gavel"></paper-icon-button></a>
           <paper-icon-button icon="info" on-click="_showHelp"></paper-icon-button>
         </td>
       </tr>
@@ -38997,6 +38793,19 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       }
     };
 
+    var AuthStateEventLoop = {
+      req : {
+        event : 'get-auth-state',
+      },
+
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.userState = e;
+        }
+      }
+    };
+
     Polymer({
       is: 'app-header-page',
 
@@ -39007,11 +38816,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       eventLoops : {
-        catalog : CatalogEventLoop
+        catalog : CatalogEventLoop,
+        authState : AuthStateEventLoop
       },
 
       ready : function() {
         window.addEventListener('resize', this._resize.bind(this));
+        this.eventLoop.authState.req();
         this._resize();
       },
 
@@ -39053,6 +38864,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       :host {
         display: block;
       }
+      paper-icon-button {
+        color: white;
+      }
     </style>
 
     <div class="layout center">
@@ -39060,10 +38874,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       <h2 class="flex">[[title]]</h2>
       <div>
         <div id="icons">
-          <paper-icon-button icon="check" on-click="_approve" hidden$="[[!userState.user.isAdmin]]">
-          </paper-icon-button>
-          <paper-icon-button icon="save" on-click="_save"></paper-icon-button>
-          <paper-icon-button icon="delete" id="delete" on-click="_delete"></paper-icon-button>
+
+          <a href="#admin" hidden$="[[!userState.user.isAdmin]]"><paper-icon-button icon="gavel"></paper-icon-button></a>
+
         </div>
       </div>
     </div>
@@ -39109,8 +38922,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       ebBind : {
-        'ui-mark-comment-start' : '_onComment',
-        'ui-mark-edit-start' : '_onEdit',
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
         'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
         'app-state-update' : '_onAppStateUpdate'
@@ -39136,35 +38947,11 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this.pageId = id;
       },
 
-      _onComment : function() {
-        this.$.icons.style.display = 'none';
-      },
-
-      _onEdit : function(mark) {
-        this.$.icons.style.display = 'block';
-        this.$.delete.style.display = 'none';
-        if( this.userState.user && 
-            ( mark.data.user === this.userState.user.uid ||
-             this.userState.user.isAdmin) ) {
-          this.$.delete.style.display = 'inline-block';
-        }
-      },
-
       _cancelEdit : function() {
         window.location.hash = this.catalogId + '/' + this.pageId;
       },
 
-      _approve : function() {
-        this.ebEmit('ui-admin-approve-mark');
-      },
 
-      _delete : function() {
-        this.ebEmit('ui-delete-mark');
-      },
-
-      _save : function() {
-        this.ebEmit('ui-save-mark');
-      }
     });
 
 })();
@@ -39299,7 +39086,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
             <a on-click="_logout">Logout</a>
           </div>
-          <div hidden$="[[!isAdmin]]"><a href="/#admin" on-click="_hidePopup">Admin Interface</a></div>
+          <div hidden$="[[!isAdmin]]">
+            <a href="#admin" on-click="_hidePopup"><iron-icon icon="gavel"></iron-icon> Admin Interface</a>
+            </div>
           <div hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></div>
         </div>
       </div>
@@ -39799,6 +39588,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       .light {
         color: var(--secondary-text-color);
       }
+
+      paper-icon-button[nav] {
+        color: var(--default-primary-color);
+      }
+
+      paper-icon-button[nav][disabled] {
+        color: var(--secondary-text-color);
+      }
     </style>
 
 
@@ -39816,20 +39613,20 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       </div>
     </div>
 
-    <paper-material class="layout center">
+    <div class="layout center" style="margin: 0 40px">
       <div>
-        <paper-icon-button icon="chevron-left"></paper-icon-button>
+        <paper-icon-button nav="" icon="arrow-back" id="prevBtn" on-click="_prev"></paper-icon-button>
       </div>
-      <div class="flex" style="text-align: center">
+      <h2 class="flex" style="text-align: center">
         Showing 
-        <span class="light">1</span> to 
-        <span class="light">10</span> of 
-        <span class="light">55</span>
-      </div>
+        <span class="light">[[start]]</span> to 
+        <span class="light">[[stop]]</span> of 
+        <span class="light">[[total]]</span>
+      </h2>
       <div>
-        <paper-icon-button icon="chevron-right"></paper-icon-button>
+        <paper-icon-button nav="" icon="arrow-forward" id="nextBtn" on-click="_next"></paper-icon-button>
       </div>
-    </paper-material>
+    </div>
 
     <paper-material style="overflow-x:auto">
       <app-datatable id="datatable" on-inspect="onInspect" on-approve="onApprove" on-delete="onDelete" loading="[[loading]]" header="[[header]]" data="[[marks]]">
@@ -39884,15 +39681,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           value : 'score'
         },
 
-        /**
-         * The firebase pagging api is horrid.  You have to keep track of this
-         * id, to know where to start from.
-         **/
-        lastMarkId : {
-          type : String,
-          value : ''
-        },
-
         hostApi : {
           type : String,
           value : ''
@@ -39903,7 +39691,28 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           value : function() {
             return ['Page', 'Data', 'Score', 'Actions'];
           }
-        }
+        },
+
+        pageIndex : {
+          type : Number,
+          value : 0
+        },
+        limit : {
+          type : Number,
+          value : 10
+        },
+        total : {
+          type : Number,
+          value : 0
+        },
+        stop : {
+          type : Number,
+          value : 0
+        },
+        start : {
+          type : Number,
+          value : 0
+        },
       },
 
       behaviors : [EventBusBehavior],
@@ -39927,7 +39736,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
         this.ebEmit('pending-mark-search', {
           params : {
-            order : this.$.sortInput.value
+            order : this.$.sortInput.value,
+            limit : this.limit,
+            offset : this.limit*this.pageIndex
           },
           handler : this._onMarksLoad.bind(this)
         });
@@ -39945,13 +39756,43 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
         if( e.state !== 'loaded' ) return;
 
-        var arr = e.payload;
+        this.searchResults = e;
+
+        var arr = e.payload.results;
         arr.forEach((mark) => {
           mark.createdStr = new Date(mark.created).toLocaleString();
           mark.updatedStr = new Date(mark.updated).toLocaleString();
         });
 
         this.marks = arr;
+        this._updatePaging();
+      },
+
+      _updatePaging : function() {
+        this.start = this.searchResults.payload.start+1;
+        this.stop = this.searchResults.payload.stop+1;
+        this.total = this.searchResults.payload.total;
+
+        this.$.prevBtn.removeAttribute('disabled');
+        this.$.nextBtn.removeAttribute('disabled');
+
+        if( this.searchResults.payload.start === 0 ) {
+          this.$.prevBtn.setAttribute('disabled', 'disabled');
+        }
+
+        if( this.stop >= this.total ) {
+          this.$.nextBtn.setAttribute('disabled', 'disabled');
+        }
+      },
+
+      _prev : function() {
+        this.pageIndex--;
+        this._getPendingMarks();
+      },
+
+      _next : function() {
+        this.pageIndex++;
+        this._getPendingMarks();
       },
 
       _getApiHost : function() {

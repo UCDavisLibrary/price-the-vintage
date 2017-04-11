@@ -21,6 +21,14 @@
       .light {
         color: var(--secondary-text-color);
       }
+
+      paper-icon-button[nav] {
+        color: var(--default-primary-color);
+      }
+
+      paper-icon-button[nav][disabled] {
+        color: var(--secondary-text-color);
+      }
     </style>
 
 
@@ -38,20 +46,20 @@
       </div>
     </div>
 
-    <paper-material class="layout center">
+    <div class="layout center" style="margin: 0 40px">
       <div >
-        <paper-icon-button icon="chevron-left"></paper-icon-button>
+        <paper-icon-button nav icon="arrow-back" id="prevBtn" on-click="_prev"></paper-icon-button>
       </div>
-      <div class="flex" style="text-align: center">
+      <h2 class="flex" style="text-align: center">
         Showing 
-        <span class="light">1</span> to 
-        <span class="light">10</span> of 
-        <span class="light">55</span>
-      </div>
+        <span class="light">[[start]]</span> to 
+        <span class="light">[[stop]]</span> of 
+        <span class="light">[[total]]</span>
+      </h2>
       <div>
-        <paper-icon-button icon="chevron-right"></paper-icon-button>
+        <paper-icon-button nav icon="arrow-forward" id="nextBtn" on-click="_next"></paper-icon-button>
       </div>
-    </paper-material>
+    </div>
 
     <paper-material style="overflow-x:auto">
       <app-datatable 
@@ -117,15 +125,6 @@
           value : 'score'
         },
 
-        /**
-         * The firebase pagging api is horrid.  You have to keep track of this
-         * id, to know where to start from.
-         **/
-        lastMarkId : {
-          type : String,
-          value : ''
-        },
-
         hostApi : {
           type : String,
           value : ''
@@ -136,7 +135,28 @@
           value : function() {
             return ['Page', 'Data', 'Score', 'Actions'];
           }
-        }
+        },
+
+        pageIndex : {
+          type : Number,
+          value : 0
+        },
+        limit : {
+          type : Number,
+          value : 10
+        },
+        total : {
+          type : Number,
+          value : 0
+        },
+        stop : {
+          type : Number,
+          value : 0
+        },
+        start : {
+          type : Number,
+          value : 0
+        },
       },
 
       behaviors : [EventBusBehavior],
@@ -160,7 +180,9 @@
 
         this.ebEmit('pending-mark-search', {
           params : {
-            order : this.$.sortInput.value
+            order : this.$.sortInput.value,
+            limit : this.limit,
+            offset : this.limit*this.pageIndex
           },
           handler : this._onMarksLoad.bind(this)
         });
@@ -178,13 +200,43 @@
 
         if( e.state !== 'loaded' ) return;
 
-        var arr = e.payload;
+        this.searchResults = e;
+
+        var arr = e.payload.results;
         arr.forEach((mark) => {
           mark.createdStr = new Date(mark.created).toLocaleString();
           mark.updatedStr = new Date(mark.updated).toLocaleString();
         });
 
         this.marks = arr;
+        this._updatePaging();
+      },
+
+      _updatePaging : function() {
+        this.start = this.searchResults.payload.start+1;
+        this.stop = this.searchResults.payload.stop+1;
+        this.total = this.searchResults.payload.total;
+
+        this.$.prevBtn.removeAttribute('disabled');
+        this.$.nextBtn.removeAttribute('disabled');
+
+        if( this.searchResults.payload.start === 0 ) {
+          this.$.prevBtn.setAttribute('disabled', 'disabled');
+        }
+
+        if( this.stop >= this.total ) {
+          this.$.nextBtn.setAttribute('disabled', 'disabled');
+        }
+      },
+
+      _prev : function() {
+        this.pageIndex--;
+        this._getPendingMarks();
+      },
+
+      _next : function() {
+        this.pageIndex++;
+        this._getPendingMarks();
       },
 
       _getApiHost : function() {
