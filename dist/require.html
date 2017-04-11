@@ -36222,6 +36222,141 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     });
   </script>
 </dom-module>
+<dom-module id="app-page-carousel-search" assetpath="elements/mark/">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        background: rgba(255,255,255,.2);
+        transition: background 300ms linear;
+      }
+
+      input {
+        font-size: 16px;
+        background: transparent;
+        width: 250px;
+        padding: 10px;
+        margin: 0;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: 1px solid var(--secondary-text-color);
+      }
+
+      #overflow {
+        transition: all 300ms linear;
+        width: 0;
+        overflow: hidden;
+      }
+
+      :host([active]) {
+        background: rgba(255,255,255,1);
+      }
+
+      :host([active]) #overflow {
+        width: 275px;
+      }
+    </style>
+
+    <div class="layout center">
+      <paper-icon-button icon="search" on-click="toggleActive"></paper-icon-button>
+      <div id="overflow">
+        <input type="text" id="input" placeholder="Search Catalog Pages" hidden$="active" on-keyup="_search">
+      </div>
+      <div style="padding-left: 15px">
+        <paper-spinner active="" hidden$="[[!searching]]"></paper-spinner>
+        <div hidden$="[[!showResults]]">[[total]]</div>
+      </div>
+    </div>
+
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-page-carousel-search',
+
+      properties : {
+        catalogId : {
+          type : String,
+          value : ''
+        },
+        searching : {
+          type : Boolean,
+          value : false
+        },
+        active : {
+          type : Boolean,
+          value : false,
+          reflectToAttribute : true
+        },
+        showResults : {
+          type : Boolean,
+          value : false
+        },
+        total : {
+          type : String,
+          value : ''
+        }
+      },
+
+      behaviors : [EventBusBehavior],
+
+      ebBind : {
+        'search-catalog-pages-update' : '_onSearchUpdate'
+      },
+
+      toggleActive : function() {
+        this.active = !this.active;
+        this.showResults = false;
+
+        if( this.active ) {
+          this.$.input.value = '';
+          setTimeout(function() {
+            this.$.input.focus();
+          }.bind(this), 300);
+        } else {
+          this.ebEmit('ui-clear-search-catalog-pages');
+        }
+      },
+
+      _search : function() {
+        this.showResults = false;
+
+        if( !this.$.input.value ) {
+          this.searching = false;
+          return this.ebEmit('ui-clear-search-catalog-pages');
+        }
+
+        this.searching = true;
+        this.debounce('_searchAsync', this._searchAsync, 200);
+      },
+
+      _searchAsync : function() {
+        if( !this.$.input.value ) {
+          this.searching = false;
+          this.showResults = true;
+          return this.ebEmit('ui-clear-search-catalog-pages');
+        }
+
+        this.ebEmit('search-catalog-pages', {
+          query : {
+            catalogId : this.catalogId,
+            q : this.$.input.value,
+          }
+        });
+      },
+
+      _onSearchUpdate : function(e) {
+        if( e.state !== 'loaded' ) return;
+        this.searching = false;
+        this.showResults = true;
+        this.total = 'Matches: '+e.results.total;
+      }
+
+    });
+  </script>
+</dom-module>
 <dom-module id="app-page-carousel" assetpath="elements/mark/">
   <template>
     <style include="shared-styles"></style>
@@ -36281,15 +36416,19 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       #nextBtn {
         z-index: 5;
         position: absolute;
-        top: 55px;
+        top: 85px;
         right: 5px;
       }
 
       #previousBtn {
         z-index: 5;
         position: absolute;
-        top: 55px;
+        top: 85px;
         left: 5px;
+      }
+
+      app-page-item[no-search-match] {
+        opacity: .2;
       }
 
     </style>
@@ -36301,7 +36440,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         <div id="scrollPanel">
           <div>
             <template is="dom-repeat" items="[[pages]]" as="page" style="height:80px">
-                <app-page-item style="display:inline-block" class="grid-item" active$="[[active]]" catalog-id$="[[catalogId]]" page="[[page]]" api-host="[[apiHost]]" on-click="_select">
+                <app-page-item style="display:inline-block" class="grid-item" active$="[[active]]" no-search-match$="[[page.noMatch]]" catalog-id$="[[catalogId]]" page="[[page]]" api-host="[[apiHost]]" on-click="_select">
                 </app-page-item>
             </template>
           </div>
@@ -36391,7 +36530,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       ebBind : {
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'catalog-update' : '_updateScroll'
+        'catalog-update' : '_updateScroll',
+        'ui-clear-search-catalog-pages' : '_clearSearch',
+        'search-catalog-pages-update' : '_searchUpdate'
       },
 
       ready : function() {
@@ -36510,6 +36651,32 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _select : function(e) {
         window.location.hash = this.catalogId+'/'+e.currentTarget.page.page_id;
+      },
+
+      _clearSearch : function() {
+        this.pages.forEach(function(page, index){
+          this.set('pages.'+index+'.noMatch', false);
+        }.bind(this));
+      },
+
+      _searchUpdate : function(e) {
+        if( e.state !== 'loaded' ) return;
+
+        console.log(e);
+
+        this.pages.forEach(function(page, index) {
+          var matched = this._getResultsPageById(e.results.results, page.page_id);
+          this.set('pages.'+index+'.noMatch', !matched ? true : false);
+        }.bind(this));
+      },
+
+      _getResultsPageById : function(results, id) {
+        for( var i = 0; i < results.length; i++ ) {
+          if( results[i].page_id === id ) {
+            return results[i];
+          }
+        }
+        return null;
       }
 
     });
@@ -36868,9 +37035,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           right: 0;
           z-index: 1000;
         }
+
     </style>
 
+
+    
     <paper-material id="carousel">
+      <app-page-carousel-search catalog-id="[[catalogId]]" id="carousel-search">
+      </app-page-carousel-search>
       <app-page-carousel active="[[active]]"></app-page-carousel>
     </paper-material>
 

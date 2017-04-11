@@ -1,3 +1,5 @@
+<link rel="import" href="app-page-carousel-search.html">
+
 <dom-module id="app-page-carousel">
   <template>
     <style include="shared-styles"></style>
@@ -57,15 +59,19 @@
       #nextBtn {
         z-index: 5;
         position: absolute;
-        top: 55px;
+        top: 85px;
         right: 5px;
       }
 
       #previousBtn {
         z-index: 5;
         position: absolute;
-        top: 55px;
+        top: 85px;
         left: 5px;
+      }
+
+      app-page-item[no-search-match] {
+        opacity: .2;
       }
 
     </style>
@@ -84,6 +90,7 @@
                   style="display:inline-block"
                   class="grid-item"
                   active$="[[active]]"
+                  no-search-match$="[[page.noMatch]]"
                   catalog-id$="[[catalogId]]" 
                   page="[[page]]" 
                   api-host="[[apiHost]]"
@@ -180,7 +187,9 @@
 
       ebBind : {
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'catalog-update' : '_updateScroll'
+        'catalog-update' : '_updateScroll',
+        'ui-clear-search-catalog-pages' : '_clearSearch',
+        'search-catalog-pages-update' : '_searchUpdate'
       },
 
       ready : function() {
@@ -299,6 +308,32 @@
 
       _select : function(e) {
         window.location.hash = this.catalogId+'/'+e.currentTarget.page.page_id;
+      },
+
+      _clearSearch : function() {
+        this.pages.forEach(function(page, index){
+          this.set('pages.'+index+'.noMatch', false);
+        }.bind(this));
+      },
+
+      _searchUpdate : function(e) {
+        if( e.state !== 'loaded' ) return;
+
+        console.log(e);
+
+        this.pages.forEach(function(page, index) {
+          var matched = this._getResultsPageById(e.results.results, page.page_id);
+          this.set('pages.'+index+'.noMatch', !matched ? true : false);
+        }.bind(this));
+      },
+
+      _getResultsPageById : function(results, id) {
+        for( var i = 0; i < results.length; i++ ) {
+          if( results[i].page_id === id ) {
+            return results[i];
+          }
+        }
+        return null;
       }
 
     });

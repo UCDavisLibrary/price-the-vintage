@@ -41,9 +41,16 @@
           right: 0;
           z-index: 1000;
         }
+
     </style>
 
+
+    
     <paper-material id="carousel">
+      <app-page-carousel-search 
+        catalog-id="[[catalogId]]" 
+        id="carousel-search">
+      </app-page-carousel-search>
       <app-page-carousel active="[[active]]"></app-page-carousel>
     </paper-material>
 
