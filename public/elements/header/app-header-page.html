@@ -13,6 +13,13 @@
         display: block;
       }
 
+      @media(min-width: 768px) {
+        .overflow {
+          text-align: center;
+          padding-left: 80px;
+        }
+      }
+
       paper-dialog {
         color: black;
       }
@@ -30,7 +37,7 @@
     <table style="width: 100%">
       <tr>
         <td>
-          <paper-icon-button icon="close" on-click="_back"></paper-icon-button>
+          <paper-icon-button icon="arrow-back" on-click="_back"></paper-icon-button>
         </td>
         <td>
           <h2 class="overflow" id="title">[[title]]</h2>
@@ -116,7 +123,13 @@
       },
 
       _resize : function() {
-        this.$.title.style.width = (window.innerWidth - 212) + 'px';
+        // 80 px is for padding
+        var size = window.innerWidth - 212;
+        if( window.innerWidth > 768 ) {
+          size -= 80;
+        }
+
+        this.$.title.style.width = size + 'px';
       },
 
       _showHelp : function() {

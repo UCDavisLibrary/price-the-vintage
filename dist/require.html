@@ -38734,6 +38734,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         display: block;
       }
 
+      @media(min-width: 768px) {
+        .overflow {
+          text-align: center;
+          padding-left: 80px;
+        }
+      }
+
       paper-dialog {
         color: black;
       }
@@ -38751,7 +38758,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     <table style="width: 100%">
       <tbody><tr>
         <td>
-          <paper-icon-button icon="close" on-click="_back"></paper-icon-button>
+          <paper-icon-button icon="arrow-back" on-click="_back"></paper-icon-button>
         </td>
         <td>
           <h2 class="overflow" id="title">[[title]]</h2>
@@ -38837,7 +38844,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _resize : function() {
-        this.$.title.style.width = (window.innerWidth - 212) + 'px';
+        // 80 px is for padding
+        var size = window.innerWidth - 212;
+        if( window.innerWidth > 768 ) {
+          size -= 80;
+        }
+
+        this.$.title.style.width = size + 'px';
       },
 
       _showHelp : function() {
@@ -38998,10 +39011,11 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     </style>
 
     <div class="layout center">
-      <h2 class="flex">Admin Interface</h2>
+      
       <div>
         <a href="#"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
       </div>
+      <h2 class="flex" style="text-align: center">Admin Interface</h2>
     </div>
 
   </template>
@@ -39113,7 +39127,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
             <a on-click="_logout">Logout</a>
           </div>
-          <div hidden$="[[!isAdmin]]"><a href="/#admin">Admin Interface</a></div>
+          <div hidden$="[[!isAdmin]]"><a href="/#admin" on-click="_hidePopup">Admin Interface</a></div>
           <div hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></div>
         </div>
       </div>
@@ -39205,6 +39219,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         }
       },
 
+      _hidePopup : function() {
+        this.$.logout.style.display = 'none';
+      },
+
       _login : function() {
         this.ebEmit('login-auth0');
       },
@@ -39212,6 +39230,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       _switch : function() {
         this._logout();
         this._login();
+        this._hidePopup();
       },
 
       _toggleLogout : function() {
@@ -39499,7 +39518,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     <style>
       :host {
         display: block;
-        height: 200px;
+        height: 232px;
         overflow: auto;
       }
     </style>
@@ -39550,7 +39569,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         },
       },
 
-      ignore : ['user'],
+      ignore : ['user','created','updated','xy'],
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
@@ -39568,7 +39587,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         for( var key in e.data ) {
           if( this.ignore.indexOf(key) > -1 ) continue;
           if( !e.data[key] ) continue;
-          html += '<tr><td style="font-weight:bold">'+key+'</td><td>';
+          html += '<tr><td style="font-weight:bold">'+key+'</td>'+
+                  '<td style="color:#757575;padding:5px">';
 
           if( key === 'created' || key === 'updated' ) {
             html +=  new Date(e.data[key]).toLocaleString();
@@ -39599,23 +39619,45 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         margin: 15px;
         background: white;
       }
+
+      tr td {
+        padding: 10px !important;
+      }
+
+      .light {
+        color: var(--secondary-text-color);
+      }
     </style>
 
+
     <div style="padding: 15px">
-      <div class="layout bottom">
-        <h3 style="padding-right: 15px">Sort By:</h3>
-        <div class="flex">
-          <select id="sortInput" on-change="_getPendingMarks">
-            <option value="updated.desc">Updated Desc</option>
-            <option value="updated.asc">Updated Asc</option>
-            <option value="created.desc">Created Desc</option>
-            <option value="created.asc">Created Asc</option>
-            <option value="score.desc">Score Desc</option>
-            <option value="score.asc">Score Asc</option>
-          </select>
-        </div>
+      <h3 style="margin:0">Sort By:</h3>
+      <div style="max-width: 400px">
+        <select id="sortInput" on-change="_getPendingMarks">
+          <option value="updated.desc">Updated Descending</option>
+          <option value="updated.asc">Updated Ascending</option>
+          <option value="created.desc">Created Descending</option>
+          <option value="created.asc">Created Ascending</option>
+          <option value="score.desc">Score Descending</option>
+          <option value="score.asc">Score Ascending</option>
+        </select>
       </div>
     </div>
+
+    <paper-material class="layout center">
+      <div>
+        <paper-icon-button icon="chevron-left"></paper-icon-button>
+      </div>
+      <div class="flex" style="text-align: center">
+        Showing 
+        <span class="light">1</span> to 
+        <span class="light">10</span> of 
+        <span class="light">55</span>
+      </div>
+      <div>
+        <paper-icon-button icon="chevron-right"></paper-icon-button>
+      </div>
+    </paper-material>
 
     <paper-material style="overflow-x:auto">
       <app-datatable id="datatable" on-inspect="onInspect" on-approve="onApprove" on-delete="onDelete" loading="[[loading]]" header="[[header]]" data="[[marks]]">
@@ -39624,13 +39666,17 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             <td>
               <app-page-admin-mark-icon api-host$="[[apiHost]]" mark="[[item]]" page-id="[[item.page_id]]">
               </app-page-admin-mark-icon>
+              <div class="light">Created on [[item.createdStr]]</div>
+              <div class="light">Updated on [[item.updatedStr]]</div>
             </td>
             <td>
               <app-page-admin-mark-details mark="[[item]]">
               </app-page-admin-mark-details>
             </td>
-            <td><h1>[[item.score]]</h1></td>
-            <td style="white-space:nowrap">
+            <td style="vertical-align:top; text-align:center">
+              <h1 style="margin:7px">[[item.score]]</h1>
+            </td>
+            <td style="white-space:nowrap;vertical-align:top">
               <paper-icon-button icon="create" trigger="inspect"></paper-icon-button>
               <paper-icon-button icon="check" trigger="approve"></paper-icon-button>
               <paper-icon-button icon="delete" trigger="delete"></paper-icon-button>
@@ -39683,7 +39729,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         header : {
           type : Array,
           value : function() {
-            return ['Page', 'Data', 'Score', ''];
+            return ['Page', 'Data', 'Score', 'Actions'];
           }
         }
       },

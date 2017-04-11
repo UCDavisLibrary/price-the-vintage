@@ -4,7 +4,7 @@
     <style>
       :host {
         display: block;
-        height: 200px;
+        height: 232px;
         overflow: auto;
       }
     </style>
@@ -55,7 +55,7 @@
         },
       },
 
-      ignore : ['user'],
+      ignore : ['user','created','updated','xy'],
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
@@ -73,7 +73,8 @@
         for( var key in e.data ) {
           if( this.ignore.indexOf(key) > -1 ) continue;
           if( !e.data[key] ) continue;
-          html += '<tr><td style="font-weight:bold">'+key+'</td><td>';
+          html += '<tr><td style="font-weight:bold">'+key+'</td>'+
+                  '<td style="color:#757575;padding:5px">';
 
           if( key === 'created' || key === 'updated' ) {
             html +=  new Date(e.data[key]).toLocaleString();
