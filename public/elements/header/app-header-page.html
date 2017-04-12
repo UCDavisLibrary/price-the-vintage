@@ -32,6 +32,34 @@
       paper-button {
         color: var(--default-primary-color);
       }
+
+      table.legend td {
+        padding: 5px;
+      }
+
+      table.legend td:first-child {
+        text-align: center;
+      }
+
+      .mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px 20px 0 20px;
+      }
+
+      .othersmark {
+        background: var(--default-primary-color);
+      }
+
+      .selected {
+        border: 2px solid #FF9800;
+        width: 36px;
+        height: 36px;
+      }
+
+      .mymark {
+        background: var(--accent-color);
+      }
     </style>
 
     <table style="width: 100%">
@@ -51,7 +79,10 @@
 
     
     <paper-dialog modal id="helpPopup">
-      <h2>Ready to Price the Vintage?  Here's how:</h2>
+      <div class="layout">
+        <h2 class="flex">Ready to Price the Vintage?  Here's how:</h2>
+        <paper-icon-button icon="close" on-click="_hideHelp"></paper-icon-button>
+      </div>
 
       <div class="layout panel">
         <div>
@@ -74,6 +105,60 @@
       <div style="text-align: center" class="panel">
         <img src="/images/help/overview.png" style="max-width: 75%" />
       </div>
+
+      <h2>Mark Legend</h2>
+
+      <table class="legend">
+        <tr>
+          <td>
+            <iron-icon icon="device:gps-fixed"></iron-icon>
+          </td><td>
+            <div>Pending Mark</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <iron-icon icon="done"></iron-icon>
+          </td><td>
+            <div>Approved Mark</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <iron-icon icon="open-with"></iron-icon>
+          </td><td>
+            <div>Editing Mark (Movable)</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <iron-icon icon="settings"></iron-icon>
+          </td><td>
+            <div>Creating Mark</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="othersmark mark"></div>
+          </td><td>
+            <div>Other Users Mark</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="mymark mark"></div>
+          </td><td>
+            <div>Your Mark</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="selected mark"></div>
+          </td><td>
+            <div>Selected Mark</div>
+          </td>
+        </tr>
+      </table>
 
       <div class="buttons">
         <paper-button on-click="_hideHelp">Got it</paper-button>

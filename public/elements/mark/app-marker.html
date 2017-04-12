@@ -107,6 +107,10 @@
         icon : {
           type : String,
           value : 'device:gps-fixed'
+        },
+        drawToolMarker : {
+          type : Boolean,
+          value : false
         }
       },
 
@@ -124,7 +128,12 @@
 
       ready : function() {
         this.eventLoop.authState.req();
-        this.toggleState('creating');
+
+        if( this.drawToolMarker ) {
+          this.toggleState('creating');
+        } else {
+          this.toggleState('created');
+        }
 
         window.addEventListener('mouseup', function(){
           if( !this.moving ) return;
