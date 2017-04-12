@@ -1,7 +1,7 @@
 <script src="DrawToolBehavior.js"></script>
 <link rel="import" href="app-page-carousel.html">
 <link rel="import" href="app-admin-markup-control.html">
-
+<link rel="import" href="app-marker.html">
 
 <dom-module id="app-page-markup">
   <template>
@@ -137,8 +137,6 @@
             this._removeMark(e.id);
             return false;
           }
-
-          
 
           this.marks[e.id] = e;
 
@@ -302,7 +300,7 @@
         }
 
         if( this.mapMarkers[id] ) {
-          this.marksLayer.removeLayer(this.mapMarkers[id]);
+          this.mapMarkers[id].removeFromLayer();
           delete this.mapMarkers[id];
         }
       },
@@ -409,7 +407,7 @@
 
         e.payload.forEach(function(mark){
           if( this.mapMarkers[mark.markId] && this.marksLayer ) {
-            this.marksLayer.removeLayer(this.mapMarkers[mark.markId]);
+            this.mapMarkers[mark.markId].removeFromLayer();
           }
 
           this.marks[mark.markId] = {
@@ -434,47 +432,24 @@
       _drawMark : function(mark) {
         if( !this.marksLayer ) return null;
 
-        var style;
-        if( this._isMyMark(mark) ) {
-          if( mark.data.isTemp ) return; // don't draw our own tmp marks
-
-          style = this._getMarkBtnStyle();
-        } else {
-          style = this._getMarkBtnStyle(true);
-        }
-
-        var btn = this._getMarkBtn(style, mark);
-
-        var myIcon = L.divIcon({html: btn});
-        var marker = L.marker([mark.data.xy[1], mark.data.xy[0]], {icon: myIcon});
-
+        var marker = document.createElement('app-marker');
         marker.mark = mark;
-        marker.on('click', function(){
-          if( this.addMarker ) return alert('You must finish or cancel creating new mark.');
-          if( mark.data.isTemp ) {
-            return alert('User is currently creating new mark.');
-          }
-
-          if( !mark.data.approved ) {
-            window.location.hash = this.catalogId + '/' + this.selected + '/edit/' + mark.id;
-          } else {
-            window.location.hash = this.catalogId + '/' + this.selected + '/view/' + mark.id;
-          }
-        }.bind(this));
-
+        marker.catalogId = this.catalogId;
+        marker.pageId = this.selected;
         marker.addTo(this.marksLayer);
 
         return marker;
       },
 
       _selectMarker : function(marker, id) {
-        if( this.selectedMarker && this.selectedMarker._icon ) {
-          this.selectedMarker._icon.firstChild.style.border = 'none';
+
+        if( this.selectedMarker ) {
+          this.selectedMarker.selected = false;
         }
 
         this.selectedMarker = marker;
         if( marker ) {
-          this.selectedMarker._icon.firstChild.style.border = '2px solid #FF9800';
+          this.selectedMarker.selected = true;
         }
 
         if( marker ) {
@@ -482,16 +457,16 @@
             if( !this.mapMarkers[key] ) continue;
 
             if( key === id ) {
-              this.mapMarkers[key]._icon.style.display = 'block';
+              this.mapMarkers[key].show();
             } else {
-              this.mapMarkers[key]._icon.style.display = 'none';
+              this.mapMarkers[key].hide();
             }
           }
         } else {
           for( var key in this.mapMarkers ) {
             if( !this.mapMarkers[key] ) continue;
 
-            this.mapMarkers[key]._icon.style.display = 'block';
+            this.mapMarkers[key].show();
           }
         }
       },

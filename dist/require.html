@@ -35083,6 +35083,13 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         event : 'auth-update',
         handler : function(e) {
           this.authState = e;
+
+          if( this.route && e.state === 'loggedIn' && this.route.catalog && this.route.page ) {
+            this.ebEmit('set-user-activity', {
+              catalogId : this.route.catalog,
+              pageId : this.route.page
+            });
+          }
         }
       }
     }
@@ -36866,6 +36873,256 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 })();
   </script>
 </dom-module>
+<dom-module id="app-marker" assetpath="elements/mark/">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+      }
+
+      app-icon-spinner, paper-icon-button {
+        position : absolute;
+        top: -38px;
+        left: -38px;
+        box-shadow : 0 0 8px black;
+        background: var(--default-primary-color);
+        color: white;
+        border-radius: 20px 20px 0 20px;
+      }
+
+      app-icon-spinner[users-mark], paper-icon-button[users-mark] {
+        background: var(--accent-color);
+      }
+
+      paper-icon-button[selected] {
+        border: 2px solid #FF9800;
+      }
+    </style>
+
+    <app-icon-spinner state="creating" icon="settings" spin="" users-mark$="[[usersMark]]" style="padding:8px">
+    </app-icon-spinner>
+      
+    <paper-icon-button state="created" users-mark$="[[usersMark]]" selected$="[[selected]]" icon="[[icon]]">
+    </paper-icon-button>
+  </template>
+  <script>
+
+(function() {
+
+    L.AppMarker = L.Icon.extend({
+      options: {
+        className: 'leaflet-div-icon',
+        element : null
+      },
+
+      createIcon: function () {
+        return this.options.element;
+      },
+
+      createShadow: function () {
+        return null;
+      }
+    });
+    L.appMarker = new L.AppMarker();
+
+    var AuthStateEventLoop = {
+      req : {event: 'get-auth-state'},
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.authState = e;
+          this.render();
+        }
+      }
+    };
+
+    Polymer({
+      is: 'app-marker',
+
+      properties : {
+        mark : {
+          type : Object,
+          value : function() {
+            return null;
+          },
+          observer : '_onMarkSet'
+        },
+        selected : {
+          type : Boolean,
+          value : false,
+          observer : 'render'
+        },
+        pageId : {
+          type : String,
+          value : ''
+        },
+        catalogId : {
+          type : String,
+          value : ''
+        },
+        usersMark : {
+          type : Boolean,
+          value : true
+        },
+        moving : {
+          type : Boolean,
+          value : false
+        },
+        icon : {
+          type : String,
+          value : 'device:gps-fixed'
+        }
+      },
+
+      icons : {
+        pending : 'device:gps-fixed',
+        approved : 'check',
+        moving : 'open-with'
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
+
+      eventLoops : {
+        authState : AuthStateEventLoop
+      },
+
+      ready : function() {
+        this.eventLoop.authState.req();
+        this.toggleState('creating');
+
+        window.addEventListener('mouseup', function(){
+          if( !this.moving ) return;
+          this._onMoveStop();
+        }.bind(this));
+
+        window.addEventListener('hashchange', function(){
+          if( !this.mark || !this.wrapper ) return;
+          
+          // always reset marks to starting location on hash change
+          this.setLatLng([this.originalXy[1], this.originalXy[0]]);
+          this.mark.data.xy = this.originalXy;
+        }.bind(this));
+      },
+
+      _onMarkSet : function() {
+        if( !this.mark ) return;
+
+        this.originalXy = this.mark.data.xy.slice(0);
+
+        this.appMarkerAnchor = new L.AppMarker({element: this});
+
+        this.wrapper = L.marker(
+          [this.mark.data.xy[1], this.mark.data.xy[0]],
+          {icon: this.appMarkerAnchor}
+        );
+
+        this.wrapper.on('click', this._onClick.bind(this));
+        this.wrapper.on('mousedown', this._onMouseDown.bind(this));
+
+        this.render();
+      },
+
+      _onClick : function() {
+        if( this.mark.data.isTemp ) return;
+
+        if( !this.mark.data.approved ) {
+          window.location.hash = this.catalogId + '/' + this.pageId + '/edit/' + this.mark.id;
+        } else {
+          window.location.hash = this.catalogId + '/' + this.pageId + '/view/' + this.mark.id;
+        }
+      },
+
+      _onMoveStop : function() {
+        this.moving = false;
+        this.layer._map.dragging.enable();
+        this.render();
+      },
+
+      _onMouseDown : function(e) {
+        if( !this.usersMark || this.mark.data.approved || this.mark.data.isTemp ) return;
+        if( !this.selected ) return;
+
+        this.moving = true;
+        this.layer._map.dragging.disable();
+        this.render();
+      },
+
+      _onMouseMove : function(e) {
+        if( !this.moving ) return;
+        this.setLatLng(e.latlng);
+        this.mark.data.xy = [e.latlng.lng, e.latlng.lat];
+      },
+
+      _isUserMark : function() {
+        if( !this.authState || !this.mark ) return false;
+        if( this.authState.user.uid === this.mark.data.user) {
+          return true;
+        }
+        return false;
+      },
+
+      render : function() {
+        if( !this.mark ) return;
+
+        var state = '';
+        this.style.display = 'block';
+ 
+        if( this._isUserMark() ) {
+          // don't show our own tmp mark
+          if( this.mark.data.isTemp ) {
+            return this.hide();
+          }
+
+          this.usersMark = true;
+        } else {
+          this.usersMark = false;
+        }
+
+        if( this.mark.data.isTemp ) {
+          this.toggleState('creating');
+        } else {
+          this.toggleState('created');
+        }
+
+
+        if( this.mark.data.approved ) {
+          this.icon = this.icons.approved;
+        } else if( this.moving || this.selected ) {
+          this.icon = this.icons.moving;
+        } else {
+          this.icon = this.icons.pending;
+        }
+      },
+
+      hide : function() {
+        this.style.display = 'none';
+      },
+
+      show : function() {
+        this.style.display = 'block';
+      },
+
+      addTo : function(layer) {
+        this.layer = layer;
+        this.layer._map.on('mousemove', this._onMouseMove.bind(this));
+
+        this.wrapper.addTo(layer);
+      },
+
+      removeFromLayer : function() {
+        this.layer.removeLayer(this.wrapper);
+      },
+
+      setLatLng : function() {
+        this.wrapper.setLatLng.apply(this.wrapper, arguments);
+      }
+
+    });
+
+})()
+  </script>
+</dom-module>
 <script>var MarkBehavior = {
 
   drawToolOptions : {
@@ -36878,18 +37135,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       marker: {
         icon: ''
       }
-    }
-  },
-
-  _getBaseMarkerStyle : function() {
-    return {
-      'position' : 'relative',
-      'box-shadow': '0 0 8px black',
-      'background': '#9C27B0',
-      'color': 'white',
-      'border-radius': '20px 20px 0 20px',
-      'top': '-32px',
-      'left': '-32px'
     }
   },
 
@@ -36913,8 +37158,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     
     this.map.addLayer(this.marksLayer);
 
-    var style = this._getMarkBtnStyle();
-    var myIcon = L.divIcon({html: this._getMarkBtn(style)});
+    var myIcon = L.divIcon({html: '<app-marker draw-tool-marker></app-marker>'});
     this.drawToolOptions.draw.marker.icon = myIcon;
 
     this.drawControl = new L.Control.Draw(this.drawToolOptions);
@@ -36930,14 +37174,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     for( var key in this.marks ) {
       if( this.mapMarkers[key] ) continue;
       this.mapMarkers[key] = this._drawMark(this.marks[key]);
-
-      if( this.currentState.markId ) {
-        if( this.currentState.markId === key) {
-          this._selectAndShowPopup(key);
-        } else if( this.mapMarkers[key] ) {
-          this.mapMarkers[key]._icon.style.display = 'none';
-        }
-      }
+    }
+    
+    if( this.currentState.markId ) {
+      this._selectAndShowPopup(this.currentState.markId);
     }
 
     L.control.adminControl({ position: 'topright' }).addTo(this.map);
@@ -36983,31 +37223,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
     this.pendingLayer = layer;
     window.location.hash = this.catalogId + '/' + this.selected + '/edit';
-  },
-
-  _getMarkBtnStyle : function(otherUserMark) {
-    var baseStyle = this._getBaseMarkerStyle();
-
-    if( otherUserMark ) {
-      baseStyle.background = '#4CAF50';
-    }
-
-    var styleArray = [];
-    for( var key in baseStyle ) {
-      styleArray.push(key+':'+baseStyle[key]);
-    }
-    return styleArray.join(';');
-  },
-
-  _getMarkBtn : function(style, mark) {
-    if( mark && mark.data.isTemp ) {
-      return '<app-icon-spinner icon="settings" spin style="'+style+'; padding: 8px"></app-icon-spinner>';
-    }
-    if( mark && mark.data.approved ) {
-      return '<paper-icon-button icon="check" style="'+style+'"></paper-icon-button>';
-    }
-
-    return '<paper-icon-button icon="device:gps-fixed" style="'+style+'"></paper-icon-button>';
   }
 }</script>
 <dom-module id="app-page-markup" assetpath="elements/mark/">
@@ -37137,8 +37352,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             this._removeMark(e.id);
             return false;
           }
-
-          
 
           this.marks[e.id] = e;
 
@@ -37302,7 +37515,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         }
 
         if( this.mapMarkers[id] ) {
-          this.marksLayer.removeLayer(this.mapMarkers[id]);
+          this.mapMarkers[id].removeFromLayer();
           delete this.mapMarkers[id];
         }
       },
@@ -37409,7 +37622,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
         e.payload.forEach(function(mark){
           if( this.mapMarkers[mark.markId] && this.marksLayer ) {
-            this.marksLayer.removeLayer(this.mapMarkers[mark.markId]);
+            this.mapMarkers[mark.markId].removeFromLayer();
           }
 
           this.marks[mark.markId] = {
@@ -37434,47 +37647,24 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       _drawMark : function(mark) {
         if( !this.marksLayer ) return null;
 
-        var style;
-        if( this._isMyMark(mark) ) {
-          if( mark.data.isTemp ) return; // don't draw our own tmp marks
-
-          style = this._getMarkBtnStyle();
-        } else {
-          style = this._getMarkBtnStyle(true);
-        }
-
-        var btn = this._getMarkBtn(style, mark);
-
-        var myIcon = L.divIcon({html: btn});
-        var marker = L.marker([mark.data.xy[1], mark.data.xy[0]], {icon: myIcon});
-
+        var marker = document.createElement('app-marker');
         marker.mark = mark;
-        marker.on('click', function(){
-          if( this.addMarker ) return alert('You must finish or cancel creating new mark.');
-          if( mark.data.isTemp ) {
-            return alert('User is currently creating new mark.');
-          }
-
-          if( !mark.data.approved ) {
-            window.location.hash = this.catalogId + '/' + this.selected + '/edit/' + mark.id;
-          } else {
-            window.location.hash = this.catalogId + '/' + this.selected + '/view/' + mark.id;
-          }
-        }.bind(this));
-
+        marker.catalogId = this.catalogId;
+        marker.pageId = this.selected;
         marker.addTo(this.marksLayer);
 
         return marker;
       },
 
       _selectMarker : function(marker, id) {
-        if( this.selectedMarker && this.selectedMarker._icon ) {
-          this.selectedMarker._icon.firstChild.style.border = 'none';
+
+        if( this.selectedMarker ) {
+          this.selectedMarker.selected = false;
         }
 
         this.selectedMarker = marker;
         if( marker ) {
-          this.selectedMarker._icon.firstChild.style.border = '2px solid #FF9800';
+          this.selectedMarker.selected = true;
         }
 
         if( marker ) {
@@ -37482,16 +37672,16 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
             if( !this.mapMarkers[key] ) continue;
 
             if( key === id ) {
-              this.mapMarkers[key]._icon.style.display = 'block';
+              this.mapMarkers[key].show();
             } else {
-              this.mapMarkers[key]._icon.style.display = 'none';
+              this.mapMarkers[key].hide();
             }
           }
         } else {
           for( var key in this.mapMarkers ) {
             if( !this.mapMarkers[key] ) continue;
 
-            this.mapMarkers[key]._icon.style.display = 'block';
+            this.mapMarkers[key].show();
           }
         }
       },
@@ -37876,9 +38066,12 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _approve : function() {
+        var data = this._getData();
+
         this.ebEmit('admin-approve-mark', {
           pageId : this.editMark.pageId,
           markId : this.editMark.id,
+          mark : data,
           handler : function(error, success) {
             if( error ) {
               console.error(error);
@@ -37894,7 +38087,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this.fire('delete', this.editMark);
       },
 
-      _save : function() {
+      _getData : function() {
         var data = this.$[this.type].getData();
         data.type = this.type;
         data.section = this.$.sectionInput.value;
@@ -37902,6 +38095,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         if( this.editMode ) {
           data.xy = this.editMark.data.xy;
           data.created = this.editMark.data.created;
+          data.updated = this.editMark.data.updated;
           data.user = this.editMark.data.user;
         } else {
           data.xy = [this.ll.lng, this.ll.lat];
@@ -37916,6 +38110,12 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         if( data.year ) {
           data.year = parseInt(data.year);
         }
+
+        return data;
+      },
+
+      _save : function() {
+        var data = this._getData();
 
         if( !this.editMode ) {
           this.fire('add-mark');

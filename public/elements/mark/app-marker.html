@@ -1,0 +1,260 @@
+
+<dom-module id="app-marker">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+      }
+
+      app-icon-spinner, paper-icon-button {
+        position : absolute;
+        top: -38px;
+        left: -38px;
+        box-shadow : 0 0 8px black;
+        background: var(--default-primary-color);
+        color: white;
+        border-radius: 20px 20px 0 20px;
+      }
+
+      app-icon-spinner[users-mark], paper-icon-button[users-mark] {
+        background: var(--accent-color);
+      }
+
+      paper-icon-button[selected] {
+        border: 2px solid #FF9800;
+      }
+    </style>
+
+    <app-icon-spinner 
+      state="creating"
+      icon="settings"
+      spin 
+      users-mark$="[[usersMark]]"
+      style="padding:8px">
+    </app-icon-spinner>
+      
+    <paper-icon-button 
+      state="created"
+      users-mark$="[[usersMark]]"
+      selected$="[[selected]]"
+      icon="[[icon]]">
+    </paper-icon-button>
+  </template>
+  <script>
+
+(function() {
+
+    L.AppMarker = L.Icon.extend({
+      options: {
+        className: 'leaflet-div-icon',
+        element : null
+      },
+
+      createIcon: function () {
+        return this.options.element;
+      },
+
+      createShadow: function () {
+        return null;
+      }
+    });
+    L.appMarker = new L.AppMarker();
+
+    var AuthStateEventLoop = {
+      req : {event: 'get-auth-state'},
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.authState = e;
+          this.render();
+        }
+      }
+    };
+
+    Polymer({
+      is: 'app-marker',
+
+      properties : {
+        mark : {
+          type : Object,
+          value : function() {
+            return null;
+          },
+          observer : '_onMarkSet'
+        },
+        selected : {
+          type : Boolean,
+          value : false,
+          observer : 'render'
+        },
+        pageId : {
+          type : String,
+          value : ''
+        },
+        catalogId : {
+          type : String,
+          value : ''
+        },
+        usersMark : {
+          type : Boolean,
+          value : true
+        },
+        moving : {
+          type : Boolean,
+          value : false
+        },
+        icon : {
+          type : String,
+          value : 'device:gps-fixed'
+        }
+      },
+
+      icons : {
+        pending : 'device:gps-fixed',
+        approved : 'check',
+        moving : 'open-with'
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
+
+      eventLoops : {
+        authState : AuthStateEventLoop
+      },
+
+      ready : function() {
+        this.eventLoop.authState.req();
+        this.toggleState('creating');
+
+        window.addEventListener('mouseup', function(){
+          if( !this.moving ) return;
+          this._onMoveStop();
+        }.bind(this));
+
+        window.addEventListener('hashchange', function(){
+          if( !this.mark || !this.wrapper ) return;
+          
+          // always reset marks to starting location on hash change
+          this.setLatLng([this.originalXy[1], this.originalXy[0]]);
+          this.mark.data.xy = this.originalXy;
+        }.bind(this));
+      },
+
+      _onMarkSet : function() {
+        if( !this.mark ) return;
+
+        this.originalXy = this.mark.data.xy.slice(0);
+
+        this.appMarkerAnchor = new L.AppMarker({element: this});
+
+        this.wrapper = L.marker(
+          [this.mark.data.xy[1], this.mark.data.xy[0]],
+          {icon: this.appMarkerAnchor}
+        );
+
+        this.wrapper.on('click', this._onClick.bind(this));
+        this.wrapper.on('mousedown', this._onMouseDown.bind(this));
+
+        this.render();
+      },
+
+      _onClick : function() {
+        if( this.mark.data.isTemp ) return;
+
+        if( !this.mark.data.approved ) {
+          window.location.hash = this.catalogId + '/' + this.pageId + '/edit/' + this.mark.id;
+        } else {
+          window.location.hash = this.catalogId + '/' + this.pageId + '/view/' + this.mark.id;
+        }
+      },
+
+      _onMoveStop : function() {
+        this.moving = false;
+        this.layer._map.dragging.enable();
+        this.render();
+      },
+
+      _onMouseDown : function(e) {
+        if( !this.usersMark || this.mark.data.approved || this.mark.data.isTemp ) return;
+        if( !this.selected ) return;
+
+        this.moving = true;
+        this.layer._map.dragging.disable();
+        this.render();
+      },
+
+      _onMouseMove : function(e) {
+        if( !this.moving ) return;
+        this.setLatLng(e.latlng);
+        this.mark.data.xy = [e.latlng.lng, e.latlng.lat];
+      },
+
+      _isUserMark : function() {
+        if( !this.authState || !this.mark ) return false;
+        if( this.authState.user.uid === this.mark.data.user) {
+          return true;
+        }
+        return false;
+      },
+
+      render : function() {
+        if( !this.mark ) return;
+
+        var state = '';
+        this.style.display = 'block';
+ 
+        if( this._isUserMark() ) {
+          // don't show our own tmp mark
+          if( this.mark.data.isTemp ) {
+            return this.hide();
+          }
+
+          this.usersMark = true;
+        } else {
+          this.usersMark = false;
+        }
+
+        if( this.mark.data.isTemp ) {
+          this.toggleState('creating');
+        } else {
+          this.toggleState('created');
+        }
+
+
+        if( this.mark.data.approved ) {
+          this.icon = this.icons.approved;
+        } else if( this.moving || this.selected ) {
+          this.icon = this.icons.moving;
+        } else {
+          this.icon = this.icons.pending;
+        }
+      },
+
+      hide : function() {
+        this.style.display = 'none';
+      },
+
+      show : function() {
+        this.style.display = 'block';
+      },
+
+      addTo : function(layer) {
+        this.layer = layer;
+        this.layer._map.on('mousemove', this._onMouseMove.bind(this));
+
+        this.wrapper.addTo(layer);
+      },
+
+      removeFromLayer : function() {
+        this.layer.removeLayer(this.wrapper);
+      },
+
+      setLatLng : function() {
+        this.wrapper.setLatLng.apply(this.wrapper, arguments);
+      }
+
+    });
+
+})()
+  </script>
+</dom-module>

@@ -152,9 +152,12 @@
       },
 
       _approve : function() {
+        var data = this._getData();
+
         this.ebEmit('admin-approve-mark', {
           pageId : this.editMark.pageId,
           markId : this.editMark.id,
+          mark : data,
           handler : function(error, success) {
             if( error ) {
               console.error(error);
@@ -170,7 +173,7 @@
         this.fire('delete', this.editMark);
       },
 
-      _save : function() {
+      _getData : function() {
         var data = this.$[this.type].getData();
         data.type = this.type;
         data.section = this.$.sectionInput.value;
@@ -178,6 +181,7 @@
         if( this.editMode ) {
           data.xy = this.editMark.data.xy;
           data.created = this.editMark.data.created;
+          data.updated = this.editMark.data.updated;
           data.user = this.editMark.data.user;
         } else {
           data.xy = [this.ll.lng, this.ll.lat];
@@ -192,6 +196,12 @@
         if( data.year ) {
           data.year = parseInt(data.year);
         }
+
+        return data;
+      },
+
+      _save : function() {
+        var data = this._getData();
 
         if( !this.editMode ) {
           this.fire('add-mark');

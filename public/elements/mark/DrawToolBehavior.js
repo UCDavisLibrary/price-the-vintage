@@ -13,18 +13,6 @@ var MarkBehavior = {
     }
   },
 
-  _getBaseMarkerStyle : function() {
-    return {
-      'position' : 'relative',
-      'box-shadow': '0 0 8px black',
-      'background': '#9C27B0',
-      'color': 'white',
-      'border-radius': '20px 20px 0 20px',
-      'top': '-32px',
-      'left': '-32px'
-    }
-  },
-
   _redraw: function() {
     if ( !this.bounds ) return
     if( this.map ) this.map.remove();
@@ -45,8 +33,7 @@ var MarkBehavior = {
     
     this.map.addLayer(this.marksLayer);
 
-    var style = this._getMarkBtnStyle();
-    var myIcon = L.divIcon({html: this._getMarkBtn(style)});
+    var myIcon = L.divIcon({html: '<app-marker draw-tool-marker></app-marker>'});
     this.drawToolOptions.draw.marker.icon = myIcon;
 
     this.drawControl = new L.Control.Draw(this.drawToolOptions);
@@ -62,14 +49,10 @@ var MarkBehavior = {
     for( var key in this.marks ) {
       if( this.mapMarkers[key] ) continue;
       this.mapMarkers[key] = this._drawMark(this.marks[key]);
-
-      if( this.currentState.markId ) {
-        if( this.currentState.markId === key) {
-          this._selectAndShowPopup(key);
-        } else if( this.mapMarkers[key] ) {
-          this.mapMarkers[key]._icon.style.display = 'none';
-        }
-      }
+    }
+    
+    if( this.currentState.markId ) {
+      this._selectAndShowPopup(this.currentState.markId);
     }
 
     L.control.adminControl({ position: 'topright' }).addTo(this.map);
@@ -115,30 +98,5 @@ var MarkBehavior = {
 
     this.pendingLayer = layer;
     window.location.hash = this.catalogId + '/' + this.selected + '/edit';
-  },
-
-  _getMarkBtnStyle : function(otherUserMark) {
-    var baseStyle = this._getBaseMarkerStyle();
-
-    if( otherUserMark ) {
-      baseStyle.background = '#4CAF50';
-    }
-
-    var styleArray = [];
-    for( var key in baseStyle ) {
-      styleArray.push(key+':'+baseStyle[key]);
-    }
-    return styleArray.join(';');
-  },
-
-  _getMarkBtn : function(style, mark) {
-    if( mark && mark.data.isTemp ) {
-      return '<app-icon-spinner icon="settings" spin style="'+style+'; padding: 8px"></app-icon-spinner>';
-    }
-    if( mark && mark.data.approved ) {
-      return '<paper-icon-button icon="check" style="'+style+'"></paper-icon-button>';
-    }
-
-    return '<paper-icon-button icon="device:gps-fixed" style="'+style+'"></paper-icon-button>';
   }
 }

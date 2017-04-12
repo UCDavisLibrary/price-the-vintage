@@ -75,6 +75,13 @@ Parses URL on hash change and sets appState.
         event : 'auth-update',
         handler : function(e) {
           this.authState = e;
+
+          if( this.route && e.state === 'loggedIn' && this.route.catalog && this.route.page ) {
+            this.ebEmit('set-user-activity', {
+              catalogId : this.route.catalog,
+              pageId : this.route.page
+            });
+          }
         }
       }
     }
