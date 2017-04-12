@@ -15,29 +15,13 @@ exports.updatePageMarkCount = functions.database.ref('/marks/{pageId}/{markId}')
 
         event.data.ref.parent.once('value').then((ref) => {
             const data = ref.val();
-            var count = 0;
 
-            if( data ) {
-              for( var key in data ) {
-                if( !data[key].isTemp ) count++;
-              }
+            // mark has been deleted
+            if( !mark ) {
+              return removeMark(oldMark.user, event.params.markId, resolve, reject);
             }
 
-            console.log('Setting page count', event.params.pageId, count);
-
-            admin
-              .database()
-              .ref(`/pages/${event.params.pageId}/markCount`)
-              .set(count)
-              .then(() => {
-                // mark has been deleted
-                if( !mark ) {
-                  return removeMark(oldMark.user, event.params.markId, resolve, reject);
-                }
-
-                bookkeeping(mark, oldMark, event.params, resolve, reject);
-              })
-              .catch(reject);
+            bookkeeping(mark, oldMark, event.params, resolve, reject);
         });
 
       });
@@ -70,6 +54,10 @@ function bookkeeping(mark, oldMark, params, resolve, reject) {
       created : mark.created || Date.now(),
       updated : mark.updated || Date.now(),
       score : score
+    }
+
+    if( mark.section === 'test' ) {
+      search.test = true;
     }
 
     admin

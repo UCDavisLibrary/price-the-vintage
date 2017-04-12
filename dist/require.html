@@ -39800,17 +39800,16 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
 
     <div style="padding: 15px">
-      <h3 style="margin:0">Sort By:</h3>
-      <div style="max-width: 400px">
-        <select id="sortInput" on-change="_getPendingMarks">
-          <option value="updated.desc">Updated Descending</option>
-          <option value="updated.asc">Updated Ascending</option>
-          <option value="created.desc">Created Descending</option>
-          <option value="created.asc">Created Ascending</option>
-          <option value="score.desc">Score Descending</option>
-          <option value="score.asc">Score Ascending</option>
-        </select>
-      </div>
+        <div style="max-width: 400px">
+          <h3 style="margin:0">Sort By:</h3>
+          <select id="sortInput" on-change="_getPendingMarks">
+            <option value="updated.desc">Updated Descending</option>
+            <option value="updated.asc">Updated Ascending</option>
+            <option value="created.desc">Created Descending</option>
+            <option value="created.asc">Created Ascending</option>
+            <option value="score.desc">Score Descending</option>
+            <option value="score.asc">Score Ascending</option>
+          </select>
     </div>
 
     <div class="layout center" style="margin: 0 40px">
@@ -39854,8 +39853,15 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         </template>
       </app-datatable>
     </paper-material>
+
+    <div style="padding: 15px">
+      <div class="flex" style="text-align: right">
+        <paper-button on-click="_cleanTests" raised="" style="background:white">Clean Test Marks</paper-button>
+        <div>Any mark with section==test will be removed</div>
+      </div>
+    </div>
     
-  </template>
+  </div></template>
   <script>
     Polymer({
       is: 'app-review-marks',
@@ -39928,6 +39934,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       _onActive : function() {
         if( !this.active ) return;
         this._getPendingMarks();
+      },
+
+      _cleanTests : function() {
+        this.ebEmit('admin-clean-test-marks', {
+          handler : function(){
+            alert('Test marks cleared');
+          }.bind(this)
+        });
       },
 
       _getPendingMarks : function() {

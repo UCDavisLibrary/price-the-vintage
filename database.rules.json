@@ -47,8 +47,10 @@
         },
         "marks" : {
           ".read" : "$userid === auth.uid || auth.token.isAdmin === true",
-          "approved" : {
-            ".write" : "auth.token.isAdmin === true"
+          "$markid" : {
+            "approved" : {
+              ".write" : "auth.token.isAdmin === true"
+            }
           }
         },
         "tempMarks" : {
