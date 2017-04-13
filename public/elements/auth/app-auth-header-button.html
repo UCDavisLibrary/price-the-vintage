@@ -35,31 +35,44 @@
       }
       a {
         cursor: pointer;
+        text-decoration: none;
+      }
+
+      .dropdown-content {
+        color: black;
+        white-space: nowrap;
+      }
+      paper-menu-button {
+        z-index: 1000;
+        --paper-menu-button-content : {
+          z-index: 1000;
+        }
       }
     </style>
 
     <div state="pending">...</div>
     
     <div state="loggedIn">
-      <span hidden$="[[auth.user.isAnonymous]]">
-        <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]" on-click="_toggleLogout"></paper-icon-button>
-        <img src="[[photo]]" hidden$="[[!hasPhoto]]" on-click="_toggleLogout" />
-      </span>
       <paper-icon-button on-click="_login" icon="power-settings-new" hidden$="[[!auth.user.isAnonymous]]" ></paper-icon-button>
 
-      <div id="logout">
-        <div>[[username]]</div>
-        <div style="white-space: nowrap; color: blue">
+      <paper-menu-button id="menuBtn" hidden$="[[auth.user.isAnonymous]]" horizontal-align="right" vertical-offset="50">
+        <div class="dropdown-trigger">
           <div>
-            <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
-            <a on-click="_logout">Logout</a>
+            <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
+            <img src="[[photo]]" hidden$="[[!hasPhoto]]" />
           </div>
-          <div hidden$="[[!isAdmin]]">
-            <a href="#admin" on-click="_hidePopup"><iron-icon icon="gavel"></iron-icon> Admin Interface</a>
-            </div>
-          <div hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></div>
         </div>
-      </div>
+        <div class="dropdown-content">
+          <paper-item>[[username]]</paper-item>
+          <paper-item on-click="_logout" style="cursor:pointer">
+            <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
+          </paper-item>
+          <paper-item hidden$="[[!isAdmin]]" on-click="_gotToAdmin" style="cursor:pointer">
+            <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface</a>
+          </paper-item>
+          <paper-item hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></paper-item>
+        </div>
+      </paper-menu-button>
     </div>
 
     <div state="notLoggedIn">
@@ -139,17 +152,12 @@
       },
 
       _logout : function() {
-        this.$.logout.style.display = 'none';
-
+        this.$.menuBtn.close();
         localStorage.removeItem('auth0-profile');
         this.ebEmit('auth-logout');
         if( this.appState.editingMark ) {
           window.location.hash = this.catalogId + '/' + this.pageId;
         }
-      },
-
-      _hidePopup : function() {
-        this.$.logout.style.display = 'none';
       },
 
       _login : function() {
@@ -160,10 +168,6 @@
         this._logout();
         this._login();
         this._hidePopup();
-      },
-
-      _toggleLogout : function() {
-        this.$.logout.style.display = (this.$.logout.style.display === 'block') ? 'none' : 'block';
       },
 
       _renderAuthState : function() {
@@ -185,6 +189,11 @@
         }
 
         this.toggleState(this.auth.state);
+      },
+
+      _gotToAdmin : function() {
+        window.location.hash = '#admin';
+        this.$.menuBtn.close();
       }
 
     });

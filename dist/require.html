@@ -38678,7 +38678,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         <paper-icon-button state="list" icon="search" on-click="_toggleSearch"></paper-icon-button>
       </div>
       <div>
-        <paper-icon-button icon="info" on-click="_showHelp"></paper-icon-button>
+        <paper-icon-button icon="info" on-click="_showHelp" style="margin-right: 5px"></paper-icon-button>
       </div>
     </div>
 
@@ -38930,6 +38930,12 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         color: var(--default-primary-color);
       }
 
+      table.legend {
+        width: 235px;
+        text-align: left;
+        margin: auto;
+      }
+
       table.legend td {
         padding: 5px;
       }
@@ -38954,10 +38960,23 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         height: 36px;
       }
 
+      [layout] {
+        @apply(--layout-horizontal)
+      }
+
       .mymark {
         background: var(--accent-color);
       }
+
+      .legend-panel {
+        text-align: center;
+        border-top: 1px solid #eee;
+        margin-top: 10px;
+      }
     </style>
+
+    <iron-media-query query="(min-width: 600px)" query-matches="{{notSmall}}"></iron-media-query>
+
 
     <table style="width: 100%">
       <tbody><tr>
@@ -38967,9 +38986,12 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         <td>
           <h2 class="overflow" id="title">[[title]]</h2>
         </td>
-        <td style="text-align: right">
-          <a href="#admin" hidden$="[[!userState.user.isAdmin]]" style="color:white"><paper-icon-button icon="gavel"></paper-icon-button></a>
-          <paper-icon-button icon="info" on-click="_showHelp"></paper-icon-button>
+        <td style="text-align: right; white-space: nowrap">
+          <a href="#admin" hidden$="[[!userState.user.isAdmin]]" style="text-decoration: none; color:white">
+            <paper-icon-button icon="gavel"></paper-icon-button>
+          </a>
+          <paper-icon-button style="margin-right: 5px" icon="info" on-click="_showHelp">
+          </paper-icon-button>
         </td>
       </tr>
     </tbody></table>
@@ -39003,59 +39025,105 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         <img src="/images/help/overview.png" style="max-width: 75%">
       </div>
 
-      <h2>Mark Legend</h2>
+      <div layout$="[[notSmall]]" class="legend-panel">
+        <div class="flex">
 
-      <table class="legend">
-        <tbody><tr>
-          <td>
-            <iron-icon icon="device:gps-fixed"></iron-icon>
-          </td><td>
-            <div>Pending Mark</div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <iron-icon icon="done"></iron-icon>
-          </td><td>
-            <div>Approved Mark</div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <iron-icon icon="open-with"></iron-icon>
-          </td><td>
-            <div>Editing Mark (Movable)</div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <iron-icon icon="settings"></iron-icon>
-          </td><td>
-            <div>Creating Mark</div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div class="othersmark mark"></div>
-          </td><td>
-            <div>Other Users Mark</div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div class="mymark mark"></div>
-          </td><td>
-            <div>Your Mark</div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div class="selected mark"></div>
-          </td><td>
-            <div>Selected Mark</div>
-          </td>
-        </tr>
-      </tbody></table>
+          <table class="legend">
+            <tbody><tr>
+              <td colspan="2">
+                <h2 style="text-align: left">Marker Legend</h2>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <iron-icon icon="device:gps-fixed"></iron-icon>
+              </td><td>
+                <div>Pending Mark</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <iron-icon icon="done"></iron-icon>
+              </td><td>
+                <div>Approved Mark</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <iron-icon icon="open-with"></iron-icon>
+              </td><td>
+                <div>Editing Mark (Movable)</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <iron-icon icon="settings"></iron-icon>
+              </td><td>
+                <div>Creating Mark</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="othersmark mark"></div>
+              </td><td>
+                <div>Other Users Mark</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="mymark mark"></div>
+              </td><td>
+                <div>Your Mark</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="selected mark"></div>
+              </td><td>
+                <div>Selected Mark</div>
+              </td>
+            </tr>
+          </tbody></table>
+        
+        </div>
+        <div class="flex">
+          <table class="legend">
+            <tbody><tr>
+              <td colspan="2">
+                <h2 style="text-align: left">Page Legend</h2>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <iron-icon icon="social:group"></iron-icon>
+              </td><td>
+                <div>Active Users</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <iron-icon icon="block"></iron-icon>
+              </td><td>
+                <div>Nothing to Mark</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <iron-icon icon="done"></iron-icon>
+              </td><td>
+                <div>Approved Marks</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <iron-icon icon="done-all"></iron-icon>
+              </td><td>
+                <div>Page Completed</div>
+              </td>
+            </tr>
+          </tbody></table>
+        </div>
+      </div>
 
       <div class="buttons">
         <paper-button on-click="_hideHelp">Got it</paper-button>
@@ -39122,7 +39190,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _resize : function() {
         // 80 px is for padding
-        var size = window.innerWidth - 212;
+        var size = window.innerWidth - 232;
         if( window.innerWidth > 768 ) {
           size -= 80;
         }
@@ -39361,31 +39429,44 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       }
       a {
         cursor: pointer;
+        text-decoration: none;
+      }
+
+      .dropdown-content {
+        color: black;
+        white-space: nowrap;
+      }
+      paper-menu-button {
+        z-index: 1000;
+        --paper-menu-button-content : {
+          z-index: 1000;
+        }
       }
     </style>
 
     <div state="pending">...</div>
     
     <div state="loggedIn">
-      <span hidden$="[[auth.user.isAnonymous]]">
-        <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]" on-click="_toggleLogout"></paper-icon-button>
-        <img src="[[photo]]" hidden$="[[!hasPhoto]]" on-click="_toggleLogout">
-      </span>
       <paper-icon-button on-click="_login" icon="power-settings-new" hidden$="[[!auth.user.isAnonymous]]"></paper-icon-button>
 
-      <div id="logout">
-        <div>[[username]]</div>
-        <div style="white-space: nowrap; color: blue">
+      <paper-menu-button id="menuBtn" hidden$="[[auth.user.isAnonymous]]" horizontal-align="right" vertical-offset="50">
+        <div class="dropdown-trigger">
           <div>
-            <paper-icon-button on-click="_logout" icon="exit-to-app"></paper-icon-button> 
-            <a on-click="_logout">Logout</a>
+            <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
+            <img src="[[photo]]" hidden$="[[!hasPhoto]]">
           </div>
-          <div hidden$="[[!isAdmin]]">
-            <a href="#admin" on-click="_hidePopup"><iron-icon icon="gavel"></iron-icon> Admin Interface</a>
-            </div>
-          <div hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></div>
         </div>
-      </div>
+        <div class="dropdown-content">
+          <paper-item>[[username]]</paper-item>
+          <paper-item on-click="_logout" style="cursor:pointer">
+            <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
+          </paper-item>
+          <paper-item hidden$="[[!isAdmin]]" on-click="_gotToAdmin" style="cursor:pointer">
+            <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface
+          </paper-item>
+          <paper-item hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></paper-item>
+        </div>
+      </paper-menu-button>
     </div>
 
     <div state="notLoggedIn">
@@ -39465,17 +39546,12 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       _logout : function() {
-        this.$.logout.style.display = 'none';
-
+        this.$.menuBtn.close();
         localStorage.removeItem('auth0-profile');
         this.ebEmit('auth-logout');
         if( this.appState.editingMark ) {
           window.location.hash = this.catalogId + '/' + this.pageId;
         }
-      },
-
-      _hidePopup : function() {
-        this.$.logout.style.display = 'none';
       },
 
       _login : function() {
@@ -39486,10 +39562,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this._logout();
         this._login();
         this._hidePopup();
-      },
-
-      _toggleLogout : function() {
-        this.$.logout.style.display = (this.$.logout.style.display === 'block') ? 'none' : 'block';
       },
 
       _renderAuthState : function() {
@@ -39511,6 +39583,11 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         }
 
         this.toggleState(this.auth.state);
+      },
+
+      _gotToAdmin : function() {
+        window.location.hash = '#admin';
+        this.$.menuBtn.close();
       }
 
     });
