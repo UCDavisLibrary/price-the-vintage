@@ -29,6 +29,18 @@
     <meta name="msapplication-TileColor" content="#7B1FA2">
     <meta name="msapplication-tap-highlight" content="no">
 
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js').then(function(registration) {
+            console.log('Service worker registered');
+          }).catch(function(err) {
+            console.error('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
+
     <script src="js/polyfill.js"></script>
     <script src="js/lib.js"></script>
     <link rel="import" href="require.html">
