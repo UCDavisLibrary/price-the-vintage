@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=no">
 
-    <title>Price the Vintage</title>
+    <title>Price the Vintage (Alpha)</title>
     <meta name="description" content="Price the Vintage">
 
     <!-- TODO -->
@@ -52,4 +52,21 @@
   </noscript>
 
   <price-the-vintage></price-the-vintage>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-97570476-1', 'auto');
+    
+    function sendGa() {
+      ga('send', 'pageview', {
+      'page': location.pathname + location.search  + location.hash
+      });
+    }
+    window.addEventListener('hashchange', sendGa);
+    sendGa();
+  </script>
 </html>
