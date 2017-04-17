@@ -11,10 +11,6 @@
         width: 25px;
       }
 
-      paper-toggle-button {
-        --paper-toggle-button-checked-button-color: var(--primary-color);
-      }
-
       paper-button[save] {
         color: white;
         background-color: var(--default-primary-color);
@@ -32,7 +28,7 @@
             <paper-toggle-button 
               id="typeInput" 
               checked
-              disabled$="[[disabled]]" 
+              disabled$="[[disabled]]"
               on-change="_setType">
             </paper-toggle-button>
           </div>
@@ -117,7 +113,9 @@
         },
         disabled : {
           type : Boolean,
-          value : false
+          value : false,
+          // have to trigger polymers style shim on update (css vars updated)
+          observer : 'updateStyles'
         }
       },
 
@@ -135,7 +133,7 @@
       ready : function() {
         this.eventLoop.authState.req();
       },
-
+      
       _setType : function(e) {
         if( this.$.typeInput.checked ) {
           this.type = 'wine';
@@ -245,7 +243,7 @@
         this.editMode = true;
         this.editMark = mark;
         
-        this.$.sectionInput.value = mark.data.section;
+        this.$.sectionInput.value = mark.data.section || (this.disabled ? '-' : '');
         this.type = mark.data.type;
 
         this.$.typeInput.checked = (this.type === 'wine') ? true : false;

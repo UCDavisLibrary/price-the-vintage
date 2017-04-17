@@ -31490,6 +31490,26 @@ style this element.
       select:focus {
         @apply(--select-input-focus);
       }
+      select[disabled] {
+        color: var(--primary-text-color);
+        box-shadow: none;
+        background: none;
+      }
+
+      paper-input[disabled] {
+        --paper-input-container: {
+          opacity: 1 !important;
+        }
+        --paper-input-container-input: {
+          color: var(--primary-text-color);
+        }
+        --paper-input-container-label-floating : {
+          color: var(--primary-text-color);
+        }
+        --paper-input-container-underline-disabled : {
+          border: none;
+        }
+      }
 
       .layout-vertical {
         @apply(--layout-vertical);
@@ -31507,33 +31527,10 @@ style this element.
         @apply(--layout-flex);
       }
 
-		 a,paper-button {
-				 font-weight: bold;
-		 }
-
-		 a {
-					/*color: var(--primary-color);*/
-		 }
-
-		 paper-button {
-				 /*color: var(--primary-color);*/
-		 }
-
-		 paper-button.primary {
-				 /*background: var(--primary-color);*/
-		 }
-
-		 blockquote {
-				 border-left: 4px solid #eee;
-				 margin-left: 4px;
-				 padding-left: 20px;
-		  }
-
-      iron-icon {
-        /*color: var(--primary-background-color);*/
-      }
-      iron-icon:hover {
-        /*color: var(--accent-color);*/
+     blockquote {
+         border-left: 4px solid #eee;
+         margin-left: 4px;
+         padding-left: 20px;
       }
 
      .card {
@@ -31906,7 +31903,7 @@ style this element.
 
       #loading {
         text-align: center;
-        height: 148px;
+        height: 120px;
       }
       #loading paper-spinner {
         padding: 25px;
@@ -34557,10 +34554,6 @@ style this element.
         width: 25px;
       }
 
-      paper-toggle-button {
-        --paper-toggle-button-checked-button-color: var(--primary-color);
-      }
-
       paper-button[save] {
         color: white;
         background-color: var(--default-primary-color);
@@ -34649,7 +34642,9 @@ style this element.
         },
         disabled : {
           type : Boolean,
-          value : false
+          value : false,
+          // have to trigger polymers style shim on update (css vars updated)
+          observer : 'updateStyles'
         }
       },
 
@@ -34667,7 +34662,7 @@ style this element.
       ready : function() {
         this.eventLoop.authState.req();
       },
-
+      
       _setType : function(e) {
         if( this.$.typeInput.checked ) {
           this.type = 'wine';
@@ -34777,7 +34772,7 @@ style this element.
         this.editMode = true;
         this.editMark = mark;
         
-        this.$.sectionInput.value = mark.data.section;
+        this.$.sectionInput.value = mark.data.section || (this.disabled ? '-' : '');
         this.type = mark.data.type;
 
         this.$.typeInput.checked = (this.type === 'wine') ? true : false;
@@ -34922,7 +34917,9 @@ style this element.
         },
         disabled : {
           type : Boolean,
-          value : false
+          value : false,
+          // have to trigger polymers style shim on update (css vars updated)
+          observer : 'updateStyles'
         }
       },
       
@@ -34941,15 +34938,19 @@ style this element.
       },
 
       edit : function(data) {
-        this.$.color.value = data.color || 'Red';
-        this.$.wineType.value = data.wineType || 'Still';
-        this.$.bottleType.value = data.bottleType || 'Standard';
-        this.$.name.value = data.name || '';
-        this.$.producer.value = data.producer || '';
-        this.$.price.value = data.price || '';
-        this.$.casePrice.value = data.casePrice || '';
-        this.$.country.value = data.country || '';
-        this.$.year.value = data.year || '';
+        this.$.color.value = data.color || this.getEmptyValue('Red');
+        this.$.wineType.value = data.wineType || this.getEmptyValue('Still');
+        this.$.bottleType.value = data.bottleType || this.getEmptyValue('Standard');
+        this.$.name.value = data.name || this.getEmptyValue();
+        this.$.producer.value = data.producer || this.getEmptyValue();
+        this.$.price.value = data.price || this.getEmptyValue();
+        this.$.casePrice.value = data.casePrice || this.getEmptyValue();
+        this.$.country.value = data.country || this.getEmptyValue();
+        this.$.year.value = data.year || this.getEmptyValue();
+      },
+
+      getEmptyValue : function(val) {
+        return this.disabled ? '-' : (val || '');
       },
 
       getData : function() {
@@ -34977,7 +34978,7 @@ style this element.
     </style>
 
     <div class="form-row">
-      <paper-input always-float-label="" id="name" placeholder="Hint text" label="Name" disabled$="[[disabled]]">
+      <paper-input always-float-label="" id="name" placeholder="Hint text" label="Name" read-only$="[[disabled]]">
       </paper-input>
     </div>
 
@@ -35026,7 +35027,9 @@ style this element.
         },
         disabled : {
           type : Boolean,
-          value : false
+          value : false,
+          // have to trigger polymers style shim on update (css vars updated)
+          observer : 'updateStyles'
         }
       },
 
@@ -35042,11 +35045,15 @@ style this element.
       },
 
       edit : function(data) {
-        this.$.name.value = data.name || '';
-        this.$.spiritType.value = data.spiritType || '';
-        this.$.country.value = data.country || '';
-        this.$.price.value = data.price || '';
-        this.$.casePrice.value = data.casePrice || '';
+        this.$.name.value = data.name || this.getEmptyValue();
+        this.$.spiritType.value = data.spiritType || this.getEmptyValue();
+        this.$.country.value = data.country || this.getEmptyValue();
+        this.$.price.value = data.price || this.getEmptyValue();
+        this.$.casePrice.value = data.casePrice || this.getEmptyValue();
+      },
+
+      getEmptyValue : function(val) {
+        return this.disabled ? '-' : (val || '');
       },
 
       getData : function() {

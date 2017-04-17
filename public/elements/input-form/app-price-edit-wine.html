@@ -158,7 +158,9 @@
         },
         disabled : {
           type : Boolean,
-          value : false
+          value : false,
+          // have to trigger polymers style shim on update (css vars updated)
+          observer : 'updateStyles'
         }
       },
       
@@ -177,15 +179,19 @@
       },
 
       edit : function(data) {
-        this.$.color.value = data.color || 'Red';
-        this.$.wineType.value = data.wineType || 'Still';
-        this.$.bottleType.value = data.bottleType || 'Standard';
-        this.$.name.value = data.name || '';
-        this.$.producer.value = data.producer || '';
-        this.$.price.value = data.price || '';
-        this.$.casePrice.value = data.casePrice || '';
-        this.$.country.value = data.country || '';
-        this.$.year.value = data.year || '';
+        this.$.color.value = data.color || this.getEmptyValue('Red');
+        this.$.wineType.value = data.wineType || this.getEmptyValue('Still');
+        this.$.bottleType.value = data.bottleType || this.getEmptyValue('Standard');
+        this.$.name.value = data.name || this.getEmptyValue();
+        this.$.producer.value = data.producer || this.getEmptyValue();
+        this.$.price.value = data.price || this.getEmptyValue();
+        this.$.casePrice.value = data.casePrice || this.getEmptyValue();
+        this.$.country.value = data.country || this.getEmptyValue();
+        this.$.year.value = data.year || this.getEmptyValue();
+      },
+
+      getEmptyValue : function(val) {
+        return this.disabled ? '-' : (val || '');
       },
 
       getData : function() {

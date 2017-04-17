@@ -13,7 +13,7 @@
         id="name" 
         placeholder="Hint text" 
         label="Name" 
-        disabled$="[[disabled]]">
+        read-only$="[[disabled]]">
       </paper-input>
     </div>
 
@@ -88,7 +88,9 @@
         },
         disabled : {
           type : Boolean,
-          value : false
+          value : false,
+          // have to trigger polymers style shim on update (css vars updated)
+          observer : 'updateStyles'
         }
       },
 
@@ -104,11 +106,15 @@
       },
 
       edit : function(data) {
-        this.$.name.value = data.name || '';
-        this.$.spiritType.value = data.spiritType || '';
-        this.$.country.value = data.country || '';
-        this.$.price.value = data.price || '';
-        this.$.casePrice.value = data.casePrice || '';
+        this.$.name.value = data.name || this.getEmptyValue();
+        this.$.spiritType.value = data.spiritType || this.getEmptyValue();
+        this.$.country.value = data.country || this.getEmptyValue();
+        this.$.price.value = data.price || this.getEmptyValue();
+        this.$.casePrice.value = data.casePrice || this.getEmptyValue();
+      },
+
+      getEmptyValue : function(val) {
+        return this.disabled ? '-' : (val || '');
       },
 
       getData : function() {

@@ -77,6 +77,26 @@
       select:focus {
         @apply(--select-input-focus);
       }
+      select[disabled] {
+        color: var(--primary-text-color);
+        box-shadow: none;
+        background: none;
+      }
+
+      paper-input[disabled] {
+        --paper-input-container: {
+          opacity: 1 !important;
+        }
+        --paper-input-container-input: {
+          color: var(--primary-text-color);
+        }
+        --paper-input-container-label-floating : {
+          color: var(--primary-text-color);
+        }
+        --paper-input-container-underline-disabled : {
+          border: none;
+        }
+      }
 
       .layout-vertical {
         @apply(--layout-vertical);
@@ -94,33 +114,10 @@
         @apply(--layout-flex);
       }
 
-		 a,paper-button {
-				 font-weight: bold;
-		 }
-
-		 a {
-					/*color: var(--primary-color);*/
-		 }
-
-		 paper-button {
-				 /*color: var(--primary-color);*/
-		 }
-
-		 paper-button.primary {
-				 /*background: var(--primary-color);*/
-		 }
-
-		 blockquote {
-				 border-left: 4px solid #eee;
-				 margin-left: 4px;
-				 padding-left: 20px;
-		  }
-
-      iron-icon {
-        /*color: var(--primary-background-color);*/
-      }
-      iron-icon:hover {
-        /*color: var(--accent-color);*/
+     blockquote {
+         border-left: 4px solid #eee;
+         margin-left: 4px;
+         padding-left: 20px;
       }
 
      .card {
