@@ -11,20 +11,20 @@
     "sizes": "32x32",
     "type": "image/png"
   },{
+    "src": "images/wine-icon-64.png",
+    "sizes": "64x64",
+    "type": "image/png"
+  },{
     "src": "images/wine-icon-96.png",
     "sizes": "96x96",
     "type": "image/png"
   },{
-    "src": "images/wine-icon-144.png",
-    "sizes": "144x144",
+    "src": "images/wine-icon-128.png",
+    "sizes": "128x128",
     "type": "image/png"
   },{
     "src": "images/wine-icon-192.png",
     "sizes": "192x192",
-    "type": "image/png"
-  },{
-    "src": "images/wine-icon-196.png",
-    "sizes": "196x196",
     "type": "image/png"
   }]
 }
