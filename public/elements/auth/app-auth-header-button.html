@@ -48,6 +48,11 @@
           z-index: 1000;
         }
       }
+
+      a {
+        text-decoration: none;
+        color: black;
+      }
     </style>
 
     <div state="pending">...</div>
@@ -67,6 +72,10 @@
           <paper-item on-click="_logout" style="cursor:pointer">
             <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
           </paper-item>
+          <!-- TODO: enable when user dashboard is ready -->
+          <!--<paper-item style="cursor:pointer">
+            <a href="#user"><iron-icon icon="dashboard"></iron-icon>&nbsp;My Dashboard</a>
+          </paper-item>-->
           <paper-item hidden$="[[!isAdmin]]" on-click="_gotToAdmin" style="cursor:pointer">
             <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface</a>
           </paper-item>
@@ -141,6 +150,10 @@
         this.toggleState('pending');
         this.eventLoop.authState.req();
         this.eventLoop.appState.req();
+
+        window.addEventListener('hashchange', function() {
+          this.$.menuBtn.close();
+        }.bind(this));
       },
 
       _onSelectedCatalogUpdate : function(id) {
