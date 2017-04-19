@@ -1,0 +1,48 @@
+<link rel="import" href="app-user-stats.html" />
+<link rel="import" href="app-user-review.html" />
+
+<dom-module id="app-user-dashboard">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-tabs {
+        background: white;
+        --paper-tabs-selection-bar-color: var(--default-primary-color);
+      }
+      paper-tab {
+        --paper-tab-ink: var(--default-primary-color);
+      }
+    </style>
+
+    <paper-tabs selected="{{selectedTab}}">
+      <paper-tab>Stats</paper-tab>
+      <paper-tab>Review</paper-tab>
+    </paper-tabs>
+
+    <iron-pages selected="[[selectedTab]]">
+      <app-user-stats active="[[active]]"></app-user-stats>
+      <app-user-review active="[[active]]"></app-user-review>
+    </iron-pages>
+
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-user-dashboard',
+
+      properties : {
+        active : {
+          type : Boolean,
+          value : false,
+        },
+        selectedTab : {
+          type : Number,
+          value : 0
+        }
+      }
+    });
+  </script>
+</dom-module>

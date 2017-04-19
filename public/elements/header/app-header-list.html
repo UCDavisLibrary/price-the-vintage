@@ -63,7 +63,11 @@
       <div hidden$="[[!searchBoxActive]]">
         <iron-icon icon="search"></iron-icon>
       </div>
-      <img src="/images/wine-icon-48.png"  hidden$="[[searchBoxActive]]" style="padding-right: 10px" />
+      <img 
+          src="/images/wine-icon-48.png" 
+          srcset="/images/wine-icon-48.png 1x, /images/wine-icon-64.png 1.5x, /images/wine-icon-96.png 2x"  
+          hidden$="[[searchBoxActive]]" 
+          style="padding-right: 10px" />
       <div class="flex">
         
         <h2 hidden$="[[searchBoxActive]]">

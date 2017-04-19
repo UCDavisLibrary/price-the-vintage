@@ -1,0 +1,260 @@
+<dom-module id="app-user-review">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        padding: 0 10px;
+      }
+
+      paper-material {
+        margin: 15px;
+        background: white;
+      }
+
+      tr td {
+        padding: 10px !important;
+      }
+
+      .light {
+        color: var(--secondary-text-color);
+      }
+
+      paper-icon-button[nav] {
+        color: var(--default-primary-color);
+      }
+
+      paper-icon-button[nav][disabled] {
+        color: var(--secondary-text-color);
+      }
+    </style>
+
+
+    <h3>
+       Help us approve marks by reviewing pending marks and voting on them!
+    </h3>
+    <div class="flex">
+        <div  style="max-width: 400px">
+          <h3 style="margin:0">Sort By:</h3>
+          <select id="sortInput" on-change="_getPendingMarks">
+            <option value="updated.desc">Updated Descending</option>
+            <option value="updated.asc">Updated Ascending</option>
+            <option value="created.desc">Created Descending</option>
+            <option value="created.asc">Created Ascending</option>
+          </select>
+        </div>
+    </div>
+
+    <div class="layout center" style="margin: 0 40px">
+      <div >
+        <paper-icon-button nav icon="arrow-back" id="prevBtn" on-click="_prev"></paper-icon-button>
+      </div>
+      <h2 class="flex" style="text-align: center">
+        Showing 
+        <span class="light">[[start]]</span> to 
+        <span class="light">[[stop]]</span> of 
+        <span class="light">[[total]]</span>
+      </h2>
+      <div>
+        <paper-icon-button nav icon="arrow-forward" id="nextBtn" on-click="_next"></paper-icon-button>
+      </div>
+    </div>
+
+    <paper-material style="overflow-x:auto">
+      <app-datatable 
+        id="datatable" 
+        on-inspect="onInspect"
+        on-approve="onApprove"
+        on-delete="onDelete"
+        loading="[[loading]]"
+        header="[[header]]" 
+        data="[[marks]]">
+        <template>
+          <tr>
+            <td>
+              <app-page-admin-mark-icon 
+                api-host$="[[apiHost]]"
+                mark="[[item]]"
+                page-id="[[item.page_id]]">
+              </app-page-admin-mark-icon>
+              <div class="light">Created on [[item.createdStr]]</div>
+              <div class="light">Updated on [[item.updatedStr]]</div>
+            </td>
+            <td>
+              <app-page-admin-mark-details 
+                mark="[[item]]">
+              </app-page-admin-mark-details>
+            </td>
+            <td style="white-space:nowrap;vertical-align:top">
+              <paper-icon-button icon="zoom-in" trigger="inspect"></paper-icon-button>
+            </td>
+            <td style="white-space:nowrap;vertical-align:top">
+              <app-price-form-voting></app-price-form-voting>
+            </td>
+          </tr>
+        </template>
+      </app-datatable>
+    </paper-material>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-user-review',
+
+      properties : {
+        active : {
+          type : Boolean,
+          value : false,
+          observer : '_onActive'
+        },
+        marks : {
+          type : Array,
+          value : []
+        },
+
+        loading : {
+          type : Boolean,
+          value : false
+        },
+
+        sort : {
+          type : String,
+          value : 'score'
+        },
+
+        hostApi : {
+          type : String,
+          value : ''
+        },
+
+        header : {
+          type : Array,
+          value : function() {
+            return ['Page', 'Data', 'Inspect', 'Vote'];
+          }
+        },
+
+        pageIndex : {
+          type : Number,
+          value : 0
+        },
+        limit : {
+          type : Number,
+          value : 10
+        },
+        total : {
+          type : Number,
+          value : 0
+        },
+        stop : {
+          type : Number,
+          value : 0
+        },
+        start : {
+          type : Number,
+          value : 0
+        },
+      },
+
+      behaviors : [EventBusBehavior],
+      
+      ebBind : {
+        'pending-mark-search-update' : '_onMarksLoad'
+      },
+
+      ready : function() {
+        this._getApiHost();
+      },
+
+      _onActive : function() {
+        if( !this.active ) return;
+        this._getPendingMarks();
+      },
+
+      _getPendingMarks : function() {
+        if( !this.active ) return;
+        this.loading = true;
+
+        this.ebEmit('pending-mark-search', {
+          params : {
+            order : this.$.sortInput.value,
+            limit : this.limit,
+            offset : this.limit*this.pageIndex
+          },
+          handler : this._onMarksLoad.bind(this)
+        });
+      },
+
+      _onMarksLoad : function(e) {
+        if( e.state === 'loading' ) return;
+        this.loading = false;
+
+        if( e.state == 'error' ) {
+          this.marks = [];
+          return alert('Failed to load pending marks')
+        }
+
+        if( e.state !== 'loaded' ) return;
+
+        this.searchResults = e;
+
+        var arr = e.payload.results;
+        arr.forEach((mark) => {
+          mark.createdStr = new Date(mark.created).toLocaleString();
+          mark.updatedStr = new Date(mark.updated).toLocaleString();
+        });
+
+        this.marks = arr;
+        this._updatePaging();
+      },
+
+      _updatePaging : function() {
+        this.start = this.searchResults.payload.start+1;
+        this.stop = this.searchResults.payload.stop+1;
+        this.total = this.searchResults.payload.total;
+
+        this.$.prevBtn.removeAttribute('disabled');
+        this.$.nextBtn.removeAttribute('disabled');
+
+        if( this.searchResults.payload.start === 0 ) {
+          this.$.prevBtn.setAttribute('disabled', 'disabled');
+        }
+
+        if( this.stop >= this.total ) {
+          this.$.nextBtn.setAttribute('disabled', 'disabled');
+        }
+      },
+
+      _prev : function() {
+        this.pageIndex--;
+        this._getPendingMarks();
+      },
+
+      _next : function() {
+        this.pageIndex++;
+        this._getPendingMarks();
+      },
+
+      _getApiHost : function() {
+        this.ebEmit('get-api-host', {
+          handler : function(host) {
+            this.apiHost = host;
+          }.bind(this)
+        });
+      },
+
+      onInspect : function(e) {
+        var mark = e.detail.data;
+
+        this.ebEmit('get-page', {
+          id : mark.page_id,
+          handler : function(e) {
+            window.location = '/#'+e.payload.catalog_id+'/'+mark.page_id+'/edit/'+mark.mark_id;
+          }
+        });
+      }
+
+      
+    });
+  </script>
+</dom-module>
