@@ -1,0 +1,13 @@
+{
+  "name": "price-the-vintage-cloud-functions",
+  "version": "0.0.1",
+  "description": "functions for price the vintage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justin Merz <jrmerz@gmail.com>",
+  "license": "ISC",
+  "dependencies": {},
+  "private": true
+}

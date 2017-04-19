@@ -89,7 +89,7 @@
               <paper-icon-button icon="zoom-in" trigger="inspect"></paper-icon-button>
             </td>
             <td style="white-space:nowrap;vertical-align:top">
-              <app-price-form-voting></app-price-form-voting>
+              <app-user-review-voting mark="[[item]]"></app-user-review-voting>
             </td>
           </tr>
         </template>
@@ -98,6 +98,37 @@
     
   </template>
   <script>
+
+(function(){
+
+    var InterestedPartyEventLoop = {
+      req : {
+        event : 'interested-party-response',
+        payload : function() {
+          var ids = [];
+          this.marks.forEach(function(mark){
+            ids.push(mark.mark_id);
+          });
+          
+          return {
+            ids : ids,
+            types : ['markup']
+          }
+        }
+      },
+
+      resp : {
+        event : 'interested-party-request',
+        handle : function() {
+          return (this.active);
+        },
+        handler : function() {
+          this.eventLoop.interestedParty.req();
+        }
+      }
+    };
+
+
     Polymer({
       is: 'app-user-review',
 
@@ -156,7 +187,11 @@
         },
       },
 
-      behaviors : [EventBusBehavior],
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        interestedParty : InterestedPartyEventLoop
+      },
       
       ebBind : {
         'pending-mark-search-update' : '_onMarksLoad'
@@ -199,10 +234,15 @@
         this.searchResults = e;
 
         var arr = e.payload.results;
-        arr.forEach((mark) => {
+        arr.forEach(function(mark) {
           mark.createdStr = new Date(mark.created).toLocaleString();
           mark.updatedStr = new Date(mark.updated).toLocaleString();
-        });
+
+          this.ebEmit('listen-to-mark', {
+            markId : mark.mark_id,
+            pageId : mark.page_id
+          });
+        }.bind(this));
 
         this.marks = arr;
         this._updatePaging();
@@ -256,5 +296,7 @@
 
       
     });
+
+})();
   </script>
 </dom-module>

@@ -1,5 +1,6 @@
 <link rel="import" href="app-user-stats.html" />
 <link rel="import" href="app-user-review.html" />
+<link rel="import" href="app-user-review-voting.html" />
 
 <dom-module id="app-user-dashboard">
   <template>
@@ -24,7 +25,7 @@
 
     <iron-pages selected="[[selectedTab]]">
       <app-user-stats active="[[active]]"></app-user-stats>
-      <app-user-review active="[[active]]"></app-user-review>
+      <app-user-review active="[[showingReviews]]"></app-user-review>
     </iron-pages>
 
     
@@ -36,12 +37,21 @@
       properties : {
         active : {
           type : Boolean,
-          value : false,
+          value : false
         },
         selectedTab : {
           type : Number,
           value : 0
+        },
+        showingReviews : {
+          typ : Boolean,
+          value : false,
+          computed : '_showingReviews(active, selectedTab)'
         }
+      },
+
+      _showingReviews : function(active, selectedTab) {
+        return (this.active && this.selectedTab === 1);
       }
     });
   </script>
