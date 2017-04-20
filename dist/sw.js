@@ -1,8 +1,11 @@
-var CACHE_NAME = 'price-the-vintage-cache-v1.1';
+var CACHE_NAME = 'price-the-vintage-cache-v1.3';
 var urlsToCache = [
   '/offline.html',
   '/images/library.png',
-  '/images/wine-icon-144.png'
+  '/images/wine-icon-32.png',
+  '/images/wine-icon-48.png',
+  '/images/wine-icon-64.png',
+  '/images/wine-icon-192.png'
 ];
 
 self.addEventListener('install', function(event) {
