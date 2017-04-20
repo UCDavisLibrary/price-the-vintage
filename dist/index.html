@@ -11,8 +11,15 @@
     <link rel="icon" type="image/png" href="/images/wine-icon-32.png">
 
     <!-- apple stuff -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- 
+      Currently this flag has to be set to 'no' as when it's enabled it breaks
+      Google Oauth.  Crazy, right?!  Basically iOS will launch app w/o address
+      bar and uses a webview to do this.  The User-Agent in the webview is 
+      blocked by Google as they want webviews to be using native SDKs.  Like
+      I said, crazy.
+    -->
+    <meta name="mobile-web-app-capable" content="no">
+    <meta name="apple-mobile-web-app-capable" content="no"> 
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <!-- more apple stuff -->
     <link rel="icon" sizes="192x192" href="images/wine-icon-192.png">

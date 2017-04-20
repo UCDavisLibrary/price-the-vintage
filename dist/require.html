@@ -32860,7 +32860,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     </style>
 
     <paper-header-panel style="height: 100%">
-      <paper-toolbar>
+      <paper-toolbar id="toolbar">
         <app-header class="flex"></app-header>
       </paper-toolbar>
 
@@ -32942,6 +32942,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this._setPageAndAppState(null, true);
 
         this.eventLoop.authState.req();
+
+        // hack
+        this.$.toolbar.$.topBar.style.padding = '0 8px';
       },
 
       _isAuthRedirect : function() {
@@ -36488,7 +36491,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       <div class="flex">
         
         <h2 hidden$="[[searchBoxActive]]">
-          Price the Vintage (Alpha)
+          Price the Vintage <span style="font-size:12px">Alpha</span>
         </h2>
 
         <div id="outer-input" hidden$="[[!searchBoxActive]]">

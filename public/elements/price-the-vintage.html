@@ -32,7 +32,7 @@ Parses URL on hash change and sets appState.
     </style>
 
     <paper-header-panel style="height: 100%">
-      <paper-toolbar>
+      <paper-toolbar id="toolbar">
         <app-header class="flex"></app-header>
       </paper-toolbar>
 
@@ -117,6 +117,9 @@ Parses URL on hash change and sets appState.
         this._setPageAndAppState(null, true);
 
         this.eventLoop.authState.req();
+
+        // hack
+        this.$.toolbar.$.topBar.style.padding = '0 8px';
       },
 
       _isAuthRedirect : function() {
