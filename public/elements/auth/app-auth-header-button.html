@@ -102,6 +102,7 @@
       resp : {
         event : 'auth-update',
         handler : function(e) {
+          console.log(e);
           this.auth = e;
           this._renderAuthState();
         }

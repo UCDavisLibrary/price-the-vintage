@@ -36484,7 +36484,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       <div hidden$="[[!searchBoxActive]]">
         <iron-icon icon="search"></iron-icon>
       </div>
-      <img src="/images/wine-icon-48.png" srcset="/images/wine-icon-48.png 1x, /images/wine-icon-64.png 1.5x, /images/wine-icon-96.png 2x" hidden$="[[searchBoxActive]]" style="padding-right: 10px">
+      <img alt="Application Icon" src="/images/wine-icon-48.png" srcset="/images/wine-icon-48.png 1x, /images/wine-icon-64.png 1.5x, /images/wine-icon-96.png 2x" hidden$="[[searchBoxActive]]" style="padding-right: 10px">
       <div class="flex">
         
         <h2 hidden$="[[searchBoxActive]]">
@@ -37355,6 +37355,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       resp : {
         event : 'auth-update',
         handler : function(e) {
+          console.log(e);
           this.auth = e;
           this._renderAuthState();
         }
