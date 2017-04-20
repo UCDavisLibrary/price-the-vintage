@@ -5042,6 +5042,30 @@ L.EditToolbar.Delete = L.Handler.extend({
 
 </head><body><div hidden="" by-vulcanize=""><!--
 @license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
 Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -8083,22 +8107,7 @@ this._tryReady();
 },
 _marshalBehavior: function (b) {
 }
-});</script><!--
-@license
-Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
-
-
-
-
-
-<script>(function () {
+});</script><script>(function () {
 Polymer.nar = [];
 var disableUpgradeEnabled = Polymer.Settings.disableUpgradeEnabled;
 Polymer.Annotations = {
@@ -13485,22 +13494,137 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><!--
+Material design: [Icon toggles](https://www.google.com/design/spec/components/buttons.html#buttons-toggle-buttons)
+
+`paper-icon-button` is a button with an image placed at the center. When the user touches
+the button, a ripple effect emanates from the center of the button.
+
+`paper-icon-button` includes a default icon set.  Use `icon` to specify which icon
+from the icon set to use.
+
+    <paper-icon-button icon="menu"></paper-icon-button>
+
+See [`iron-iconset`](iron-iconset) for more information about
+how to use a custom icon set.
+
+Example:
+
+    <link href="path/to/iron-icons/iron-icons.html" rel="import">
+
+    <paper-icon-button icon="favorite"></paper-icon-button>
+    <paper-icon-button src="star.png"></paper-icon-button>
+
+To use `paper-icon-button` as a link, wrap it in an anchor tag. Since `paper-icon-button`
+will already receive focus, you may want to prevent the anchor tag from receiving focus
+as well by setting its tabindex to -1.
+
+    <a href="https://www.polymer-project.org" tabindex="-1">
+      <paper-icon-button icon="polymer"></paper-icon-button>
+    </a>
+
+### Styling
+
+Style the button with CSS as you would a normal DOM element. If you are using the icons
+provided by `iron-icons`, they will inherit the foreground color of the button.
+
+    /* make a red "favorite" button */
+    <paper-icon-button icon="favorite" style="color: red;"></paper-icon-button>
+
+By default, the ripple is the same color as the foreground at 25% opacity. You may
+customize the color using the `--paper-icon-button-ink-color` custom property.
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-icon-button-disabled-text` | The color of the disabled button | `--disabled-text-color`
+`--paper-icon-button-ink-color` | Selected/focus ripple color | `--primary-text-color`
+`--paper-icon-button` | Mixin for a button | `{}`
+`--paper-icon-button-disabled` | Mixin for a disabled button | `{}`
+`--paper-icon-button-hover` | Mixin for button on hover | `{}`
+
+@group Paper Elements
+@element paper-icon-button
+@demo demo/index.html
+-->
+
+<!--
 @license
-Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+
+The `iron-icon` element displays an icon. By default an icon renders as a 24px square.
+
+Example using src:
+
+    <iron-icon src="star.png"></iron-icon>
+
+Example setting size to 32px x 32px:
+
+    <iron-icon class="big" src="big_star.png"></iron-icon>
+
+    <style is="custom-style">
+      .big {
+        --iron-icon-height: 32px;
+        --iron-icon-width: 32px;
+      }
+    </style>
+
+The iron elements include several sets of icons.
+To use the default set of icons, import `iron-icons.html` and use the `icon` attribute to specify an icon:
+
+    <link rel="import" href="/components/iron-icons/iron-icons.html">
+
+    <iron-icon icon="menu"></iron-icon>
+
+To use a different built-in set of icons, import the specific `iron-icons/<iconset>-icons.html`, and
+specify the icon as `<iconset>:<icon>`. For example, to use a communication icon, you would
+use:
+
+    <link rel="import" href="/components/iron-icons/communication-icons.html">
+
+    <iron-icon icon="communication:email"></iron-icon>
+
+You can also create custom icon sets of bitmap or SVG icons.
+
+Example of using an icon named `cherry` from a custom iconset with the ID `fruit`:
+
+    <iron-icon icon="fruit:cherry"></iron-icon>
+
+See [iron-iconset](iron-iconset) and [iron-iconset-svg](iron-iconset-svg) for more information about
+how to create a custom iconset.
+
+See the [iron-icons demo](iron-icons?view=demo:demo/index.html) to see the icons available
+in the various iconsets.
+
+To load a subset of icons from one of the default `iron-icons` sets, you can
+use the [poly-icon](https://poly-icon.appspot.com/) tool. It allows you
+to select individual icons, and creates an iconset from them that you can
+use directly in your elements.
+
+### Styling
+
+The following custom properties are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--iron-icon` | Mixin applied to the icon | {}
+`--iron-icon-width` | Width of the icon | `24px`
+`--iron-icon-height` | Height of the icon | `24px`
+`--iron-icon-fill-color` | Fill color of the svg icon | `currentcolor`
+`--iron-icon-stroke-color` | Stroke color of the svg icon | none
+
+@group Iron Elements
+@element iron-icon
+@demo demo/index.html
+@hero hero.svg
+@homepage polymer.github.io
 -->
-
-
-
-
-
-
-
-
 
 <!--
 @license
@@ -13830,8 +13954,7 @@ Or, in a Polymer element, you can include a meta in your template:
     });
 
   })();
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -13880,9 +14003,7 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
   [hidden] {
     display: none !important;
   }
-</style>
-
-<style is="custom-style">
+</style><style is="custom-style">
   :root {
 
     --layout: {
@@ -14231,86 +14352,7 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
 
   }
 
-</style>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-
-The `iron-icon` element displays an icon. By default an icon renders as a 24px square.
-
-Example using src:
-
-    <iron-icon src="star.png"></iron-icon>
-
-Example setting size to 32px x 32px:
-
-    <iron-icon class="big" src="big_star.png"></iron-icon>
-
-    <style is="custom-style">
-      .big {
-        --iron-icon-height: 32px;
-        --iron-icon-width: 32px;
-      }
-    </style>
-
-The iron elements include several sets of icons.
-To use the default set of icons, import `iron-icons.html` and use the `icon` attribute to specify an icon:
-
-    <link rel="import" href="/components/iron-icons/iron-icons.html">
-
-    <iron-icon icon="menu"></iron-icon>
-
-To use a different built-in set of icons, import the specific `iron-icons/<iconset>-icons.html`, and
-specify the icon as `<iconset>:<icon>`. For example, to use a communication icon, you would
-use:
-
-    <link rel="import" href="/components/iron-icons/communication-icons.html">
-
-    <iron-icon icon="communication:email"></iron-icon>
-
-You can also create custom icon sets of bitmap or SVG icons.
-
-Example of using an icon named `cherry` from a custom iconset with the ID `fruit`:
-
-    <iron-icon icon="fruit:cherry"></iron-icon>
-
-See [iron-iconset](iron-iconset) and [iron-iconset-svg](iron-iconset-svg) for more information about
-how to create a custom iconset.
-
-See the [iron-icons demo](iron-icons?view=demo:demo/index.html) to see the icons available
-in the various iconsets.
-
-To load a subset of icons from one of the default `iron-icons` sets, you can
-use the [poly-icon](https://poly-icon.appspot.com/) tool. It allows you
-to select individual icons, and creates an iconset from them that you can
-use directly in your elements.
-
-### Styling
-
-The following custom properties are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--iron-icon` | Mixin applied to the icon | {}
-`--iron-icon-width` | Width of the icon | `24px`
-`--iron-icon-height` | Height of the icon | `24px`
-`--iron-icon-fill-color` | Fill color of the svg icon | `currentcolor`
-`--iron-icon-stroke-color` | Stroke color of the svg icon | none
-
-@group Iron Elements
-@element iron-icon
-@demo demo/index.html
-@hero hero.svg
-@homepage polymer.github.io
--->
-
-<dom-module id="iron-icon" assetpath="bower_components/iron-icon/">
+</style><dom-module id="iron-icon" assetpath="bower_components/iron-icon/">
   <template>
     <style>
       :host {
@@ -14437,6 +14479,22 @@ Custom property | Description | Default
 
 </dom-module>
 <!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -14927,8 +14985,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     };
   })();
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -15033,8 +15090,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<script>
+</script><script>
 
   /**
    * @demo demo/index.html
@@ -15255,8 +15311,7 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
+--><!--
 @license
 Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -16126,16 +16181,7 @@ Apply `circle` class to make the rippling effect within a circle.
       }
     }
   };
-</script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<script>
+</script><script>
   /**
    * `Polymer.PaperInkyFocusBehavior` implements a ripple when the element has keyboard focus.
    *
@@ -16179,7 +16225,8 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
+--><!-- Taken from https://www.google.com/design/spec/style/color.html#color-ui-color-application -->
+
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -16508,18 +16555,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   }
 
-</style>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!-- Taken from https://www.google.com/design/spec/style/color.html#color-ui-color-application -->
-
-<style is="custom-style">
+</style><style is="custom-style">
 
   :root {
     /*
@@ -16575,71 +16611,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   }
 
-</style>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Icon toggles](https://www.google.com/design/spec/components/buttons.html#buttons-toggle-buttons)
-
-`paper-icon-button` is a button with an image placed at the center. When the user touches
-the button, a ripple effect emanates from the center of the button.
-
-`paper-icon-button` includes a default icon set.  Use `icon` to specify which icon
-from the icon set to use.
-
-    <paper-icon-button icon="menu"></paper-icon-button>
-
-See [`iron-iconset`](iron-iconset) for more information about
-how to use a custom icon set.
-
-Example:
-
-    <link href="path/to/iron-icons/iron-icons.html" rel="import">
-
-    <paper-icon-button icon="favorite"></paper-icon-button>
-    <paper-icon-button src="star.png"></paper-icon-button>
-
-To use `paper-icon-button` as a link, wrap it in an anchor tag. Since `paper-icon-button`
-will already receive focus, you may want to prevent the anchor tag from receiving focus
-as well by setting its tabindex to -1.
-
-    <a href="https://www.polymer-project.org" tabindex="-1">
-      <paper-icon-button icon="polymer"></paper-icon-button>
-    </a>
-
-### Styling
-
-Style the button with CSS as you would a normal DOM element. If you are using the icons
-provided by `iron-icons`, they will inherit the foreground color of the button.
-
-    /* make a red "favorite" button */
-    <paper-icon-button icon="favorite" style="color: red;"></paper-icon-button>
-
-By default, the ripple is the same color as the foreground at 25% opacity. You may
-customize the color using the `--paper-icon-button-ink-color` custom property.
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-icon-button-disabled-text` | The color of the disabled button | `--disabled-text-color`
-`--paper-icon-button-ink-color` | Selected/focus ripple color | `--primary-text-color`
-`--paper-icon-button` | Mixin for a button | `{}`
-`--paper-icon-button-disabled` | Mixin for a disabled button | `{}`
-`--paper-icon-button-hover` | Mixin for button on hover | `{}`
-
-@group Paper Elements
-@element paper-icon-button
-@demo demo/index.html
--->
-
-<dom-module id="paper-icon-button" assetpath="bower_components/paper-icon-button/">
+</style><dom-module id="paper-icon-button" assetpath="bower_components/paper-icon-button/">
   <template strip-whitespace="">
     <style>
       :host {
@@ -16745,6 +16717,38 @@ Custom property | Description | Default
     });
   </script>
 </dom-module>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+`iron-pages` is used to select one of its children to show. One use is to cycle through a list of
+children "pages".
+
+Example:
+
+    <iron-pages selected="0">
+      <div>One</div>
+      <div>Two</div>
+      <div>Three</div>
+    </iron-pages>
+
+    <script>
+      document.addEventListener('click', function(e) {
+        var pages = document.querySelector('iron-pages');
+        pages.selectNext();
+      });
+    </script>
+
+@group Iron Elements
+@hero hero.svg
+@demo demo/index.html
+-->
+
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -16934,9 +16938,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this._notifyingDescendant = false;
     }
   };
-</script>
-
-<!--
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -17049,8 +17059,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<script>
+</script><script>
 
   /** @polymerBehavior */
   Polymer.IronSelectableBehavior = {
@@ -17424,48 +17433,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-`iron-pages` is used to select one of its children to show. One use is to cycle through a list of
-children "pages".
-
-Example:
-
-    <iron-pages selected="0">
-      <div>One</div>
-      <div>Two</div>
-      <div>Three</div>
-    </iron-pages>
-
-    <script>
-      document.addEventListener('click', function(e) {
-        var pages = document.querySelector('iron-pages');
-        pages.selectNext();
-      });
-    </script>
-
-@group Iron Elements
-@hero hero.svg
-@demo demo/index.html
--->
-
-<dom-module id="iron-pages" assetpath="bower_components/iron-pages/">
+</script><dom-module id="iron-pages" assetpath="bower_components/iron-pages/">
 
   <template>
     <style>
@@ -17516,6 +17484,14 @@ Example:
   </script>
 </dom-module>
 <!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -17663,8 +17639,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.IronMultiSelectableBehaviorImpl
   ];
 
-</script>
-<script>
+</script><script>
   /**
   `iron-selector` is an element which can be used to manage a list of elements
   that can be selected.  Tapping on the item will make the item selected.  The `selected` indicates
@@ -17737,125 +17712,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   });
 
 </script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
-`iron-media-query` can be used to data bind to a CSS media query.
-The `query` property is a bare CSS media query.
-The `query-matches` property is a boolean representing whether the page matches that media query.
-
-Example:
-
-    <iron-media-query query="(min-width: 600px)" query-matches="{{queryMatches}}"></iron-media-query>
-
-@group Iron Elements
-@demo demo/index.html
-@hero hero.svg
-@element iron-media-query
--->
-
-<script>
-
-  Polymer({
-
-    is: 'iron-media-query',
-
-    properties: {
-
-      /**
-       * The Boolean return value of the media query.
-       */
-      queryMatches: {
-        type: Boolean,
-        value: false,
-        readOnly: true,
-        notify: true
-      },
-
-      /**
-       * The CSS media query to evaluate.
-       */
-      query: {
-        type: String,
-        observer: 'queryChanged'
-      },
-
-      /**
-       * If true, the query attribute is assumed to be a complete media query
-       * string rather than a single media feature.
-       */
-      full: {
-        type: Boolean,
-        value: false
-      },
-
-      /**
-       * @type {function(MediaQueryList)}
-       */
-      _boundMQHandler: {
-        value: function() {
-          return this.queryHandler.bind(this);
-        }
-      },
-
-      /**
-       * @type {MediaQueryList}
-       */
-      _mq: {
-        value: null
-      }
-    },
-
-    attached: function() {
-      this.style.display = 'none';
-      this.queryChanged();
-    },
-
-    detached: function() {
-      this._remove();
-    },
-
-    _add: function() {
-      if (this._mq) {
-        this._mq.addListener(this._boundMQHandler);
-      }
-    },
-
-    _remove: function() {
-      if (this._mq) {
-        this._mq.removeListener(this._boundMQHandler);
-      }
-      this._mq = null;
-    },
-
-    queryChanged: function() {
-      this._remove();
-      var query = this.query;
-      if (!query) {
-        return;
-      }
-      if (!this.full && query[0] !== '(') {
-        query = '(' + query + ')';
-      }
-      this._mq = window.matchMedia(query);
-      this._add();
-      this.queryHandler(this._mq);
-    },
-
-    queryHandler: function(mq) {
-      this._setQueryMatches(mq.matches);
-    }
-
-  });
-
-</script>
-<!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -17979,7 +17835,116 @@ Custom property | Description | Default
 @hero hero.svg
 -->
 
-<dom-module id="paper-drawer-panel" assetpath="bower_components/paper-drawer-panel/">
+<!--
+`iron-media-query` can be used to data bind to a CSS media query.
+The `query` property is a bare CSS media query.
+The `query-matches` property is a boolean representing whether the page matches that media query.
+
+Example:
+
+    <iron-media-query query="(min-width: 600px)" query-matches="{{queryMatches}}"></iron-media-query>
+
+@group Iron Elements
+@demo demo/index.html
+@hero hero.svg
+@element iron-media-query
+-->
+
+<script>
+
+  Polymer({
+
+    is: 'iron-media-query',
+
+    properties: {
+
+      /**
+       * The Boolean return value of the media query.
+       */
+      queryMatches: {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      },
+
+      /**
+       * The CSS media query to evaluate.
+       */
+      query: {
+        type: String,
+        observer: 'queryChanged'
+      },
+
+      /**
+       * If true, the query attribute is assumed to be a complete media query
+       * string rather than a single media feature.
+       */
+      full: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * @type {function(MediaQueryList)}
+       */
+      _boundMQHandler: {
+        value: function() {
+          return this.queryHandler.bind(this);
+        }
+      },
+
+      /**
+       * @type {MediaQueryList}
+       */
+      _mq: {
+        value: null
+      }
+    },
+
+    attached: function() {
+      this.style.display = 'none';
+      this.queryChanged();
+    },
+
+    detached: function() {
+      this._remove();
+    },
+
+    _add: function() {
+      if (this._mq) {
+        this._mq.addListener(this._boundMQHandler);
+      }
+    },
+
+    _remove: function() {
+      if (this._mq) {
+        this._mq.removeListener(this._boundMQHandler);
+      }
+      this._mq = null;
+    },
+
+    queryChanged: function() {
+      this._remove();
+      var query = this.query;
+      if (!query) {
+        return;
+      }
+      if (!this.full && query[0] !== '(') {
+        query = '(' + query + ')';
+      }
+      this._mq = window.matchMedia(query);
+      this._add();
+      this.queryHandler(this._mq);
+    },
+
+    queryHandler: function(mq) {
+      this._setQueryMatches(mq.matches);
+    }
+
+  });
+
+</script><dom-module id="paper-drawer-panel" assetpath="bower_components/paper-drawer-panel/">
   <template>
     <style>
       :host {
@@ -19210,8 +19175,95 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700">
+--><!--
+Material design: [Toolbars](https://www.google.com/design/spec/components/toolbars.html)
+
+`paper-toolbar` is a horizontal bar containing items that can be used for
+label, navigation, search and actions.  The items placed inside the
+`paper-toolbar` are projected into a `class="horizontal center layout"` container inside of
+`paper-toolbar`'s Shadow DOM.  You can use flex attributes to control the items'
+sizing.
+
+Example:
+
+```html
+<paper-toolbar>
+  <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
+  <div class="title">Title</div>
+  <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
+</paper-toolbar>
+```
+
+`paper-toolbar` has a standard height, but can made be taller by setting `tall`
+class on the `paper-toolbar`. This will make the toolbar 3x the normal height.
+
+```html
+<paper-toolbar class="tall">
+  <paper-icon-button icon="menu"></paper-icon-button>
+</paper-toolbar>
+```
+
+Apply `medium-tall` class to make the toolbar medium tall.  This will make the
+toolbar 2x the normal height.
+
+```html
+<paper-toolbar class="medium-tall">
+  <paper-icon-button icon="menu"></paper-icon-button>
+</paper-toolbar>
+```
+
+When `tall`, items can pin to either the top (default), middle or bottom.  Use
+`middle` class for middle content and `bottom` class for bottom content.
+
+```html
+<paper-toolbar class="tall">
+  <paper-icon-button icon="menu"></paper-icon-button>
+  <div class="middle title">Middle Title</div>
+  <div class="bottom title">Bottom Title</div>
+</paper-toolbar>
+```
+
+For `medium-tall` toolbar, the middle and bottom contents overlap and are
+pinned to the bottom.  But `middleJustify` and `bottomJustify` attributes are
+still honored separately.
+
+To make an element completely fit at the bottom of the toolbar, use `fit` along
+with `bottom`.
+
+```html
+<paper-toolbar class="tall">
+  <div id="progressBar" class="bottom fit"></div>
+</paper-toolbar>
+```
+
+When inside a `paper-header-panel` element with `mode="waterfall-tall"`, 
+the class `.animate` is toggled to animate the height change in the toolbar. 
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-toolbar-title`      | Mixin applied to the title of the toolbar | `{}`
+`--paper-toolbar-background` | Toolbar background color     | `--primary-color`
+`--paper-toolbar-color`      | Toolbar foreground color     | `--dark-theme-text-color`
+`--paper-toolbar-height`     | Custom height for toolbar    | `64px`
+`--paper-toolbar-sm-height`  | Custom height for small screen toolbar | `56px`
+`--paper-toolbar`            | Mixin applied to the toolbar | `{}`
+`--paper-toolbar-content`    | Mixin applied to the content section of the toolbar | `{}`
+`--paper-toolbar-medium`     | Mixin applied to medium height toolbar | `{}`
+`--paper-toolbar-tall`       | Mixin applied to tall height toolbar | `{}`
+`--paper-toolbar-transition` | Transition applied to the `.animate` class | `height 0.18s ease-in`
+
+### Accessibility
+
+`<paper-toolbar>` has `role="toolbar"` by default. Any elements with the class `title` will
+be used as the label of the toolbar via `aria-labelledby`.
+
+@demo demo/index.html
+-->
+
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -19220,7 +19272,17 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><style is="custom-style">
+--><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700">
+<style is="custom-style">
 
   :root {
 
@@ -19375,105 +19437,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   }
 
-</style>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Toolbars](https://www.google.com/design/spec/components/toolbars.html)
-
-`paper-toolbar` is a horizontal bar containing items that can be used for
-label, navigation, search and actions.  The items placed inside the
-`paper-toolbar` are projected into a `class="horizontal center layout"` container inside of
-`paper-toolbar`'s Shadow DOM.  You can use flex attributes to control the items'
-sizing.
-
-Example:
-
-```html
-<paper-toolbar>
-  <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
-  <div class="title">Title</div>
-  <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
-</paper-toolbar>
-```
-
-`paper-toolbar` has a standard height, but can made be taller by setting `tall`
-class on the `paper-toolbar`. This will make the toolbar 3x the normal height.
-
-```html
-<paper-toolbar class="tall">
-  <paper-icon-button icon="menu"></paper-icon-button>
-</paper-toolbar>
-```
-
-Apply `medium-tall` class to make the toolbar medium tall.  This will make the
-toolbar 2x the normal height.
-
-```html
-<paper-toolbar class="medium-tall">
-  <paper-icon-button icon="menu"></paper-icon-button>
-</paper-toolbar>
-```
-
-When `tall`, items can pin to either the top (default), middle or bottom.  Use
-`middle` class for middle content and `bottom` class for bottom content.
-
-```html
-<paper-toolbar class="tall">
-  <paper-icon-button icon="menu"></paper-icon-button>
-  <div class="middle title">Middle Title</div>
-  <div class="bottom title">Bottom Title</div>
-</paper-toolbar>
-```
-
-For `medium-tall` toolbar, the middle and bottom contents overlap and are
-pinned to the bottom.  But `middleJustify` and `bottomJustify` attributes are
-still honored separately.
-
-To make an element completely fit at the bottom of the toolbar, use `fit` along
-with `bottom`.
-
-```html
-<paper-toolbar class="tall">
-  <div id="progressBar" class="bottom fit"></div>
-</paper-toolbar>
-```
-
-When inside a `paper-header-panel` element with `mode="waterfall-tall"`, 
-the class `.animate` is toggled to animate the height change in the toolbar. 
-
-### Styling
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-toolbar-title`      | Mixin applied to the title of the toolbar | `{}`
-`--paper-toolbar-background` | Toolbar background color     | `--primary-color`
-`--paper-toolbar-color`      | Toolbar foreground color     | `--dark-theme-text-color`
-`--paper-toolbar-height`     | Custom height for toolbar    | `64px`
-`--paper-toolbar-sm-height`  | Custom height for small screen toolbar | `56px`
-`--paper-toolbar`            | Mixin applied to the toolbar | `{}`
-`--paper-toolbar-content`    | Mixin applied to the content section of the toolbar | `{}`
-`--paper-toolbar-medium`     | Mixin applied to medium height toolbar | `{}`
-`--paper-toolbar-tall`       | Mixin applied to tall height toolbar | `{}`
-`--paper-toolbar-transition` | Transition applied to the `.animate` class | `height 0.18s ease-in`
-
-### Accessibility
-
-`<paper-toolbar>` has `role="toolbar"` by default. Any elements with the class `title` will
-be used as the label of the toolbar via `aria-labelledby`.
-
-@demo demo/index.html
--->
-
-<dom-module id="paper-toolbar" assetpath="bower_components/paper-toolbar/">
+</style><dom-module id="paper-toolbar" assetpath="bower_components/paper-toolbar/">
   <template>
     <style>
       :host {
@@ -19761,99 +19725,6 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><!--
-`PaperItemBehavior` is a convenience behavior shared by <paper-item> and
-<paper-icon-item> that manages the shared control states and attributes of
-the items.
--->
-
-<script>
-  /** @polymerBehavior Polymer.PaperItemBehavior */
-  Polymer.PaperItemBehaviorImpl = {
-    hostAttributes: {
-      role: 'option',
-      tabindex: '0'
-    }
-  };
-
-  /** @polymerBehavior */
-  Polymer.PaperItemBehavior = [
-    Polymer.IronButtonState,
-    Polymer.IronControlState,
-    Polymer.PaperItemBehaviorImpl
-  ];
-</script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><dom-module id="paper-item-shared-styles" assetpath="bower_components/paper-item/">
-  <template>
-    <style>
-      :host, .paper-item {
-        display: block;
-        position: relative;
-        min-height: var(--paper-item-min-height, 48px);
-        padding: 0px 16px;
-      }
-
-      .paper-item {
-        @apply(--paper-font-subhead);
-        border:none;
-        outline: none;
-        background: white;
-        width: 100%;
-        text-align: left;
-      }
-
-      :host([hidden]), .paper-item[hidden] {
-        display: none !important;
-      }
-
-      :host(.iron-selected), .paper-item.iron-selected {
-        font-weight: var(--paper-item-selected-weight, bold);
-
-        @apply(--paper-item-selected);
-      }
-
-      :host([disabled]), .paper-item[disabled] {
-        color: var(--paper-item-disabled-color, --disabled-text-color);
-
-        @apply(--paper-item-disabled);
-      }
-
-      :host(:focus), .paper-item:focus {
-        position: relative;
-        outline: 0;
-
-        @apply(--paper-item-focused);
-      }
-
-      :host(:focus):before, .paper-item:focus:before {
-        @apply(--layout-fit);
-
-        background: currentColor;
-        content: '';
-        opacity: var(--dark-divider-opacity);
-        pointer-events: none;
-
-        @apply(--paper-item-focused-before);
-      }
-    </style>
-  </template>
-</dom-module>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
 Material design: [Lists](https://www.google.com/design/spec/components/lists.html)
 
 `<paper-item>` is an interactive list item. By default, it is a horizontal flexbox.
@@ -19923,6 +19794,98 @@ This element has `role="listitem"` by default. Depending on usage, it may be mor
 @demo demo/index.html
 -->
 
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+`PaperItemBehavior` is a convenience behavior shared by <paper-item> and
+<paper-icon-item> that manages the shared control states and attributes of
+the items.
+-->
+
+<script>
+  /** @polymerBehavior Polymer.PaperItemBehavior */
+  Polymer.PaperItemBehaviorImpl = {
+    hostAttributes: {
+      role: 'option',
+      tabindex: '0'
+    }
+  };
+
+  /** @polymerBehavior */
+  Polymer.PaperItemBehavior = [
+    Polymer.IronButtonState,
+    Polymer.IronControlState,
+    Polymer.PaperItemBehaviorImpl
+  ];
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><dom-module id="paper-item-shared-styles" assetpath="bower_components/paper-item/">
+  <template>
+    <style>
+      :host, .paper-item {
+        display: block;
+        position: relative;
+        min-height: var(--paper-item-min-height, 48px);
+        padding: 0px 16px;
+      }
+
+      .paper-item {
+        @apply(--paper-font-subhead);
+        border:none;
+        outline: none;
+        background: white;
+        width: 100%;
+        text-align: left;
+      }
+
+      :host([hidden]), .paper-item[hidden] {
+        display: none !important;
+      }
+
+      :host(.iron-selected), .paper-item.iron-selected {
+        font-weight: var(--paper-item-selected-weight, bold);
+
+        @apply(--paper-item-selected);
+      }
+
+      :host([disabled]), .paper-item[disabled] {
+        color: var(--paper-item-disabled-color, --disabled-text-color);
+
+        @apply(--paper-item-disabled);
+      }
+
+      :host(:focus), .paper-item:focus {
+        position: relative;
+        outline: 0;
+
+        @apply(--paper-item-focused);
+      }
+
+      :host(:focus):before, .paper-item:focus:before {
+        @apply(--layout-fit);
+
+        background: currentColor;
+        content: '';
+        opacity: var(--dark-divider-opacity);
+        pointer-events: none;
+
+        @apply(--paper-item-focused-before);
+      }
+    </style>
+  </template>
+</dom-module>
 <dom-module id="paper-item" assetpath="bower_components/paper-item/">
   <template>
     <style include="paper-item-shared-styles"></style>
@@ -19949,6 +19912,236 @@ This element has `role="listitem"` by default. Depending on usage, it may be mor
     });
   </script>
 </dom-module>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+
+`iron-list` displays a virtual, 'infinite' list. The template inside
+the iron-list element represents the DOM to create for each list item.
+The `items` property specifies an array of list item data.
+
+For performance reasons, not every item in the list is rendered at once;
+instead a small subset of actual template elements *(enough to fill the viewport)*
+are rendered and reused as the user scrolls. As such, it is important that all
+state of the list template be bound to the model driving it, since the view may
+be reused with a new model at any time. Particularly, any state that may change
+as the result of a user interaction with the list item must be bound to the model
+to avoid view state inconsistency.
+
+### Sizing iron-list
+
+`iron-list` must either be explicitly sized, or delegate scrolling to an
+explicitly sized parent. By "explicitly sized", we mean it either has an explicit
+CSS `height` property set via a class or inline style, or else is sized by other
+layout means (e.g. the `flex` or `fit` classes).
+
+#### Flexbox - [jsbin](http://jsbin.com/kokaki/edit?html,output)
+
+```html
+<template is="x-list">
+  <style>
+    :host {
+      display: block;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    iron-list {
+      flex: 1 1 auto;
+    }
+  </style>
+  <app-toolbar>App name</app-toolbar>
+  <iron-list items="[[items]]">
+    <template>
+      <div>
+        ...
+      </div>
+    </template>
+  </iron-list>
+</template>
+```
+#### Explicit size - [jsbin](http://jsbin.com/pibefo/edit?html,output)
+```html
+<template is="x-list">
+  <style>
+    :host {
+      display: block;
+    }
+
+    iron-list {
+      height: 100vh; /* don't use % values unless the parent element is sized. */
+    }
+  </style>
+  <iron-list items="[[items]]">
+    <template>
+      <div>
+        ...
+      </div>
+    </template>
+  </iron-list>
+</template>
+```
+#### Main document scrolling - [jsbin](http://jsbin.com/cojuli/edit?html,output)
+```html
+<head>
+  <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    app-toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    iron-list {
+      /* add padding since the app-toolbar is fixed at the top */
+      padding-top: 64px;
+    }
+  </style>
+</head>
+<body>
+  <template is="dom-bind">
+    <app-toolbar>App name</app-toolbar>
+    <iron-list scroll-target="document" items="[[items]]">
+      <template>
+        <div>
+          ...
+        </div>
+      </template>
+    </iron-list>
+  </template>
+</body>
+```
+
+`iron-list` must be given a `<template>` which contains exactly one element. In the examples
+above we used a `<div>`, but you can provide any element (including custom elements).
+
+### Template model
+
+List item templates should bind to template models of the following structure:
+
+```js
+{
+  index: 0,        // index in the item array
+  selected: false, // true if the current item is selected
+  tabIndex: -1,    // a dynamically generated tabIndex for focus management
+  item: {}         // user data corresponding to items[index]
+}
+```
+
+Alternatively, you can change the property name used as data index by changing the
+`indexAs` property. The `as` property defines the name of the variable to add to the binding
+scope for the array.
+
+For example, given the following `data` array:
+
+##### data.json
+
+```js
+[
+  {"name": "Bob"},
+  {"name": "Tim"},
+  {"name": "Mike"}
+]
+```
+
+The following code would render the list (note the name and checked properties are
+bound from the model object provided to the template scope):
+
+```html
+<template is="dom-bind">
+  <iron-ajax url="data.json" last-response="{{data}}" auto></iron-ajax>
+  <iron-list items="[[data]]" as="item">
+    <template>
+      <div>
+        Name: [[item.name]]
+      </div>
+    </template>
+  </iron-list>
+</template>
+```
+
+### Grid layout
+
+`iron-list` supports a grid layout in addition to linear layout by setting
+the `grid` attribute.  In this case, the list template item must have both fixed
+width and height (e.g. via CSS). Based on this, the number of items
+per row are determined automatically based on the size of the list viewport.
+
+### Accessibility
+
+`iron-list` automatically manages the focus state for the items. It also provides
+a `tabIndex` property within the template scope that can be used for keyboard navigation.
+For example, users can press the up and down keys to move to previous and next
+items in the list:
+
+```html
+<iron-list items="[[data]]" as="item">
+  <template>
+    <div tabindex$="[[tabIndex]]">
+      Name: [[item.name]]
+    </div>
+  </template>
+</iron-list>
+```
+
+### Styling
+
+You can use the `--iron-list-items-container` mixin to style the container of items:
+
+```css
+iron-list {
+ --iron-list-items-container: {
+    margin: auto;
+  };
+}
+```
+
+### Resizing
+
+`iron-list` lays out the items when it receives a notification via the `iron-resize` event.
+This event is fired by any element that implements `IronResizableBehavior`.
+
+By default, elements such as `iron-pages`, `paper-tabs` or `paper-dialog` will trigger
+this event automatically. If you hide the list manually (e.g. you use `display: none`)
+you might want to implement `IronResizableBehavior` or fire this event manually right
+after the list became visible again. For example:
+
+```js
+document.querySelector('iron-list').fire('iron-resize');
+```
+
+### When should `<iron-list>` be used?
+
+`iron-list` should be used when a page has significantly more DOM nodes than the ones
+visible on the screen. e.g. the page has 500 nodes, but only 20 are visible at a time.
+This is why we refer to it as a `virtual` list. In this case, a `dom-repeat` will still
+create 500 nodes which could slow down the web app, but `iron-list` will only create 20.
+
+However, having an `iron-list` does not mean that you can load all the data at once.
+Say you have a million records in the database, you want to split the data into pages
+so you can bring in a page at the time. The page could contain 500 items, and iron-list
+will only render 20.
+
+@group Iron Element
+@element iron-list
+@demo demo/index.html
+
+-->
+
 <!--
 @license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
@@ -20204,238 +20397,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-
-`iron-list` displays a virtual, 'infinite' list. The template inside
-the iron-list element represents the DOM to create for each list item.
-The `items` property specifies an array of list item data.
-
-For performance reasons, not every item in the list is rendered at once;
-instead a small subset of actual template elements *(enough to fill the viewport)*
-are rendered and reused as the user scrolls. As such, it is important that all
-state of the list template be bound to the model driving it, since the view may
-be reused with a new model at any time. Particularly, any state that may change
-as the result of a user interaction with the list item must be bound to the model
-to avoid view state inconsistency.
-
-### Sizing iron-list
-
-`iron-list` must either be explicitly sized, or delegate scrolling to an
-explicitly sized parent. By "explicitly sized", we mean it either has an explicit
-CSS `height` property set via a class or inline style, or else is sized by other
-layout means (e.g. the `flex` or `fit` classes).
-
-#### Flexbox - [jsbin](http://jsbin.com/kokaki/edit?html,output)
-
-```html
-<template is="x-list">
-  <style>
-    :host {
-      display: block;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    iron-list {
-      flex: 1 1 auto;
-    }
-  </style>
-  <app-toolbar>App name</app-toolbar>
-  <iron-list items="[[items]]">
-    <template>
-      <div>
-        ...
-      </div>
-    </template>
-  </iron-list>
-</template>
-```
-#### Explicit size - [jsbin](http://jsbin.com/pibefo/edit?html,output)
-```html
-<template is="x-list">
-  <style>
-    :host {
-      display: block;
-    }
-
-    iron-list {
-      height: 100vh; /* don't use % values unless the parent element is sized. */
-    }
-  </style>
-  <iron-list items="[[items]]">
-    <template>
-      <div>
-        ...
-      </div>
-    </template>
-  </iron-list>
-</template>
-```
-#### Main document scrolling - [jsbin](http://jsbin.com/cojuli/edit?html,output)
-```html
-<head>
-  <style>
-    body {
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    app-toolbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-    }
-
-    iron-list {
-      /* add padding since the app-toolbar is fixed at the top */
-      padding-top: 64px;
-    }
-  </style>
-</head>
-<body>
-  <template is="dom-bind">
-    <app-toolbar>App name</app-toolbar>
-    <iron-list scroll-target="document" items="[[items]]">
-      <template>
-        <div>
-          ...
-        </div>
-      </template>
-    </iron-list>
-  </template>
-</body>
-```
-
-`iron-list` must be given a `<template>` which contains exactly one element. In the examples
-above we used a `<div>`, but you can provide any element (including custom elements).
-
-### Template model
-
-List item templates should bind to template models of the following structure:
-
-```js
-{
-  index: 0,        // index in the item array
-  selected: false, // true if the current item is selected
-  tabIndex: -1,    // a dynamically generated tabIndex for focus management
-  item: {}         // user data corresponding to items[index]
-}
-```
-
-Alternatively, you can change the property name used as data index by changing the
-`indexAs` property. The `as` property defines the name of the variable to add to the binding
-scope for the array.
-
-For example, given the following `data` array:
-
-##### data.json
-
-```js
-[
-  {"name": "Bob"},
-  {"name": "Tim"},
-  {"name": "Mike"}
-]
-```
-
-The following code would render the list (note the name and checked properties are
-bound from the model object provided to the template scope):
-
-```html
-<template is="dom-bind">
-  <iron-ajax url="data.json" last-response="{{data}}" auto></iron-ajax>
-  <iron-list items="[[data]]" as="item">
-    <template>
-      <div>
-        Name: [[item.name]]
-      </div>
-    </template>
-  </iron-list>
-</template>
-```
-
-### Grid layout
-
-`iron-list` supports a grid layout in addition to linear layout by setting
-the `grid` attribute.  In this case, the list template item must have both fixed
-width and height (e.g. via CSS). Based on this, the number of items
-per row are determined automatically based on the size of the list viewport.
-
-### Accessibility
-
-`iron-list` automatically manages the focus state for the items. It also provides
-a `tabIndex` property within the template scope that can be used for keyboard navigation.
-For example, users can press the up and down keys to move to previous and next
-items in the list:
-
-```html
-<iron-list items="[[data]]" as="item">
-  <template>
-    <div tabindex$="[[tabIndex]]">
-      Name: [[item.name]]
-    </div>
-  </template>
-</iron-list>
-```
-
-### Styling
-
-You can use the `--iron-list-items-container` mixin to style the container of items:
-
-```css
-iron-list {
- --iron-list-items-container: {
-    margin: auto;
-  };
-}
-```
-
-### Resizing
-
-`iron-list` lays out the items when it receives a notification via the `iron-resize` event.
-This event is fired by any element that implements `IronResizableBehavior`.
-
-By default, elements such as `iron-pages`, `paper-tabs` or `paper-dialog` will trigger
-this event automatically. If you hide the list manually (e.g. you use `display: none`)
-you might want to implement `IronResizableBehavior` or fire this event manually right
-after the list became visible again. For example:
-
-```js
-document.querySelector('iron-list').fire('iron-resize');
-```
-
-### When should `<iron-list>` be used?
-
-`iron-list` should be used when a page has significantly more DOM nodes than the ones
-visible on the screen. e.g. the page has 500 nodes, but only 20 are visible at a time.
-This is why we refer to it as a `virtual` list. In this case, a `dom-repeat` will still
-create 500 nodes which could slow down the web app, but `iron-list` will only create 20.
-
-However, having an `iron-list` does not mean that you can load all the data at once.
-Say you have a million records in the database, you want to split the data into pages
-so you can bring in a page at the time. The page could contain 500 items, and iron-list
-will only render 20.
-
-@group Iron Element
-@element iron-list
-@demo demo/index.html
-
--->
-
-<dom-module id="iron-list" assetpath="bower_components/iron-list/">
+</script><dom-module id="iron-list" assetpath="bower_components/iron-list/">
   <template>
     <style>
       :host {
@@ -22091,6 +22053,14 @@ will only render 20.
 </script>
 <!--
 @license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -22324,16 +22294,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   });
 
-</script>
-<!--
-@license
-Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><iron-iconset-svg name="icons" size="24">
+</script><iron-iconset-svg name="icons" size="24">
 <svg><defs>
 <g id="3d-rotation"><path d="M7.52 21.48C4.25 19.94 1.91 16.76 1.55 13H.05C.56 19.16 5.71 24 12 24l.66-.03-3.81-3.81-1.33 1.32zm.89-6.52c-.19 0-.37-.03-.52-.08-.16-.06-.29-.13-.4-.24-.11-.1-.2-.22-.26-.37-.06-.14-.09-.3-.09-.47h-1.3c0 .36.07.68.21.95.14.27.33.5.56.69.24.18.51.32.82.41.3.1.62.15.96.15.37 0 .72-.05 1.03-.15.32-.1.6-.25.83-.44s.42-.43.55-.72c.13-.29.2-.61.2-.97 0-.19-.02-.38-.07-.56-.05-.18-.12-.35-.23-.51-.1-.16-.24-.3-.4-.43-.17-.13-.37-.23-.61-.31.2-.09.37-.2.52-.33.15-.13.27-.27.37-.42.1-.15.17-.3.22-.46.05-.16.07-.32.07-.48 0-.36-.06-.68-.18-.96-.12-.28-.29-.51-.51-.69-.2-.19-.47-.33-.77-.43C9.1 8.05 8.76 8 8.39 8c-.36 0-.69.05-1 .16-.3.11-.57.26-.79.45-.21.19-.38.41-.51.67-.12.26-.18.54-.18.85h1.3c0-.17.03-.32.09-.45s.14-.25.25-.34c.11-.09.23-.17.38-.22.15-.05.3-.08.48-.08.4 0 .7.1.89.31.19.2.29.49.29.86 0 .18-.03.34-.08.49-.05.15-.14.27-.25.37-.11.1-.25.18-.41.24-.16.06-.36.09-.58.09H7.5v1.03h.77c.22 0 .42.02.6.07s.33.13.45.23c.12.11.22.24.29.4.07.16.1.35.1.57 0 .41-.12.72-.35.93-.23.23-.55.33-.95.33zm8.55-5.92c-.32-.33-.7-.59-1.14-.77-.43-.18-.92-.27-1.46-.27H12v8h2.3c.55 0 1.06-.09 1.51-.27.45-.18.84-.43 1.16-.76.32-.33.57-.73.74-1.19.17-.47.26-.99.26-1.57v-.4c0-.58-.09-1.1-.26-1.57-.18-.47-.43-.87-.75-1.2zm-.39 3.16c0 .42-.05.79-.14 1.13-.1.33-.24.62-.43.85-.19.23-.43.41-.71.53-.29.12-.62.18-.99.18h-.91V9.12h.97c.72 0 1.27.23 1.64.69.38.46.57 1.12.57 1.99v.4zM12 0l-.66.03 3.81 3.81 1.33-1.33c3.27 1.55 5.61 4.72 5.96 8.48h1.5C23.44 4.84 18.29 0 12 0z"></path></g>
 <g id="accessibility"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"></path></g>
@@ -23573,6 +23534,98 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Dropdown buttons](https://www.google.com/design/spec/components/buttons.html#buttons-dropdown-buttons)
+
+`paper-menu-button` allows one to compose a designated "trigger" element with
+another element that represents "content", to create a dropdown menu that
+displays the "content" when the "trigger" is clicked.
+
+The child element with the class `dropdown-trigger` will be used as the
+"trigger" element. The child element with the class `dropdown-content` will be
+used as the "content" element.
+
+The `paper-menu-button` is sensitive to its content's `iron-select` events. If
+the "content" element triggers an `iron-select` event, the `paper-menu-button`
+will close automatically.
+
+Example:
+
+    <paper-menu-button>
+      <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+      <paper-menu class="dropdown-content">
+        <paper-item>Share</paper-item>
+        <paper-item>Settings</paper-item>
+        <paper-item>Help</paper-item>
+      </paper-menu>
+    </paper-menu-button>
+
+### Styling
+
+The following custom properties and mixins are also available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-menu-button-dropdown-background` | Background color of the paper-menu-button dropdown | `--primary-background-color`
+`--paper-menu-button` | Mixin applied to the paper-menu-button | `{}`
+`--paper-menu-button-disabled` | Mixin applied to the paper-menu-button when disabled | `{}`
+`--paper-menu-button-dropdown` | Mixin applied to the paper-menu-button dropdown | `{}`
+`--paper-menu-button-content` | Mixin applied to the paper-menu-button content | `{}`
+
+@hero hero.svg
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+`<iron-dropdown>` is a generalized element that is useful when you have
+hidden content (`.dropdown-content`) that is revealed due to some change in
+state that should cause it to do so.
+
+Note that this is a low-level element intended to be used as part of other
+composite elements that cause dropdowns to be revealed.
+
+Examples of elements that might be implemented using an `iron-dropdown`
+include comboboxes, menubuttons, selects. The list goes on.
+
+The `<iron-dropdown>` element exposes attributes that allow the position
+of the `.dropdown-content` relative to the `.dropdown-trigger` to be
+configured.
+
+    <iron-dropdown horizontal-align="right" vertical-align="top">
+      <div class="dropdown-content">Hello!</div>
+    </iron-dropdown>
+
+In the above example, the `<div>` with class `.dropdown-content` will be
+hidden until the dropdown element has `opened` set to true, or when the `open`
+method is called on the element.
+
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><script>
 /**
 `Polymer.IronFitBehavior` fits an element in another element using `max-height` and `max-width`, and
@@ -24172,8 +24225,15 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
     }
 
   };
-</script>
-<!--
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -24690,15 +24750,6 @@ Custom property | Description | Default
   Polymer.IronOverlayManager = new Polymer.IronOverlayManagerClass();
 </script><!--
 @license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
-@license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -24912,8 +24963,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     };
   })();
-</script>
-<script>
+</script><script>
 (function() {
   'use strict';
 
@@ -25541,8 +25591,7 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -25687,8 +25736,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<script>
+</script><script>
 
   /**
    * `Polymer.NeonAnimationRunnerBehavior` adds a method to run animations.
@@ -25811,7 +25859,11 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+`<opaque-animation>` makes an element `opacity:1` for the duration of the animation. Used to prevent
+webkit/safari from drawing a frame before an animation for elements that animate from display:none.
 -->
+
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -25892,8 +25944,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -25945,20 +25996,6 @@ this.currentTarget=a,this.defaultPrevented=!1,this.eventPhase=Event.AT_TARGET,th
   });
 
 </script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-`<opaque-animation>` makes an element `opacity:1` for the duration of the animation. Used to prevent
-webkit/safari from drawing a frame before an animation for elements that animate from display:none.
--->
-
-
-<!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -26312,42 +26349,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     };
   })();
-</script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-`<iron-dropdown>` is a generalized element that is useful when you have
-hidden content (`.dropdown-content`) that is revealed due to some change in
-state that should cause it to do so.
-
-Note that this is a low-level element intended to be used as part of other
-composite elements that cause dropdowns to be revealed.
-
-Examples of elements that might be implemented using an `iron-dropdown`
-include comboboxes, menubuttons, selects. The list goes on.
-
-The `<iron-dropdown>` element exposes attributes that allow the position
-of the `.dropdown-content` relative to the `.dropdown-trigger` to be
-configured.
-
-    <iron-dropdown horizontal-align="right" vertical-align="top">
-      <div class="dropdown-content">Hello!</div>
-    </iron-dropdown>
-
-In the above example, the `<div>` with class `.dropdown-content` will be
-hidden until the dropdown element has `opened` set to true, or when the `open`
-method is called on the element.
-
-@demo demo/index.html
--->
-
-<dom-module id="iron-dropdown" assetpath="bower_components/iron-dropdown/">
+</script><dom-module id="iron-dropdown" assetpath="bower_components/iron-dropdown/">
   <template>
     <style>
       :host {
@@ -26697,8 +26699,7 @@ Configuration:
 
   });
 
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -26740,8 +26741,7 @@ Configuration:
 
   });
 
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -26812,8 +26812,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     };
   }
 
-</style>
-<!--
+</style><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -26914,60 +26913,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       return this._effect;
     }
   });
-</script>
-
-
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Dropdown buttons](https://www.google.com/design/spec/components/buttons.html#buttons-dropdown-buttons)
-
-`paper-menu-button` allows one to compose a designated "trigger" element with
-another element that represents "content", to create a dropdown menu that
-displays the "content" when the "trigger" is clicked.
-
-The child element with the class `dropdown-trigger` will be used as the
-"trigger" element. The child element with the class `dropdown-content` will be
-used as the "content" element.
-
-The `paper-menu-button` is sensitive to its content's `iron-select` events. If
-the "content" element triggers an `iron-select` event, the `paper-menu-button`
-will close automatically.
-
-Example:
-
-    <paper-menu-button>
-      <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
-      <paper-menu class="dropdown-content">
-        <paper-item>Share</paper-item>
-        <paper-item>Settings</paper-item>
-        <paper-item>Help</paper-item>
-      </paper-menu>
-    </paper-menu-button>
-
-### Styling
-
-The following custom properties and mixins are also available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-menu-button-dropdown-background` | Background color of the paper-menu-button dropdown | `--primary-background-color`
-`--paper-menu-button` | Mixin applied to the paper-menu-button | `{}`
-`--paper-menu-button-disabled` | Mixin applied to the paper-menu-button when disabled | `{}`
-`--paper-menu-button-dropdown` | Mixin applied to the paper-menu-button dropdown | `{}`
-`--paper-menu-button-content` | Mixin applied to the paper-menu-button content | `{}`
-
-@hero hero.svg
-@demo demo/index.html
--->
-
-<dom-module id="paper-menu-button" assetpath="bower_components/paper-menu-button/">
+</script><dom-module id="paper-menu-button" assetpath="bower_components/paper-menu-button/">
   <template>
     <style>
       :host {
@@ -27377,6 +27323,53 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Floating Action Button](https://www.google.com/design/spec/components/buttons-floating-action-button.html)
+
+`paper-fab` is a floating action button. It contains an image placed in the center and
+comes in two sizes: regular size and a smaller size by applying the attribute `mini`. When
+the user touches the button, a ripple effect emanates from the center of the button.
+
+You may import `iron-icons` to use with this element, or provide a URL to a custom icon.
+See `iron-iconset` for more information about how to use a custom icon set.
+
+Example:
+
+    <link href="path/to/iron-icons/iron-icons.html" rel="import">
+
+    <paper-fab icon="add"></paper-fab>
+    <paper-fab mini icon="favorite"></paper-fab>
+    <paper-fab src="star.png"></paper-fab>
+
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-fab-background` | The background color of the button | `--accent-color`
+`--paper-fab-keyboard-focus-background` | The background color of the button when focused | `--paper-pink-900`
+`--paper-fab-disabled-background` | The background color of the button when it's disabled | `--paper-grey-300`
+`--paper-fab-disabled-text` | The text color of the button when it's disabled | `--paper-grey-500`
+`--paper-fab` | Mixin applied to the button | `{}`
+`--paper-fab-mini` | Mixin applied to a mini button | `{}`
+`--paper-fab-disabled` | Mixin applied to a disabled button | `{}`
+`--paper-fab-iron-icon` | Mixin applied to the iron-icon within the button | `{}`
+`--paper-fab-label` | Mixin applied to the label within the button | `{}`
+
+@group Paper Elements
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><script>
   /** @polymerBehavior Polymer.PaperButtonBehavior */
   Polymer.PaperButtonBehaviorImpl = {
@@ -27459,8 +27452,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.PaperRippleBehavior,
     Polymer.PaperButtonBehaviorImpl
   ];
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -27498,53 +27490,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
   </template>
 </dom-module>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Floating Action Button](https://www.google.com/design/spec/components/buttons-floating-action-button.html)
-
-`paper-fab` is a floating action button. It contains an image placed in the center and
-comes in two sizes: regular size and a smaller size by applying the attribute `mini`. When
-the user touches the button, a ripple effect emanates from the center of the button.
-
-You may import `iron-icons` to use with this element, or provide a URL to a custom icon.
-See `iron-iconset` for more information about how to use a custom icon set.
-
-Example:
-
-    <link href="path/to/iron-icons/iron-icons.html" rel="import">
-
-    <paper-fab icon="add"></paper-fab>
-    <paper-fab mini icon="favorite"></paper-fab>
-    <paper-fab src="star.png"></paper-fab>
-
-
-### Styling
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-fab-background` | The background color of the button | `--accent-color`
-`--paper-fab-keyboard-focus-background` | The background color of the button when focused | `--paper-pink-900`
-`--paper-fab-disabled-background` | The background color of the button when it's disabled | `--paper-grey-300`
-`--paper-fab-disabled-text` | The text color of the button when it's disabled | `--paper-grey-500`
-`--paper-fab` | Mixin applied to the button | `{}`
-`--paper-fab-mini` | Mixin applied to a mini button | `{}`
-`--paper-fab-disabled` | Mixin applied to a disabled button | `{}`
-`--paper-fab-iron-icon` | Mixin applied to the iron-icon within the button | `{}`
-`--paper-fab-label` | Mixin applied to the label within the button | `{}`
-
-@group Paper Elements
-@demo demo/index.html
--->
-
 <dom-module id="paper-fab" assetpath="bower_components/paper-fab/">
   <template strip-whitespace="">
     <style include="paper-material-shared-styles">
@@ -27934,6 +27879,52 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Progress & activity](https://www.google.com/design/spec/components/progress-activity.html)
+
+Element providing a multiple color material design circular spinner.
+
+    <paper-spinner active></paper-spinner>
+
+The default spinner cycles between four layers of colors; by default they are
+blue, red, yellow and green. It can be customized to cycle between four different
+colors. Use <paper-spinner-lite> for single color spinners.
+
+### Accessibility
+
+Alt attribute should be set to provide adequate context for accessibility. If not provided,
+it defaults to 'loading'.
+Empty alt can be provided to mark the element as decorative if alternative content is provided
+in another form (e.g. a text block following the spinner).
+
+    <paper-spinner alt="Loading contacts list" active></paper-spinner>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-spinner-layer-1-color` | Color of the first spinner rotation | `--google-blue-500`
+`--paper-spinner-layer-2-color` | Color of the second spinner rotation | `--google-red-500`
+`--paper-spinner-layer-3-color` | Color of the third spinner rotation | `--google-yellow-500`
+`--paper-spinner-layer-4-color` | Color of the fourth spinner rotation | `--google-green-500`
+`--paper-spinner-stroke-width` | The width of the spinner stroke | 3px
+
+@group Paper Elements
+@element paper-spinner
+@hero hero.svg
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><script>
 
   /** @polymerBehavior */
@@ -28008,8 +27999,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.__coolingDown = false;
     }
   };
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -28348,52 +28338,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
   </template>
 </dom-module>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Progress & activity](https://www.google.com/design/spec/components/progress-activity.html)
-
-Element providing a multiple color material design circular spinner.
-
-    <paper-spinner active></paper-spinner>
-
-The default spinner cycles between four layers of colors; by default they are
-blue, red, yellow and green. It can be customized to cycle between four different
-colors. Use <paper-spinner-lite> for single color spinners.
-
-### Accessibility
-
-Alt attribute should be set to provide adequate context for accessibility. If not provided,
-it defaults to 'loading'.
-Empty alt can be provided to mark the element as decorative if alternative content is provided
-in another form (e.g. a text block following the spinner).
-
-    <paper-spinner alt="Loading contacts list" active></paper-spinner>
-
-### Styling
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-spinner-layer-1-color` | Color of the first spinner rotation | `--google-blue-500`
-`--paper-spinner-layer-2-color` | Color of the second spinner rotation | `--google-red-500`
-`--paper-spinner-layer-3-color` | Color of the third spinner rotation | `--google-yellow-500`
-`--paper-spinner-layer-4-color` | Color of the fourth spinner rotation | `--google-green-500`
-`--paper-spinner-stroke-width` | The width of the spinner stroke | 3px
-
-@group Paper Elements
-@element paper-spinner
-@hero hero.svg
-@demo demo/index.html
--->
-
 <dom-module id="paper-spinner" assetpath="bower_components/paper-spinner/">
   <template strip-whitespace="">
     <style include="paper-spinner-styles"></style>
@@ -28457,6 +28401,73 @@ Custom property | Description | Default
     }
   }
 }</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Switch](https://www.google.com/design/spec/components/selection-controls.html#selection-controls-switch)
+
+`paper-toggle-button` provides a ON/OFF switch that user can toggle the state
+by tapping or by dragging the switch.
+
+Example:
+
+    <paper-toggle-button></paper-toggle-button>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-toggle-button-unchecked-bar-color` | Slider color when the input is not checked | `#000000`
+`--paper-toggle-button-unchecked-button-color` | Button color when the input is not checked | `--paper-grey-50`
+`--paper-toggle-button-unchecked-ink-color` | Selected/focus ripple color when the input is not checked | `--dark-primary-color`
+`--paper-toggle-button-checked-bar-color` | Slider button color when the input is checked | `--primary-color`
+`--paper-toggle-button-checked-button-color` | Button color when the input is checked | `--primary-color`
+`--paper-toggle-button-checked-ink-color` | Selected/focus ripple color when the input is checked | `--primary-color`
+`--paper-toggle-button-invalid-bar-color` | Slider button color when the input is invalid | `--error-color`
+`--paper-toggle-button-invalid-button-color` | Button color when the input is invalid | `--error-color`
+`--paper-toggle-button-invalid-ink-color` | Selected/focus ripple color when the input is invalid | `--error-color`
+`--paper-toggle-button-unchecked-bar` | Mixin applied to the slider when the input is not checked | `{}`
+`--paper-toggle-button-unchecked-button` | Mixin applied to the slider button when the input is not checked | `{}`
+`--paper-toggle-button-unchecked-ink` | Mixin applied to the ripple when the input is not checked | `{}`
+`--paper-toggle-button-checked-bar` | Mixin applied to the slider when the input is checked | `{}`
+`--paper-toggle-button-checked-button` | Mixin applied to the slider button when the input is checked | `{}`
+`--paper-toggle-button-checked-ink` | Mixin applied to the ripple when the input is checked | `{}`
+`--paper-toggle-button-label-color` | Label color | `--primary-text-color`
+`--paper-toggle-button-label-spacing` | Spacing between the label and the button | `8px`
+
+This element applies the mixin `--paper-font-common-base` but does not import `paper-styles/typography.html`.
+In order to apply the `Roboto` font to this element, make sure you've imported `paper-styles/typography.html`.
+
+@group Paper Elements
+@element paper-toggle-button
+@hero hero.svg
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -28599,8 +28610,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   };
 
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -28681,8 +28691,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<script>
+</script><script>
 
   /**
    * Use `Polymer.IronCheckedElementBehavior` to implement a custom element
@@ -28787,24 +28796,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.IronCheckedElementBehaviorImpl
   ];
 
-</script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><script>
+</script><script>
   /**
    * Use `Polymer.PaperCheckedElementBehavior` to implement a custom element
    * that has a `checked` property similar to `Polymer.IronCheckedElementBehavior`
@@ -28846,59 +28838,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.IronCheckedElementBehavior,
     Polymer.PaperCheckedElementBehaviorImpl
   ];
-</script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Switch](https://www.google.com/design/spec/components/selection-controls.html#selection-controls-switch)
-
-`paper-toggle-button` provides a ON/OFF switch that user can toggle the state
-by tapping or by dragging the switch.
-
-Example:
-
-    <paper-toggle-button></paper-toggle-button>
-
-### Styling
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-toggle-button-unchecked-bar-color` | Slider color when the input is not checked | `#000000`
-`--paper-toggle-button-unchecked-button-color` | Button color when the input is not checked | `--paper-grey-50`
-`--paper-toggle-button-unchecked-ink-color` | Selected/focus ripple color when the input is not checked | `--dark-primary-color`
-`--paper-toggle-button-checked-bar-color` | Slider button color when the input is checked | `--primary-color`
-`--paper-toggle-button-checked-button-color` | Button color when the input is checked | `--primary-color`
-`--paper-toggle-button-checked-ink-color` | Selected/focus ripple color when the input is checked | `--primary-color`
-`--paper-toggle-button-invalid-bar-color` | Slider button color when the input is invalid | `--error-color`
-`--paper-toggle-button-invalid-button-color` | Button color when the input is invalid | `--error-color`
-`--paper-toggle-button-invalid-ink-color` | Selected/focus ripple color when the input is invalid | `--error-color`
-`--paper-toggle-button-unchecked-bar` | Mixin applied to the slider when the input is not checked | `{}`
-`--paper-toggle-button-unchecked-button` | Mixin applied to the slider button when the input is not checked | `{}`
-`--paper-toggle-button-unchecked-ink` | Mixin applied to the ripple when the input is not checked | `{}`
-`--paper-toggle-button-checked-bar` | Mixin applied to the slider when the input is checked | `{}`
-`--paper-toggle-button-checked-button` | Mixin applied to the slider button when the input is checked | `{}`
-`--paper-toggle-button-checked-ink` | Mixin applied to the ripple when the input is checked | `{}`
-`--paper-toggle-button-label-color` | Label color | `--primary-text-color`
-`--paper-toggle-button-label-spacing` | Spacing between the label and the button | `8px`
-
-This element applies the mixin `--paper-font-common-base` but does not import `paper-styles/typography.html`.
-In order to apply the `Roboto` font to this element, make sure you've imported `paper-styles/typography.html`.
-
-@group Paper Elements
-@element paper-toggle-button
-@hero hero.svg
-@demo demo/index.html
--->
-
-<dom-module id="paper-toggle-button" assetpath="bower_components/paper-toggle-button/">
+</script><dom-module id="paper-toggle-button" assetpath="bower_components/paper-toggle-button/">
   <template strip-whitespace="">
 
     <style>
@@ -29135,6 +29075,73 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><!--
+Material design: [Text fields](https://www.google.com/design/spec/components/text-fields.html)
+
+`<paper-input>` is a single-line text field with Material Design styling.
+
+    <paper-input label="Input label"></paper-input>
+
+It may include an optional error message or character counter.
+
+    <paper-input error-message="Invalid input!" label="Input label"></paper-input>
+    <paper-input char-counter label="Input label"></paper-input>
+
+It can also include custom prefix or suffix elements, which are displayed
+before or after the text input itself. In order for an element to be
+considered as a prefix, it must have the `prefix` attribute (and similarly
+for `suffix`).
+
+    <paper-input label="total">
+      <div prefix>$</div>
+      <paper-icon-button suffix icon="clear"></paper-icon-button>
+    </paper-input>
+
+A `paper-input` can use the native `type=search` or `type=file` features.
+However, since we can't control the native styling of the input (search icon,
+file button, date placeholder, etc.), in these cases the label will be
+automatically floated. The `placeholder` attribute can still be used for
+additional informational text.
+
+    <paper-input label="search!" type="search"
+        placeholder="search for cats" autosave="test" results="5">
+    </paper-input>
+
+See `Polymer.PaperInputBehavior` for more API docs.
+
+### Focus
+
+To focus a paper-input, you can call the native `focus()` method as long as the
+paper input has a tab index.
+
+### Styling
+
+See `Polymer.PaperInputContainer` for a list of custom properties used to
+style this element.
+
+
+@group Paper Elements
+@element paper-input
+@hero hero.svg
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 `iron-a11y-announcer` is a singleton element that is intended to add a11y
 to features that require on-demand announcement from screen readers. In
 order to make use of the announcer, it is best to request its availability
@@ -29246,15 +29253,7 @@ Note: announcements are only audible if you have a screen reader enabled.
 
   </script>
 </dom-module>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><script>
+<script>
 
 /*
 `<iron-input>` adds two-way binding and custom validators using `Polymer.IronValidatorBehavior`
@@ -29545,8 +29544,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
   @event iron-input-validate
   */
 
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -30108,7 +30106,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.IronA11yKeysBehavior,
     Polymer.PaperInputBehaviorImpl
   ];
-</script>
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+`<paper-input-char-counter>` is a character counter for use with `<paper-input-container>`. It
+shows the number of characters entered in the input and the max length if it is specified.
+
+    <paper-input-container>
+      <input is="iron-input" maxlength="20">
+      <paper-input-char-counter></paper-input-char-counter>
+    </paper-input-container>
+
+### Styling
+
+The following mixin is available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-input-char-counter` | Mixin applied to the element | `{}`
+-->
+
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -30151,34 +30174,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-`<paper-input-char-counter>` is a character counter for use with `<paper-input-container>`. It
-shows the number of characters entered in the input and the max length if it is specified.
-
-    <paper-input-container>
-      <input is="iron-input" maxlength="20">
-      <paper-input-char-counter></paper-input-char-counter>
-    </paper-input-container>
-
-### Styling
-
-The following mixin is available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-input-char-counter` | Mixin applied to the element | `{}`
--->
-
-<dom-module id="paper-input-char-counter" assetpath="bower_components/paper-input/">
+</script><dom-module id="paper-input-char-counter" assetpath="bower_components/paper-input/">
   <template>
     <style>
       :host {
@@ -30951,65 +30947,6 @@ Custom property | Description | Default
     }
   });
 </script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Text fields](https://www.google.com/design/spec/components/text-fields.html)
-
-`<paper-input>` is a single-line text field with Material Design styling.
-
-    <paper-input label="Input label"></paper-input>
-
-It may include an optional error message or character counter.
-
-    <paper-input error-message="Invalid input!" label="Input label"></paper-input>
-    <paper-input char-counter label="Input label"></paper-input>
-
-It can also include custom prefix or suffix elements, which are displayed
-before or after the text input itself. In order for an element to be
-considered as a prefix, it must have the `prefix` attribute (and similarly
-for `suffix`).
-
-    <paper-input label="total">
-      <div prefix>$</div>
-      <paper-icon-button suffix icon="clear"></paper-icon-button>
-    </paper-input>
-
-A `paper-input` can use the native `type=search` or `type=file` features.
-However, since we can't control the native styling of the input (search icon,
-file button, date placeholder, etc.), in these cases the label will be
-automatically floated. The `placeholder` attribute can still be used for
-additional informational text.
-
-    <paper-input label="search!" type="search"
-        placeholder="search for cats" autosave="test" results="5">
-    </paper-input>
-
-See `Polymer.PaperInputBehavior` for more API docs.
-
-### Focus
-
-To focus a paper-input, you can call the native `focus()` method as long as the
-paper input has a tab index.
-
-### Styling
-
-See `Polymer.PaperInputContainer` for a list of custom properties used to
-style this element.
-
-
-@group Paper Elements
-@element paper-input
-@hero hero.svg
-@demo demo/index.html
--->
-
 <dom-module id="paper-input" assetpath="bower_components/paper-input/">
   <template>
     <style>
@@ -31078,6 +31015,1280 @@ style this element.
     ]
   });
 </script>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Tabs](https://www.google.com/design/spec/components/tabs.html)
+
+`paper-tabs` makes it easy to explore and switch between different views or functional aspects of
+an app, or to browse categorized data sets.
+
+Use `selected` property to get or set the selected tab.
+
+Example:
+
+    <paper-tabs selected="0">
+      <paper-tab>TAB 1</paper-tab>
+      <paper-tab>TAB 2</paper-tab>
+      <paper-tab>TAB 3</paper-tab>
+    </paper-tabs>
+
+See <a href="?active=paper-tab">paper-tab</a> for more information about
+`paper-tab`.
+
+A common usage for `paper-tabs` is to use it along with `iron-pages` to switch
+between different views.
+
+    <paper-tabs selected="{{selected}}">
+      <paper-tab>Tab 1</paper-tab>
+      <paper-tab>Tab 2</paper-tab>
+      <paper-tab>Tab 3</paper-tab>
+    </paper-tabs>
+
+    <iron-pages selected="{{selected}}">
+      <div>Page 1</div>
+      <div>Page 2</div>
+      <div>Page 3</div>
+    </iron-pages>
+
+
+To use links in tabs, add `link` attribute to `paper-tab` and put an `<a>`
+element in `paper-tab` with a `tabindex` of -1.
+
+Example:
+
+<pre><code>
+&lt;style is="custom-style">
+  .link {
+    &#64;apply(--layout-horizontal);
+    &#64;apply(--layout-center-center);
+  }
+&lt;/style>
+
+&lt;paper-tabs selected="0">
+  &lt;paper-tab link>
+    &lt;a href="#link1" class="link" tabindex="-1">TAB ONE&lt;/a>
+  &lt;/paper-tab>
+  &lt;paper-tab link>
+    &lt;a href="#link2" class="link" tabindex="-1">TAB TWO&lt;/a>
+  &lt;/paper-tab>
+  &lt;paper-tab link>
+    &lt;a href="#link3" class="link" tabindex="-1">TAB THREE&lt;/a>
+  &lt;/paper-tab>
+&lt;/paper-tabs>
+</code></pre>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-tabs-selection-bar-color` | Color for the selection bar | `--paper-yellow-a100`
+`--paper-tabs-selection-bar` | Mixin applied to the selection bar | `{}`
+`--paper-tabs` | Mixin applied to the tabs | `{}`
+`--paper-tabs-content` | Mixin applied to the content container of tabs | `{}`
+`--paper-tabs-container` | Mixin applied to the layout container of tabs | `{}`
+
+@hero hero.svg
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><script>
+
+  /**
+   * `Polymer.IronMenuBehavior` implements accessible menu behavior.
+   *
+   * @demo demo/index.html
+   * @polymerBehavior Polymer.IronMenuBehavior
+   */
+  Polymer.IronMenuBehaviorImpl = {
+
+    properties: {
+
+      /**
+       * Returns the currently focused item.
+       * @type {?Object}
+       */
+      focusedItem: {
+        observer: '_focusedItemChanged',
+        readOnly: true,
+        type: Object
+      },
+
+      /**
+       * The attribute to use on menu items to look up the item title. Typing the first
+       * letter of an item when the menu is open focuses that item. If unset, `textContent`
+       * will be used.
+       */
+      attrForItemTitle: {
+        type: String
+      }
+    },
+
+    _SEARCH_RESET_TIMEOUT_MS: 1000,
+
+    hostAttributes: {
+      'role': 'menu',
+      'tabindex': '0'
+    },
+
+    observers: [
+      '_updateMultiselectable(multi)'
+    ],
+
+    listeners: {
+      'focus': '_onFocus',
+      'keydown': '_onKeydown',
+      'iron-items-changed': '_onIronItemsChanged'
+    },
+
+    keyBindings: {
+      'up': '_onUpKey',
+      'down': '_onDownKey',
+      'esc': '_onEscKey',
+      'shift+tab:keydown': '_onShiftTabDown'
+    },
+
+    attached: function() {
+      this._resetTabindices();
+    },
+
+    /**
+     * Selects the given value. If the `multi` property is true, then the selected state of the
+     * `value` will be toggled; otherwise the `value` will be selected.
+     *
+     * @param {string|number} value the value to select.
+     */
+    select: function(value) {
+      // Cancel automatically focusing a default item if the menu received focus
+      // through a user action selecting a particular item.
+      if (this._defaultFocusAsync) {
+        this.cancelAsync(this._defaultFocusAsync);
+        this._defaultFocusAsync = null;
+      }
+      var item = this._valueToItem(value);
+      if (item && item.hasAttribute('disabled')) return;
+      this._setFocusedItem(item);
+      Polymer.IronMultiSelectableBehaviorImpl.select.apply(this, arguments);
+    },
+
+    /**
+     * Resets all tabindex attributes to the appropriate value based on the
+     * current selection state. The appropriate value is `0` (focusable) for
+     * the default selected item, and `-1` (not keyboard focusable) for all
+     * other items.
+     */
+    _resetTabindices: function() {
+      var selectedItem = this.multi ? (this.selectedItems && this.selectedItems[0]) : this.selectedItem;
+
+      this.items.forEach(function(item) {
+        item.setAttribute('tabindex', item === selectedItem ? '0' : '-1');
+      }, this);
+    },
+
+    /**
+     * Sets appropriate ARIA based on whether or not the menu is meant to be
+     * multi-selectable.
+     *
+     * @param {boolean} multi True if the menu should be multi-selectable.
+     */
+    _updateMultiselectable: function(multi) {
+      if (multi) {
+        this.setAttribute('aria-multiselectable', 'true');
+      } else {
+        this.removeAttribute('aria-multiselectable');
+      }
+    },
+
+    /**
+     * Given a KeyboardEvent, this method will focus the appropriate item in the
+     * menu (if there is a relevant item, and it is possible to focus it).
+     *
+     * @param {KeyboardEvent} event A KeyboardEvent.
+     */
+    _focusWithKeyboardEvent: function(event) {
+      this.cancelDebouncer('_clearSearchText');
+
+      var searchText = this._searchText || '';
+      var key = event.key && event.key.length == 1 ? event.key :
+          String.fromCharCode(event.keyCode);
+      searchText += key.toLocaleLowerCase();
+
+      var searchLength = searchText.length;
+
+      for (var i = 0, item; item = this.items[i]; i++) {
+        if (item.hasAttribute('disabled')) {
+          continue;
+        }
+
+        var attr = this.attrForItemTitle || 'textContent';
+        var title = (item[attr] || item.getAttribute(attr) || '').trim();
+
+        if (title.length < searchLength) {
+          continue;
+        }
+
+        if (title.slice(0, searchLength).toLocaleLowerCase() == searchText) {
+          this._setFocusedItem(item);
+          break;
+        }
+      }
+
+      this._searchText = searchText;
+      this.debounce('_clearSearchText', this._clearSearchText,
+                    this._SEARCH_RESET_TIMEOUT_MS);
+    },
+
+    _clearSearchText: function() {
+      this._searchText = '';
+    },
+
+    /**
+     * Focuses the previous item (relative to the currently focused item) in the
+     * menu, disabled items will be skipped.
+     * Loop until length + 1 to handle case of single item in menu.
+     */
+    _focusPrevious: function() {
+      var length = this.items.length;
+      var curFocusIndex = Number(this.indexOf(this.focusedItem));
+
+      for (var i = 1; i < length + 1; i++) {
+        var item = this.items[(curFocusIndex - i + length) % length];
+        if (!item.hasAttribute('disabled')) {
+          var owner = Polymer.dom(item).getOwnerRoot() || document;
+          this._setFocusedItem(item);
+
+          // Focus might not have worked, if the element was hidden or not
+          // focusable. In that case, try again.
+          if (Polymer.dom(owner).activeElement == item) {
+            return;
+          }
+        }
+      }
+    },
+
+    /**
+     * Focuses the next item (relative to the currently focused item) in the
+     * menu, disabled items will be skipped.
+     * Loop until length + 1 to handle case of single item in menu.
+     */
+    _focusNext: function() {
+      var length = this.items.length;
+      var curFocusIndex = Number(this.indexOf(this.focusedItem));
+
+      for (var i = 1; i < length + 1; i++) {
+        var item = this.items[(curFocusIndex + i) % length];
+        if (!item.hasAttribute('disabled')) {
+          var owner = Polymer.dom(item).getOwnerRoot() || document;
+          this._setFocusedItem(item);
+
+          // Focus might not have worked, if the element was hidden or not
+          // focusable. In that case, try again.
+          if (Polymer.dom(owner).activeElement == item) {
+            return;
+          }
+        }
+      }
+    },
+
+    /**
+     * Mutates items in the menu based on provided selection details, so that
+     * all items correctly reflect selection state.
+     *
+     * @param {Element} item An item in the menu.
+     * @param {boolean} isSelected True if the item should be shown in a
+     * selected state, otherwise false.
+     */
+    _applySelection: function(item, isSelected) {
+      if (isSelected) {
+        item.setAttribute('aria-selected', 'true');
+      } else {
+        item.removeAttribute('aria-selected');
+      }
+      Polymer.IronSelectableBehavior._applySelection.apply(this, arguments);
+    },
+
+    /**
+     * Discretely updates tabindex values among menu items as the focused item
+     * changes.
+     *
+     * @param {Element} focusedItem The element that is currently focused.
+     * @param {?Element} old The last element that was considered focused, if
+     * applicable.
+     */
+    _focusedItemChanged: function(focusedItem, old) {
+      old && old.setAttribute('tabindex', '-1');
+      if (focusedItem) {
+        focusedItem.setAttribute('tabindex', '0');
+        focusedItem.focus();
+      }
+    },
+
+    /**
+     * A handler that responds to mutation changes related to the list of items
+     * in the menu.
+     *
+     * @param {CustomEvent} event An event containing mutation records as its
+     * detail.
+     */
+    _onIronItemsChanged: function(event) {
+      if (event.detail.addedNodes.length) {
+        this._resetTabindices();
+      }
+    },
+
+    /**
+     * Handler that is called when a shift+tab keypress is detected by the menu.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onShiftTabDown: function(event) {
+      var oldTabIndex = this.getAttribute('tabindex');
+
+      Polymer.IronMenuBehaviorImpl._shiftTabPressed = true;
+
+      this._setFocusedItem(null);
+
+      this.setAttribute('tabindex', '-1');
+
+      this.async(function() {
+        this.setAttribute('tabindex', oldTabIndex);
+        Polymer.IronMenuBehaviorImpl._shiftTabPressed = false;
+        // NOTE(cdata): polymer/polymer#1305
+      }, 1);
+    },
+
+    /**
+     * Handler that is called when the menu receives focus.
+     *
+     * @param {FocusEvent} event A focus event.
+     */
+    _onFocus: function(event) {
+      if (Polymer.IronMenuBehaviorImpl._shiftTabPressed) {
+        // do not focus the menu itself
+        return;
+      }
+
+      // Do not focus the selected tab if the deepest target is part of the
+      // menu element's local DOM and is focusable.
+      var rootTarget = /** @type {?HTMLElement} */(
+          Polymer.dom(event).rootTarget);
+      if (rootTarget !== this && typeof rootTarget.tabIndex !== "undefined" && !this.isLightDescendant(rootTarget)) {
+        return;
+      }
+
+      // clear the cached focus item
+      this._defaultFocusAsync = this.async(function() {
+        // focus the selected item when the menu receives focus, or the first item
+        // if no item is selected
+        var selectedItem = this.multi ? (this.selectedItems && this.selectedItems[0]) : this.selectedItem;
+
+        this._setFocusedItem(null);
+
+        if (selectedItem) {
+          this._setFocusedItem(selectedItem);
+        } else if (this.items[0]) {
+          // We find the first none-disabled item (if one exists)
+          this._focusNext();
+        }
+      });
+    },
+
+    /**
+     * Handler that is called when the up key is pressed.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onUpKey: function(event) {
+      // up and down arrows moves the focus
+      this._focusPrevious();
+      event.detail.keyboardEvent.preventDefault();
+    },
+
+    /**
+     * Handler that is called when the down key is pressed.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onDownKey: function(event) {
+      this._focusNext();
+      event.detail.keyboardEvent.preventDefault();
+    },
+
+    /**
+     * Handler that is called when the esc key is pressed.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onEscKey: function(event) {
+      // esc blurs the control
+      this.focusedItem.blur();
+    },
+
+    /**
+     * Handler that is called when a keydown event is detected.
+     *
+     * @param {KeyboardEvent} event A keyboard event.
+     */
+    _onKeydown: function(event) {
+      if (!this.keyboardEventMatchesKeys(event, 'up down esc')) {
+        // all other keys focus the menu item starting with that character
+        this._focusWithKeyboardEvent(event);
+      }
+      event.stopPropagation();
+    },
+
+    // override _activateHandler
+    _activateHandler: function(event) {
+      Polymer.IronSelectableBehavior._activateHandler.call(this, event);
+      event.stopPropagation();
+    }
+  };
+
+  Polymer.IronMenuBehaviorImpl._shiftTabPressed = false;
+
+  /** @polymerBehavior Polymer.IronMenuBehavior */
+  Polymer.IronMenuBehavior = [
+    Polymer.IronMultiSelectableBehavior,
+    Polymer.IronA11yKeysBehavior,
+    Polymer.IronMenuBehaviorImpl
+  ];
+
+</script><script>
+
+  /**
+   * `Polymer.IronMenubarBehavior` implements accessible menubar behavior.
+   *
+   * @polymerBehavior Polymer.IronMenubarBehavior
+   */
+  Polymer.IronMenubarBehaviorImpl = {
+
+    hostAttributes: {
+      'role': 'menubar'
+    },
+
+    keyBindings: {
+      'left': '_onLeftKey',
+      'right': '_onRightKey'
+    },
+
+    _onUpKey: function(event) {
+      this.focusedItem.click();
+      event.detail.keyboardEvent.preventDefault();
+    },
+
+    _onDownKey: function(event) {
+      this.focusedItem.click();
+      event.detail.keyboardEvent.preventDefault();
+    },
+
+    get _isRTL() {
+      return window.getComputedStyle(this)['direction'] === 'rtl';
+    },
+
+    _onLeftKey: function(event) {
+      if (this._isRTL) {
+        this._focusNext();
+      } else {
+        this._focusPrevious();
+      }
+      event.detail.keyboardEvent.preventDefault();
+    },
+
+    _onRightKey: function(event) {
+      if (this._isRTL) {
+        this._focusPrevious();
+      } else {
+        this._focusNext();
+      }
+      event.detail.keyboardEvent.preventDefault();
+    },
+
+    _onKeydown: function(event) {
+      if (this.keyboardEventMatchesKeys(event, 'up down left right esc')) {
+        return;
+      }
+
+      // all other keys focus the menu item starting with that character
+      this._focusWithKeyboardEvent(event);
+    }
+
+  };
+
+  /** @polymerBehavior Polymer.IronMenubarBehavior */
+  Polymer.IronMenubarBehavior = [
+    Polymer.IronMenuBehavior,
+    Polymer.IronMenubarBehaviorImpl
+  ];
+
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><iron-iconset-svg name="paper-tabs" size="24">
+<svg><defs>
+<g id="chevron-left"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></g>
+<g id="chevron-right"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></g>
+</defs></svg>
+</iron-iconset-svg>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+`paper-tab` is styled to look like a tab.  It should be used in conjunction with
+`paper-tabs`.
+
+Example:
+
+    <paper-tabs selected="0">
+      <paper-tab>TAB 1</paper-tab>
+      <paper-tab>TAB 2</paper-tab>
+      <paper-tab>TAB 3</paper-tab>
+    </paper-tabs>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-tab-ink` | Ink color | `--paper-yellow-a100`
+`--paper-tab` | Mixin applied to the tab | `{}`
+`--paper-tab-content` | Mixin applied to the tab content | `{}`
+`--paper-tab-content-unselected` | Mixin applied to the tab content when the tab is not selected | `{}`
+
+This element applies the mixin `--paper-font-common-base` but does not import `paper-styles/typography.html`.
+In order to apply the `Roboto` font to this element, make sure you've imported `paper-styles/typography.html`.
+
+-->
+
+<dom-module id="paper-tab" assetpath="bower_components/paper-tabs/">
+  <template>
+    <style>
+      :host {
+        @apply(--layout-inline);
+        @apply(--layout-center);
+        @apply(--layout-center-justified);
+        @apply(--layout-flex-auto);
+
+        position: relative;
+        padding: 0 12px;
+        overflow: hidden;
+        cursor: pointer;
+        vertical-align: middle;
+
+        @apply(--paper-font-common-base);
+        @apply(--paper-tab);
+      }
+
+      :host(:focus) {
+        outline: none;
+      }
+
+      :host([link]) {
+        padding: 0;
+      }
+
+      .tab-content {
+        height: 100%;
+        transform: translateZ(0);
+          -webkit-transform: translateZ(0);
+        transition: opacity 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        @apply(--layout-flex-auto);
+        @apply(--paper-tab-content);
+      }
+
+      :host(:not(.iron-selected)) > .tab-content {
+        opacity: 0.8;
+
+        @apply(--paper-tab-content-unselected);
+      }
+
+      :host(:focus) .tab-content {
+        opacity: 1;
+        font-weight: 700;
+      }
+
+      paper-ripple {
+        color: var(--paper-tab-ink, --paper-yellow-a100);
+      }
+
+      .tab-content > ::content > a {
+        @apply(--layout-flex-auto);
+
+        height: 100%;
+      }
+    </style>
+
+    <div class="tab-content">
+      <content></content>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'paper-tab',
+
+      behaviors: [
+        Polymer.IronControlState,
+        Polymer.IronButtonState,
+        Polymer.PaperRippleBehavior
+      ],
+
+      properties: {
+
+        /**
+         * If true, the tab will forward keyboard clicks (enter/space) to
+         * the first anchor element found in its descendants
+         */
+        link: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
+        }
+
+      },
+
+      hostAttributes: {
+        role: 'tab'
+      },
+
+      listeners: {
+        down: '_updateNoink',
+        tap: '_onTap'
+      },
+
+      attached: function() {
+        this._updateNoink();
+      },
+
+      get _parentNoink () {
+        var parent = Polymer.dom(this).parentNode;
+        return !!parent && !!parent.noink;
+      },
+
+      _updateNoink: function() {
+        this.noink = !!this.noink || !!this._parentNoink;
+      },
+
+      _onTap: function(event) {
+        if (this.link) {
+          var anchor = this.queryEffectiveChildren('a');
+
+          if (!anchor) {
+            return;
+          }
+
+          // Don't get stuck in a loop delegating
+          // the listener from the child anchor
+          if (event.target === anchor) {
+            return;
+          }
+
+          anchor.click();
+        }
+      }
+
+    });
+  </script>
+</dom-module>
+<dom-module id="paper-tabs" assetpath="bower_components/paper-tabs/">
+  <template>
+    <style>
+      :host {
+        @apply(--layout);
+        @apply(--layout-center);
+
+        height: 48px;
+        font-size: 14px;
+        font-weight: 500;
+        overflow: hidden;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+
+        /* NOTE: Both values are needed, since some phones require the value to be `transparent`. */
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        -webkit-tap-highlight-color: transparent;
+
+        @apply(--paper-tabs);
+      }
+
+      :host-context([dir=rtl]) {
+        @apply(--layout-horizontal-reverse);
+      }
+
+      #tabsContainer {
+        position: relative;
+        height: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        @apply(--layout-flex-auto);
+        @apply(--paper-tabs-container);
+      }
+
+      #tabsContent {
+        height: 100%;
+        -moz-flex-basis: auto;
+        -ms-flex-basis: auto;
+        flex-basis: auto;
+        @apply(--paper-tabs-content);
+      }
+
+      #tabsContent.scrollable {
+        position: absolute;
+        white-space: nowrap;
+      }
+
+      #tabsContent:not(.scrollable),
+      #tabsContent.scrollable.fit-container {
+        @apply(--layout-horizontal);
+      }
+
+      #tabsContent.scrollable.fit-container {
+        min-width: 100%;
+      }
+
+      #tabsContent.scrollable.fit-container > ::content > * {
+        /* IE - prevent tabs from compressing when they should scroll. */
+        -ms-flex: 1 0 auto;
+        -webkit-flex: 1 0 auto;
+        flex: 1 0 auto;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .not-visible {
+        opacity: 0;
+        cursor: default;
+      }
+
+      paper-icon-button {
+        width: 48px;
+        height: 48px;
+        padding: 12px;
+        margin: 0 4px;
+      }
+
+      #selectionBar {
+        position: absolute;
+        height: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-bottom: 2px solid var(--paper-tabs-selection-bar-color, --paper-yellow-a100);
+          -webkit-transform: scale(0);
+        transform: scale(0);
+          -webkit-transform-origin: left center;
+        transform-origin: left center;
+          transition: -webkit-transform;
+        transition: transform;
+
+        @apply(--paper-tabs-selection-bar);
+      }
+
+      #selectionBar.align-bottom {
+        top: 0;
+        bottom: auto;
+      }
+
+      #selectionBar.expand {
+        transition-duration: 0.15s;
+        transition-timing-function: cubic-bezier(0.4, 0.0, 1, 1);
+      }
+
+      #selectionBar.contract {
+        transition-duration: 0.18s;
+        transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+      }
+
+      #tabsContent > ::content > *:not(#selectionBar) {
+        height: 100%;
+      }
+    </style>
+
+    <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
+
+    <div id="tabsContainer" on-track="_scroll" on-down="_down">
+      <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable, fitContainer)]]">
+        <div id="selectionBar" class$="[[_computeSelectionBarClass(noBar, alignBottom)]]" on-transitionend="_onBarTransitionEnd"></div>
+        <content select="*"></content>
+      </div>
+    </div>
+
+    <paper-icon-button icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'paper-tabs',
+
+      behaviors: [
+        Polymer.IronResizableBehavior,
+        Polymer.IronMenubarBehavior
+      ],
+
+      properties: {
+        /**
+         * If true, ink ripple effect is disabled. When this property is changed,
+         * all descendant `<paper-tab>` elements have their `noink` property
+         * changed to the new value as well.
+         */
+        noink: {
+          type: Boolean,
+          value: false,
+          observer: '_noinkChanged'
+        },
+
+        /**
+         * If true, the bottom bar to indicate the selected tab will not be shown.
+         */
+        noBar: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, the slide effect for the bottom bar is disabled.
+         */
+        noSlide: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, tabs are scrollable and the tab width is based on the label width.
+         */
+        scrollable: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, tabs expand to fit their container. This currently only applies when
+         * scrollable is true.
+         */
+        fitContainer: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, dragging on the tabs to scroll is disabled.
+         */
+        disableDrag: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, scroll buttons (left/right arrow) will be hidden for scrollable tabs.
+         */
+        hideScrollButtons: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * If true, the tabs are aligned to bottom (the selection bar appears at the top).
+         */
+        alignBottom: {
+          type: Boolean,
+          value: false
+        },
+
+        selectable: {
+          type: String,
+          value: 'paper-tab'
+        },
+
+        /**
+         * If true, tabs are automatically selected when focused using the
+         * keyboard.
+         */
+        autoselect: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * The delay (in milliseconds) between when the user stops interacting
+         * with the tabs through the keyboard and when the focused item is
+         * automatically selected (if `autoselect` is true).
+         */
+        autoselectDelay: {
+          type: Number,
+          value: 0
+        },
+
+        _step: {
+          type: Number,
+          value: 10
+        },
+
+        _holdDelay: {
+          type: Number,
+          value: 1
+        },
+
+        _leftHidden: {
+          type: Boolean,
+          value: false
+        },
+
+        _rightHidden: {
+          type: Boolean,
+          value: false
+        },
+
+        _previousTab: {
+          type: Object
+        }
+      },
+
+      hostAttributes: {
+        role: 'tablist'
+      },
+
+      listeners: {
+        'iron-resize': '_onTabSizingChanged',
+        'iron-items-changed': '_onTabSizingChanged',
+        'iron-select': '_onIronSelect',
+        'iron-deselect': '_onIronDeselect'
+      },
+
+      keyBindings: {
+        'left:keyup right:keyup': '_onArrowKeyup'
+      },
+
+      created: function() {
+        this._holdJob = null;
+        this._pendingActivationItem = undefined;
+        this._pendingActivationTimeout = undefined;
+        this._bindDelayedActivationHandler = this._delayedActivationHandler.bind(this);
+        this.addEventListener('blur', this._onBlurCapture.bind(this), true);
+      },
+
+      ready: function() {
+        this.setScrollDirection('y', this.$.tabsContainer);
+      },
+
+      detached: function() {
+        this._cancelPendingActivation();
+      },
+
+      _noinkChanged: function(noink) {
+        var childTabs = Polymer.dom(this).querySelectorAll('paper-tab');
+        childTabs.forEach(noink ? this._setNoinkAttribute : this._removeNoinkAttribute);
+      },
+
+      _setNoinkAttribute: function(element) {
+        element.setAttribute('noink', '');
+      },
+
+      _removeNoinkAttribute: function(element) {
+        element.removeAttribute('noink');
+      },
+
+      _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
+        if (!scrollable || hideScrollButtons) {
+          return 'hidden';
+        }
+
+        if (hideThisButton) {
+          return 'not-visible';
+        }
+
+        return '';
+      },
+
+      _computeTabsContentClass: function(scrollable, fitContainer) {
+        return scrollable ? 'scrollable' + (fitContainer ? ' fit-container' : '') : ' fit-container';
+      },
+
+      _computeSelectionBarClass: function(noBar, alignBottom) {
+        if (noBar) {
+          return 'hidden';
+        } else if (alignBottom) {
+          return 'align-bottom';
+        }
+
+        return '';
+      },
+
+      // TODO(cdata): Add `track` response back in when gesture lands.
+
+      _onTabSizingChanged: function() {
+        this.debounce('_onTabSizingChanged', function() {
+          this._scroll();
+          this._tabChanged(this.selectedItem);
+        }, 10);
+      },
+
+      _onIronSelect: function(event) {
+        this._tabChanged(event.detail.item, this._previousTab);
+        this._previousTab = event.detail.item;
+        this.cancelDebouncer('tab-changed');
+      },
+
+      _onIronDeselect: function(event) {
+        this.debounce('tab-changed', function() {
+          this._tabChanged(null, this._previousTab);
+          this._previousTab = null;
+        // See polymer/polymer#1305
+        }, 1);
+      },
+
+      _activateHandler: function() {
+        // Cancel item activations scheduled by keyboard events when any other
+        // action causes an item to be activated (e.g. clicks).
+        this._cancelPendingActivation();
+
+        Polymer.IronMenuBehaviorImpl._activateHandler.apply(this, arguments);
+      },
+
+      /**
+       * Activates an item after a delay (in milliseconds).
+       */
+      _scheduleActivation: function(item, delay) {
+        this._pendingActivationItem = item;
+        this._pendingActivationTimeout = this.async(
+            this._bindDelayedActivationHandler, delay);
+      },
+
+      /**
+       * Activates the last item given to `_scheduleActivation`.
+       */
+      _delayedActivationHandler: function() {
+        var item = this._pendingActivationItem;
+        this._pendingActivationItem = undefined;
+        this._pendingActivationTimeout = undefined;
+        item.fire(this.activateEvent, null, {
+          bubbles: true,
+          cancelable: true
+        });
+      },
+
+      /**
+       * Cancels a previously scheduled item activation made with
+       * `_scheduleActivation`.
+       */
+      _cancelPendingActivation: function() {
+        if (this._pendingActivationTimeout !== undefined) {
+          this.cancelAsync(this._pendingActivationTimeout);
+          this._pendingActivationItem = undefined;
+          this._pendingActivationTimeout = undefined;
+        }
+      },
+
+      _onArrowKeyup: function(event) {
+        if (this.autoselect) {
+          this._scheduleActivation(this.focusedItem, this.autoselectDelay);
+        }
+      },
+
+      _onBlurCapture: function(event) {
+        // Cancel a scheduled item activation (if any) when that item is
+        // blurred.
+        if (event.target === this._pendingActivationItem) {
+          this._cancelPendingActivation();
+        }
+      },
+
+      get _tabContainerScrollSize () {
+        return Math.max(
+          0,
+          this.$.tabsContainer.scrollWidth -
+            this.$.tabsContainer.offsetWidth
+        );
+      },
+
+      _scroll: function(e, detail) {
+        if (!this.scrollable) {
+          return;
+        }
+
+        var ddx = (detail && -detail.ddx) || 0;
+        this._affectScroll(ddx);
+      },
+
+      _down: function(e) {
+        // go one beat async to defeat IronMenuBehavior
+        // autorefocus-on-no-selection timeout
+        this.async(function() {
+          if (this._defaultFocusAsync) {
+            this.cancelAsync(this._defaultFocusAsync);
+            this._defaultFocusAsync = null;
+          }
+        }, 1);
+      },
+
+      _affectScroll: function(dx) {
+        this.$.tabsContainer.scrollLeft += dx;
+
+        var scrollLeft = this.$.tabsContainer.scrollLeft;
+
+        this._leftHidden = scrollLeft === 0;
+        this._rightHidden = scrollLeft === this._tabContainerScrollSize;
+      },
+
+      _onLeftScrollButtonDown: function() {
+        this._scrollToLeft();
+        this._holdJob = setInterval(this._scrollToLeft.bind(this), this._holdDelay);
+      },
+
+      _onRightScrollButtonDown: function() {
+        this._scrollToRight();
+        this._holdJob = setInterval(this._scrollToRight.bind(this), this._holdDelay);
+      },
+
+      _onScrollButtonUp: function() {
+        clearInterval(this._holdJob);
+        this._holdJob = null;
+      },
+
+      _scrollToLeft: function() {
+        this._affectScroll(-this._step);
+      },
+
+      _scrollToRight: function() {
+        this._affectScroll(this._step);
+      },
+
+      _tabChanged: function(tab, old) {
+        if (!tab) {
+          // Remove the bar without animation.
+          this.$.selectionBar.classList.remove('expand');
+          this.$.selectionBar.classList.remove('contract');
+          this._positionBar(0, 0);
+          return;
+        }
+
+        var r = this.$.tabsContent.getBoundingClientRect();
+        var w = r.width;
+        var tabRect = tab.getBoundingClientRect();
+        var tabOffsetLeft = tabRect.left - r.left;
+
+        this._pos = {
+          width: this._calcPercent(tabRect.width, w),
+          left: this._calcPercent(tabOffsetLeft, w)
+        };
+
+        if (this.noSlide || old == null) {
+          // Position the bar without animation.
+          this.$.selectionBar.classList.remove('expand');
+          this.$.selectionBar.classList.remove('contract');
+          this._positionBar(this._pos.width, this._pos.left);
+          return;
+        }
+
+        var oldRect = old.getBoundingClientRect();
+        var oldIndex = this.items.indexOf(old);
+        var index = this.items.indexOf(tab);
+        var m = 5;
+
+        // bar animation: expand
+        this.$.selectionBar.classList.add('expand');
+
+        var moveRight = oldIndex < index;
+        var isRTL = this._isRTL;
+        if (isRTL) {
+          moveRight = !moveRight;
+        }
+
+        if (moveRight) {
+          this._positionBar(this._calcPercent(tabRect.left + tabRect.width - oldRect.left, w) - m,
+              this._left);
+        } else {
+          this._positionBar(this._calcPercent(oldRect.left + oldRect.width - tabRect.left, w) - m,
+              this._calcPercent(tabOffsetLeft, w) + m);
+        }
+
+        if (this.scrollable) {
+          this._scrollToSelectedIfNeeded(tabRect.width, tabOffsetLeft);
+        }
+      },
+
+      _scrollToSelectedIfNeeded: function(tabWidth, tabOffsetLeft) {
+        var l = tabOffsetLeft - this.$.tabsContainer.scrollLeft;
+        if (l < 0) {
+          this.$.tabsContainer.scrollLeft += l;
+        } else {
+          l += (tabWidth - this.$.tabsContainer.offsetWidth);
+          if (l > 0) {
+            this.$.tabsContainer.scrollLeft += l;
+          }
+        }
+      },
+
+      _calcPercent: function(w, w0) {
+        return 100 * w / w0;
+      },
+
+      _positionBar: function(width, left) {
+        width = width || 0;
+        left = left || 0;
+
+        this._width = width;
+        this._left = left;
+        this.transform(
+            'translateX(' + left + '%) scaleX(' + (width / 100) + ')',
+            this.$.selectionBar);
+      },
+
+      _onBarTransitionEnd: function(e) {
+        var cl = this.$.selectionBar.classList;
+        // bar animation: expand -> contract
+        if (cl.contains('expand')) {
+          cl.remove('expand');
+          cl.add('contract');
+          this._positionBar(this._pos.width, this._pos.left);
+        // bar animation done
+        } else if (cl.contains('contract')) {
+          cl.remove('contract');
+        }
+      }
+    });
+  </script>
+</dom-module>
 <script>var EventBusBehavior = (function(){
   function init() {
     if( this._eb_handlersSet ) return;
@@ -31660,6 +32871,7 @@ style this element.
         <app-catalogs-list section="list"></app-catalogs-list>
         <app-pages-list section="catalog"></app-pages-list>
         <app-page-markup section="page"></app-page-markup>
+        <app-user-dashboard section="user"></app-user-dashboard>
       </iron-pages>
 
     </paper-header-panel>
@@ -31835,6 +33047,9 @@ style this element.
 
               this.route.section = 'admin';
               return;
+            } else if( value === 'user' ) {
+              this.route.section = 'user';
+              return;
             }
 
             this.route.section = 'catalog';
@@ -31863,6 +33078,10 @@ style this element.
   </script>
 
 </dom-module>
+<!--
+  This is the main catalog list view.  Contains a list of catalog cards as well as 
+  the bottom (popup) section of the search results.
+-->
 <dom-module id="app-catalog-card" assetpath="elements/catalogs/">
   <template>
     <style include="shared-styles"></style>
@@ -32236,10 +33455,6 @@ style this element.
 })();
   </script>
 </dom-module>
-<!--
-  This is the main catalog list view.  Contains a list of catalog cards as well as 
-  the bottom (popup) section of the search results.
--->
 <dom-module id="app-catalogs-list" assetpath="elements/catalogs/">
   <template>
       <style include="shared-styles"></style>
@@ -32835,6 +34050,108 @@ style this element.
     });
   </script>
 </dom-module>
+<script>var MarkBehavior = {
+
+  drawToolOptions : {
+    position: 'topright',
+    draw: {
+      polyline:false,
+      polygon: false,
+      circle: false, // Turns off this drawing tool
+      rectangle: false,
+      marker: {
+        icon: ''
+      }
+    }
+  },
+
+  _redraw: function() {
+    if ( !this.bounds ) return
+    if( this.map ) this.map.remove();
+
+    this.map = L.map(this.$.map, {
+      crs: L.CRS.Simple,
+      minZoom: -2
+    });
+
+    L.imageOverlay(
+      this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id,
+      this.bounds
+    ).addTo(this.map);
+    
+    this.map.fitBounds(this.bounds);
+
+    this.marksLayer = new L.FeatureGroup();
+    
+    this.map.addLayer(this.marksLayer);
+
+    var myIcon = L.divIcon({html: '<app-marker draw-tool-marker></app-marker>'});
+    this.drawToolOptions.draw.marker.icon = myIcon;
+
+    this.drawControl = new L.Control.Draw(this.drawToolOptions);
+
+    if( this.selectedPage.editable && !this.selectedPage.completed ) {
+      this.map.addControl(this.drawControl);
+
+      this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
+      this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
+    }
+
+    this.mapMarkers = {};
+    for( var key in this.marks ) {
+      if( this.mapMarkers[key] ) continue;
+      this.mapMarkers[key] = this._drawMark(this.marks[key]);
+    }
+    
+    if( this.currentState.markId ) {
+      this._selectAndShowPopup(this.currentState.markId);
+    }
+
+    L.control.adminControl({ position: 'topright' }).addTo(this.map);
+
+    // hack
+    var controls = this.$.map.querySelectorAll('.leaflet-control, .leaflet-top, .leaflet-bottom');
+    for( var i = 0; i < controls.length; i++ ) {
+      controls[i].style.zIndex = 500;
+    }
+
+    this._updateMapSize();
+    this._renderMarkControls();
+  },
+
+  _showHideControls : function(show) {
+    if( this.$.carousel ) {
+      this.$.carousel.style.display = show ? 'block' : 'none';
+    }
+
+    var ele = this.$.map.querySelector('.leaflet-top.leaflet-right');
+    if( !ele ) return;
+    ele.style.display = show ? 'block' : 'none';
+  },
+
+  _onDrawToolDrawStart :  function(e){
+    if( this.userState && this.userState.user.isAnonymous && !this.isAnonymousAlertShow ) {
+      alert('Reminder, you are creating marks as an anonymous user.');
+      this.isAnonymousAlertShow = true;
+    }
+  },
+
+  _onDrawToolCreated : function (e) {
+    var type = e.layerType,
+        layer = e.layer;
+    
+    this.ebEmit(
+      'update-temp-catalog-page-mark', 
+      {
+        pageId : this.selected,
+        xy : [e.layer._latlng.lng, e.layer._latlng.lat]
+      }
+    );
+
+    this.pendingLayer = layer;
+    window.location.hash = this.catalogId + '/' + this.selected + '/edit';
+  }
+}</script>
 <dom-module id="app-page-carousel-search" assetpath="elements/mark/">
   <template>
     <style include="shared-styles"></style>
@@ -33738,108 +35055,6 @@ style this element.
 })()
   </script>
 </dom-module>
-<script>var MarkBehavior = {
-
-  drawToolOptions : {
-    position: 'topright',
-    draw: {
-      polyline:false,
-      polygon: false,
-      circle: false, // Turns off this drawing tool
-      rectangle: false,
-      marker: {
-        icon: ''
-      }
-    }
-  },
-
-  _redraw: function() {
-    if ( !this.bounds ) return
-    if( this.map ) this.map.remove();
-
-    this.map = L.map(this.$.map, {
-      crs: L.CRS.Simple,
-      minZoom: -2
-    });
-
-    L.imageOverlay(
-      this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id,
-      this.bounds
-    ).addTo(this.map);
-    
-    this.map.fitBounds(this.bounds);
-
-    this.marksLayer = new L.FeatureGroup();
-    
-    this.map.addLayer(this.marksLayer);
-
-    var myIcon = L.divIcon({html: '<app-marker draw-tool-marker></app-marker>'});
-    this.drawToolOptions.draw.marker.icon = myIcon;
-
-    this.drawControl = new L.Control.Draw(this.drawToolOptions);
-
-    if( this.selectedPage.editable && !this.selectedPage.completed ) {
-      this.map.addControl(this.drawControl);
-
-      this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
-      this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
-    }
-
-    this.mapMarkers = {};
-    for( var key in this.marks ) {
-      if( this.mapMarkers[key] ) continue;
-      this.mapMarkers[key] = this._drawMark(this.marks[key]);
-    }
-    
-    if( this.currentState.markId ) {
-      this._selectAndShowPopup(this.currentState.markId);
-    }
-
-    L.control.adminControl({ position: 'topright' }).addTo(this.map);
-
-    // hack
-    var controls = this.$.map.querySelectorAll('.leaflet-control, .leaflet-top, .leaflet-bottom');
-    for( var i = 0; i < controls.length; i++ ) {
-      controls[i].style.zIndex = 500;
-    }
-
-    this._updateMapSize();
-    this._renderMarkControls();
-  },
-
-  _showHideControls : function(show) {
-    if( this.$.carousel ) {
-      this.$.carousel.style.display = show ? 'block' : 'none';
-    }
-
-    var ele = this.$.map.querySelector('.leaflet-top.leaflet-right');
-    if( !ele ) return;
-    ele.style.display = show ? 'block' : 'none';
-  },
-
-  _onDrawToolDrawStart :  function(e){
-    if( this.userState && this.userState.user.isAnonymous && !this.isAnonymousAlertShow ) {
-      alert('Reminder, you are creating marks as an anonymous user.');
-      this.isAnonymousAlertShow = true;
-    }
-  },
-
-  _onDrawToolCreated : function (e) {
-    var type = e.layerType,
-        layer = e.layer;
-    
-    this.ebEmit(
-      'update-temp-catalog-page-mark', 
-      {
-        pageId : this.selected,
-        xy : [e.layer._latlng.lng, e.layer._latlng.lat]
-      }
-    );
-
-    this.pendingLayer = layer;
-    window.location.hash = this.catalogId + '/' + this.selected + '/edit';
-  }
-}</script>
 <dom-module id="app-page-markup" assetpath="elements/mark/">
   <template>
     <style include="shared-styles"></style>
@@ -34006,7 +35221,7 @@ style this element.
 
       resp : {
         event : 'interested-party-request',
-        interested : function() {
+        handle : function() {
           return (this.active && this.selected);
         },
         handler : function() {
@@ -34349,7 +35564,7 @@ style this element.
     <style include="shared-styles"></style>
     <style>
       :host {
-        display: block;
+        display: inline-block;
       }
 
       #voteCount {
@@ -35269,7 +36484,7 @@ style this element.
       <div hidden$="[[!searchBoxActive]]">
         <iron-icon icon="search"></iron-icon>
       </div>
-      <img src="/images/wine-icon-48.png" hidden$="[[searchBoxActive]]" style="padding-right: 10px">
+      <img src="/images/wine-icon-48.png" srcset="/images/wine-icon-48.png 1x, /images/wine-icon-64.png 1.5x, /images/wine-icon-96.png 2x" hidden$="[[searchBoxActive]]" style="padding-right: 10px">
       <div class="flex">
         
         <h2 hidden$="[[searchBoxActive]]">
@@ -35955,7 +37170,39 @@ style this element.
       is: 'app-header-admin',
     });
   </script>
-</dom-module><dom-module id="app-header" assetpath="elements/header/">
+</dom-module><dom-module id="app-header-user" assetpath="elements/header/">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      h2 {
+        font-weight: 200;
+      }
+      iron-icon {
+        padding: 8px;
+      }
+      a {
+        color: white;
+        text-decoration: none;
+      }
+    </style>
+    
+    <div class="layout center">
+      <a href="#"><iron-icon icon="arrow-back"></iron-icon></a>
+      <h2 class="flex">My Dashboard</h2>
+    </div>
+    
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-header-user'
+    });
+  </script>
+</dom-module>
+<dom-module id="app-header" assetpath="elements/header/">
   <template>
     <style include="shared-styles"></style>
     <style>
@@ -35975,6 +37222,7 @@ style this element.
           <app-header-catalogs section="catalog"></app-header-catalogs>
           <app-header-page section="page"></app-header-page>
           <app-header-editing section="editing"></app-header-editing>
+          <app-header-user section="user"></app-header-user>
         </iron-pages>
 
       </div>
@@ -36053,6 +37301,11 @@ style this element.
           z-index: 1000;
         }
       }
+
+      a {
+        text-decoration: none;
+        color: black;
+      }
     </style>
 
     <div state="pending">...</div>
@@ -36072,6 +37325,10 @@ style this element.
           <paper-item on-click="_logout" style="cursor:pointer">
             <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
           </paper-item>
+          <!-- TODO: enable when user dashboard is ready -->
+          <!--<paper-item style="cursor:pointer">
+            <a href="#user"><iron-icon icon="dashboard"></iron-icon>&nbsp;My Dashboard</a>
+          </paper-item>-->
           <paper-item hidden$="[[!isAdmin]]" on-click="_gotToAdmin" style="cursor:pointer">
             <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface
           </paper-item>
@@ -36146,6 +37403,10 @@ style this element.
         this.toggleState('pending');
         this.eventLoop.authState.req();
         this.eventLoop.appState.req();
+
+        window.addEventListener('hashchange', function() {
+          this.$.menuBtn.close();
+        }.bind(this));
       },
 
       _onSelectedCatalogUpdate : function(id) {
@@ -36204,6 +37465,525 @@ style this element.
     });
 
 })();
+  </script>
+</dom-module>
+<dom-module id="app-user-stats" assetpath="elements/user/">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        padding: 10px;
+        display: block;
+      }
+      paper-material {
+        text-align: left;
+        margin: auto;
+        display: inline-block;
+        background: white;
+        padding: 15px;
+      }
+    </style>
+    
+    <div style="text-align: center; margin-top: 75px">
+      <paper-material>
+        <div class="layout">
+          <img src="[[photo]]" hidden$="[[!hasPhoto]]" alt="User profile image" style="height: 48px; width: 48px; padding-right: 15px;">
+          <h1>Welcome [[username]]</h1>
+        </div>
+
+        <h2>Here are your stats:</h2>
+        <table>
+          <tbody><tr>
+            <td><b>Pending Marks</b></td>
+            <td>[[pendingMarks]]</td>
+          </tr>
+          <tr>
+            <td><b>Approved Marks</b></td>
+            <td>[[approvedMarks]]</td>
+          </tr>
+        </tbody></table>
+      </paper-material>
+    </div>
+    
+
+  </template>
+  <script>
+
+(function() {
+
+    var AuthStateEventLoop = {
+      req : {
+        event : 'get-auth-state'
+      },
+      resp : {
+        event : 'auth-update',
+        handler : function(e) {
+          this.auth = e;
+          this._renderAuthState();
+        }
+      }
+    }
+
+    Polymer({
+      is: 'app-user-stats',
+
+      properties : {
+        pendingMarks : {
+          type : Number,
+          value : 0
+        },
+        approvedMarks : {
+          type : Number,
+          value : 0
+        }
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        authState : AuthStateEventLoop
+      },
+
+      ready : function() {
+        this.eventLoop.authState.req();
+      },
+
+      _renderAuthState : function() {
+        this.hasPhoto = false;
+        this.isAdmin = false;
+
+        if( this.auth.user ) {
+
+          if( this.auth.user.photoURL ) {
+            this.photo = this.auth.user.photoURL;
+            this.hasPhoto = true;
+          }
+
+          if( this.auth.user.roles  && this.auth.user.roles.indexOf('admin') > -1 ) {
+            this.isAdmin = true;
+          }
+
+          this.username = this.auth.user.name || this.auth.user.email || 'Anonymous';
+        }
+      }
+    });
+
+})();
+  </script>
+</dom-module>
+<dom-module id="app-user-review" assetpath="elements/user/">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        padding: 0 10px;
+      }
+
+      paper-material {
+        margin: 15px;
+        background: white;
+      }
+
+      tr td {
+        padding: 10px !important;
+      }
+
+      .light {
+        color: var(--secondary-text-color);
+      }
+
+      paper-icon-button[nav] {
+        color: var(--default-primary-color);
+      }
+
+      paper-icon-button[nav][disabled] {
+        color: var(--secondary-text-color);
+      }
+    </style>
+
+
+    <h2 style="text-align: center">
+       Help us approve marks by reviewing pending marks and voting on them!
+    </h2>
+    <div class="flex">
+        <div style="max-width: 400px">
+          <h3 style="margin:0">Sort By:</h3>
+          <select id="sortInput" on-change="_getPendingMarks">
+            <option value="updated.desc">Updated Descending</option>
+            <option value="updated.asc">Updated Ascending</option>
+            <option value="created.desc">Created Descending</option>
+            <option value="created.asc">Created Ascending</option>
+          </select>
+        </div>
+    </div>
+
+    <div class="layout center" style="margin: 0 40px">
+      <div>
+        <paper-icon-button nav="" icon="arrow-back" id="prevBtn" on-click="_prev"></paper-icon-button>
+      </div>
+      <h2 class="flex" style="text-align: center">
+        Showing 
+        <span class="light">[[start]]</span> to 
+        <span class="light">[[stop]]</span> of 
+        <span class="light">[[total]]</span>
+      </h2>
+      <div>
+        <paper-icon-button nav="" icon="arrow-forward" id="nextBtn" on-click="_next"></paper-icon-button>
+      </div>
+    </div>
+
+    <paper-material style="overflow-x:auto">
+      <app-datatable id="datatable" on-inspect="onInspect" on-approve="onApprove" on-delete="onDelete" loading="[[loading]]" header="[[header]]" data="[[marks]]">
+        <template>
+          <tr>
+            <td>
+              <app-page-admin-mark-icon api-host$="[[apiHost]]" mark="[[item]]" page-id="[[item.page_id]]">
+              </app-page-admin-mark-icon>
+              <div class="light">Created on [[item.createdStr]]</div>
+              <div class="light">Updated on [[item.updatedStr]]</div>
+            </td>
+            <td>
+              <app-page-admin-mark-details mark="[[item]]">
+              </app-page-admin-mark-details>
+            </td>
+            <td style="white-space:nowrap;vertical-align:top">
+              <paper-icon-button icon="zoom-in" trigger="inspect"></paper-icon-button>
+            </td>
+            <td style="white-space:nowrap;vertical-align:top">
+              <app-user-review-voting mark="[[item]]"></app-user-review-voting>
+            </td>
+          </tr>
+        </template>
+      </app-datatable>
+    </paper-material>
+    
+  </template>
+  <script>
+
+(function(){
+
+    var InterestedPartyEventLoop = {
+      req : {
+        event : 'interested-party-response',
+        payload : function() {
+          var ids = [];
+          this.marks.forEach(function(mark){
+            ids.push(mark.mark_id);
+          });
+          
+          return {
+            ids : ids,
+            types : ['markup']
+          }
+        }
+      },
+
+      resp : {
+        event : 'interested-party-request',
+        handle : function() {
+          return (this.active);
+        },
+        handler : function() {
+          this.eventLoop.interestedParty.req();
+        }
+      }
+    };
+
+
+    Polymer({
+      is: 'app-user-review',
+
+      properties : {
+        active : {
+          type : Boolean,
+          value : false,
+          observer : '_onActive'
+        },
+        marks : {
+          type : Array,
+          value : []
+        },
+
+        loading : {
+          type : Boolean,
+          value : false
+        },
+
+        sort : {
+          type : String,
+          value : 'score'
+        },
+
+        hostApi : {
+          type : String,
+          value : ''
+        },
+
+        header : {
+          type : Array,
+          value : function() {
+            return ['Page', 'Data', 'Inspect', 'Vote'];
+          }
+        },
+
+        pageIndex : {
+          type : Number,
+          value : 0
+        },
+        limit : {
+          type : Number,
+          value : 10
+        },
+        total : {
+          type : Number,
+          value : 0
+        },
+        stop : {
+          type : Number,
+          value : 0
+        },
+        start : {
+          type : Number,
+          value : 0
+        },
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        interestedParty : InterestedPartyEventLoop
+      },
+      
+      ebBind : {
+        'pending-mark-search-update' : '_onMarksLoad'
+      },
+
+      ready : function() {
+        this._getApiHost();
+      },
+
+      _onActive : function() {
+        if( !this.active ) return;
+        this._getPendingMarks();
+      },
+
+      _getPendingMarks : function() {
+        if( !this.active ) return;
+        this.loading = true;
+
+        this.ebEmit('pending-mark-search', {
+          params : {
+            order : this.$.sortInput.value,
+            limit : this.limit,
+            offset : this.limit*this.pageIndex
+          },
+          handler : this._onMarksLoad.bind(this)
+        });
+      },
+
+      _onMarksLoad : function(e) {
+        if( e.state === 'loading' ) return;
+        this.loading = false;
+
+        if( e.state == 'error' ) {
+          this.marks = [];
+          return alert('Failed to load pending marks')
+        }
+
+        if( e.state !== 'loaded' ) return;
+
+        this.searchResults = e;
+
+        var arr = e.payload.results;
+        arr.forEach(function(mark) {
+          mark.createdStr = new Date(mark.created).toLocaleString();
+          mark.updatedStr = new Date(mark.updated).toLocaleString();
+
+          this.ebEmit('listen-to-mark', {
+            markId : mark.mark_id,
+            pageId : mark.page_id
+          });
+        }.bind(this));
+
+        this.marks = arr;
+        this._updatePaging();
+      },
+
+      _updatePaging : function() {
+        this.start = this.searchResults.payload.start+1;
+        this.stop = this.searchResults.payload.stop+1;
+        this.total = this.searchResults.payload.total;
+
+        this.$.prevBtn.removeAttribute('disabled');
+        this.$.nextBtn.removeAttribute('disabled');
+
+        if( this.searchResults.payload.start === 0 ) {
+          this.$.prevBtn.setAttribute('disabled', 'disabled');
+        }
+
+        if( this.stop >= this.total ) {
+          this.$.nextBtn.setAttribute('disabled', 'disabled');
+        }
+      },
+
+      _prev : function() {
+        this.pageIndex--;
+        this._getPendingMarks();
+      },
+
+      _next : function() {
+        this.pageIndex++;
+        this._getPendingMarks();
+      },
+
+      _getApiHost : function() {
+        this.ebEmit('get-api-host', {
+          handler : function(host) {
+            this.apiHost = host;
+          }.bind(this)
+        });
+      },
+
+      onInspect : function(e) {
+        var mark = e.detail.data;
+
+        this.ebEmit('get-page', {
+          id : mark.page_id,
+          handler : function(e) {
+            window.location = '/#'+e.payload.catalog_id+'/'+mark.page_id+'/edit/'+mark.mark_id;
+          }
+        });
+      }
+
+      
+    });
+
+})();
+  </script>
+</dom-module>
+<dom-module id="app-user-review-voting" assetpath="elements/user/">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    
+    <app-price-form-voting id="voting"></app-price-form-voting>
+
+  </template>
+  <script>
+(function() {
+
+    var GetMarkEventLoop = {
+      req : {
+        event : 'get-catalog-page-mark',
+        payload : function() {
+          return {
+            markId: this.mark.mark_id,
+            pageId: this.mark.page_id,
+          }
+        }
+      },
+
+      resp : {
+        event : 'catalog-page-marks-update',
+        handle : function(e) {
+          if( e.state !== 'loaded' || e.id !== this.mark.mark_id ) return false;
+          return true;
+        },
+        handler : function(e) {
+          this._markReady(e);
+        },
+        debounce : 100
+      }
+    };
+
+    Polymer({
+      is: 'app-user-review-voting',
+
+      properties : {
+        mark : {
+          type : Object,
+          observer : '_render',
+          value : function() {
+            return {};
+          }
+        }
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      eventLoops : {
+        getMark : GetMarkEventLoop
+      },
+
+      _render : function() {
+        if( !this.mark || !this.eventLoop ) return;
+        this.eventLoop.getMark.req();
+      },
+
+      _markReady : function(e) {
+        this.$.voting.show(e);
+      }
+    });
+
+})();
+  </script>
+</dom-module>
+<dom-module id="app-user-dashboard" assetpath="elements/user/">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-tabs {
+        background: white;
+        --paper-tabs-selection-bar-color: var(--default-primary-color);
+      }
+      paper-tab {
+        --paper-tab-ink: var(--default-primary-color);
+      }
+    </style>
+
+    <paper-tabs selected="{{selectedTab}}">
+      <paper-tab>Stats</paper-tab>
+      <paper-tab>Review</paper-tab>
+    </paper-tabs>
+
+    <iron-pages selected="[[selectedTab]]">
+      <app-user-stats active="[[active]]"></app-user-stats>
+      <app-user-review active="[[showingReviews]]"></app-user-review>
+    </iron-pages>
+
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-user-dashboard',
+
+      properties : {
+        active : {
+          type : Boolean,
+          value : false
+        },
+        selectedTab : {
+          type : Number,
+          value : 0
+        },
+        showingReviews : {
+          typ : Boolean,
+          value : false,
+          computed : '_showingReviews(active, selectedTab)'
+        }
+      },
+
+      _showingReviews : function(active, selectedTab) {
+        return (this.active && this.selectedTab === 1);
+      }
+    });
   </script>
 </dom-module>
 <dom-module id="app-admin-interface" assetpath="elements/admin/">
@@ -36512,7 +38292,15 @@ style this element.
         },
       },
 
-      ignore : ['user','created','updated','xy'],
+      ignore : ['user','created','updated','xy', 'votes'],
+
+      labels : {
+        wineType : 'Wine Type',
+        bottleType : 'Bottle Type',
+        price : 'Price per Bottle',
+        casePrice : 'Case Price',
+        isAnonymous : 'Anonymous User Mark'
+      },
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
@@ -36530,7 +38318,7 @@ style this element.
         for( var key in e.data ) {
           if( this.ignore.indexOf(key) > -1 ) continue;
           if( !e.data[key] ) continue;
-          html += '<tr><td style="font-weight:bold">'+key+'</td>'+
+          html += '<tr><td style="font-weight:bold; text-transform: capitalize">'+this.getLabel(key)+'</td>'+
                   '<td style="color:#757575;padding:5px">';
 
           if( key === 'created' || key === 'updated' ) {
@@ -36544,6 +38332,10 @@ style this element.
         }
         this.innerHTML = html+'</table>';
       },
+
+      getLabel : function(key) {
+        return this.labels[key] || key;
+      }
 
     });
 
@@ -36755,7 +38547,7 @@ style this element.
         this.searchResults = e;
 
         var arr = e.payload.results;
-        arr.forEach((mark) => {
+        arr.forEach(function(mark) {
           mark.createdStr = new Date(mark.created).toLocaleString();
           mark.updatedStr = new Date(mark.updated).toLocaleString();
         });

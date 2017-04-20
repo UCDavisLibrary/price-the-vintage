@@ -217,7 +217,7 @@
         this.searchResults = e;
 
         var arr = e.payload.results;
-        arr.forEach((mark) => {
+        arr.forEach(function(mark) {
           mark.createdStr = new Date(mark.created).toLocaleString();
           mark.updatedStr = new Date(mark.updated).toLocaleString();
         });

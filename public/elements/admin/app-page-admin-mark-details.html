@@ -55,7 +55,15 @@
         },
       },
 
-      ignore : ['user','created','updated','xy'],
+      ignore : ['user','created','updated','xy', 'votes'],
+
+      labels : {
+        wineType : 'Wine Type',
+        bottleType : 'Bottle Type',
+        price : 'Price per Bottle',
+        casePrice : 'Case Price',
+        isAnonymous : 'Anonymous User Mark'
+      },
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
@@ -73,7 +81,7 @@
         for( var key in e.data ) {
           if( this.ignore.indexOf(key) > -1 ) continue;
           if( !e.data[key] ) continue;
-          html += '<tr><td style="font-weight:bold">'+key+'</td>'+
+          html += '<tr><td style="font-weight:bold; text-transform: capitalize">'+this.getLabel(key)+'</td>'+
                   '<td style="color:#757575;padding:5px">';
 
           if( key === 'created' || key === 'updated' ) {
@@ -87,6 +95,10 @@
         }
         this.innerHTML = html+'</table>';
       },
+
+      getLabel : function(key) {
+        return this.labels[key] || key;
+      }
 
     });
 
