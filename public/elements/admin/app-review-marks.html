@@ -276,21 +276,32 @@
       },
 
       onApprove : function(e) {
-        var mark = e.detail.data;
+        var markIndex = e.detail.data;
         var index = e.detail.index;
 
         if( !confirm('Are you sure you want to approve this mark?') ) return;
 
-        this.ebEmit('admin-approve-mark', {
-          pageId : mark.page_id,
-          markId : mark.mark_id,
-          handler : function(error, success) {
-            if( error ) {
-              console.error(error);
-              return alert('Failed to approve mark :(');
-            }
-            this.splice('marks', index, 1);
-          }.bind(this)
+
+        this.ebEmit('get-catalog-page-mark', {
+          pageId : markIndex.page_id,
+          markId : markIndex.mark_id,
+          callback : function(error, mark) {
+            if( error ) return alert('Failed to get mark');
+
+            this.ebEmit('admin-approve-mark', {
+              pageId : markIndex.page_id,
+              markId : markIndex.mark_id,
+              mark : mark,
+              handler : function(error, success) {
+                if( error ) {
+                  console.error(error);
+                  return alert('Failed to approve mark :(');
+                }
+                this.splice('marks', index, 1);
+              }.bind(this)
+            });
+
+          }.bind(this) 
         });
       },
 

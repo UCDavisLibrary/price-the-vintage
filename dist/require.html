@@ -34942,6 +34942,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _onMarkSet : function() {
         if( !this.mark ) return;
+        if( !this.mark.data || this.mark.deleted ) return;
 
         this.originalXy = this.mark.data.xy.slice(0);
 
@@ -34999,6 +35000,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       render : function() {
         if( !this.mark ) return;
+        if( this.mark.deleted ) return;
 
         var state = '';
         this.style.display = 'block';
@@ -35039,6 +35041,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       addTo : function(layer) {
+        if( !this.wrapper ) return;
         this.layer = layer;
         this.layer._map.on('mousemove', this._onMouseMove.bind(this));
 
@@ -35046,10 +35049,12 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       removeFromLayer : function() {
+        if( !this.layer ) return;
         this.layer.removeLayer(this.wrapper);
       },
 
       setLatLng : function() {
+        if( !this.wrapper ) return;
         this.wrapper.setLatLng.apply(this.wrapper, arguments);
       }
 
@@ -35706,6 +35711,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       show : function(mark) {
+        if( !mark.data || mark.deleted ) return;
+
         this.count = 0;
         this.mark = mark;
 
@@ -35998,6 +36005,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
         else this.$.spirit.edit(mark.data);
 
+        debugger;
         this.$.voting.show(mark);
       },
 
@@ -37358,7 +37366,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       resp : {
         event : 'auth-update',
         handler : function(e) {
-          console.log(e);
           this.auth = e;
           this._renderAuthState();
         }
@@ -38211,6 +38218,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       _markReady : function(e) {
         this.marker = e;
+        if( !this.marker.data ) return; // mark was deleted
         this._setPosition();
       },
 
@@ -38610,21 +38618,32 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       onApprove : function(e) {
-        var mark = e.detail.data;
+        var markIndex = e.detail.data;
         var index = e.detail.index;
 
         if( !confirm('Are you sure you want to approve this mark?') ) return;
 
-        this.ebEmit('admin-approve-mark', {
-          pageId : mark.page_id,
-          markId : mark.mark_id,
-          handler : function(error, success) {
-            if( error ) {
-              console.error(error);
-              return alert('Failed to approve mark :(');
-            }
-            this.splice('marks', index, 1);
-          }.bind(this)
+
+        this.ebEmit('get-catalog-page-mark', {
+          pageId : markIndex.page_id,
+          markId : markIndex.mark_id,
+          callback : function(error, mark) {
+            if( error ) return alert('Failed to get mark');
+
+            this.ebEmit('admin-approve-mark', {
+              pageId : markIndex.page_id,
+              markId : markIndex.mark_id,
+              mark : mark,
+              handler : function(error, success) {
+                if( error ) {
+                  console.error(error);
+                  return alert('Failed to approve mark :(');
+                }
+                this.splice('marks', index, 1);
+              }.bind(this)
+            });
+
+          }.bind(this) 
         });
       },
 

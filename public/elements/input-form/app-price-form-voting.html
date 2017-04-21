@@ -151,6 +151,8 @@
       },
 
       show : function(mark) {
+        if( !mark.data || mark.deleted ) return;
+
         this.count = 0;
         this.mark = mark;
 

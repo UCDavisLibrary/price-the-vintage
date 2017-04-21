@@ -151,6 +151,7 @@
 
       _onMarkSet : function() {
         if( !this.mark ) return;
+        if( !this.mark.data || this.mark.deleted ) return;
 
         this.originalXy = this.mark.data.xy.slice(0);
 
@@ -208,6 +209,7 @@
 
       render : function() {
         if( !this.mark ) return;
+        if( this.mark.deleted ) return;
 
         var state = '';
         this.style.display = 'block';
@@ -248,6 +250,7 @@
       },
 
       addTo : function(layer) {
+        if( !this.wrapper ) return;
         this.layer = layer;
         this.layer._map.on('mousemove', this._onMouseMove.bind(this));
 
@@ -255,10 +258,12 @@
       },
 
       removeFromLayer : function() {
+        if( !this.layer ) return;
         this.layer.removeLayer(this.wrapper);
       },
 
       setLatLng : function() {
+        if( !this.wrapper ) return;
         this.wrapper.setLatLng.apply(this.wrapper, arguments);
       }
 
