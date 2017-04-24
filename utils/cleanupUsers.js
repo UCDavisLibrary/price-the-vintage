@@ -76,3 +76,5 @@ function cleanActivity(id, activity) {
     }
   }
 }
+
+checkDone();
