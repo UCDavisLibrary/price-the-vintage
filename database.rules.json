@@ -38,6 +38,9 @@
     },
     "users" : {
       "$userid" : {
+        "anonymous" : {
+          ".write" : "$userid === auth.uid"
+        },
         "activity" : {
           ".read" : "$userid === auth.uid",
           "$resourceid" : {
