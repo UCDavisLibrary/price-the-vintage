@@ -140,6 +140,10 @@
 
         this.isEditable = this.page.payload.editable;
         this.isCompleted = this.page.payload.completed;
+
+        if( !this.isEditable || this.isCompleted ) {
+          this.ebEmit('ui-show-mark-noop-popup');
+        }
       },
 
       _toggleDone : function() {

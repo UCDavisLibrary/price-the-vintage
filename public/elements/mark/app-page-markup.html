@@ -41,6 +41,23 @@
           right: 0;
           z-index: 1000;
         }
+
+        #nothingToDo {
+          position: absolute;
+          text-align: center;
+          left: 0; 
+          right: 0;
+          top: 50px;
+        }
+        #nothingToDo paper-material {
+          display: inline-block;
+          padding: 10px;
+          max-width: 600px;
+          background: white;
+          text-align: left;
+          margin: auto;
+          z-index: 1000;
+        }
     </style>
 
     <paper-material id="carousel">
@@ -63,6 +80,17 @@
     <div state="loading">
       <paper-spinner active></paper-spinner>
     </div>
+
+    <div id="nothingToDo">
+      <paper-material >
+        <div class="layout center">
+          <h1 class="flex">There's nothing to do on this page. </h1>
+          <paper-icon-button style="float:right;margin-top: -15px;" on-click="_hidePopup" icon="close"></paper-icon-button>
+        </div>
+
+        <p>The current page doesn't have any pricing information, so it doesn't need any marking</p>
+      </paper-material>
+    <div>
 
   </template>
   <script>
@@ -232,6 +260,7 @@
       },
 
       ebBind : {
+        'ui-show-mark-noop-popup' : '_showPopup',
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
         'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
         'approved-catalog-page-marks-update' : '_onApprovedMarksUpdate'
@@ -285,6 +314,8 @@
         this.selected = id;
 
         this.toggleState('loading');
+        this._hidePopup();
+
         this._reset();
         this.eventLoop.pageMarks.req();
       },
@@ -356,6 +387,8 @@
         } else {
           state = this.currentState;
         }
+
+        this._hidePopup();
 
         if( !this.active ) return;
 
@@ -507,6 +540,14 @@
       _removeTmpMark : function() {
         this.ebEmit('remove-temp-catalog-page-mark', {pageId: this.selected});
         this._selectMarker();
+      },
+
+      _hidePopup : function() {
+        this.$.nothingToDo.style.display = 'none';
+      },
+
+      _showPopup : function() {
+        this.$.nothingToDo.style.display = 'block';
       }
 
     });

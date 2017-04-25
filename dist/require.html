@@ -5040,6 +5040,9 @@ L.EditToolbar.Delete = L.Handler.extend({
 }(window, document));
 </script>
 
+<!--<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">-->
+
+
 </head><body><div hidden="" by-vulcanize=""><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -32779,6 +32782,12 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         padding: 8px;
       }
 
+      .grid-thumbnail {
+        position: relative;
+        width: 159px;
+        padding: 8px;
+      }
+
       .grid-card-img {
         /*display: block;
         background-color: #ddd;
@@ -32793,8 +32802,9 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         background-color: #ddd;
         background-position: center center;
         background-repeat: no-repeat;
-        width: 110px;
-        height: 120px;
+        background-size: 143px auto;
+        width: 143px;
+        height: 156px;
       }
 
       .grid-item .detail {
@@ -33085,7 +33095,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
   This is the main catalog list view.  Contains a list of catalog cards as well as 
   the bottom (popup) section of the search results.
 -->
-<dom-module id="app-catalog-card" assetpath="elements/catalogs/">
+<dom-module id="app-catalog-thumbnail" assetpath="elements/catalogs/">
   <template>
     <style include="shared-styles"></style>
     <style>
@@ -33104,24 +33114,15 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       }
 
       .align-bottom {
-        padding: 5px;
         position: absolute;
         left:0;
         right:0;
         bottom:0;
+        padding: 4px;
+        background-color: rgba(156, 39, 176, .9);
+        color: white;
       }
 
-      paper-material {
-        transition: transform 200ms linear, box-shadow 200ms linear;
-      }
-      paper-material:hover {
-        box-shadow: 0px -1px 10px var(--default-primary-color);
-        transform: translateY(5px);
-      }
-
-      iron-icon, .light {
-        color: var(--default-primary-color);
-      }
 
       #loading {
         text-align: center;
@@ -33134,28 +33135,22 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
     <paper-material>
       <div hidden$="[[loading]]">
-        <div class="layout">
-
-          <div class="grid-card-img" id="img" alt="Catalog Thumbnail Image"></div>
-
-          <div class="flex" style="position: relative">
-            <h3>[[catalog.title]]</h3>
-
-            <div class="align-bottom">
+        <div class="grid-card-img" id="img" alt="Catalog Thumbnail Image">
+          <div class="align-bottom">
+          
               <div class="layout">
                 <div class="flex">
                   <span hidden$="[[!showUserCount]]">
                     <iron-icon icon="social:group"></iron-icon>
-                    <span class="light">[[userCount]]</span>
+                    <span>[[userCount]]</span>
                   </span>
                 </div>
                 <div style="text-align: right">
                   <iron-icon icon="done-all"></iron-icon>
-                  <span class="light">[[percentComplete]]</span>
+                  <span>[[percentComplete]]</span>
                 </div>
               </div>
-            </div>
-            
+          
           </div>
         </div>
       </div>
@@ -33257,7 +33252,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
 
     Polymer({
-      is: 'app-catalog-card',
+      is: 'app-catalog-thumbnail',
 
       properties : {
         active : {
@@ -33535,13 +33530,29 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       <app-catalogs-search-results></app-catalogs-search-results>
 
       <div loading-state="loaded">
-        <iron-list id="list" items="[[results]]" as="catalog" grid="" style="height:100%">
-          <template>
-            <app-catalog-card class="grid-card" active="[[active]]" catalog="[[catalog]]" api-host="[[apiHost]]">
-            </app-catalog-card>
-            
-          </template>
-        </iron-list>
+
+          <div style="text-align:center; overflow: auto" id="introText">
+            <div style="max-width: 700px; text-align: left; margin: auto;">
+              <h2 style="margin: 0px; padding: 4px">Browse the Collection</h2>
+              <div style="padding: 4px">Browse through our collection of Shrry-Lehmann catalogs.
+                As you do, you might notice a lot of wine prices.  We need
+                your help in making and transcibing the prices thaat you see
+                on the pages.</div>
+            </div>
+          </div>
+
+          <div style="text-align:center; overflow: auto" id="scrollable-element">
+            <div style="max-width: 700px; text-align: left; margin: auto; height: 100%">
+              <iron-list id="list" items="[[results]]" as="catalog" grid="" scroll-target="scrollable-element" style="height: 100%">
+                <template>
+                  <app-catalog-thumbnail class="grid-thumbnail" active="[[active]]" catalog="[[catalog]]" api-host="[[apiHost]]">
+                  </app-catalog-thumbnail>
+                  
+                </template>
+              </iron-list>
+            </div>
+          </div>
+
       </div>
 
       <div loading-state="loading">
@@ -33624,6 +33635,11 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this.toggleState('loading', 'loading-state');
         // grab the api host from config file.
         this._getApiHost();
+
+        window.addEventListener('resize', function(){
+          if( !this.active ) return;
+          this._updateListSize();
+        }.bind(this));
       },
 
       _onActive : function() {
@@ -33661,7 +33677,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
        * Resize the card grid
        **/
       _updateListSize : function() {
+        var h = this.offsetHeight;
+        var ih = this.$.introText.offsetHeight;
+
+        this.$['scrollable-element'].style.height = (h-ih)+'px';
         this.$.list.fire('iron-resize');
+        setTimeout(function(){
+          this.$.list.fire('iron-resize');
+        }.bind(this), 250);
       }
 
     });
@@ -33710,7 +33733,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       }
 
       paper-material {
-        transition: transform 200ms linear, box-shadow 200ms linear, border 200ms linear;
         border: 2px solid white;
       }
 
@@ -33718,13 +33740,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         border: 2px solid var(--default-primary-color);
       }
 
-      paper-material:hover {
-        box-shadow: 0px -2px 15px var(--default-primary-color);
-        transform: translateY(5px);
-      }
-
       iron-icon {
-        color: var(--light-primary-color);
+        color: white;
       }
     </style>
 
@@ -34770,6 +34787,10 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
         this.isEditable = this.page.payload.editable;
         this.isCompleted = this.page.payload.completed;
+
+        if( !this.isEditable || this.isCompleted ) {
+          this.ebEmit('ui-show-mark-noop-popup');
+        }
       },
 
       _toggleDone : function() {
@@ -35101,6 +35122,23 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
           right: 0;
           z-index: 1000;
         }
+
+        #nothingToDo {
+          position: absolute;
+          text-align: center;
+          left: 0; 
+          right: 0;
+          top: 50px;
+        }
+        #nothingToDo paper-material {
+          display: inline-block;
+          padding: 10px;
+          max-width: 600px;
+          background: white;
+          text-align: left;
+          margin: auto;
+          z-index: 1000;
+        }
     </style>
 
     <paper-material id="carousel">
@@ -35117,7 +35155,18 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       <paper-spinner active=""></paper-spinner>
     </div>
 
-  </template>
+    <div id="nothingToDo">
+      <paper-material>
+        <div class="layout center">
+          <h1 class="flex">There's nothing to do on this page. </h1>
+          <paper-icon-button style="float:right;margin-top: -15px;" on-click="_hidePopup" icon="close"></paper-icon-button>
+        </div>
+
+        <p>The current page doesn't have any pricing information, so it doesn't need any marking</p>
+      </paper-material>
+    <div>
+
+  </div></div></template>
   <script>
 
 (function() {
@@ -35285,6 +35334,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       },
 
       ebBind : {
+        'ui-show-mark-noop-popup' : '_showPopup',
         'selected-catalog-update' : '_onSelectedCatalogUpdate',
         'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
         'approved-catalog-page-marks-update' : '_onApprovedMarksUpdate'
@@ -35338,6 +35388,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         this.selected = id;
 
         this.toggleState('loading');
+        this._hidePopup();
+
         this._reset();
         this.eventLoop.pageMarks.req();
       },
@@ -35409,6 +35461,8 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         } else {
           state = this.currentState;
         }
+
+        this._hidePopup();
 
         if( !this.active ) return;
 
@@ -35560,6 +35614,14 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       _removeTmpMark : function() {
         this.ebEmit('remove-temp-catalog-page-mark', {pageId: this.selected});
         this._selectMarker();
+      },
+
+      _hidePopup : function() {
+        this.$.nothingToDo.style.display = 'none';
+      },
+
+      _showPopup : function() {
+        this.$.nothingToDo.style.display = 'block';
       }
 
     });
@@ -37022,6 +37084,11 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
         window.addEventListener('resize', this._resize.bind(this));
         this.eventLoop.authState.req();
         this._resize();
+
+        if( !window.localStorage.getItem('first-catalog-viewing') ) {
+          this.$.helpPopup.open();
+          window.localStorage.setItem('first-catalog-viewing', 'true');
+        } 
       },
 
       _resize : function() {

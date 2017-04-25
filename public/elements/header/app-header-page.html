@@ -292,6 +292,11 @@
         window.addEventListener('resize', this._resize.bind(this));
         this.eventLoop.authState.req();
         this._resize();
+
+        if( !window.localStorage.getItem('first-catalog-viewing') ) {
+          this.$.helpPopup.open();
+          window.localStorage.setItem('first-catalog-viewing', 'true');
+        } 
       },
 
       _resize : function() {

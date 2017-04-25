@@ -1,0 +1,235 @@
+<dom-module id="app-catalog-thumbnail">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        cursor: pointer;
+        display: block;
+      }
+
+      paper-material {
+        background :white; 
+        position : relative;
+      }
+
+      h3 {
+        padding: 0 5px;
+      }
+
+      .align-bottom {
+        position: absolute;
+        left:0;
+        right:0;
+        bottom:0;
+        padding: 4px;
+        background-color: rgba(156, 39, 176, .9);
+        color: white;
+      }
+
+
+      #loading {
+        text-align: center;
+        height: 120px;
+      }
+      #loading paper-spinner {
+        padding: 25px;
+      }
+    </style>
+
+    <paper-material>
+      <div hidden$="[[loading]]">
+        <div class="grid-card-img" id="img" alt="Catalog Thumbnail Image">
+          <div class="align-bottom">
+          
+              <div class="layout">
+                <div class="flex">
+                  <span hidden$="[[!showUserCount]]">
+                    <iron-icon icon="social:group"></iron-icon>
+                    <span>[[userCount]]</span>
+                  </span>
+                </div>
+                <div style="text-align: right">
+                  <iron-icon icon="done-all"></iron-icon>
+                  <span>[[percentComplete]]</span>
+                </div>
+              </div>
+          
+          </div>
+        </div>
+      </div>
+      <div id="loading" hidden$="[[!loading]]">
+        <paper-spinner active></paper-spinner>
+      </div>
+    </paper-material>
+    
+  </template>
+  <script>
+(function() {
+    /**
+     * Event Loop Definitions
+     **/
+    var UserActivityEventLoop = {
+      req : {
+        event : 'get-user-activity',
+        handle : function() {
+          if( !this.catalog ) return false;
+          return this.catalog.catalog_id ? true : false
+        },
+        payload : function() {
+          return {id: this.catalog.catalog_id};
+        },
+        debounce : 50
+      },
+
+      resp : {
+        event : 'user-activity-update',
+        handle : function(e) {
+          return e.id === this.catalog.catalog_id;
+        },
+        handler : function(e) {
+          this.userCount = Object.keys(e.users).length;
+          this.showUserCount = (this.userCount > 0 ) ? true : false;
+        }
+      }
+    }
+  
+    var CatalogPageEventLoop = {
+      req : {
+        event : 'get-catalog-pages',
+        handle : function() {
+          var trigger = false;
+          if( this.catalog && this.catalog.catalog_id ) {
+            this.loading = true;
+            trigger = true;
+          }
+          return trigger;
+        },
+        payload : function() {
+          return {id: this.catalog.catalog_id}
+        }
+      },
+
+      resp : {
+        event : 'catalog-pages-update',
+        handle : function(e) {
+          return (this.active && 
+                  e.id === this.catalog.catalog_id && 
+                  e.state === 'loaded')
+        },
+        handler : function(e) {
+          this.loading = false;
+
+          if( e.payload.length === 0 ) {
+            return alert('This catalog has no pages :(');
+          }
+
+          var page = e.payload[0];
+          window.location.hash = this.catalog.catalog_id+'/'+page.page_id;
+        }
+      }
+    };
+
+    // this loop is actually backward :)  but that is how we want it
+    // the services are actually pulling us.
+    var InterestedPartyEventLoop = {
+      req : {
+        event : 'interested-party-response',
+        payload : function() {
+          return {
+            id : this.catalog.catalog_id,
+            types : ['activity']
+          }
+        }
+      },
+
+      resp : {
+        event : 'interested-party-request',
+        interested : function() {
+          return (this.active && this.catalog && this.catalog.catalog_id);
+        },
+        handler : function() {
+          this.eventLoop.interestedParty.req();
+        }
+      }
+    };
+
+
+    Polymer({
+      is: 'app-catalog-thumbnail',
+
+      properties : {
+        active : {
+          type : Boolean,
+          value : false,
+          observer : '_onUpdate'
+        },
+        apiHost : {
+          type : String,
+          value : ''
+        },
+        catalog : {
+          type : Object,
+          value : function() {
+            return {};
+          },
+          observer : '_onUpdate'
+        },
+        imgUrl : {
+          type : String,
+          computed : '_createImgUrl(apiHost, catalog)',
+          observer : '_setImgUrl'
+        },
+        userCount : {
+          type : Number,
+          value : 0
+        },
+        showUserCount : {
+          type : Boolean,
+          value : false
+        },
+        percentComplete : {
+          type : String,
+          value : '',
+        },
+        loading: {
+          type : Boolean,
+          value : false
+        }
+      },
+
+      listeners: {
+        click : '_select'
+      },
+
+      eventLoops : {
+        userActivity : UserActivityEventLoop,
+        catalogPages : CatalogPageEventLoop,
+        interestedParty : InterestedPartyEventLoop
+      },
+
+      behaviors : [EventBusBehavior, EventLoopBehavior],
+
+      _createImgUrl : function(apiHost, catalog) {
+        return apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
+      },
+
+      _setImgUrl : function() {
+        this.$.img.style.backgroundImage = 'url('+this.imgUrl+')';
+      },
+
+      _onUpdate : function() {
+        
+
+        this.getEventLoop().userActivity.req();
+        if( !this.catalog ) return;
+        this.percentComplete = this.catalog.pages_finished+' / '+this.catalog.pages;
+      },
+
+      _select : function(e) {
+        this.eventLoop.catalogPages.req();
+      }
+    });
+
+})();
+  </script>
+</dom-module>

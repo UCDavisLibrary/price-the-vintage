@@ -1,4 +1,4 @@
-<link rel="import" href="app-catalog-card.html">
+<link rel="import" href="app-catalog-thumbnail.html">
 <link rel="import" href="app-catalogs-search-results.html">
 
 <!--
@@ -82,17 +82,33 @@
       <app-catalogs-search-results></app-catalogs-search-results>
 
       <div loading-state="loaded">
-        <iron-list id="list" items="[[results]]" as="catalog" grid style="height:100%">
-          <template>
-            <app-catalog-card 
-              class="grid-card" 
-              active="[[active]]"
-              catalog="[[catalog]]"
-              api-host="[[apiHost]]">
-            </app-catalog-card>
-            
-          </template>
-        </iron-list>
+
+          <div style="text-align:center; overflow: auto" id="introText">
+            <div style="max-width: 700px; text-align: left; margin: auto;">
+              <h2 style="margin: 0px; padding: 4px">Browse the Collection</h2>
+              <div style="padding: 4px">Browse through our collection of Shrry-Lehmann catalogs.
+                As you do, you might notice a lot of wine prices.  We need
+                your help in making and transcibing the prices thaat you see
+                on the pages.</div>
+            </div>
+          </div>
+
+          <div style="text-align:center; overflow: auto" id="scrollable-element">
+            <div style="max-width: 700px; text-align: left; margin: auto; height: 100%">
+              <iron-list id="list" items="[[results]]" as="catalog" grid scroll-target="scrollable-element" style="height: 100%">
+                <template>
+                  <app-catalog-thumbnail 
+                    class="grid-thumbnail" 
+                    active="[[active]]"
+                    catalog="[[catalog]]"
+                    api-host="[[apiHost]]">
+                  </app-catalog-thumbnail>
+                  
+                </template>
+              </iron-list>
+            </div>
+          </div>
+
       </div>
 
       <div loading-state="loading">
@@ -175,6 +191,11 @@
         this.toggleState('loading', 'loading-state');
         // grab the api host from config file.
         this._getApiHost();
+
+        window.addEventListener('resize', function(){
+          if( !this.active ) return;
+          this._updateListSize();
+        }.bind(this));
       },
 
       _onActive : function() {
@@ -212,7 +233,14 @@
        * Resize the card grid
        **/
       _updateListSize : function() {
+        var h = this.offsetHeight;
+        var ih = this.$.introText.offsetHeight;
+
+        this.$['scrollable-element'].style.height = (h-ih)+'px';
         this.$.list.fire('iron-resize');
+        setTimeout(function(){
+          this.$.list.fire('iron-resize');
+        }.bind(this), 250);
       }
 
     });
