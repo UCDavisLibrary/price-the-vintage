@@ -17,7 +17,7 @@ done
 
 # build non-source map version of app
 echo "Building js lib..."
-browserify -t [ bulkify ] -t [ babelify --presets [ es2015 ] ] $DIR/build/glob.js | uglifyjs > $DIST/js/lib.js
+browserify -t [ bulkify ] -t [ babelify --presets [ es2015 babel-polyfill ] ] $DIR/build/glob.js | uglifyjs > $DIST/js/lib.js
 
 # HACKNESS for leaflet images
 mkdir -p $DIST/bower_components/leaflet/dist/images
@@ -32,7 +32,7 @@ vulcanize --inline-scripts --inline-css $APP/require.html > $DIST/require.html
 
 # This is failing right now...
 # echo "Splitting polymer html and js..."
-# crisper --source $DIST/require.html --html $DIST/tmp.html --js $DIST/require.js
+# crisper --source $DIST/require.html --html $DIST/require.html --js $DIST/require.js
 
 # # echo "Minifiying html..."
 # html-minifier --remove-comments $DIST/tmp.html > $DIST/require.html

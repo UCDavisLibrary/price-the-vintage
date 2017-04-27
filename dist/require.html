@@ -28385,12 +28385,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       states.push('state');
     }
 
-    states.forEach((type) => {
+    for( var j = 0; j < states.length; j++ ) {
+      var type = states[j];
       var eles = this.querySelectorAll('['+type+']');
       for( var i = 0; i < eles.length; i++ ) {
         eles[i].style.display = 'none';
       }
-    });
+    }
   },
 
   toggleState : function(state, type) {
@@ -32292,16 +32293,18 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     });
   </script>
 </dom-module>
-<script>var EventBusBehavior = (function(){
+<script>'use strict';
+
+var EventBusBehavior = function () {
   function init() {
-    if( this._eb_handlersSet ) return;
+    if (this._eb_handlersSet) return;
 
     this._eb_handlersSet = true;
 
-    if( !this.getEventBus() || !this.ebBind ) return;
-    for( var key in this.ebBind ) {
-      if( !this[this.ebBind[key]] ) {
-        console.warn(`${this.nodeName} could not bind event ${key} to ${this.ebBind[key]}`);
+    if (!this.getEventBus() || !this.ebBind) return;
+    for (var key in this.ebBind) {
+      if (!this[this.ebBind[key]]) {
+        console.warn(this.nodeName + ' could not bind event ' + key + ' to ' + this.ebBind[key]);
         continue;
       }
 
@@ -32317,70 +32320,71 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
   function triggerEbChainEvent(index, events, results, eventBus, done) {
     var e = events[index];
 
-    if( typeof e === 'string' ) {
-      e = {event: e};
+    if (typeof e === 'string') {
+      e = { event: e };
     }
 
-    if( !e.payload ) e.payload = {};
+    if (!e.payload) e.payload = {};
 
-    if( e.stream ) {
-      for( var key in e.stream ) {
+    if (e.stream) {
+      for (var key in e.stream) {
         e.payload[key] = e.stream[key](results);
       }
     }
 
-    e.payload.handler = (result) => {
+    e.payload.handler = function (result) {
       results.push(result);
       index++;
 
-      if( index === events.length ) {
-        if( done ) done(results);
+      if (index === events.length) {
+        if (done) done(results);
       } else {
         triggerEbChainEvent(index, events, results, eventBus, done);
       }
-    }
+    };
 
     eventBus.emit(e.event, e.payload);
   }
 
   return {
     // have we initialized the handlers?
-    _eb_handlersSet : false,
+    _eb_handlersSet: false,
     // do we want to detach listeners when element is detached
     // (prevent memory leaks)
-    _eb_unregisterOnDetach : true,
+    _eb_unregisterOnDetach: true,
 
-    ready : init,
-    
-    attached : init,
-    
-    detached : function() {
-      if( !this._eb_unregisterOnDetach ) return;
+    ready: init,
+
+    attached: init,
+
+    detached: function detached() {
+      if (!this._eb_unregisterOnDetach) return;
 
       this._eb_handlersSet = false;
-      if( !this.getEventBus() || !this.ebBind ) return;
-      
-      for( var key in this.ebBind ) {
-        if( !this[this.ebBind[key]] ) continue;
+      if (!this.getEventBus() || !this.ebBind) return;
+
+      for (var key in this.ebBind) {
+        if (!this[this.ebBind[key]]) continue;
         this.getEventBus().removeListener(key, this[this.ebBind[key]]);
       }
     },
 
-    getEventBus : function() {
-      if( this.EVENT_BUS && window[this.EVENT_BUS] ) {
+    getEventBus: function getEventBus() {
+      if (this.EVENT_BUS && window[this.EVENT_BUS]) {
         return window[this.EVENT_BUS];
       }
       return window.EventBus;
     },
 
-    ebEmit : function(event, payload) {
+    ebEmit: function ebEmit(event, payload) {
       this.getEventBus().emit(event, payload);
     },
 
-    ebChain : ebChain
-  }
+    ebChain: ebChain
+  };
+}();
 
-})();</script><script>var EventLoopBehavior = (function() {
+</script><script>var EventLoopBehavior = (function() {
 
   function init() {
     if( !this.eventLoops ) return;
