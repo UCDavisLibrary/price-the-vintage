@@ -1,7 +1,7 @@
 var admin = require('firebase-admin');
 var firebaseWrapper = require('app/firebase');
 var redux = require('app/redux/store');
-var config = require('app/config').firebase;
+var config = require('app/config').firebase.prod;
 var serviceAccount = require('app/config/price-the-vintage-firebase-adminsdk');
 
 /**

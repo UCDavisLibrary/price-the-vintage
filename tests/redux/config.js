@@ -7,10 +7,10 @@ describe('Redux: config', function() {
 
     var host = 'https://foo.com';
 
-    it('should set appState', () => {
+    it('should set host', () => {
       store.dispatch(
         actions.setConfigHost(host)
       );
-      assert.equal(store.getState().config.host, host);
+      assert.equal(store.getState().config.apiHost, host);
     });
 });
