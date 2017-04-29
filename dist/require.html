@@ -32788,7 +32788,8 @@ var EventBusBehavior = function () {
 
       .grid-thumbnail {
         position: relative;
-        width: 159px;
+        width: 176px;
+        height: 208px;
         padding: 8px;
       }
 
@@ -32804,11 +32805,11 @@ var EventBusBehavior = function () {
 
         display: block;
         background-color: #ddd;
-        background-position: center center;
+        /*background-position: center center;
         background-repeat: no-repeat;
-        background-size: 143px auto;
-        width: 143px;
-        height: 156px;
+        background-size: 143px auto;*/
+        width: 160px;
+        height: 192px;
       }
 
       .grid-item .detail {
@@ -33106,6 +33107,8 @@ var EventBusBehavior = function () {
       :host {
         cursor: pointer;
         display: block;
+        width: 160px;
+        height: 192px;
       }
 
       paper-material {
@@ -33137,9 +33140,10 @@ var EventBusBehavior = function () {
       }
     </style>
 
-    <paper-material>
+    <paper-material style="height:100%">
       <div hidden$="[[loading]]">
-        <div class="grid-card-img" id="img" alt="Catalog Thumbnail Image">
+        <img id="image" on-load="_onImgLoad" class="grid-card-img" src="[[imgSrc]]" srcset="[[imgSrcSet]]" alt="Catalog Thumbnail Image">
+        <!--<div class="grid-card-img" id="img" alt="Catalog Thumbnail Image">-->
           <div class="align-bottom">
           
               <div class="layout">
@@ -33156,7 +33160,7 @@ var EventBusBehavior = function () {
               </div>
           
           </div>
-        </div>
+        <!--</div>-->
       </div>
       <div id="loading" hidden$="[[!loading]]">
         <paper-spinner active=""></paper-spinner>
@@ -33277,8 +33281,12 @@ var EventBusBehavior = function () {
         },
         imgUrl : {
           type : String,
-          computed : '_createImgUrl(apiHost, catalog)',
-          observer : '_setImgUrl'
+          computed : '_createImgUrl(catalog)'
+          // observer : '_setImgUrl'
+        },
+        imgSrcSet : {
+          type : String,
+          computed : '_createSrcSet(catalog)'
         },
         userCount : {
           type : Number,
@@ -33310,16 +33318,28 @@ var EventBusBehavior = function () {
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
-      _createImgUrl : function(apiHost, catalog) {
-        return apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
+      firebaseStorage : 'https://firebasestorage.googleapis.com/v0/b/price-the-vintage.appspot.com/o/cover-pngs%2F',
+
+      _createImgUrl : function(catalog) {
+        this.loading = false;
+        return this.firebaseStorage+catalog.media_id+'-cover.png?alt=media';
+        // return apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
+      },
+
+      _createSrcSet : function(catalog) {
+        return this.firebaseStorage+catalog.media_id+'-cover-2x.png?alt=media 2x';
       },
 
       _setImgUrl : function() {
         this.$.img.style.backgroundImage = 'url('+this.imgUrl+')';
       },
 
+      _onImgLoad : function() {
+        this.$.image.style.display = 'block';
+      },
+
       _onUpdate : function() {
-        
+        this.$.image.style.display = 'none';
 
         this.getEventLoop().userActivity.req();
         if( !this.catalog ) return;
@@ -33536,7 +33556,7 @@ var EventBusBehavior = function () {
       <div loading-state="loaded">
 
           <div style="text-align:center; overflow: auto" id="introText">
-            <div style="max-width: 700px; text-align: left; margin: auto;">
+            <div style="max-width: 800px; text-align: left; margin: auto;">
               <h2 style="margin: 0px; padding: 4px">Browse the Collection</h2>
               <div style="padding: 4px">Browse through our collection of Shrry-Lehmann catalogs.
                 As you do, you might notice a lot of wine prices.  We need
@@ -33546,7 +33566,7 @@ var EventBusBehavior = function () {
           </div>
 
           <div style="text-align:center; overflow: auto" id="scrollable-element">
-            <div style="max-width: 700px; text-align: left; margin: auto; height: 100%">
+            <div style="max-width: 800px; text-align: left; margin: auto; height: 100%">
               <iron-list id="list" items="[[results]]" as="catalog" grid="" scroll-target="scrollable-element" style="height: 100%">
                 <template>
                   <app-catalog-thumbnail class="grid-thumbnail" active="[[active]]" catalog="[[catalog]]" api-host="[[apiHost]]">

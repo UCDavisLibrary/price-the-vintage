@@ -5,6 +5,8 @@
       :host {
         cursor: pointer;
         display: block;
+        width: 160px;
+        height: 192px;
       }
 
       paper-material {
@@ -36,9 +38,10 @@
       }
     </style>
 
-    <paper-material>
+    <paper-material style="height:100%">
       <div hidden$="[[loading]]">
-        <div class="grid-card-img" id="img" alt="Catalog Thumbnail Image">
+        <img id="image" on-load="_onImgLoad" class="grid-card-img" src="[[imgSrc]]" srcset="[[imgSrcSet]]" alt="Catalog Thumbnail Image" />
+        <!--<div class="grid-card-img" id="img" alt="Catalog Thumbnail Image">-->
           <div class="align-bottom">
           
               <div class="layout">
@@ -55,7 +58,7 @@
               </div>
           
           </div>
-        </div>
+        <!--</div>-->
       </div>
       <div id="loading" hidden$="[[!loading]]">
         <paper-spinner active></paper-spinner>
@@ -176,8 +179,12 @@
         },
         imgUrl : {
           type : String,
-          computed : '_createImgUrl(apiHost, catalog)',
-          observer : '_setImgUrl'
+          computed : '_createImgUrl(catalog)'
+          // observer : '_setImgUrl'
+        },
+        imgSrcSet : {
+          type : String,
+          computed : '_createSrcSet(catalog)'
         },
         userCount : {
           type : Number,
@@ -209,16 +216,28 @@
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
-      _createImgUrl : function(apiHost, catalog) {
-        return apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
+      firebaseStorage : 'https://firebasestorage.googleapis.com/v0/b/price-the-vintage.appspot.com/o/cover-pngs%2F',
+
+      _createImgUrl : function(catalog) {
+        this.loading = false;
+        return this.firebaseStorage+catalog.media_id+'-cover.png?alt=media';
+        // return apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
+      },
+
+      _createSrcSet : function(catalog) {
+        return this.firebaseStorage+catalog.media_id+'-cover-2x.png?alt=media 2x';
       },
 
       _setImgUrl : function() {
         this.$.img.style.backgroundImage = 'url('+this.imgUrl+')';
       },
 
+      _onImgLoad : function() {
+        this.$.image.style.display = 'block';
+      },
+
       _onUpdate : function() {
-        
+        this.$.image.style.display = 'none';
 
         this.getEventLoop().userActivity.req();
         if( !this.catalog ) return;
