@@ -28,6 +28,10 @@ var MarkBehavior = {
     ).addTo(this.map);
     
     this.map.fitBounds(this.bounds);
+    setTimeout(function(){
+      this.map.zoomIn();
+    }.bind(this), 200);
+    
 
     this.marksLayer = new L.FeatureGroup();
     

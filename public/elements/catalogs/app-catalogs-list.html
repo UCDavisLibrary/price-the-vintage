@@ -136,6 +136,7 @@
           return e.state === 'loaded'
         },
         handler : function(e) {
+          console.log('Rendering list results!', e.results.results);
           this.results = e.results.results;
           this._updateListSize();
         },
@@ -162,7 +163,7 @@
         results : {
           type : Array,
           value : function() {
-            return []
+            return null
           }
         },
         /**
@@ -202,7 +203,9 @@
         if( !this.active ) return;
 
         // on active, start a catalog search for current search state
+        if( this.results ) return;
         this.eventLoop.searchCatalogs.req();
+
         // update our list size in case screen has changed while hidden.
         this._updateListSize();
       },
@@ -236,7 +239,12 @@
         var h = this.offsetHeight;
         var ih = this.$.introText.offsetHeight;
 
-        this.$['scrollable-element'].style.height = (h-ih)+'px';
+        var scrollHeight = h-ih;
+        if( scrollHeight === this.currentScrollHeight ) return;
+        console.log('LIST RESIZE!', scrollHeight, this.currentScrollHeight);
+
+        this.currentScrollHeight = scrollHeight;
+        this.$['scrollable-element'].style.height = scrollHeight+'px';
         this.$.list.fire('iron-resize');
         setTimeout(function(){
           this.$.list.fire('iron-resize');

@@ -33112,7 +33112,7 @@ var EventBusBehavior = function () {
       }
 
       paper-material {
-        background :white; 
+        background :#ddd; 
         position : relative;
       }
 
@@ -33142,7 +33142,7 @@ var EventBusBehavior = function () {
 
     <paper-material style="height:100%">
       <div hidden$="[[loading]]">
-        <img id="image" on-load="_onImgLoad" class="grid-card-img" src="[[imgSrc]]" srcset="[[imgSrcSet]]" alt="Catalog Thumbnail Image">
+        <img id="image" style="display:none" class="grid-card-img" src$="[[imgSrc]]" srcset$="[[imgSrcSet]]" alt$="[[catalog.title]]">
         <!--<div class="grid-card-img" id="img" alt="Catalog Thumbnail Image">-->
           <div class="align-bottom">
           
@@ -33321,26 +33321,23 @@ var EventBusBehavior = function () {
       firebaseStorage : 'https://firebasestorage.googleapis.com/v0/b/price-the-vintage.appspot.com/o/cover-pngs%2F',
 
       _createImgUrl : function(catalog) {
-        this.loading = false;
-        return this.firebaseStorage+catalog.media_id+'-cover.png?alt=media';
-        // return apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
+        this.$.image.style.display = 'none';
+        var url = this.firebaseStorage+catalog.media_id+'-cover.png?alt=media';
+        var img = new Image();
+
+        img.onload = function() {
+          this.$.image.style.display = 'block';
+        }.bind(this);
+        img.src = url;
+        
+        return url;
       },
 
       _createSrcSet : function(catalog) {
         return this.firebaseStorage+catalog.media_id+'-cover-2x.png?alt=media 2x';
       },
 
-      _setImgUrl : function() {
-        this.$.img.style.backgroundImage = 'url('+this.imgUrl+')';
-      },
-
-      _onImgLoad : function() {
-        this.$.image.style.display = 'block';
-      },
-
       _onUpdate : function() {
-        this.$.image.style.display = 'none';
-
         this.getEventLoop().userActivity.req();
         if( !this.catalog ) return;
         this.percentComplete = this.catalog.pages_finished+' / '+this.catalog.pages;
@@ -33604,6 +33601,7 @@ var EventBusBehavior = function () {
           return e.state === 'loaded'
         },
         handler : function(e) {
+          console.log('Rendering list results!', e.results.results);
           this.results = e.results.results;
           this._updateListSize();
         },
@@ -33630,7 +33628,7 @@ var EventBusBehavior = function () {
         results : {
           type : Array,
           value : function() {
-            return []
+            return null
           }
         },
         /**
@@ -33670,7 +33668,9 @@ var EventBusBehavior = function () {
         if( !this.active ) return;
 
         // on active, start a catalog search for current search state
+        if( this.results ) return;
         this.eventLoop.searchCatalogs.req();
+
         // update our list size in case screen has changed while hidden.
         this._updateListSize();
       },
@@ -33704,7 +33704,12 @@ var EventBusBehavior = function () {
         var h = this.offsetHeight;
         var ih = this.$.introText.offsetHeight;
 
-        this.$['scrollable-element'].style.height = (h-ih)+'px';
+        var scrollHeight = h-ih;
+        if( scrollHeight === this.currentScrollHeight ) return;
+        console.log('LIST RESIZE!', scrollHeight, this.currentScrollHeight);
+
+        this.currentScrollHeight = scrollHeight;
+        this.$['scrollable-element'].style.height = scrollHeight+'px';
         this.$.list.fire('iron-resize');
         setTimeout(function(){
           this.$.list.fire('iron-resize');
@@ -34124,6 +34129,10 @@ var EventBusBehavior = function () {
     ).addTo(this.map);
     
     this.map.fitBounds(this.bounds);
+    setTimeout(function(){
+      this.map.zoomIn();
+    }.bind(this), 200);
+    
 
     this.marksLayer = new L.FeatureGroup();
     
