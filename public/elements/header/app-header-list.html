@@ -191,10 +191,10 @@
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
       attached : function() {
-        if( !window.localStorage.getItem('first-viewing') ) {
-          this.$.popup.open();
-          window.localStorage.setItem('first-viewing', 'true');
-        } 
+        // if( !window.localStorage.getItem('first-viewing') ) {
+        //   this.$.popup.open();
+        //   window.localStorage.setItem('first-viewing', 'true');
+        // } 
       },
 
       _toggleSearch : function(){

@@ -32506,7 +32506,67 @@ var EventBusBehavior = function () {
     }
   }
 
-})();</script><dom-module id="paper-dialog" assetpath="elements/">
+})();</script><dom-module id="app-home" assetpath="elements/">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        overflow: auto;
+        padding: 10px;
+      }
+
+      [browse] {
+        font-size: 24px;
+        color: white;
+        background-color: var(--default-primary-color);
+      }
+      a {
+        text-decoration: none;
+      }
+    </style>
+
+    <!--<div class="layout center">
+      <img src="/images/wine-icon-48.png" alt="Price the vintage icon" style="padding-right: 10px"  /> 
+      <div class="flex">
+      <h1>Price the Vintage </h1>
+      </div>
+    </div>-->
+
+    <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
+    
+    <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
+
+    <div style="text-align:center; padding: 20px;">
+      <a href="#"><paper-button browse="">Browse Catalogs</paper-button></a>
+    </div>
+<!--
+    <h2>Examples</h2>
+
+    <div>
+      <app-catalog-thumbnail catalog-id="a60bb267-fe06-4fae-81db-4da9518b95ab"><app-catalog-thumbnail>
+    </div>-->
+
+
+    <div style="text-align: center; padding: 25px 0;">
+      <h3>Powered By</h3>
+      <img src="/images/library.png" style="width:100%; max-width: 350px;" alt="UC Davis Library logo">
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-home'
+    });
+  </script>
+</dom-module>
+<dom-module id="paper-dialog" assetpath="elements/">
   <template>
     <style>
       :host {
@@ -32887,6 +32947,7 @@ var EventBusBehavior = function () {
         <app-pages-list section="catalog"></app-pages-list>
         <app-page-markup section="page"></app-page-markup>
         <app-user-dashboard section="user"></app-user-dashboard>
+        <app-home section="home"></app-home>
       </iron-pages>
 
     </paper-header-panel>
@@ -33009,6 +33070,11 @@ var EventBusBehavior = function () {
           markId : ''
         }
 
+        if( !window.localStorage.getItem('first-viewing') ) {
+          this.route.section = 'home';
+          window.localStorage.setItem('first-viewing', 'true');
+        }
+
         // split up the hash state
         var parts = window
           .location
@@ -33067,6 +33133,9 @@ var EventBusBehavior = function () {
               return;
             } else if( value === 'user' ) {
               this.route.section = 'user';
+              return;
+            } else if( value === 'home' ) {
+              this.route.section = 'home';
               return;
             }
 
@@ -36713,10 +36782,10 @@ var EventBusBehavior = function () {
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
       attached : function() {
-        if( !window.localStorage.getItem('first-viewing') ) {
-          this.$.popup.open();
-          window.localStorage.setItem('first-viewing', 'true');
-        } 
+        // if( !window.localStorage.getItem('first-viewing') ) {
+        //   this.$.popup.open();
+        //   window.localStorage.setItem('first-viewing', 'true');
+        // } 
       },
 
       _toggleSearch : function(){
@@ -37356,6 +37425,8 @@ var EventBusBehavior = function () {
       _onAppStateUpdate : function(e) {
         if( e.editingMark || e.viewingMark ) {
           this.section = 'editing';
+        } else if ( e.section === 'home' ) {
+          this.section = 'list';
         } else {
           this.section = e.section;
         }
