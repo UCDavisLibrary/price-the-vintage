@@ -58,7 +58,7 @@
     <div state="pending">...</div>
     
     <div state="loggedIn">
-      <paper-icon-button on-click="_login" icon="power-settings-new" hidden$="[[!auth.user.isAnonymous]]" ></paper-icon-button>
+      <paper-icon-button on-click="_login" icon="social:person-outline" hidden$="[[!auth.user.isAnonymous]]" ></paper-icon-button>
 
       <paper-menu-button id="menuBtn" hidden$="[[auth.user.isAnonymous]]" horizontal-align="right" vertical-offset="50">
         <div class="dropdown-trigger">
@@ -85,7 +85,7 @@
     </div>
 
     <div state="notLoggedIn">
-      <paper-icon-button on-click="_login" icon="power-settings-new"></paper-icon-button>
+      <paper-icon-button on-click="_login" icon="social:person-outline"></paper-icon-button>
     </div>
 
 

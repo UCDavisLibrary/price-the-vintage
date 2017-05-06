@@ -1,5 +1,6 @@
 <link rel="import" href="app-catalog-thumbnail.html">
 <link rel="import" href="app-catalogs-search-results.html">
+<link rel="import" href="app-catalogs-pagination.html">
 
 <!--
   This is the main catalog list view.  Contains a list of catalog cards as well as 
@@ -56,14 +57,6 @@
           padding: 5px;
         }
 
-        [loading-state="loaded"] {
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom:0;
-        }
-
         [loading-state="loading"] {
           text-align: center;
           margin-top: 100px;
@@ -79,44 +72,53 @@
       </style>
 
       <!-- This is the popup section of the catalog search results -->
-      <app-catalogs-search-results></app-catalogs-search-results>
+      <!--<app-catalogs-search-results></app-catalogs-search-results>-->
 
-      <div loading-state="loaded">
 
+      <div class="layout" style="justify-content: center">
+
+        <div>
           <div style="text-align:center; overflow: auto" id="introText">
             <div style="max-width: 800px; text-align: left; margin: auto;">
-              <h2 style="margin: 0px; padding: 4px">Browse the Collection</h2>
-              <div style="padding: 4px">Browse through our collection of Shrry-Lehmann catalogs.
-                As you do, you might notice a lot of wine prices.  We need
-                your help in making and transcibing the prices thaat you see
-                on the pages.</div>
+              <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
+              
+              <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
+
             </div>
           </div>
 
-          <div style="text-align:center; overflow: auto" id="scrollable-element">
-            <div style="max-width: 800px; text-align: left; margin: auto; height: 100%">
-              <iron-list id="list" items="[[results]]" as="catalog" grid scroll-target="scrollable-element" style="height: 100%">
-                <template>
+          <app-catalogs-pagination results="[[results]]" show-total></app-catalogs-pagination>
+          <div style=" min-height: 685px;">
+            <div loading-state="loaded" style="max-width: 800px; text-align: center" >
+                
+                <template is="dom-repeat" items="[[results.results]]" as="catalog">
                   <app-catalog-thumbnail 
-                    class="grid-thumbnail" 
-                    active="[[active]]"
-                    catalog="[[catalog]]"
-                    api-host="[[apiHost]]">
-                  </app-catalog-thumbnail>
-                  
+                      style="display:inline-block"
+                      class="grid-thumbnail" 
+                      active="[[active]]"
+                      catalog="[[catalog]]"
+                      api-host="[[apiHost]]">
+                    </app-catalog-thumbnail>
                 </template>
-              </iron-list>
+                
+            </div>
+
+            <div loading-state="loading">
+              <paper-spinner active></paper-spinner>
+            </div>
+
+            <div loading-state="error">
+              Failed to load wine catalogs :(
             </div>
           </div>
+          <app-catalogs-pagination results="[[results]]"></app-catalogs-pagination>
+        </div>
 
       </div>
 
-      <div loading-state="loading">
-        <paper-spinner active></paper-spinner>
-      </div>
-
-      <div loading-state="error">
-        Failed to load wine catalogs :(
+      <div style="text-align: center; padding: 25px 0;">
+        <h3>Powered By</h3>
+        <img src="/images/library.png" style="width:100%; max-width: 350px;" alt="UC Davis Library logo" />
       </div>
 
   </template>
@@ -129,16 +131,23 @@
      * time this element asks to start a search is when element is active.
      **/
     var SearchCatalogsEventLoop = {
-      req : {event : 'search-catalogs'},
+      req : {
+        event : 'search-catalogs',
+        payload : function() {
+          return {
+            offset : 0,
+            limit : 12
+          }
+        }
+      },
       resp : {
         event : 'search-catalogs-update',
         handle : function(e) {
           return e.state === 'loaded'
         },
         handler : function(e) {
-          console.log('Rendering list results!', e.results.results);
-          this.results = e.results.results;
-          this._updateListSize();
+          this.results = e.results;
+          this.toggleState('loaded', 'loading-state');
         },
         debounce : 500
       }
@@ -161,7 +170,7 @@
          * Current list of catalog results
          **/
         results : {
-          type : Array,
+          type : Object,
           value : function() {
             return null
           }
@@ -192,11 +201,6 @@
         this.toggleState('loading', 'loading-state');
         // grab the api host from config file.
         this._getApiHost();
-
-        window.addEventListener('resize', function(){
-          if( !this.active ) return;
-          this._updateListSize();
-        }.bind(this));
       },
 
       _onActive : function() {
@@ -205,9 +209,6 @@
         // on active, start a catalog search for current search state
         if( this.results ) return;
         this.eventLoop.searchCatalogs.req();
-
-        // update our list size in case screen has changed while hidden.
-        this._updateListSize();
       },
 
       /**
@@ -216,8 +217,6 @@
       _onAppStateUpdate : function(e) {
         if( e.searching ) {
           this.toggleState('loading', 'loading-state');
-        } else {
-          this.toggleState('loaded', 'loading-state');
         }
       },
 
@@ -230,25 +229,6 @@
             this.apiHost = host;
           }.bind(this)
         });
-      },
-
-      /**
-       * Resize the card grid
-       **/
-      _updateListSize : function() {
-        var h = this.offsetHeight;
-        var ih = this.$.introText.offsetHeight;
-
-        var scrollHeight = h-ih;
-        if( scrollHeight === this.currentScrollHeight ) return;
-        console.log('LIST RESIZE!', scrollHeight, this.currentScrollHeight);
-
-        this.currentScrollHeight = scrollHeight;
-        this.$['scrollable-element'].style.height = scrollHeight+'px';
-        this.$.list.fire('iron-resize');
-        setTimeout(function(){
-          this.$.list.fire('iron-resize');
-        }.bind(this), 250);
       }
 
     });

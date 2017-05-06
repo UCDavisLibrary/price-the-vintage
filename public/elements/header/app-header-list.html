@@ -86,32 +86,7 @@
       <div hidden$="[[searchBoxActive]]">
         <paper-icon-button state="list" icon="search" on-click="_toggleSearch"></paper-icon-button>
       </div>
-      <div>
-        <paper-icon-button icon="info" on-click="_showHelp" style="margin-right: 5px"></paper-icon-button>
-      </div>
     </div>
-
-    <paper-dialog modal id="popup">
-      <div class="layout center">
-        <img src="/images/wine-icon-48.png" alt="Price the vintage icon" style="padding-right: 10px"  /> 
-        <div class="flex">
-        <h1>Price the Vintage <paper-icon-button style="float:right;margin-top: -15px;" on-click="_hideHelp" icon="close"></paper-icon-button></h1>
-        </div>
-      </div>
-
-      <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
-      
-      <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
-
-      <div style="text-align: center; padding: 25px 0;">
-        <h3>Powered By</h3>
-        <img src="/images/library.png" style="width:100%; max-width: 350px;" alt="UC Davis Library logo" />
-      </div>
-
-      <div class="buttons">
-        <paper-button on-click="_hideHelp">OK</paper-button>
-      </div>
-    </paper-dialog>
 
   </template>
   <script>
@@ -213,14 +188,6 @@
 
       _search : function() {
         this.eventLoop.searchCatalogs.req();
-      },
-
-      _showHelp : function() {
-        this.$.popup.open();
-      },
-
-      _hideHelp : function() {
-        this.$.popup.close();
       }
     });
 })();

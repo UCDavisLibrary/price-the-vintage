@@ -1,0 +1,119 @@
+
+<dom-module id="app-catalogs-pagination">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <div class="layout center">
+      <paper-icon-button 
+        icon="arrow-back" 
+        on-click="back"
+        disabled$="[[backDisabled]]">
+      </paper-icon-button>
+
+      <div class="flex" style="text-align: center">
+        <span id="text" hidden$="[[!showTotal]]" >Showing [[displayStart]] to [[displayStop]] of [[results.total]]</span>
+      </div>
+      
+      <paper-icon-button 
+        icon="arrow-forward" 
+        on-click="forward"
+        disabled$="[[forwardDisabled]]">
+      </paper-icon-button>
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-catalogs-pagination',
+
+      properties : {
+        results : {
+          type : Object,
+          value : null,
+          observer : '_onUpdate'
+        },
+        showTotal : {
+          type : Boolean,
+          value : false
+        },
+        itemsPerPage : {
+          type : Number,
+          value : 12
+        },
+        searchText : {
+          type : String,
+          value : ''
+        },
+        backDisabled : {
+          type : Boolean,
+          value : false
+        },
+        forwardDisabled : {
+          type : Boolean,
+          value : false
+        }
+      },
+
+      behaviors : [EventBusBehavior],
+
+      ebBind : {
+        'app-state-update' : '_onAppStateUpdate'
+      },
+
+      _onUpdate : function() {
+        if( !this.results ) {
+          this.$.text.style.display = 'none';
+          this.backDisabled = true;
+          this.forwardDisabled = true;
+          return;
+        }
+        this.$.text.style.display = 'block';
+
+        if( this.results.stop === 0 ) {
+          this.displayStart = 0;
+          this.displayStop = 0;
+        } else {
+          this.displayStart = (this.results.start || 0)+1;
+          this.displayStop = this.results.stop+1;
+        }
+
+        this.backDisabled = (this.results.start || 0 === 0) ? true : false;
+        this.forwardDisabled = (this.results.total <= this.results.stop) ? true : false;
+      },
+
+      forward : function() {
+        this.search(this.results.start+this.itemsPerPage);
+      },
+
+      back : function() {
+        this.search(this.results.start-this.itemsPerPage);
+      },
+
+      _onAppStateUpdate : function(e) {
+        this.searchText = e.searchText;
+      },
+
+      search : function(offset) {
+        this.ebEmit('update-app-state', {
+          state: {
+            searching : true
+          }
+        });
+
+        this.ebEmit('search-catalogs', {
+          query : {
+            q : this.searchText,
+            exact : true,
+            limit : this.itemsPerPage,
+            offset : offset
+          }
+        });
+      }
+    });
+  </script>
+</dom-module>
