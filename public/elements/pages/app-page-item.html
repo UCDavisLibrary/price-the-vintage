@@ -213,6 +213,18 @@
         }
       },
 
+      onTmpSelectPageUpdate : function(selectedPageId) {
+        if( this.active && this.page && this.$.root ) {
+          if( this.page.page_id+'' == selectedPageId ) {
+            this.$.root.classList.add('selected');
+          } else {
+            this.$.root.classList.remove('selected');
+          }
+        } else {
+          this.$.root.classList.remove('selected');
+        }
+      },
+
       _onInterestedPartyRequest : function() {
         if( this.active && this.catalogId && this.page && this.page.page_id  ) {
           this.ebEmit(

@@ -295,15 +295,44 @@
       _previous : function(e) {
         if( e.currentTarget.classList.contains('disabled') ) return;
         var page = this._getPageNumber()-1;
-        page = this._getPageIdFromPageNumber(page);
-        window.location.hash = this.catalogId+'/'+page;
+        
+        if( this.searchResults ) {
+          while( !this._getResultsPageById(this.searchResults, this._getPageIdFromPageNumber(page)) ) {
+            page--;
+            if( page === -1 ) {
+              return;
+            }
+          }
+        }
+
+        this._onNavBtnClick(page);
       },
 
       _next : function(e) {
         if( e.currentTarget.classList.contains('disabled') ) return;
-        var page = this._getPageNumber()+1;
-        page = this._getPageIdFromPageNumber(page);
-        window.location.hash = this.catalogId+'/'+page;
+        var page = this._getPageNumber()+1
+
+        if( this.searchResults ) {
+          while( !this._getResultsPageById(this.searchResults, this._getPageIdFromPageNumber(page)) ) {
+            page++;
+            if( page === this.pages.length ) {
+              return;
+            }
+          }
+        }
+
+        this._onNavBtnClick(page);
+      },
+
+      _onNavBtnClick : function(page) {
+        this.selected = this._getPageIdFromPageNumber(page);
+        this._updateScroll();
+        this._updateButtons();
+
+        var pages = this.querySelectorAll('app-page-item');
+        for( var i = 0; i < pages.length; i++ ) {
+          pages[i].onTmpSelectPageUpdate(this.selected);
+        }
       },
 
       _select : function(e) {
@@ -311,6 +340,7 @@
       },
 
       _clearSearch : function() {
+        this.searchResults = null;
         this.pages.forEach(function(page, index){
           this.set('pages.'+index+'.noMatch', false);
         }.bind(this));
@@ -319,10 +349,21 @@
       _searchUpdate : function(e) {
         if( e.state !== 'loaded' ) return;
 
+        this.searchResults = e.results.results;
+
         this.pages.forEach(function(page, index) {
           var matched = this._getResultsPageById(e.results.results, page.page_id);
           this.set('pages.'+index+'.noMatch', !matched ? true : false);
         }.bind(this));
+
+        var page = 0;
+        while( !this._getResultsPageById(this.searchResults, this._getPageIdFromPageNumber(page)) ) {
+          page++;
+          if( page === this.pages.length ) {
+            return;
+          }
+        }
+        window.location.hash = this.catalogId + '/' + this._getPageIdFromPageNumber(page);
       },
 
       _getResultsPageById : function(results, id) {

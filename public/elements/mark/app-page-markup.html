@@ -47,21 +47,23 @@
           text-align: center;
           left: 0; 
           right: 0;
-          top: 50px;
+          top: 0px;
         }
         #nothingToDo paper-material {
           display: inline-block;
-          padding: 10px;
+          padding: 0 10px;
           max-width: 600px;
           background: white;
+          color: var(--default-primary-color);
           text-align: left;
           margin: auto;
-          z-index: 1000;
+          z-index: 500;
         }
     </style>
 
     <paper-material id="carousel">
       <app-page-carousel-search 
+        active="[[active]]"
         catalog-id="[[catalogId]]" 
         id="carousel-search">
       </app-page-carousel-search>
@@ -82,14 +84,14 @@
     </div>
 
     <div id="nothingToDo">
-      <paper-material >
-        <div class="layout center">
-          <h1 class="flex">There's nothing to do on this page. </h1>
-          <paper-icon-button style="float:right;margin-top: -15px;" on-click="_hidePopup" icon="close"></paper-icon-button>
-        </div>
-
-        <p>The current page doesn't have any pricing information, so it doesn't need any marking</p>
-      </paper-material>
+      <div style="margin: 0 50px">
+        <paper-material>
+          <div class="layout center">
+            <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking</div>
+            <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
+          </div>
+        </paper-material>
+      </div>
     <div>
 
   </template>

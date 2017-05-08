@@ -165,18 +165,14 @@
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
-      attached : function() {
-        // if( !window.localStorage.getItem('first-viewing') ) {
-        //   this.$.popup.open();
-        //   window.localStorage.setItem('first-viewing', 'true');
-        // } 
-      },
-
       _toggleSearch : function(){
         this.searchBoxActive = !this.searchBoxActive;
 
         if( this.searchBoxActive ) {
           this.$.input.focus();
+        } else {
+          this.$.input.value = '';
+          this.eventLoop.searchCatalogs.req();
         }
 
         this.eventLoop.appState.req({

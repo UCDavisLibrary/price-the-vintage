@@ -32539,13 +32539,6 @@ var EventBusBehavior = function () {
       </div>
     </div>-->
 
-    <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
-    
-    <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
-
-    <div style="text-align:center; padding: 20px;">
-      <a href="#"><paper-button browse="">Browse Catalogs</paper-button></a>
-    </div>
 <!--
     <h2>Examples</h2>
 
@@ -32587,9 +32580,12 @@ var EventBusBehavior = function () {
       .modal {
         max-width: 600px;
         margin: 30px auto;
-        background-color: white;
+      }
+      .modal-inner {
         box-shadow: 0 0 10px black;
         padding: 10px;
+        background-color: white;
+        margin: 0 15px;
       }
       @media(min-width: 768px) {
         .modal {
@@ -32602,7 +32598,9 @@ var EventBusBehavior = function () {
     </style>
 
     <div class="modal">
-      <content></content>
+      <div class="modal-inner">
+        <content></content>
+      </div>
     </div>
     
   </template>
@@ -32848,26 +32846,15 @@ var EventBusBehavior = function () {
 
       .grid-thumbnail {
         position: relative;
-        width: 176px;
-        height: 208px;
+        width: 160px;
+        height: 192px;
         padding: 8px;
       }
 
       .grid-card-img {
-        /*display: block;
-        background-color: #ddd;
-        background-size: cover;
-        background-position: center center;
-        background-repeat: no-repeat;
-        
-        width: 118px;
-        height: 148px;*/
-
         display: block;
         background-color: #ddd;
-        /*background-position: center center;
-        background-repeat: no-repeat;
-        background-size: 143px auto;*/
+
         width: 160px;
         height: 192px;
       }
@@ -33175,7 +33162,8 @@ var EventBusBehavior = function () {
     <style>
       :host {
         cursor: pointer;
-        display: block;
+        display: inline-block;
+        vertical-align: top;
         width: 160px;
         height: 192px;
       }
@@ -33543,6 +33531,118 @@ var EventBusBehavior = function () {
 })();
   </script>
 </dom-module>
+<dom-module id="app-catalogs-pagination" assetpath="elements/catalogs/">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <div class="layout center">
+      <paper-icon-button icon="arrow-back" on-click="back" disabled$="[[backDisabled]]">
+      </paper-icon-button>
+
+      <div class="flex" style="text-align: center">
+        <span id="text" hidden$="[[!showTotal]]">Showing [[displayStart]] to [[displayStop]] of [[results.total]]</span>
+      </div>
+      
+      <paper-icon-button icon="arrow-forward" on-click="forward" disabled$="[[forwardDisabled]]">
+      </paper-icon-button>
+    </div>
+    
+  </template>
+  <script>
+    Polymer({
+      is: 'app-catalogs-pagination',
+
+      properties : {
+        results : {
+          type : Object,
+          value : null,
+          observer : '_onUpdate'
+        },
+        showTotal : {
+          type : Boolean,
+          value : false
+        },
+        itemsPerPage : {
+          type : Number,
+          value : 12
+        },
+        searchText : {
+          type : String,
+          value : ''
+        },
+        backDisabled : {
+          type : Boolean,
+          value : false
+        },
+        forwardDisabled : {
+          type : Boolean,
+          value : false
+        }
+      },
+
+      behaviors : [EventBusBehavior],
+
+      ebBind : {
+        'app-state-update' : '_onAppStateUpdate'
+      },
+
+      _onUpdate : function() {
+        if( !this.results ) {
+          this.$.text.style.display = 'none';
+          this.backDisabled = true;
+          this.forwardDisabled = true;
+          return;
+        }
+        this.$.text.style.display = 'block';
+
+        if( this.results.stop === 0 ) {
+          this.displayStart = 0;
+          this.displayStop = 0;
+        } else {
+          this.displayStart = (this.results.start || 0)+1;
+          this.displayStop = this.results.stop+1;
+        }
+
+        this.backDisabled = (this.results.start || 0 === 0) ? true : false;
+        this.forwardDisabled = (this.results.total <= this.results.stop) ? true : false;
+      },
+
+      forward : function() {
+        this.search(this.results.start+this.itemsPerPage);
+      },
+
+      back : function() {
+        this.search(this.results.start-this.itemsPerPage);
+      },
+
+      _onAppStateUpdate : function(e) {
+        this.searchText = e.searchText;
+      },
+
+      search : function(offset) {
+        this.ebEmit('update-app-state', {
+          state: {
+            searching : true
+          }
+        });
+
+        this.ebEmit('search-catalogs', {
+          query : {
+            q : this.searchText,
+            exact : true,
+            limit : this.itemsPerPage,
+            offset : offset
+          }
+        });
+      }
+    });
+  </script>
+</dom-module>
 <dom-module id="app-catalogs-list" assetpath="elements/catalogs/">
   <template>
       <style include="shared-styles"></style>
@@ -33594,14 +33694,6 @@ var EventBusBehavior = function () {
           padding: 5px;
         }
 
-        [loading-state="loaded"] {
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom:0;
-        }
-
         [loading-state="loading"] {
           text-align: center;
           margin-top: 100px;
@@ -33617,40 +33709,48 @@ var EventBusBehavior = function () {
       </style>
 
       <!-- This is the popup section of the catalog search results -->
-      <app-catalogs-search-results></app-catalogs-search-results>
+      <!--<app-catalogs-search-results></app-catalogs-search-results>-->
 
-      <div loading-state="loaded">
 
+      <div class="layout" style="justify-content: center">
+
+        <div>
           <div style="text-align:center; overflow: auto" id="introText">
             <div style="max-width: 800px; text-align: left; margin: auto;">
-              <h2 style="margin: 0px; padding: 4px">Browse the Collection</h2>
-              <div style="padding: 4px">Browse through our collection of Shrry-Lehmann catalogs.
-                As you do, you might notice a lot of wine prices.  We need
-                your help in making and transcibing the prices thaat you see
-                on the pages.</div>
+              <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
+              
+              <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
+
             </div>
           </div>
 
-          <div style="text-align:center; overflow: auto" id="scrollable-element">
-            <div style="max-width: 800px; text-align: left; margin: auto; height: 100%">
-              <iron-list id="list" items="[[results]]" as="catalog" grid="" scroll-target="scrollable-element" style="height: 100%">
-                <template>
-                  <app-catalog-thumbnail class="grid-thumbnail" active="[[active]]" catalog="[[catalog]]" api-host="[[apiHost]]">
-                  </app-catalog-thumbnail>
-                  
+          <app-catalogs-pagination results="[[results]]" show-total=""></app-catalogs-pagination>
+          <div style=" min-height: 685px;">
+            <div loading-state="loaded" style="max-width: 800px; text-align: center">
+                
+                <template is="dom-repeat" items="[[results.results]]" as="catalog">
+                  <app-catalog-thumbnail style="display:inline-block" class="grid-thumbnail" active="[[active]]" catalog="[[catalog]]" api-host="[[apiHost]]">
+                    </app-catalog-thumbnail>
                 </template>
-              </iron-list>
+                
+            </div>
+
+            <div loading-state="loading">
+              <paper-spinner active=""></paper-spinner>
+            </div>
+
+            <div loading-state="error">
+              Failed to load wine catalogs :(
             </div>
           </div>
+          <app-catalogs-pagination results="[[results]]"></app-catalogs-pagination>
+        </div>
 
       </div>
 
-      <div loading-state="loading">
-        <paper-spinner active=""></paper-spinner>
-      </div>
-
-      <div loading-state="error">
-        Failed to load wine catalogs :(
+      <div style="text-align: center; padding: 25px 0;">
+        <h3>Powered By</h3>
+        <img src="/images/library.png" style="width:100%; max-width: 350px;" alt="UC Davis Library logo">
       </div>
 
   </template>
@@ -33663,16 +33763,23 @@ var EventBusBehavior = function () {
      * time this element asks to start a search is when element is active.
      **/
     var SearchCatalogsEventLoop = {
-      req : {event : 'search-catalogs'},
+      req : {
+        event : 'search-catalogs',
+        payload : function() {
+          return {
+            offset : 0,
+            limit : 12
+          }
+        }
+      },
       resp : {
         event : 'search-catalogs-update',
         handle : function(e) {
           return e.state === 'loaded'
         },
         handler : function(e) {
-          console.log('Rendering list results!', e.results.results);
-          this.results = e.results.results;
-          this._updateListSize();
+          this.results = e.results;
+          this.toggleState('loaded', 'loading-state');
         },
         debounce : 500
       }
@@ -33695,7 +33802,7 @@ var EventBusBehavior = function () {
          * Current list of catalog results
          **/
         results : {
-          type : Array,
+          type : Object,
           value : function() {
             return null
           }
@@ -33726,11 +33833,6 @@ var EventBusBehavior = function () {
         this.toggleState('loading', 'loading-state');
         // grab the api host from config file.
         this._getApiHost();
-
-        window.addEventListener('resize', function(){
-          if( !this.active ) return;
-          this._updateListSize();
-        }.bind(this));
       },
 
       _onActive : function() {
@@ -33739,9 +33841,6 @@ var EventBusBehavior = function () {
         // on active, start a catalog search for current search state
         if( this.results ) return;
         this.eventLoop.searchCatalogs.req();
-
-        // update our list size in case screen has changed while hidden.
-        this._updateListSize();
       },
 
       /**
@@ -33750,8 +33849,6 @@ var EventBusBehavior = function () {
       _onAppStateUpdate : function(e) {
         if( e.searching ) {
           this.toggleState('loading', 'loading-state');
-        } else {
-          this.toggleState('loaded', 'loading-state');
         }
       },
 
@@ -33764,25 +33861,6 @@ var EventBusBehavior = function () {
             this.apiHost = host;
           }.bind(this)
         });
-      },
-
-      /**
-       * Resize the card grid
-       **/
-      _updateListSize : function() {
-        var h = this.offsetHeight;
-        var ih = this.$.introText.offsetHeight;
-
-        var scrollHeight = h-ih;
-        if( scrollHeight === this.currentScrollHeight ) return;
-        console.log('LIST RESIZE!', scrollHeight, this.currentScrollHeight);
-
-        this.currentScrollHeight = scrollHeight;
-        this.$['scrollable-element'].style.height = scrollHeight+'px';
-        this.$.list.fire('iron-resize');
-        setTimeout(function(){
-          this.$.list.fire('iron-resize');
-        }.bind(this), 250);
       }
 
     });
@@ -33988,6 +34066,18 @@ var EventBusBehavior = function () {
 
 
       _onSelectedCatalogPageUpdate : function(selectedPageId) {
+        if( this.active && this.page && this.$.root ) {
+          if( this.page.page_id+'' == selectedPageId ) {
+            this.$.root.classList.add('selected');
+          } else {
+            this.$.root.classList.remove('selected');
+          }
+        } else {
+          this.$.root.classList.remove('selected');
+        }
+      },
+
+      onTmpSelectPageUpdate : function(selectedPageId) {
         if( this.active && this.page && this.$.root ) {
           if( this.page.page_id+'' == selectedPageId ) {
             this.$.root.classList.add('selected');
@@ -34280,8 +34370,7 @@ var EventBusBehavior = function () {
     <style>
       :host {
         display: block;
-        background: rgba(255,255,255,.3);
-        transition: background 300ms linear;
+        background: white
       }
 
       input {
@@ -34309,20 +34398,16 @@ var EventBusBehavior = function () {
         overflow: hidden;
       }
 
-      :host([active]) {
-        background: rgba(255,255,255,1);
-      }
-
-      :host([active]) #overflow {
+      :host([search-active]) #overflow {
         width: 275px;
       }
     </style>
 
     <div class="layout center">
-      <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[active]]"></paper-icon-button>
-      <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!active]]"></paper-icon-button>
+      <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[searchActive]]"></paper-icon-button>
+      <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!searchActive]]"></paper-icon-button>
       <div id="overflow">
-        <input type="text" id="input" placeholder="Search Catalog Pages" hidden$="active" on-keyup="_search">
+        <input type="text" id="input" placeholder="Search Catalog Pages" hidden$="[[!searchActive]]" on-keyup="_search">
       </div>
       <div style="padding-left: 15px">
         <paper-spinner active="" hidden$="[[!searching]]"></paper-spinner>
@@ -34337,6 +34422,11 @@ var EventBusBehavior = function () {
       is: 'app-page-carousel-search',
 
       properties : {
+        active : {
+          type : Boolean,
+          value : false,
+          observer : '_onActive'
+        },
         catalogId : {
           type : String,
           value : ''
@@ -34345,7 +34435,7 @@ var EventBusBehavior = function () {
           type : Boolean,
           value : false
         },
-        active : {
+        searchActive : {
           type : Boolean,
           value : false,
           reflectToAttribute : true
@@ -34363,14 +34453,34 @@ var EventBusBehavior = function () {
       behaviors : [EventBusBehavior],
 
       ebBind : {
+        'app-state-update' : '_onAppStateUpdate',
         'search-catalog-pages-update' : '_onSearchUpdate'
       },
 
+      _onActive : function() {
+        if( !this.active ) return;
+
+        if( this.searchActive ) {
+          this._search();
+        }
+      },
+
+      _onAppStateUpdate : function(e) {
+        if( e.searchText ) {
+          this.searchActive = true;
+          this.$.input.value = e.searchText;
+        } else {
+          this.searchActive = false;
+          this.$.input.value = '';
+        }
+        this.toggleActive
+      },
+
       toggleActive : function() {
-        this.active = !this.active;
+        this.searchActive = !this.searchActive;
         this.showResults = false;
 
-        if( this.active ) {
+        if( this.searchActive ) {
           this.$.input.value = '';
           setTimeout(function() {
             this.$.input.focus();
@@ -34705,15 +34815,44 @@ var EventBusBehavior = function () {
       _previous : function(e) {
         if( e.currentTarget.classList.contains('disabled') ) return;
         var page = this._getPageNumber()-1;
-        page = this._getPageIdFromPageNumber(page);
-        window.location.hash = this.catalogId+'/'+page;
+        
+        if( this.searchResults ) {
+          while( !this._getResultsPageById(this.searchResults, this._getPageIdFromPageNumber(page)) ) {
+            page--;
+            if( page === -1 ) {
+              return;
+            }
+          }
+        }
+
+        this._onNavBtnClick(page);
       },
 
       _next : function(e) {
         if( e.currentTarget.classList.contains('disabled') ) return;
-        var page = this._getPageNumber()+1;
-        page = this._getPageIdFromPageNumber(page);
-        window.location.hash = this.catalogId+'/'+page;
+        var page = this._getPageNumber()+1
+
+        if( this.searchResults ) {
+          while( !this._getResultsPageById(this.searchResults, this._getPageIdFromPageNumber(page)) ) {
+            page++;
+            if( page === this.pages.length ) {
+              return;
+            }
+          }
+        }
+
+        this._onNavBtnClick(page);
+      },
+
+      _onNavBtnClick : function(page) {
+        this.selected = this._getPageIdFromPageNumber(page);
+        this._updateScroll();
+        this._updateButtons();
+
+        var pages = this.querySelectorAll('app-page-item');
+        for( var i = 0; i < pages.length; i++ ) {
+          pages[i].onTmpSelectPageUpdate(this.selected);
+        }
       },
 
       _select : function(e) {
@@ -34721,6 +34860,7 @@ var EventBusBehavior = function () {
       },
 
       _clearSearch : function() {
+        this.searchResults = null;
         this.pages.forEach(function(page, index){
           this.set('pages.'+index+'.noMatch', false);
         }.bind(this));
@@ -34729,10 +34869,21 @@ var EventBusBehavior = function () {
       _searchUpdate : function(e) {
         if( e.state !== 'loaded' ) return;
 
+        this.searchResults = e.results.results;
+
         this.pages.forEach(function(page, index) {
           var matched = this._getResultsPageById(e.results.results, page.page_id);
           this.set('pages.'+index+'.noMatch', !matched ? true : false);
         }.bind(this));
+
+        var page = 0;
+        while( !this._getResultsPageById(this.searchResults, this._getPageIdFromPageNumber(page)) ) {
+          page++;
+          if( page === this.pages.length ) {
+            return;
+          }
+        }
+        window.location.hash = this.catalogId + '/' + this._getPageIdFromPageNumber(page);
       },
 
       _getResultsPageById : function(results, id) {
@@ -35230,21 +35381,22 @@ var EventBusBehavior = function () {
           text-align: center;
           left: 0; 
           right: 0;
-          top: 50px;
+          top: 0px;
         }
         #nothingToDo paper-material {
           display: inline-block;
-          padding: 10px;
+          padding: 0 10px;
           max-width: 600px;
           background: white;
+          color: var(--default-primary-color);
           text-align: left;
           margin: auto;
-          z-index: 1000;
+          z-index: 500;
         }
     </style>
 
     <paper-material id="carousel">
-      <app-page-carousel-search catalog-id="[[catalogId]]" id="carousel-search">
+      <app-page-carousel-search active="[[active]]" catalog-id="[[catalogId]]" id="carousel-search">
       </app-page-carousel-search>
       <app-page-carousel active="[[active]]"></app-page-carousel>
     </paper-material>
@@ -35258,14 +35410,14 @@ var EventBusBehavior = function () {
     </div>
 
     <div id="nothingToDo">
-      <paper-material>
-        <div class="layout center">
-          <h1 class="flex">There's nothing to do on this page. </h1>
-          <paper-icon-button style="float:right;margin-top: -15px;" on-click="_hidePopup" icon="close"></paper-icon-button>
-        </div>
-
-        <p>The current page doesn't have any pricing information, so it doesn't need any marking</p>
-      </paper-material>
+      <div style="margin: 0 50px">
+        <paper-material>
+          <div class="layout center">
+            <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking</div>
+            <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
+          </div>
+        </paper-material>
+      </div>
     <div>
 
   </div></div></template>
@@ -36677,32 +36829,7 @@ var EventBusBehavior = function () {
       <div hidden$="[[searchBoxActive]]">
         <paper-icon-button state="list" icon="search" on-click="_toggleSearch"></paper-icon-button>
       </div>
-      <div>
-        <paper-icon-button icon="info" on-click="_showHelp" style="margin-right: 5px"></paper-icon-button>
-      </div>
     </div>
-
-    <paper-dialog modal="" id="popup">
-      <div class="layout center">
-        <img src="/images/wine-icon-48.png" alt="Price the vintage icon" style="padding-right: 10px"> 
-        <div class="flex">
-        <h1>Price the Vintage <paper-icon-button style="float:right;margin-top: -15px;" on-click="_hideHelp" icon="close"></paper-icon-button></h1>
-        </div>
-      </div>
-
-      <p>Flipping through the pages of the Sherry-Lehmann catalog, produced by the famed New York City wine store, is like stepping back in time. From musings on wines by noted food and wine writer James Beard to charming descriptions of bottles stocked to captivating graphics, this is an immersive history at its finest.</p>
-      
-      <p>As you flip through the catalogs, you might notice a lot of wine prices. We did too. Our goal is to take those dollar amounts and turn them into a searchable database to allow researchers and wine enthusiasts to chart changing prices and tastes. But to do that, we need your help in transcribing the prices that you see on the pages. So help us ‘Price the Vintage’</p>
-
-      <div style="text-align: center; padding: 25px 0;">
-        <h3>Powered By</h3>
-        <img src="/images/library.png" style="width:100%; max-width: 350px;" alt="UC Davis Library logo">
-      </div>
-
-      <div class="buttons">
-        <paper-button on-click="_hideHelp">OK</paper-button>
-      </div>
-    </paper-dialog>
 
   </template>
   <script>
@@ -36781,18 +36908,14 @@ var EventBusBehavior = function () {
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
-      attached : function() {
-        // if( !window.localStorage.getItem('first-viewing') ) {
-        //   this.$.popup.open();
-        //   window.localStorage.setItem('first-viewing', 'true');
-        // } 
-      },
-
       _toggleSearch : function(){
         this.searchBoxActive = !this.searchBoxActive;
 
         if( this.searchBoxActive ) {
           this.$.input.focus();
+        } else {
+          this.$.input.value = '';
+          this.eventLoop.searchCatalogs.req();
         }
 
         this.eventLoop.appState.req({
@@ -36804,14 +36927,6 @@ var EventBusBehavior = function () {
 
       _search : function() {
         this.eventLoop.searchCatalogs.req();
-      },
-
-      _showHelp : function() {
-        this.$.popup.open();
-      },
-
-      _hideHelp : function() {
-        this.$.popup.close();
       }
     });
 })();
@@ -37493,7 +37608,7 @@ var EventBusBehavior = function () {
     <div state="pending">...</div>
     
     <div state="loggedIn">
-      <paper-icon-button on-click="_login" icon="power-settings-new" hidden$="[[!auth.user.isAnonymous]]"></paper-icon-button>
+      <paper-icon-button on-click="_login" icon="social:person-outline" hidden$="[[!auth.user.isAnonymous]]"></paper-icon-button>
 
       <paper-menu-button id="menuBtn" hidden$="[[auth.user.isAnonymous]]" horizontal-align="right" vertical-offset="50">
         <div class="dropdown-trigger">
@@ -37520,7 +37635,7 @@ var EventBusBehavior = function () {
     </div>
 
     <div state="notLoggedIn">
-      <paper-icon-button on-click="_login" icon="power-settings-new"></paper-icon-button>
+      <paper-icon-button on-click="_login" icon="social:person-outline"></paper-icon-button>
     </div>
 
 

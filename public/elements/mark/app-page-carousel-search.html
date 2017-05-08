@@ -5,8 +5,7 @@
     <style>
       :host {
         display: block;
-        background: rgba(255,255,255,.3);
-        transition: background 300ms linear;
+        background: white
       }
 
       input {
@@ -34,20 +33,16 @@
         overflow: hidden;
       }
 
-      :host([active]) {
-        background: rgba(255,255,255,1);
-      }
-
-      :host([active]) #overflow {
+      :host([search-active]) #overflow {
         width: 275px;
       }
     </style>
 
     <div class="layout center">
-      <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[active]]"></paper-icon-button>
-      <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!active]]"></paper-icon-button>
+      <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[searchActive]]"></paper-icon-button>
+      <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!searchActive]]"></paper-icon-button>
       <div id="overflow">
-        <input type="text" id="input" placeholder="Search Catalog Pages"  hidden$="active" on-keyup="_search" />
+        <input type="text" id="input" placeholder="Search Catalog Pages"  hidden$="[[!searchActive]]" on-keyup="_search" />
       </div>
       <div style="padding-left: 15px">
         <paper-spinner active hidden$="[[!searching]]"></paper-spinner>
@@ -62,6 +57,11 @@
       is: 'app-page-carousel-search',
 
       properties : {
+        active : {
+          type : Boolean,
+          value : false,
+          observer : '_onActive'
+        },
         catalogId : {
           type : String,
           value : ''
@@ -70,7 +70,7 @@
           type : Boolean,
           value : false
         },
-        active : {
+        searchActive : {
           type : Boolean,
           value : false,
           reflectToAttribute : true
@@ -88,14 +88,34 @@
       behaviors : [EventBusBehavior],
 
       ebBind : {
+        'app-state-update' : '_onAppStateUpdate',
         'search-catalog-pages-update' : '_onSearchUpdate'
       },
 
+      _onActive : function() {
+        if( !this.active ) return;
+
+        if( this.searchActive ) {
+          this._search();
+        }
+      },
+
+      _onAppStateUpdate : function(e) {
+        if( e.searchText ) {
+          this.searchActive = true;
+          this.$.input.value = e.searchText;
+        } else {
+          this.searchActive = false;
+          this.$.input.value = '';
+        }
+        this.toggleActive
+      },
+
       toggleActive : function() {
-        this.active = !this.active;
+        this.searchActive = !this.searchActive;
         this.showResults = false;
 
-        if( this.active ) {
+        if( this.searchActive ) {
           this.$.input.value = '';
           setTimeout(function() {
             this.$.input.focus();
