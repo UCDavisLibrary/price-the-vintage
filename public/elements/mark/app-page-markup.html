@@ -1,6 +1,7 @@
 <script src="DrawToolBehavior.js"></script>
 <link rel="import" href="app-page-carousel.html">
 <link rel="import" href="app-admin-markup-control.html">
+<link rel="import" href="app-help-text-control.html">
 <link rel="import" href="app-marker.html">
 
 <dom-module id="app-page-markup">
@@ -71,6 +72,7 @@
     </paper-material>
 
     <div id="map" state="loaded"></div>
+
     <app-price-form 
       id="priceItem" 
       page-id="[[selected]]"
@@ -87,7 +89,7 @@
       <div style="margin: 0 50px">
         <paper-material>
           <div class="layout center">
-            <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking</div>
+            <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking. Don’t despair, plenty more pages do! Click on another!</div>
             <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
           </div>
         </paper-material>
@@ -511,12 +513,17 @@
         if( !this.drawControl._container ) return;
 
         if( !this.userState ) {
-          return this.drawControl._container.style.display = 'none';
+          this.drawControl._container.style.display = 'none';
+          this.helpTextControl._container.style.display = 'none';
+          return 
         } else if ( this.userState.state === 'notLoggedIn' ) {
-          return this.drawControl._container.style.display = 'none';
+          this.drawControl._container.style.display = 'none';
+          this.helpTextControl._container.style.display = 'none';
+          return 
         }
 
         this.drawControl._container.style.display = 'block';
+        this.helpTextControl._container.style.display = 'block';
       },
 
       _onAddCancel : function() {

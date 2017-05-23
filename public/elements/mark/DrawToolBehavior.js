@@ -40,7 +40,11 @@ var MarkBehavior = {
     var myIcon = L.divIcon({html: '<app-marker draw-tool-marker></app-marker>'});
     this.drawToolOptions.draw.marker.icon = myIcon;
 
+    this.helpTextControl = L.control.helpTextControl({ position: 'topright' }).addTo(this.map);
+    L.drawLocal.draw.handlers.marker.tooltip.start = 'Place by the name of the wine';
     this.drawControl = new L.Control.Draw(this.drawToolOptions);
+    
+
 
     if( this.selectedPage.editable && !this.selectedPage.completed ) {
       this.map.addControl(this.drawControl);
@@ -60,6 +64,7 @@ var MarkBehavior = {
     }
 
     L.control.adminControl({ position: 'topright' }).addTo(this.map);
+    
 
     // hack
     var controls = this.$.map.querySelectorAll('.leaflet-control, .leaflet-top, .leaflet-bottom');
