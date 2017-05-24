@@ -35186,10 +35186,24 @@ var EventBusBehavior = function () {
         position: relative;
       }
 
-      app-icon-spinner, paper-icon-button {
-        position : absolute;
+      paper-icon-button {
+        width: 32px;
+        height: 32px;
+        top: -32px;
+        left: -32px;
+      }
+
+      app-icon-spinner {
         top: -38px;
         left: -38px;
+      }
+
+      app-icon-spinner, paper-icon-button {
+        /*top: -38px;
+        left: -38px;*/
+
+        position : absolute;
+
         box-shadow : 0 0 8px black;
         background: var(--default-primary-color);
         color: white;
@@ -36432,7 +36446,6 @@ var EventBusBehavior = function () {
         if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
         else this.$.spirit.edit(mark.data);
 
-        debugger;
         this.$.voting.show(mark);
       },
 
