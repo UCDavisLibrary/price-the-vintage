@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "price-the-vintage"
+    "default": "price-the-vintage",
+    "development": "price-the-vintage-dev"
   }
 }

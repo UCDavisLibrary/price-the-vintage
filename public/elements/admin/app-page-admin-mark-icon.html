@@ -133,7 +133,7 @@
       },
 
       _setPosition : function() {
-        if( this.imgHeight !== -1 && this.marker ) {
+        if( this.imgHeight !== -1 && this.marker && this.marker.data ) {
           var x = (-1*this.marker.data.xy[0]+20)+'px ';
           var y = (-1*(this.imgHeight - this.marker.data.xy[1])+20)+'px';
           this.$.img.style.backgroundPosition = x+y;
