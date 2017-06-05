@@ -217,11 +217,11 @@
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
-      firebaseStorage : 'https://firebasestorage.googleapis.com/v0/b/price-the-vintage.appspot.com/o/cover-pngs%2F',
+      // firebaseStorage : 'https://firebasestorage.googleapis.com/v0/b/price-the-vintage.appspot.com/o/cover-pngs%2F',
 
       _createImgUrl : function(catalog) {
         this.$.image.style.display = 'none';
-        var url = this.firebaseStorage+catalog.media_id+'-cover.png?alt=media';
+        var url = this.apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
         var img = new Image();
 
         img.onload = function() {
@@ -233,7 +233,7 @@
       },
 
       _createSrcSet : function(catalog) {
-        return this.firebaseStorage+catalog.media_id+'-cover-2x.png?alt=media 2x';
+        return  this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + catalog.media_id;
       },
 
       _onUpdate : function() {

@@ -33375,11 +33375,11 @@ var EventBusBehavior = function () {
 
       behaviors : [EventBusBehavior, EventLoopBehavior],
 
-      firebaseStorage : 'https://firebasestorage.googleapis.com/v0/b/price-the-vintage.appspot.com/o/cover-pngs%2F',
+      // firebaseStorage : 'https://firebasestorage.googleapis.com/v0/b/price-the-vintage.appspot.com/o/cover-pngs%2F',
 
       _createImgUrl : function(catalog) {
         this.$.image.style.display = 'none';
-        var url = this.firebaseStorage+catalog.media_id+'-cover.png?alt=media';
+        var url = this.apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
         var img = new Image();
 
         img.onload = function() {
@@ -33391,7 +33391,7 @@ var EventBusBehavior = function () {
       },
 
       _createSrcSet : function(catalog) {
-        return this.firebaseStorage+catalog.media_id+'-cover-2x.png?alt=media 2x';
+        return  this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + catalog.media_id;
       },
 
       _onUpdate : function() {
@@ -35199,9 +35199,6 @@ var EventBusBehavior = function () {
       }
 
       app-icon-spinner, paper-icon-button {
-        /*top: -38px;
-        left: -38px;*/
-
         position : absolute;
 
         box-shadow : 0 0 8px black;
@@ -38633,7 +38630,7 @@ var EventBusBehavior = function () {
       },
 
       _setPosition : function() {
-        if( this.imgHeight !== -1 && this.marker ) {
+        if( this.imgHeight !== -1 && this.marker && this.marker.data ) {
           var x = (-1*this.marker.data.xy[0]+20)+'px ';
           var y = (-1*(this.imgHeight - this.marker.data.xy[1])+20)+'px';
           this.$.img.style.backgroundPosition = x+y;
