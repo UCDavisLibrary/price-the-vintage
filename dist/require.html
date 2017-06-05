@@ -33608,7 +33608,7 @@ var EventBusBehavior = function () {
           this.displayStop = this.results.stop+1;
         }
 
-        this.backDisabled = (this.results.start || 0 === 0) ? true : false;
+        this.backDisabled = (this.results.start === 0) ? true : false;
         this.forwardDisabled = (this.results.total <= this.results.stop) ? true : false;
       },
 
