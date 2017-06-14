@@ -32934,7 +32934,7 @@ var EventBusBehavior = function () {
         <app-pages-list section="catalog"></app-pages-list>
         <app-page-markup section="page"></app-page-markup>
         <app-user-dashboard section="user"></app-user-dashboard>
-        <app-home section="home"></app-home>
+        <!--<app-home section="home"></app-home>-->
       </iron-pages>
 
     </paper-header-panel>
@@ -33057,10 +33057,10 @@ var EventBusBehavior = function () {
           markId : ''
         }
 
-        if( !window.localStorage.getItem('first-viewing') ) {
-          this.route.section = 'home';
-          window.localStorage.setItem('first-viewing', 'true');
-        }
+        // if( !window.localStorage.getItem('first-viewing') ) {
+        //   this.route.section = 'list';
+        //   window.localStorage.setItem('first-viewing', 'true');
+        // }
 
         // split up the hash state
         var parts = window
@@ -33121,10 +33121,11 @@ var EventBusBehavior = function () {
             } else if( value === 'user' ) {
               this.route.section = 'user';
               return;
-            } else if( value === 'home' ) {
-              this.route.section = 'home';
-              return;
             }
+            // } else if( value === 'home' ) {
+            //   this.route.section = 'home';
+            //   return;
+            // }
 
             this.route.section = 'catalog';
             this.route.catalog = value;
