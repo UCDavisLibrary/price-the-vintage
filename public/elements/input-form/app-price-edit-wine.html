@@ -35,7 +35,7 @@
             always-float-label 
             id="name" 
             label="Name" 
-            placeholder="Santenay"
+            placeholder="ex. Santenay"
             type="string" >
           </paper-input>
         </div>
@@ -53,21 +53,11 @@
 
     <div class="form-row">
       <paper-input 
-        disabled$="[[disabled]]"
-        always-float-label 
-        id="producer" 
-        label="Producer" 
-        placeholder="Moillard">
-      </paper-input>
-    </div>
-
-    <div class="form-row">
-      <paper-input 
         always-float-label
         disabled$="[[disabled]]" 
         id="country" 
         label="Country" 
-        placeholder="France">
+        placeholder="ex. France">
       </paper-input>
     </div>
 
@@ -172,7 +162,6 @@
         this.$.wineType.value = 'Still';
         this.$.bottleType.value = 'Standard';
         this.$.name.value = '';
-        this.$.producer.value = '';
         this.$.price.value = '';
         this.$.casePrice.value = '';
         this.$.year.value = '';
@@ -184,7 +173,6 @@
         this.$.wineType.value = data.wineType || this.getEmptyValue('Still');
         this.$.bottleType.value = data.bottleType || this.getEmptyValue('Standard');
         this.$.name.value = data.name || this.getEmptyValue();
-        this.$.producer.value = data.producer || this.getEmptyValue();
         this.$.price.value = data.price || this.getEmptyValue();
         this.$.casePrice.value = data.casePrice || this.getEmptyValue();
         this.$.country.value = data.country || this.getEmptyValue();
@@ -201,7 +189,6 @@
           wineType : this.$.wineType.value,
           bottleType : this.$.bottleType.value,
           name : this.$.name.value,
-          producer : this.$.producer.value,
           price : this.$.price.value,
           casePrice : this.$.casePrice.value,
           country : this.$.country.value,

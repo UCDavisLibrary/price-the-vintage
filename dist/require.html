@@ -36238,7 +36238,7 @@ var EventBusBehavior = function () {
           <div>Wine</div>
           <div class="space"></div>
           <div class="flex">
-            <paper-input label="Page Section" disabled$="[[disabled]]" placeholder="Red Burgundies / Scotch Whiskies on Sale" id="sectionInput" always-float-label="">
+            <paper-input label="Page Section" disabled$="[[disabled]]" placeholder="ex. Red Burgundies / Scotch Whiskies on Sale" id="sectionInput" always-float-label="">
             </paper-input>
           </div>
         </div>
@@ -36489,7 +36489,7 @@ var EventBusBehavior = function () {
     <div class="form-row">
       <div class="layout form-row">
         <div class="flex" style="padding-right:10px">
-          <paper-input disabled$="[[disabled]]" always-float-label="" id="name" label="Name" placeholder="Santenay" type="string">
+          <paper-input disabled$="[[disabled]]" always-float-label="" id="name" label="Name" placeholder="ex. Santenay" type="string">
           </paper-input>
         </div>
         <div>
@@ -36500,12 +36500,7 @@ var EventBusBehavior = function () {
     </div>
 
     <div class="form-row">
-      <paper-input disabled$="[[disabled]]" always-float-label="" id="producer" label="Producer" placeholder="Moillard">
-      </paper-input>
-    </div>
-
-    <div class="form-row">
-      <paper-input always-float-label="" disabled$="[[disabled]]" id="country" label="Country" placeholder="France">
+      <paper-input always-float-label="" disabled$="[[disabled]]" id="country" label="Country" placeholder="ex. France">
       </paper-input>
     </div>
 
@@ -36594,7 +36589,6 @@ var EventBusBehavior = function () {
         this.$.wineType.value = 'Still';
         this.$.bottleType.value = 'Standard';
         this.$.name.value = '';
-        this.$.producer.value = '';
         this.$.price.value = '';
         this.$.casePrice.value = '';
         this.$.year.value = '';
@@ -36606,7 +36600,6 @@ var EventBusBehavior = function () {
         this.$.wineType.value = data.wineType || this.getEmptyValue('Still');
         this.$.bottleType.value = data.bottleType || this.getEmptyValue('Standard');
         this.$.name.value = data.name || this.getEmptyValue();
-        this.$.producer.value = data.producer || this.getEmptyValue();
         this.$.price.value = data.price || this.getEmptyValue();
         this.$.casePrice.value = data.casePrice || this.getEmptyValue();
         this.$.country.value = data.country || this.getEmptyValue();
@@ -36623,7 +36616,6 @@ var EventBusBehavior = function () {
           wineType : this.$.wineType.value,
           bottleType : this.$.bottleType.value,
           name : this.$.name.value,
-          producer : this.$.producer.value,
           price : this.$.price.value,
           casePrice : this.$.casePrice.value,
           country : this.$.country.value,
@@ -36642,12 +36634,12 @@ var EventBusBehavior = function () {
     </style>
 
     <div class="form-row">
-      <paper-input always-float-label="" id="name" placeholder="Glen Alan" label="Name" disabled$="[[disabled]]">
+      <paper-input always-float-label="" id="name" placeholder="ex. Glen Alan" label="Name" disabled$="[[disabled]]">
       </paper-input>
     </div>
 
     <div class="form-row">
-      <paper-input always-float-label="" id="country" placeholder="Scotland" label="Country" disabled$="[[disabled]]">
+      <paper-input always-float-label="" id="country" placeholder="ex. Scotland" label="Country" disabled$="[[disabled]]">
       </paper-input>
     </div>
 
