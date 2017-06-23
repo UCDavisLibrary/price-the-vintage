@@ -1,0 +1,30 @@
+<script>
+  const AuthMixin = subclass =>
+  
+  class AuthController extends subclass {
+      get bind() {
+        return Object.assign(
+          super.bind,
+          {
+            'auth-update' : '_onAuthUpdate'
+          }
+        );
+      }
+
+      _getAuthState(state) {
+        return this.emit('get-auth-state');
+      }
+
+      _loginCustom(token) {
+        return this.emit('auth-login-custom', token);
+      }
+
+      _logout() {
+        return this.emit('auth-logout');
+      }
+
+      _onAuthUpdate(e) {
+        // implement me
+      }
+  }
+</script>

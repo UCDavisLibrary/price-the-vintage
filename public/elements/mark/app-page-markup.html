@@ -7,6 +7,7 @@
 <dom-module id="app-page-markup">
   <template>
     <style include="shared-styles"></style>
+    <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css" />
     <style>
         :host {
           display: block;
@@ -283,12 +284,13 @@
         this.ebEmit('get-api-host', {
           handler : function(host) {
             this.apiHost = host;
+            this._onActive();
           }.bind(this)
         });
       },
 
       _onActive : function() {
-        if( !this.active ) {
+        if( !this.active || !this.eventLoop ) {
           if( this.addMarker && this.drawTool ) {
             this._removeTmpMark();
             this.addMarker = null;
@@ -394,7 +396,7 @@
 
         this._hidePopup();
 
-        if( !this.active ) return;
+        if( !this.active || !this.state ) return;
 
         // there is no /edit stub in url, set map mode to default
         if( !state.editingMark && !state.viewingMark ) {

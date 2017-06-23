@@ -2,6 +2,7 @@
 `price-the-vintage` is the main application element.  Controls paging based on appState.
 Parses URL on hash change and sets appState.
 -->
+<link rel="import" href="base/base-elements.html">
 
 <dom-module id="price-the-vintage">
   <template>
@@ -23,17 +24,13 @@ Parses URL on hash change and sets appState.
       }
 
       iron-pages {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        position: relative;
       }
     </style>
 
     <paper-header-panel style="height: 100%">
-      <paper-toolbar id="toolbar">
-        <app-header class="flex"></app-header>
+      <paper-toolbar id="toolbar" slot="header">
+        <app-header class="flex" slot="top"></app-header>
       </paper-toolbar>
 
 
@@ -56,74 +53,49 @@ Parses URL on hash change and sets appState.
 
   <script>
 
-(function(){
 
-    /**
-     *  Listen for and request application state event handlers.
-     **/
-    var AppStateEventLoop = {
-      req : {event : 'get-app-state'},
-      resp : {
-        event : 'app-state-update',
-        handler : function(e) {
-          this.selectedSection = e.section;
-        }
-      }
-    };
+    class PriceTheVintage extends 
+          Mixin(Polymer.Element)
+          .with(EventBusMixin, AppStateMixin, AuthMixin) {
 
-    var AuthStateEventLoop = {
-      req : {event : 'get-auth-state'},
-      resp : {
-        event : 'auth-update',
-        handler : function(e) {
-          this.authState = e;
+      static get is() { return 'price-the-vintage'; }
 
-          if( this.route && e.state === 'loggedIn' && this.route.catalog && this.route.page ) {
-            this.ebEmit('set-user-activity', {
-              catalogId : this.route.catalog,
-              pageId : this.route.page
-            });
+      static get properties() {
+        return {
+          /**
+           * Controls the iron list selected page
+           **/
+          selectedSection : {
+            type : String,
+            value : ''
           }
-        }
+        };
       }
-    }
 
-    Polymer({
-      is: 'price-the-vintage',
+      ready() {
+        super.ready();
 
-      properties : {
-        /**
-         * Controls the iron list selected page
-         **/
-        selectedSection : {
-          type : String,
-          value : ''
-        }
-      },
-
-      /**
-       * Setup event loop for application state
-       **/
-      eventLoops : {
-        appState : AppStateEventLoop,
-        authState : AuthStateEventLoop
-      },
-
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      ready : function() {
         // listen for has changes to update app state
         window.addEventListener('hashchange', this._setPageAndAppState.bind(this));
+
         // trigger update of app state on first load
         this._setPageAndAppState(null, true);
 
-        this.eventLoop.authState.req();
+        this._getAuthState().then((e) => this._onAuthStateUpdate(e));
 
         // hack
         this.$.toolbar.$.topBar.style.padding = '0 8px';
-      },
+      }
 
-      _isAuthRedirect : function() {
+      _onAuthStateUpdate(e) {
+        this.authState = e;
+
+        if( this.route && e.state === 'loggedIn' && this.route.catalog && this.route.page ) {
+          this._setUserActivity(this.route.catalog, this.route.page);
+        }
+      }
+
+      _isAuthRedirect() {
         var hash = '?'+window.location.hash.replace(/^#/,'');
 
         // crap..
@@ -131,31 +103,31 @@ Parses URL on hash change and sets appState.
             (this._getParamByName('access_token', hash) && 
             this._getParamByName('id_token', hash)) ) {
 
-            this.ebEmit('continue-login-auth0', {hash : window.location.hash});
+            this.emit('continue-login-auth0', {hash : window.location.hash});
             return true;
         } else {
-          this.ebEmit('init-auth-renew-auth0');
+          this.emit('init-auth-renew-auth0');
         }
         return false;
-      },
+      }
 
-      _getParamByName : function(name, url) {
-          if (!url) {
-            url = window.location.href;
-          }
-          name = name.replace(/[\[\]]/g, "\\$&");
-          var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-              results = regex.exec(url);
-          if (!results) return null;
-          if (!results[2]) return '';
-          return decodeURIComponent(results[2].replace(/\+/g, " "));
-      },
+      _getParamByName(name, url) {
+        if (!url) {
+          url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
 
       /**
        * Set application state from url hash.  Cause the polymer app-route
        * still falls short in some areas and is a mess to implement. 
        **/
-      _setPageAndAppState : function(event, firstLoad) {
+      _setPageAndAppState(event, firstLoad) {
         // are we in the middle of auth0 redirect?
         // if so, ignore this.
         if( firstLoad && this._isAuthRedirect() ) return;
@@ -191,30 +163,25 @@ Parses URL on hash change and sets appState.
         parts.forEach(this._parseRoute.bind(this));
 
         // set the current app state
-        this.ebEmit('update-app-state', {
-          state: {
+        this._setAppState({
             section: this.route.section,
             editingMark: this.route.edit,
             viewingMark: this.route.viewMark,
             markId : this.route.markId
-          }
         });
 
         // set the selected catalog (this may be empty)
-        this.ebEmit('select-catalog-page', {id: this.route.page});
+        this.emit('select-catalog-page', {id: this.route.page});
 
         // set the user activity, ie which catalog and page the user
         // is currently viewing (this may be empty as well).
-        this.ebEmit('set-user-activity', {
-          catalogId : this.route.catalog,
-          pageId : this.route.page
-        });
-      },
+        this._setUserActivity(this.route.catalog, this.route.page);
+      }
 
       /**
        * Parse an individual route section
        **/
-      _parseRoute : function(value, index) {
+      _parseRoute(value, index) {
         switch(index) {
           case 0:
             if( value === 'admin') {
@@ -242,7 +209,7 @@ Parses URL on hash change and sets appState.
 
             this.route.section = 'catalog';
             this.route.catalog = value;
-            this.ebEmit('select-catalog', {id: value});
+            this.emit('select-catalog', {id: value});
             break;
           case 1:
             this.route.section = 'page';
@@ -259,10 +226,10 @@ Parses URL on hash change and sets appState.
             break;
         }
       }
-      
-    });
 
-})();
+    }
+
+    window.customElements.define(PriceTheVintage.is, PriceTheVintage);
   </script>
 
 </dom-module>

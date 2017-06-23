@@ -1,0 +1,26 @@
+<script>
+  const AppStateMixin = subclass =>
+  
+  class AppStateController extends subclass {
+      get bind() {
+        return Object.assign(
+          super.bind,
+          {
+            'update-app-state' : '_onAppStateUpdate'
+          }
+        );
+      }
+
+      _setAppState(state) {
+        return this.emit('update-app-state', {state});
+      }
+
+      _getAppState() {
+        return this.emit('get-app-state');
+      }
+
+      _onAppStateUpdate(e) {
+        // implement me
+      }
+  }
+</script>

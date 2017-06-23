@@ -199,7 +199,7 @@
       },
 
       _onActive : function() {
-        if( !this.active ) return;
+        if( !this.active || !this.eventLoop ) return;
 
         this.eventLoop.selectedCatalogPage.req();
         this.eventLoop.catalogPages.req();
@@ -209,6 +209,7 @@
         this.ebEmit('get-api-host', {
           handler : function(host) {
             this.apiHost = host;
+            this._onActive();
           }.bind(this)
         });
       },

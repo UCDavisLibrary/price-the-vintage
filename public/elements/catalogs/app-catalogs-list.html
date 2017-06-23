@@ -255,7 +255,7 @@
       },
 
       _onActive : function() {
-        if( !this.active ) return;
+        if( !this.active || !this.eventLoop ) return;
 
         // on active, start a catalog search for current search state
         if( this.results ) return;
@@ -278,6 +278,7 @@
         this.ebEmit('get-api-host', {
           handler : function(host) {
             this.apiHost = host;
+            this._onActive();
           }.bind(this)
         });
       }

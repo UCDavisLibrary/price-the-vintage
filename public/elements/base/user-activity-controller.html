@@ -1,0 +1,26 @@
+<script>
+  const UserActivityMixin = subclass =>
+  
+  class UserActivityController extends subclass {
+      get bind() {
+        return Object.assign(
+          super.bind,
+          {
+            'user-activity-update' : '_onUserActivityUpdate'
+          }
+        );
+      }
+
+      _getUserActivity() {
+        return this.emit('get-user-activity');
+      }
+
+      _setUserActivity(catalogId, pageId) {
+        return this.emit('get-user-activity', {catalogId, pageId});
+      }
+
+      _onUserActivityUpdate(e) {
+        // implement me
+      }
+  }
+</script>
