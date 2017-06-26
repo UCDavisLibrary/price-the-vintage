@@ -26,76 +26,53 @@
   </template>
   <script>
 
-(function(){
-
-    var AuthStateEventLoop = {
-      req : {
-        event : 'get-auth-state',
-      },
-
-      resp : {
-        event : 'auth-update',
-        handler : function(e) {
-          this.userState = e;
-        }
-      }
-    };
-
-    Polymer({
-      is: 'app-header-editing',
-
-      properties : {
-        userState : {
-          type : Object,
-          value : function() {
-            return {};
+    class AppHeaderEditing extends 
+        Mixin(Polymer.Element)
+        .with(EventBusMixin, AuthMixin, AppStateMixin, CatalogsMixin, PagesMixin) {
+      
+      static get is() { return 'app-header-editing'; }
+    
+      static get properties() {
+        return {
+            userState : {
+              type : Object,
+              value : function() {
+                return {};
+              }
+            },
+            title : {
+              type : String,
+              value : ''
+            }
           }
-        },
-        title : {
-          type : String,
-          value : ''
-        }
-      },
+      }
 
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      eventLoops : {
-        authState : AuthStateEventLoop
-      },
-
-      ebBind : {
-        'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'selected-catalog-page-update' : '_onSelectedCatalogPageUpdate',
-        'app-state-update' : '_onAppStateUpdate'
-      },
-
-      ready : function() {
-        this.eventLoop.authState.req();
-      },
-
-      _onAppStateUpdate : function(e) {
+      _onAppStateUpdate(e) {
         if( e.editingMark ) {
           this.title = 'Edit Mark';
         } else if( e.viewingMark ) {
           this.title = 'View Mark';
         }
-      },
+      }
 
-      _onSelectedCatalogUpdate : function(id) {
-        this.catalogId = id;
-      },
+      _onSelectedCatalogUpdate(e) {
+        this.catalogId = e.id;
+      }
 
-      _onSelectedCatalogPageUpdate : function(id) {
-        this.pageId = id;
-      },
+      _onAuthStateUpdate(e) {
+        this.userState = e;
+      }
 
-      _cancelEdit : function() {
+      _cancelEdit() {
         window.location.hash = this.catalogId + '/' + this.pageId;
-      },
+      }
+
+      _onSelectedCatalogPageUpdate(id) {
+        this.pageId = id;
+      }
 
 
-    });
-
-})();
+    }
+    window.customElements.define(AppHeaderEditing.is, AppHeaderEditing);
   </script>
 </dom-module>

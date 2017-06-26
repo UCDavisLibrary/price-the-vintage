@@ -17,7 +17,9 @@
     <table style="width: 100%">
       <tr>
         <td>
-          <paper-icon-button icon="close" on-click="_back"></paper-icon-button>
+          <a href="#">
+            <paper-icon-button icon="close"></paper-icon-button>
+          </a>
         </td>
         <td>
           <h2 class="overflow" id="title">[[title]]</h2>
@@ -28,53 +30,36 @@
   </template>
   <script>
 
-(function() {
+    class AppHeaderCatalogs extends 
+          Mixin(Polymer.Element)
+          .with(EventBusMixin, CatalogsMixin) {
+      
+      static get is() { return 'app-header-catalogs'; }
+      
+      ready() {
+        super.ready();
 
-    var CatalogEventLoop = {
-      req : {
-        event : 'get-catalog',
-        payload : function() {
-          return {id: this.catalog}
-        }
-      },
-      resp : {
-        event : 'catalog-update',
-        handle : function(e) {
-          return (e.state === 'loaded' && e.id === this.catalog)
-        },
-        handler : function(e) {
-          this.title = e.payload.title;
-        }
-      }
-    };
-
-    Polymer({
-      is: 'app-header-catalogs',
-
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      ebBind : {
-        'selected-catalog-update' : '_onSelectedCatalogUpdate'
-      },
-
-      ready : function() {
         window.addEventListener('resize', this._resize.bind(this));
         this._resize();
-      },
-
-      _resize : function() {
-        this.$.title.style.width = (window.innerWidth - 132) + 'px';
-      },
-
-      _onSelectedCatalogUpdate : function(id) {
-        this.catalog = id;
-        this.eventLoop.catalog.req();
-      },
-
-      _back : function() {
-        window.location.hash = '';
       }
-    });
-});
+
+      _resize() {
+        this.$.title.style.width = (window.innerWidth - 132) + 'px';
+      }
+
+      _onCatalogSelectedUpdate(e) {
+        this.catalogId = e.id;
+
+        this.getCatalog(e.id)
+            .then((e) => this._onCatalogUpdate(e));
+      }
+
+      _onCatalogUpdate(e) {
+        if( this.catalogId !== e.id || e.state !== 'loaded' ) return;
+        this.title = e.payload.title;
+      }
+    }
+    window.customElements.define(AppHeaderCatalogs.is, AppHeaderCatalogs);
+
   </script>
 </dom-module>

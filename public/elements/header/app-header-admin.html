@@ -21,8 +21,9 @@
 
   </template>
   <script>
-    Polymer({
-      is: 'app-header-admin',
-    });
+    class AppHeaderAdmin extends Polymer.Element {
+      static get is() { return 'app-header-admin'; }
+    }
+    window.customElements.define(AppHeaderAdmin.is, AppHeaderAdmin);
   </script>
 </dom-module>

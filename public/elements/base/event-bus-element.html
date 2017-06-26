@@ -3,6 +3,16 @@
 
 class EventBusElement extends subclass {
 
+  static get properties() {
+    return {
+      active : {
+        type : Boolean,
+        value : false,
+        observer : '_onActive'
+      }
+    }
+  }
+
   get bind() {
     return {};
   }
@@ -34,15 +44,23 @@ class EventBusElement extends subclass {
 
     if( !this.getEventBus() || !this.bind ) return;
 
+    
+
     for( var key in this.bind ) {
       if( !this[this.bind[key]] ) {
         console.warn(`${this.nodeName} could not bind event ${key} to ${this.bind[key]}`);
         continue;
       }
 
-      this[this.bind[key]] = this[this.bind[key]].bind(this);
-      this.getEventBus().on(key, this[this.bind[key]]);
+      this._eb_init_fn(key);
     }
+  }
+
+  _eb_init_fn(key) {
+    this[this.bind[key]] = this[this.bind[key]].bind(this);
+    this.getEventBus().on(key, (e) => {
+      this[this.bind[key]](e);
+    });
   }
     
   disconnectedCallback() {
@@ -71,6 +89,18 @@ class EventBusElement extends subclass {
     });
   }
 
+  debounce(name, callback, timeout) {
+    name = `_${name}Debouncer`;
+    this[name] = Polymer.Debouncer.debounce(
+      this[name],
+      Polymer.Async.timeOut.after(timeout),
+      callback.bind(this)
+    );
+  }
+
+  _onActive() {
+    // implement me
+  }
   
 }
 </script>

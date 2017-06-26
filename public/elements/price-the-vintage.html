@@ -62,17 +62,18 @@ Parses URL on hash change and sets appState.
 
       static get properties() {
         return {
-          /**
-           * Controls the iron list selected page
-           **/
-          selectedSection : {
-            type : String,
-            value : ''
+            /**
+             * Controls the iron list selected page
+             **/
+            selectedSection : {
+              type : String,
+              value : ''
+            }
           }
-        };
       }
 
       ready() {
+        this.active = true;
         super.ready();
 
         // listen for has changes to update app state

@@ -11,8 +11,8 @@
         );
       }
 
-      _getUserActivity() {
-        return this.emit('get-user-activity');
+      _getUserActivity(id) {
+        return this.emit('get-user-activity', {id});
       }
 
       _setUserActivity(catalogId, pageId) {

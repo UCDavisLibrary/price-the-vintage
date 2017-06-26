@@ -13,7 +13,7 @@
 
       ready() {
         super.ready();
-        this._getAppState().then((e) => this._onAppStateUpdate);
+        this._getAppState().then((e) => this._onAppStateUpdate(e));
       }
 
       _setAppState(state) {

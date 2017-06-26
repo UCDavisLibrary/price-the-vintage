@@ -1,0 +1,181 @@
+
+<dom-module id="app-auth-header-button">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      img {
+        width: 36px;
+        height: 36px;
+        border-radius: 20px;
+        border: 1px solid white;
+        cursor: pointer;
+      }
+
+      img:hover {
+        border: 1px solid var(--light-primary-color);
+      }
+
+      [state="loggedIn"] {
+        position: relative;
+      }
+
+      #logout {
+        z-index: 1000;
+        color: black;
+        display: none;
+        position: absolute;
+        top: 45px;
+        background-color: white;
+        right: 0px;
+        padding: 10px;
+        box-shadow: 0 0 8px rgba(0,0,0,.5);
+      }
+      a {
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .dropdown-content {
+        color: black;
+        white-space: nowrap;
+      }
+      paper-menu-button {
+        z-index: 1000;
+        --paper-menu-button-content : {
+          z-index: 1000;
+        }
+      }
+
+      a {
+        text-decoration: none;
+        color: black;
+      }
+    </style>
+
+    <div state="pending">...</div>
+    
+    <div state="loggedIn">
+      <paper-icon-button on-click="_loginAuth0" icon="social:person-outline" hidden$="[[!auth.user.isAnonymous]]" ></paper-icon-button>
+
+      <paper-menu-button id="menuBtn" hidden$="[[auth.user.isAnonymous]]" horizontal-align="right" vertical-offset="50">
+        <div class="dropdown-trigger">
+          <div>
+            <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
+            <img src="[[photo]]" hidden$="[[!hasPhoto]]" alt="User profile image"/>
+          </div>
+        </div>
+        <div class="dropdown-content">
+          <paper-item>[[username]]</paper-item>
+          <paper-item on-click="_onLogout" style="cursor:pointer">
+            <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
+          </paper-item>
+          <!-- TODO: enable when user dashboard is ready -->
+          <!--<paper-item style="cursor:pointer">
+            <a href="#user"><iron-icon icon="dashboard"></iron-icon>&nbsp;My Dashboard</a>
+          </paper-item>-->
+          <paper-item hidden$="[[!isAdmin]]" on-click="_gotToAdmin" style="cursor:pointer">
+            <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface</a>
+          </paper-item>
+          <paper-item hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></paper-item>
+        </div>
+      </paper-menu-button>
+    </div>
+
+    <div state="notLoggedIn">
+      <paper-icon-button on-click="_login" icon="social:person-outline"></paper-icon-button>
+    </div>
+
+
+    
+  </template>
+  <script>
+    class AppAuthHeaderButton extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, ToggleStateMixin, AuthMixin, AppStateMixin, CatalogsMixin, PagesMixin) {
+
+      static get is(){ return 'app-auth-header-button' }
+
+      static get properties() {
+        return {
+            user : {
+              type : Object,
+              value : null
+            },
+
+            isAdmin : {
+              type : Boolean,
+              value : false
+            }
+          }
+      }
+
+      ready() {
+        super.ready();
+
+        this.toggleState('pending');
+
+        window.addEventListener('hashchange', function() {
+          this.$.menuBtn.close();
+        }.bind(this));
+      }
+
+      _onAuthUpdate(e) {
+        this.auth = e;
+        this.hasPhoto = false;
+        this.isAdmin = false;
+
+        if( this.auth.user ) {
+
+          if( this.auth.user.photoURL ) {
+            this.photo = this.auth.user.photoURL;
+            this.hasPhoto = true;
+          }
+
+          if( this.auth.user.roles  && this.auth.user.roles.indexOf('admin') > -1 ) {
+            this.isAdmin = true;
+          }
+
+          this.username = this.auth.user.name || this.auth.user.email || 'Anonymous';
+        }
+
+        this.toggleState(this.auth.state);
+      }
+
+      _onAppStateUpdate(e) {
+        this.appState = e;
+      }
+
+      _onCatalogSelectedUpdate(e) {
+        this.catalogId = id;
+      }
+
+      _onCatalogPageSelectedUpdate(e) {
+        this.pageId = id;
+      }
+
+      _onLogout() {
+        this.$.menuBtn.close();
+        this._logout();
+
+        if( this.appState.editingMark ) {
+          window.location.hash = this.catalogId + '/' + this.pageId;
+        }
+      }
+
+      _switch() {
+        this._onLogout();
+        this._loginAuth0();
+      }
+
+      _gotToAdmin() {
+        window.location.hash = '#admin';
+        this.$.menuBtn.close();
+      }
+
+    }
+    window.customElements.define(AppAuthHeaderButton.is, AppAuthHeaderButton);
+  </script>
+</dom-module>

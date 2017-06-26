@@ -1,0 +1,54 @@
+<script>
+  const PagesMixin = subclass =>
+  
+  class PagesController extends subclass {
+      get bind() {
+        return Object.assign(
+          super.bind,
+          {
+            'catalog-pages-update' : '_onCatalogPagesUpdate',
+            'catalog-page-update' : '_onCatalogPageUpdate',
+            'page-metadata-update' : '_onCatalogPageMetadataUpdate',
+            'search-catalog-pages-update' : '_onCatalogPagesSearchUpdate',
+            'selected-catalog-page-update' : '_onCatalogPageSelectedUpdate'
+          }
+        );
+      }
+
+      _getCatalogPages(catalogId) {
+        return this.emit('get-catalog-pages', {id: catalogId});
+      }
+
+      _getCatalogPage(pageId) {
+        return this.emit('get-page', {id: pageId});
+      }
+
+      _getCatalogPageMetadata(pageId) {
+        return this.emit('get-page-metadata', {id: pageId});
+      }
+
+      _searchCatalogPages(query) {
+        return this.emit('search-catalog-pages', {query});
+      }
+      
+      _onCatalogPagesUpdate(e) {
+        // implement me
+      }
+
+      _onCatalogPageUpdate(e) {
+        // implement me
+      }
+
+      _onCatalogPageSelectedUpdate(e) {
+        // implement me
+      }
+
+      _onCatalogPageMetadataUpdate(e) {
+        // implement me
+      }
+
+      _onCatalogPagesSearchUpdate(e) {
+        // implement me
+      }
+  }
+</script>

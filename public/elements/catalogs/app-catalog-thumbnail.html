@@ -69,59 +69,83 @@
     
   </template>
   <script>
-(function() {
-    /**
-     * Event Loop Definitions
-     **/
-    var UserActivityEventLoop = {
-      req : {
-        event : 'get-user-activity',
-        handle : function() {
-          if( !this.catalog ) return false;
-          return this.catalog.catalog_id ? true : false
-        },
-        payload : function() {
-          return {id: this.catalog.catalog_id};
-        },
-        debounce : 50
-      },
 
-      resp : {
-        event : 'user-activity-update',
-        handle : function(e) {
-          return e.id === this.catalog.catalog_id;
-        },
-        handler : function(e) {
-          this.userCount = Object.keys(e.users).length;
-          this.showUserCount = (this.userCount > 0 ) ? true : false;
+    class AppCatalogThumbnail extends 
+        Mixin(Polymer.Element)
+        .with(EventBusMixin, UserActivityMixin, PagesMixin, InterestedPartyMixin, ConfigMixin) {
+      
+      static get is() { return 'app-catalog-thumbnail'; }
+    
+      static get properties() {
+        return {
+          catalog : {
+            type : Object,
+            value : function() {
+              return {};
+            },
+            observer : '_onUpdate'
+          },
+          imgUrl : {
+            type : String,
+            computed : '_createImgUrl(catalog)'
+            // observer : '_setImgUrl'
+          },
+          imgSrcSet : {
+            type : String,
+            computed : '_createSrcSet(catalog)'
+          },
+          userCount : {
+            type : Number,
+            value : 0
+          },
+          showUserCount : {
+            type : Boolean,
+            value : false
+          },
+          percentComplete : {
+            type : String,
+            value : '',
+          },
+          loading: {
+            type : Boolean,
+            value : true
+          }
         }
       }
-    }
-  
-    var CatalogPageEventLoop = {
-      req : {
-        event : 'get-catalog-pages',
-        handle : function() {
-          var trigger = false;
-          if( this.catalog && this.catalog.catalog_id ) {
-            this.loading = true;
-            trigger = true;
-          }
-          return trigger;
-        },
-        payload : function() {
-          return {id: this.catalog.catalog_id}
-        }
-      },
 
-      resp : {
-        event : 'catalog-pages-update',
-        handle : function(e) {
-          return (this.active && 
-                  e.id === this.catalog.catalog_id && 
-                  e.state === 'loaded')
-        },
-        handler : function(e) {
+      static get listeners() {
+        return {
+          click : '_getCatalogPages'
+        }
+      }
+
+      _onUserActivityUpdate(e) {
+        if( !e.users ) return;
+        this.userCount = Object.keys(e.users).length;
+        this.showUserCount = (this.userCount > 0 ) ? true : false;
+      }
+
+      _getUserActivity() {
+        if( !this._isCatalogIdSet() ) return;
+        super._getUserActivity(this.catalog.catalog_id);
+      }
+
+      _getCatalogPages() {
+        if( !this._isCatalogIdSet() ) return;
+        super._getCatalogPages(this.catalog.catalog_id);
+      }
+
+      _isCatalogIdSet() {
+        if( !this.catalog ) return false;
+        if( !this.catalog.catalog_id ) return false;
+        return true;
+      }
+
+      _onCatalogPagesUpdate(e) {
+        if( this.active && 
+            e.id === this.catalog.catalog_id && 
+            e.state === 'loaded' ) {
+
           this.loading = false;
 
           if( e.payload.length === 0 ) {
@@ -132,95 +156,8 @@
           window.location.hash = this.catalog.catalog_id+'/'+page.page_id;
         }
       }
-    };
 
-    // this loop is actually backward :)  but that is how we want it
-    // the services are actually pulling us.
-    var InterestedPartyEventLoop = {
-      req : {
-        event : 'interested-party-response',
-        payload : function() {
-          return {
-            id : this.catalog.catalog_id,
-            types : ['activity']
-          }
-        }
-      },
-
-      resp : {
-        event : 'interested-party-request',
-        interested : function() {
-          return (this.active && this.catalog && this.catalog.catalog_id);
-        },
-        handler : function() {
-          this.eventLoop.interestedParty.req();
-        }
-      }
-    };
-
-
-    Polymer({
-      is: 'app-catalog-thumbnail',
-
-      properties : {
-        active : {
-          type : Boolean,
-          value : false,
-          observer : '_onUpdate'
-        },
-        apiHost : {
-          type : String,
-          value : ''
-        },
-        catalog : {
-          type : Object,
-          value : function() {
-            return {};
-          },
-          observer : '_onUpdate'
-        },
-        imgUrl : {
-          type : String,
-          computed : '_createImgUrl(catalog)'
-          // observer : '_setImgUrl'
-        },
-        imgSrcSet : {
-          type : String,
-          computed : '_createSrcSet(catalog)'
-        },
-        userCount : {
-          type : Number,
-          value : 0
-        },
-        showUserCount : {
-          type : Boolean,
-          value : false
-        },
-        percentComplete : {
-          type : String,
-          value : '',
-        },
-        loading: {
-          type : Boolean,
-          value : true
-        }
-      },
-
-      listeners: {
-        click : '_select'
-      },
-
-      eventLoops : {
-        userActivity : UserActivityEventLoop,
-        catalogPages : CatalogPageEventLoop,
-        interestedParty : InterestedPartyEventLoop
-      },
-
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      // firebaseStorage : 'https://firebasestorage.googleapis.com/v0/b/price-the-vintage.appspot.com/o/cover-pngs%2F',
-
-      _createImgUrl : function(catalog) {
+      _createImgUrl(catalog) {
         this.$.image.style.display = 'none';
         var url = this.apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
         var img = new Image();
@@ -232,23 +169,35 @@
         img.src = url;
         
         return url;
-      },
-
-      _createSrcSet : function(catalog) {
-        return  this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + catalog.media_id;
-      },
-
-      _onUpdate : function() {
-        this.getEventLoop().userActivity.req();
-        if( !this.catalog ) return;
-        this.percentComplete = this.catalog.pages_finished+' / '+this.catalog.pages;
-      },
-
-      _select : function(e) {
-        this.eventLoop.catalogPages.req();
       }
-    });
 
-})();
+      _createSrcSet(catalog) {
+        return this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + catalog.media_id;
+      }
+
+      _onUpdate() {
+        if( !this.catalog ) return;
+
+        this._getUserActivity();
+        this.percentComplete = this.catalog.pages_finished+' / '+this.catalog.pages;
+      }
+
+      _sendInterestedPartyResponse() {
+        if( !this._isCatalogIdSet() ) return;
+        super._sendInterestedPartyResponse(
+          this.catalog.catalog_id,
+          ['activity']
+        )
+      }
+
+      _onInterestedPartyRequest(e) {
+        if( this.active && this._isCatalogIdSet() ) {
+          this._sendInterestedPartyResponse();
+        }
+      }
+
+    }
+    window.customElements.define(AppCatalogThumbnail.is, AppCatalogThumbnail);
+
   </script>
 </dom-module>

@@ -1,0 +1,36 @@
+<script>
+  const CatalogsMixin = subclass =>
+  
+  class CatalogsController extends subclass {
+      get bind() {
+        return Object.assign(
+          super.bind,
+          {
+            'catalog-update' : '_onCatalogUpdate',
+            'search-catalogs-update' : '_onCatalogSearchUpdate',
+            'selected-catalog-update' : '_onCatalogSelectedUpdate'
+          }
+        );
+      }
+
+      _searchCatalogs(query) {
+        return this.emit('search-catalogs', {query});
+      }
+
+      _getCatalog(id) {
+        return this.emit('get-catalog');
+      }
+
+      _onCatalogUpdate(e) {
+        // implement me
+      }
+
+      _onCatalogSearchUpdate(e) {
+        // implement me
+      }
+
+      _onCatalogSelectedUpdate(e) {
+        // implement me
+      }
+  }
+</script>

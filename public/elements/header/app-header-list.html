@@ -76,7 +76,7 @@
         </h2>
 
         <div id="outer-input" hidden$="[[!searchBoxActive]]">
-          <input id="input" on-keyup="_search" placeholder="Search Catalogs" />
+          <input id="input" on-keyup="_searchCatalogsDelay" placeholder="Search Catalogs" />
         </div>
 
       </div>
@@ -91,81 +91,37 @@
   </template>
   <script>
 
-(function() {
+    class AppHeaderList extends 
+          Mixin(Polymer.Element)
+          .with(EventBusMixin, CatalogsMixin, AppStateMixin) {
 
-    var SearchCatalogsEventLoop = {
-      req : {
-        event : 'search-catalogs',
-        handle : function() {
-          this.eventLoop.appState.req({
-            state: {
-              searching : true,
-              searchText : this.$.input.value
-            }
-          });
-        },
-        payload : function() {
-          return {
-            query : {
-              q : this.$.input.value,
-              exact : this.appState.searchExact
+      static get is() { return 'app-header-list'; }
+
+      static get properties() {
+        return {
+            searchBoxActive : {
+              type : Boolean,
+              value : false
+            },
+            appState : {
+              type : Object,
+              value : function() {
+                return {}
+              }
             }
           }
-        },
-        debounce : 500
-      },
+      }
 
-      resp : {
-        event : 'search-catalogs-update',
-        handle : function(e) {
-          return e.state === 'loaded'
-        },
-        handler : function(e) {
-          this.eventLoop.appState.req({
-            state: {
-              searching : false
-            }
+      _searchCatalogsDelay() {
+        this.debounce('searchCatalog', () => {
+          this._searchCatalogs({
+            q : this.$.input.value,
+            exact : this.appState.searchExact
           });
-        }
+        }, 500);
       }
-    };
 
-    var AppStateEventLoop = {
-      req : {
-        event : 'update-app-state'
-      },
-      resp : {
-        event : 'app-state-update',
-        handler : function(e) {
-          this.appState = e;
-        }
-      }
-    }
-
-    Polymer({
-      is: 'app-header-list',
-
-      properties : {
-        searchBoxActive : {
-          type : Boolean,
-          value : false
-        },
-        appState : {
-          type : Object,
-          value : function() {
-            return {}
-          }
-        }
-      },
-
-      eventLoops : {
-        searchCatalogs : SearchCatalogsEventLoop,
-        appState : AppStateEventLoop
-      },
-
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      _toggleSearch : function(){
+      _toggleSearch() {
         this.searchBoxActive = !this.searchBoxActive;
 
         if( this.searchBoxActive ) {
@@ -175,17 +131,12 @@
           this.eventLoop.searchCatalogs.req();
         }
 
-        this.eventLoop.appState.req({
-          state: {
-            searchBoxActive : this.searchBoxActive
-          }
+        this._setAppState({
+          searchBoxActive : this.searchBoxActive
         });
-      },
-
-      _search : function() {
-        this.eventLoop.searchCatalogs.req();
       }
-    });
-})();
+    }
+
+    window.customElements.define(AppHeaderList.is, AppHeaderList);
   </script>
 </dom-module>

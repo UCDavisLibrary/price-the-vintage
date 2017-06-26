@@ -11,6 +11,12 @@
         );
       }
 
+      ready() {
+        super.ready();
+        this._getAuthState()
+            .then((e) => this._onAuthUpdate(e));
+      }
+
       _getAuthState(state) {
         return this.emit('get-auth-state');
       }
@@ -19,7 +25,12 @@
         return this.emit('auth-login-custom', token);
       }
 
+      _loginAuth0() {
+        return this.ebEmit('login-auth0');
+      }
+
       _logout() {
+        localStorage.removeItem('auth0-profile');
         return this.emit('auth-logout');
       }
 
