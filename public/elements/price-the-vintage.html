@@ -56,7 +56,7 @@ Parses URL on hash change and sets appState.
 
     class PriceTheVintage extends 
           Mixin(Polymer.Element)
-          .with(EventBusMixin, AppStateMixin, AuthMixin) {
+          .with(EventBusMixin, AppStateMixin, AuthMixin, UserActivityMixin) {
 
       static get is() { return 'price-the-vintage'; }
 
@@ -84,7 +84,7 @@ Parses URL on hash change and sets appState.
         this._getAuthState().then((e) => this._onAuthStateUpdate(e));
 
         // hack
-        this.$.toolbar.$.topBar.style.padding = '0 8px';
+        // this.$.toolbar.$.topBar.style.padding = '0 8px';
       }
 
       _onAuthStateUpdate(e) {
@@ -128,6 +128,7 @@ Parses URL on hash change and sets appState.
        * still falls short in some areas and is a mess to implement. 
        **/
       _setPageAndAppState(event, firstLoad) {
+
         // are we in the middle of auth0 redirect?
         // if so, ignore this.
         if( firstLoad && this._isAuthRedirect() ) return;
@@ -161,6 +162,8 @@ Parses URL on hash change and sets appState.
 
         // parse app state information based on location in hash route
         parts.forEach(this._parseRoute.bind(this));
+
+        this.selectedSection = this.route.section;
 
         // set the current app state
         this._setAppState({

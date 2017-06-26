@@ -39,16 +39,13 @@
 
   </template>
   <script>
-    Polymer({
-      is: 'app-header',
+    class AppHeader extends 
+          Mixin(Polymer.Element)
+          .with(EventBusMixin, AppStateMixin) {
 
-      behaviors : [EventBusBehavior],
+      static get is() { return 'app-header'; }
 
-      ebBind : {
-        'app-state-update' : '_onAppStateUpdate'
-      },
-
-      _onAppStateUpdate : function(e) {
+      _onAppStateUpdate(e) {
         if( e.editingMark || e.viewingMark ) {
           this.section = 'editing';
         } else if ( e.section === 'home' ) {
@@ -57,6 +54,8 @@
           this.section = e.section;
         }
       }
-    });
+    }
+
+    window.customElements.define(AppHeader.is, AppHeader);
   </script>
 </dom-module>

@@ -11,6 +11,11 @@
         );
       }
 
+      ready() {
+        super.ready();
+        this._getAppState().then((e) => this._onAppStateUpdate);
+      }
+
       _setAppState(state) {
         return this.emit('update-app-state', {state});
       }
