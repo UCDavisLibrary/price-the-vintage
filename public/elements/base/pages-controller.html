@@ -23,6 +23,10 @@
         return this.emit('get-page', {id: pageId});
       }
 
+      _getSelectedCatalogPage() {
+        return this.emit('get-selected-catalog-page');
+      }
+
       _getCatalogPageMetadata(pageId) {
         return this.emit('get-page-metadata', {id: pageId});
       }

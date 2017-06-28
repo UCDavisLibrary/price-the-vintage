@@ -14,6 +14,8 @@
         background :#ddd; 
         position : relative;
         display: block;
+        width: 160px;
+        height: 192px;
       }
 
       h3 {
@@ -41,8 +43,8 @@
       }
     </style>
 
-    <paper-material style="height:100%">
-      <div hidden$="[[loading]]" style="position:relative">
+    <paper-material>
+      <div hidden$="[[loading]]">
         <img id="image" style="display:none" class="grid-card-img" src$="[[imgSrc]]" srcset$="[[imgSrcSet]]" alt$="[[catalog.title]]" />
           <div class="align-bottom">
           
@@ -113,10 +115,9 @@
         }
       }
 
-      static get listeners() {
-        return {
-          click : '_getCatalogPages'
-        }
+      ready() {
+        super.ready();
+        this.addEventListener('click', e => this._getCatalogPages(e));
       }
 
       _onUserActivityUpdate(e) {
@@ -142,11 +143,10 @@
       }
 
       _onCatalogPagesUpdate(e) {
-        if( this.active && 
-            e.id === this.catalog.catalog_id && 
+        if( e.id === this.catalog.catalog_id && 
             e.state === 'loaded' ) {
 
-          this.loading = false;
+          // this.loading = false;
 
           if( e.payload.length === 0 ) {
             return alert('This catalog has no pages :(');
@@ -191,9 +191,8 @@
       }
 
       _onInterestedPartyRequest(e) {
-        if( this.active && this._isCatalogIdSet() ) {
-          this._sendInterestedPartyResponse();
-        }
+        if( !this._isCatalogIdSet() ) return;
+        this._sendInterestedPartyResponse();
       }
 
     }

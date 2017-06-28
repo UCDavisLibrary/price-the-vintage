@@ -114,113 +114,101 @@
   </template>
   <script>
 
-(function() {
+    class AppPageCarousel extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, ToggleStateMixin, AppStateMixin, CatalogsMixin, PagesMixin, ConfigMixin) {
+      
+      static get is() { return 'app-page-carousel'; }
 
-    var SelectedCatalogPageEventLoop = {
-      req : {event: 'get-selected-catalog-page'},
-      resp : {
-        event: 'selected-catalog-page-update',
-        handler : function(pageId) {
-          this.selected = pageId;
-
-          this._updateScroll();
-          this._updateButtons();
-        }
-      }
-    };
-
-
-    var CatalogPagesEventLoop = {
-      req : {
-        event : 'get-catalog-pages',
-        handle : function() {
-          return (this.active && this.catalogId)
-        },
-        payload : function() {
-          return {
-            id : this.catalogId
+      static get properties() {
+        return {
+          catalogId: {
+            type: String,
+            value : ''
           }
         }
-      },
-      resp : {
-        event: 'catalog-pages-update',
-        handle : function(e) {
-          if( !this.active || e.id !== this.catalogId ) return false;
-
-          this.toggleState(e.state, 'loading-state');
-          return (e.state === 'loaded')
-        },
-        handler : function(e) {
-          this.pages = e.payload;
-          this.pageOffset = this.pages[0].page;
-          this._updateButtons();
-          this._updateScroll();
-        }
       }
-    };
 
-    Polymer({
-      is: 'app-page-carousel',
+      get bind() {
+        return Object.assign(
+          super.bind,
+          {
+            'ui-clear-search-catalog-pages' : '_clearSearch'
+          }
+        )
+      }
 
-      properties: {
-        catalogId: {
-          type: String,
-          value : ''
-        },
-        active: {
-          type: Boolean,
-          value: false,
-          observer : '_onActive'
-        },
-        apiHost : {
-          type : String,
-          value : ''
-        }
-      },
-
-      behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
-
-      eventLoops : {
-        selectedCatalogPage : SelectedCatalogPageEventLoop,
-        catalogPages : CatalogPagesEventLoop
-      },
-
-      ebBind : {
-        'selected-catalog-update' : '_onSelectedCatalogUpdate',
-        'catalog-update' : '_updateScroll',
-        'ui-clear-search-catalog-pages' : '_clearSearch',
-        'search-catalog-pages-update' : '_searchUpdate'
-      },
-
-      ready : function() {
+      ready() {
+        super.ready();
         this.toggleState('loading', 'loading-state');
-        this._getApi();
         this.animateScroll = new AnimateScroll();
-      },
+      }
 
-      _onActive : function() {
-        if( !this.active || !this.eventLoop ) return;
+      _onActive() {
+        if( !this.active ) return;
 
-        this.eventLoop.selectedCatalogPage.req();
-        this.eventLoop.catalogPages.req();
-      },
+        this._getSelectedCatalogPage();
+        this._getCatalogPages();
+      }
 
-      _getApi : function() {
-        this.ebEmit('get-api-host', {
-          handler : function(host) {
-            this.apiHost = host;
-            this._onActive();
-          }.bind(this)
-        });
-      },
+      _onAppStateUpdate(appState) {
+        this.selected = appState.pageId;
+        this.catalogId = appState.catalogId;
 
-      _onSelectedCatalogPageUpdate : function(pageId) {
+        this._updateScroll();
+        this._updateButtons();
+        this._getCatalogPages();
+      }
+
+
+      _getCatalogPages() {
+        if( !this.active || !this.catalogId ) return;
+        super._getCatalogPages(this.catalogId);
+      }
+
+      _onCatalogPagesUpdate(e) {
+        if( e.id !== this.catalogId ) return false;
+
+        this.toggleState(e.state, 'loading-state');
+        if( e.state !== 'loaded' ) return;
+
+        this.pages = e.payload;
+        this.pageOffset = this.pages[0].page;
+        this._updateButtons();
+        this._updateScroll();
+      }
+
+      _onCatalogUpdate() {
+        this._updateScroll();
+      }
+
+      _onCatalogPagesSearchUpdate(e) {
+        if( e.state !== 'loaded' ) return;
+
+        this.searchResults = e.results.results;
+
+        this.pages.forEach(function(page, index) {
+          var matched = this._getResultsPageById(e.results.results, page.page_id);
+          this.set('pages.'+index+'.noMatch', !matched ? true : false);
+        }.bind(this));
+
+        var page = 0;
+        while( !this._getResultsPageById(this.searchResults, this._getPageIdFromPageNumber(page)) ) {
+          page++;
+          if( page === this.pages.length ) {
+            return;
+          }
+        }
+        window.location.hash = this.catalogId + '/' + this._getPageIdFromPageNumber(page);
+      }
+
+      _onSelectedCatalogPageUpdate(pageId) {
         this.selected = pageId;
         this._updateScroll();
         this._updateButtons();
-      },
+      }
 
-      _updateScroll : function() {
+      _updateScroll() {
         if( !this.pages || !this.selected ) return;
 
         var currentPage;
@@ -249,16 +237,9 @@
           }.bind(this));
 
         }
-      },
+      }
 
-      _onSelectedCatalogUpdate : function(id) {
-        this.catalogId = id;
-
-        this.eventLoop.catalogPages.req();
-        this._updateButtons();
-      },
-
-      _getPageNumber : function() {
+      _getPageNumber() {
         if( !this.pages ) return -1;
 
         for( var i = 0; i < this.pages.length; i++ ) {
@@ -266,9 +247,9 @@
             return this.pages[i].page;
           }
         }
-      },
+      }
 
-      _getPageIdFromPageNumber : function(page) {
+      _getPageIdFromPageNumber(page) {
         if( !this.pages ) return -1;
 
         for( var i = 0; i < this.pages.length; i++ ) {
@@ -276,9 +257,9 @@
             return this.pages[i].page_id;
           }
         }
-      },
+      }
 
-      _updateButtons : function() {
+      _updateButtons() {
         var page = this._getPageNumber();
         
         this.$.previousBtn.classList.remove('disabled');
@@ -291,9 +272,9 @@
         if( this.pages && page === this.pages[this.pages.length-1].page ) {
           this.$.nextBtn.classList.add('disabled');
         }
-      },
+      }
 
-      _previous : function(e) {
+      _previous(e) {
         if( e.currentTarget.classList.contains('disabled') ) return;
         var page = this._getPageNumber()-1;
         
@@ -307,9 +288,9 @@
         }
 
         this._onNavBtnClick(page);
-      },
+      }
 
-      _next : function(e) {
+      _next(e) {
         if( e.currentTarget.classList.contains('disabled') ) return;
         var page = this._getPageNumber()+1
 
@@ -323,9 +304,9 @@
         }
 
         this._onNavBtnClick(page);
-      },
+      }
 
-      _onNavBtnClick : function(page) {
+      _onNavBtnClick(page) {
         this.selected = this._getPageIdFromPageNumber(page);
         this._updateScroll();
         this._updateButtons();
@@ -334,40 +315,20 @@
         for( var i = 0; i < pages.length; i++ ) {
           pages[i].onTmpSelectPageUpdate(this.selected);
         }
-      },
+      }
 
-      _select : function(e) {
+      _select(e) {
         window.location.hash = this.catalogId+'/'+e.currentTarget.page.page_id;
-      },
+      }
 
-      _clearSearch : function() {
+      _clearSearch() {
         this.searchResults = null;
         this.pages.forEach(function(page, index){
           this.set('pages.'+index+'.noMatch', false);
         }.bind(this));
-      },
+      }
 
-      _searchUpdate : function(e) {
-        if( e.state !== 'loaded' ) return;
-
-        this.searchResults = e.results.results;
-
-        this.pages.forEach(function(page, index) {
-          var matched = this._getResultsPageById(e.results.results, page.page_id);
-          this.set('pages.'+index+'.noMatch', !matched ? true : false);
-        }.bind(this));
-
-        var page = 0;
-        while( !this._getResultsPageById(this.searchResults, this._getPageIdFromPageNumber(page)) ) {
-          page++;
-          if( page === this.pages.length ) {
-            return;
-          }
-        }
-        window.location.hash = this.catalogId + '/' + this._getPageIdFromPageNumber(page);
-      },
-
-      _getResultsPageById : function(results, id) {
+      _getResultsPageById(results, id) {
         for( var i = 0; i < results.length; i++ ) {
           if( results[i].page_id === id ) {
             return results[i];
@@ -375,9 +336,8 @@
         }
         return null;
       }
+    }
 
-    });
-
-})();
+    window.customElements.define(AppPageCarousel.is, AppPageCarousel);
   </script>
 </dom-module>

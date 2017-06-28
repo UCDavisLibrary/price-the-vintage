@@ -44,8 +44,6 @@ class EventBusElement extends subclass {
 
     if( !this.getEventBus() || !this.bind ) return;
 
-    
-
     for( var key in this.bind ) {
       if( !this[this.bind[key]] ) {
         console.warn(`${this.nodeName} could not bind event ${key} to ${this.bind[key]}`);

@@ -1,0 +1,68 @@
+<script>
+  const MarksMixin = subclass =>
+  
+  class MarksController extends subclass {
+      get bind() {
+        return Object.assign(
+          super.bind,
+          {
+            'catalog-page-marks-update' : '_onMarksUpdate',
+            'approved-catalog-page-marks-update' : '_onMarksApproved',
+            'pending-mark-search-update' : '_onPendingMarkSearchUpdate'
+          }
+        );
+      }
+
+      _getMarks(pageId) {
+        return this.emit('get-catalog-page-marks', {id: pageId});
+      }
+
+      _getMark(pageId, markId) {
+        return this.emit('get-catalog-page-mark', {pageId, markId});
+      }
+
+      _listenToMark(pageId, markId) {
+        return this.emit('listen-to-mark', {pageId, markId});
+      }
+
+      _addMark(pageId, mark) {
+        return this.emit('add-catalog-page-mark', {pageId, mark});
+      }
+
+      _editMark(pageId, markId, mark) {
+        return this.emit('edit-catalog-page-mark', {pageId, markId, mark});
+      }
+
+      _voteOnMark(pageId, markId, vote) {
+        return this.emit('vote-catalog-page-mark', {pageId, markId, vote});
+      }
+
+      _removeMark(pageId, markId) {
+        return this.emit('delete-catalog-page-mark', {pageId, markId});
+      }
+
+      _pendingMarkSearch(query) {
+        return this.emit('pending-mark-search', {query});
+      }
+
+      _updateTempMark(pageId, xy) {
+        return this.emit('update-temp-catalog-page-mark', {pageId, xy});
+      }
+
+      _removeTempMark() {
+        return this.emit('remove-temp-catalog-page-mark');
+      }
+
+      _onMarksUpdate(e) {
+        // implement me
+      }
+
+      _onMarksApproved(e) {
+        // implement me
+      }
+
+      _onPendingMarkSearchUpdate(e) {
+        // implement me
+      }
+  }
+</script>

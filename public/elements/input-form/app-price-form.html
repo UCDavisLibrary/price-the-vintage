@@ -52,58 +52,46 @@
   </template>
   <script>
 
-(function(){
+    class AppPriceForm extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, AuthMixin) {
+      
+      static get is() { return 'app-price-form' }
 
-    var AuthStateEventLoop = {
-      req : {
-        event : 'get-auth-state',
-      },
-
-      resp : {
-        event : 'auth-update',
-        handler : function(e) {
-          this.userState = e;
+      static get properties() {
+        return {
+          addSpace : {
+            type : Boolean,
+            value : false
+          },
+          userState : {
+            type : Object,
+            value : function() {
+              return {}
+            }
+          },
+          pageId: {
+            type : String,
+            value : ''
+          },
+          disabled : {
+            type : Boolean,
+            value : false
+          }
         }
       }
-    };
 
-    Polymer({
-      is: 'app-price-form',
+      _onAuthUpdate(e) {
+        this.userState = e;
+      }
 
-      properties : {
-        addSpace : {
-          type : Boolean,
-          value : false
-        },
-        userState : {
-          type : Object,
-          value : function() {
-            return {}
-          }
-        },
-        pageId: {
-          type : String,
-          value : ''
-        },
-        disabled : {
-          type : Boolean,
-          value : false
-        }
-      },
-
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      eventLoops : {
-        authState : AuthStateEventLoop
-      },
-
-      ready : function() {
+      ready() {
+        super.ready();
         window.addEventListener('resize', this._resize.bind(this));
-        this.eventLoop.authState.req();
         this._resize();
-      },
+      }
 
-      _resize : function() {
+      _resize() {
         var h = Math.floor(window.innerHeight * 0.5);
 
         this.style.maxHeight = h+'px';
@@ -111,13 +99,13 @@
 
         var maxFormSize = 72 * 7;
         // TODO;
-      },
+      }
 
-      _cancel : function() {
+      _cancel() {
         this.hide();
-      },
+      }
 
-      show : function(mark) {
+      show(mark) {
         if( !mark.data.approved &&
             this.userState && 
             this.userState.user &&
@@ -131,20 +119,20 @@
 
         this.$.form.show(mark);
         this.style.display = 'block';
-      },
+      }
 
-      create : function(ll) {
+      create(ll) {
         this.type = 'edit';
         this.disabled = false;
         this.$.form.create(ll);
         this.style.display = 'block';
-      },
+      }
 
-      hide : function() {
+      hide() {
         this.style.display = 'none';
       }
-    });
+    }
 
-})();
+    window.customElements.define(AppPriceForm.is, AppPriceForm);
   </script>
 </dom-module>

@@ -24,7 +24,11 @@ Parses URL on hash change and sets appState.
       }
 
       iron-pages {
-        position: relative;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
       }
     </style>
 
@@ -56,7 +60,7 @@ Parses URL on hash change and sets appState.
 
     class PriceTheVintage extends 
           Mixin(Polymer.Element)
-          .with(EventBusMixin, AppStateMixin, AuthMixin, UserActivityMixin) {
+          .with(EventBusMixin, AppStateMixin, AuthMixin, UserActivityMixin, CatalogsMixin) {
 
       static get is() { return 'price-the-vintage'; }
 
@@ -91,8 +95,8 @@ Parses URL on hash change and sets appState.
       _onAuthStateUpdate(e) {
         this.authState = e;
 
-        if( this.route && e.state === 'loggedIn' && this.route.catalog && this.route.page ) {
-          this._setUserActivity(this.route.catalog, this.route.page);
+        if( this.route && e.state === 'loggedIn' && this.route.catalogId && this.route.pageId ) {
+          this._setUserActivity(this.route.catalogId, this.route.pageId);
         }
       }
 
@@ -141,7 +145,9 @@ Parses URL on hash change and sets appState.
           page : '',
           edit : false,
           viewMark : false,
-          markId : ''
+          markId : '',
+          catalogId : '',
+          pageId : ''
         }
 
         // if( !window.localStorage.getItem('first-viewing') ) {
@@ -171,7 +177,9 @@ Parses URL on hash change and sets appState.
             section: this.route.section,
             editingMark: this.route.edit,
             viewingMark: this.route.viewMark,
-            markId : this.route.markId
+            markId : this.route.markId,
+            pageId : this.route.pageId,
+            catalogId : this.route.catalogId
         });
 
         // set the selected catalog (this may be empty)
@@ -212,12 +220,13 @@ Parses URL on hash change and sets appState.
             // }
 
             this.route.section = 'catalog';
-            this.route.catalog = value;
-            this.emit('select-catalog', {id: value});
+            this.route.catalogId = value;
+            this._selectCatalog(value);
+
             break;
           case 1:
             this.route.section = 'page';
-            this.route.page = value;
+            this.route.pageId = value;
             break;
           case 2:
             if( value === 'edit') this.route.edit = true;

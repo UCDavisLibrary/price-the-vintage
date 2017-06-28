@@ -21,6 +21,14 @@
         return this.emit('get-catalog');
       }
 
+      _getSelectedCatalog() {
+        return this.emit('get-selected-catalog');
+      }
+
+      _selectCatalog(id) {
+        return this.emit('select-catalog', {id});
+      }
+
       _onCatalogUpdate(e) {
         // implement me
       }

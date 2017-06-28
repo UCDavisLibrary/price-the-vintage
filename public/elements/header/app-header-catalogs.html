@@ -50,7 +50,7 @@
       _onCatalogSelectedUpdate(e) {
         this.catalogId = e.id;
 
-        this.getCatalog(e.id)
+        this._getCatalog(e.id)
             .then((e) => this._onCatalogUpdate(e));
       }
 

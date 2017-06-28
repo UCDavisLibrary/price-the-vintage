@@ -1,0 +1,123 @@
+<script>
+  /***
+   * Handle all mark actions for app-page-markup
+   * */
+  const PageMarkup_MarkMixin = subclass =>
+  
+  class PageMarkup_MarkControls extends subclass {
+    static get properties() {
+      return {
+        marks : {
+          type : Object,
+          value : function() {
+            return {};
+          }
+        }
+      }
+    }
+
+    _getMarks() {
+      return super._getMarks(this.selectedPageId)
+                  .then(marks => marks.forEach(this._onMarksUpdate.bind(this)));
+    }
+
+    _onMarkUpdate(e) {
+      if( e.pageId !== this.selectedPageId ) return;
+
+      if( e.state !== 'loaded' || e.deleted ) {
+        this._removeMark(e.id);
+        return;
+      }
+
+      this.marks[e.id] = e;
+
+      if( this.mapMarkers[e.id] ) {
+        if( e.data.isTemp && this._isMyMark(e) ) {
+          return; // don't draw my temp marks
+        }
+
+        this.mapMarkers[e.id].setLatLng([e.data.xy[1], e.data.xy[0]]);
+      } else {
+        this.mapMarkers[e.id] = this._drawMark(e);
+      }
+
+      if( this.currentState.markId ) {
+        if( this.currentState.markId === e.id ) {
+          this._selectAndShowPopup(e.id);
+        } else if( this.mapMarkers[e.id] ) {
+          this.mapMarkers[e.id]._icon.style.display = 'none';
+        }
+      }
+    }
+
+    _onMarksApproved(e) {
+      if( e.state !== 'loaded' || e.pageId !== this.selectedPageId ) return;
+
+      e.payload.forEach((mark) => {
+        if( this.mapMarkers[mark.markId] && this.marksLayer ) {
+          this.mapMarkers[mark.markId].removeFromLayer();
+        }
+
+        this.marks[mark.markId] = {
+          state : 'loaded',
+          pageId : mark.pageId,
+          id : mark.markId,
+          data : mark
+        };
+
+        this.mapMarkers[mark.markId] = this._drawMark(this.marks[mark.markId]);
+      });
+    }
+
+    _removeMark(id) {
+      if( this.marks[id] ) {
+        delete this.marks[id];
+      }
+
+      if( this.mapMarkers[id] ) {
+        this.mapMarkers[id].removeFromLayer();
+        delete this.mapMarkers[id];
+      }
+    }
+
+    _isMyMark(mark) {
+      if( this.userState && (this.userState.user.uid === mark.data.user) ) {
+        return true;
+      }
+      return false;
+    }
+
+    _drawMark(mark) {
+      if( !this.marksLayer ) return null;
+
+      var marker = document.createElement('app-marker');
+      marker.mark = mark;
+      marker.catalogId = this.catalogId;
+      marker.pageId = this.selected;
+      marker.addTo(this.marksLayer);
+
+      return marker;
+    }
+
+    _onAddMarkCancel() {
+      this._removeTmpMark();
+      window.location.hash = this.catalogId + '/' + this.selected;
+    }
+
+    _onDeleteMark(e) {
+      var mark = e.detail;
+      this._removeMark(this.selected, mark.id);
+      window.location.hash = this.catalogId + '/' + this.selected;
+    }
+
+    _onAddMark(e) {
+      this._removeTmpMark();
+    }
+
+    _removeTmpMark() {
+      super._removeTempMark();
+      this._selectMarker();
+    }
+
+  }
+</script>

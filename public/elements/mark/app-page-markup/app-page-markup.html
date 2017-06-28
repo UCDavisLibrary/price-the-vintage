@@ -1,0 +1,322 @@
+<link rel="import" href="../app-page-carousel.html">
+<link rel="import" href="../app-admin-markup-control.html">
+<link rel="import" href="../app-help-text-control.html">
+<link rel="import" href="../app-marker.html">
+
+<link rel="import" href="mark-controls.html">
+<link rel="import" href="catalog-page-controls.html">
+<link rel="import" href="map-controls.html">
+
+
+<dom-module id="app-page-markup">
+  <template>
+    <style include="shared-styles"></style>
+    <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css" />
+    <style>
+        :host {
+          display: block;
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom:0;
+        }
+
+        .leaflet-div-icon {
+          border: none !important;
+          background: transparent !important;
+        }
+
+        [state="loaded"] {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom:0;
+        }
+
+        [state="loading"] {
+          text-align: center;
+          margin-top: 100px;
+        }
+
+        #carousel {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+        }
+
+        #nothingToDo {
+          position: absolute;
+          text-align: center;
+          left: 0; 
+          right: 0;
+          top: 0px;
+        }
+        #nothingToDo paper-material {
+          display: inline-block;
+          padding: 0 10px;
+          max-width: 600px;
+          background: white;
+          color: var(--default-primary-color);
+          text-align: left;
+          margin: auto;
+          z-index: 500;
+        }
+    </style>
+
+    <paper-material id="carousel">
+      <app-page-carousel-search 
+        active="[[active]]"
+        catalog-id="[[selectedCatalogId]]" 
+        id="carousel-search">
+      </app-page-carousel-search>
+      <app-page-carousel active="[[active]]"></app-page-carousel>
+    </paper-material>
+
+    <div id="map" state="loaded"></div>
+
+    <app-price-form 
+      id="priceItem" 
+      page-id="[[selected]]"
+      on-add-mark="_onAddMark" 
+      on-cancel="_onAddMarkCancel"
+      on-delete="_onDeleteMark">
+    </app-price-form>
+
+    <div state="loading">
+      <paper-spinner active></paper-spinner>
+    </div>
+
+    <div id="nothingToDo">
+      <div style="margin: 0 50px">
+        <paper-material>
+          <div class="layout center">
+            <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking. Don’t despair, plenty more pages do! Click on another!</div>
+            <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
+          </div>
+        </paper-material>
+      </div>
+    <div>
+
+  </template>
+  <script>
+
+    class AppPageMarkup extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, ToggleStateMixin, AuthMixin, AppStateMixin, 
+            PagesMixin, MarksMixin, CatalogsMixin, ConfigMixin,
+            // flowing are partial mixins to break up this very big element
+            PageMarkup_MarkMixin, PageMarkup_CatalogPageMixin, PageMarkup_MapMixin) {
+      
+      static get is() { return 'app-page-markup' }
+
+      get bind() {
+        return Object.assign(
+          super.bind,
+          {
+            'ui-show-mark-noop-popup' : '_showPopup'
+          }
+        )
+      }
+
+      ready() { 
+        super.ready();
+        this.approvedMarks = {};
+      }
+
+      _onActive() {
+        if( !this.active ) {
+          if( this.addMarker && this.drawTool ) {
+            this._removeTmpMark();
+            this.addMarker = null;
+            this.drawTool.disable();
+            this.drawTool.enable();
+          }
+          return;
+        }
+
+        this._renderAppState();
+        this._updateMapSize();
+      }
+
+      _onAuthUpdate(e) {
+        this.userState = e;
+        this._renderMarkControls();
+      }
+    
+      _onAppStateUpdate(appState) {
+        if( !this.active ) return;
+
+        if( !appState.pageId || !appState.catalogId ) return;
+
+        var oldCatalogId = this.selectedCatalogId;
+        var oldPageId = this.selectedPageId;
+
+        this.selectedCatalogId = appState.catalogId;
+        this.selectedPageId = appState.pageId;
+
+        if( oldCatalogId !== appState.catalogId ) { 
+          this._getMarks()
+              .then(() => this._getCatalogPages());
+        } else if( oldPageId !== appState.pageId ) {
+          this._getMarks();
+        }
+
+        this._renderAppState(appState);
+        this._getCatalogPages();
+      }
+
+      _renderAppState(state) {
+        if( state ) {
+          this.currentState = state;
+        } else {
+          state = this.currentState;
+        }
+
+        this._hidePopup();
+
+        if( !this.active || !this.currentState ) return;
+
+        // there is no /edit stub in url, set map mode to default
+        if( !state.editingMark && !state.viewingMark ) {
+          this._showHideControls(true);
+          this.$.priceItem.hide();
+          if( this.addMarker && this.marksLayer ) {
+            this.marksLayer.removeLayer(this.addMarker);
+          }
+          this.addMarker = null;
+          this._removeTmpMark();
+          this._selectMarker();
+
+        // the draw tool has fired a create mark event.  This marker has
+        // been set as pendingLayer
+        } else if( this.pendingLayer ) {
+
+          this._showHideControls(false);
+          this.$.priceItem.create(this.pendingLayer._latlng);
+          this.marksLayer.addLayer(this.pendingLayer);
+          this.addMarker = this.pendingLayer;
+          this._selectMarker(this.addMarker);
+          this.pendingLayer = null;
+
+        // user has clicked a mark to edit
+        } else if( state.markId ) {
+
+          if( this.marks[state.markId] ) {
+            this._selectAndShowPopup(state.markId);
+          }
+
+        // there is a /edit stub in url, but no action required (proly refresh),
+        // set to normal (non-edit) mode;
+        } else {
+          window.location.hash = this.selectedCatalogId + '/' + this.selectedPageId;
+        }
+      }
+
+      _onInterestedPartyRequest(e) {
+        if( !this.selectedPageId ) return;
+        this._sendInterestedPartyResponse();
+      }
+
+      _sendInterestedPartyResponse() {
+        super._sendInterestedPartyResponse(this.selectedPageId, ['markup']);
+      }
+
+      _reset() {
+        this.selectedPage = null;
+
+        for( var key in this.marks ) {
+          if( this.marks[key].pageId !== this.selectedPageId ) {
+            delete this.marks[key];
+            if( this.mapMarkers[key] ) {
+              delete this.mapMarkers[key];
+            }
+          }
+        }
+
+        if( !this.selectedPageId || !this.pages ) return;
+
+        for( var i = 0; i < this.pages.length; i++ ) {
+          if( this.pages[i].page_id === this.selectedPageId ) {
+            this.selectedPage = this.pages[i];
+            break;
+          }
+        }
+
+        if( !this.selectedPage ) return;
+
+        var img = new Image();
+        var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id;
+
+        if( this.currentImg == url ) {
+          this.toggleState('loaded');
+          return;
+        }
+
+        img.onload = function() {
+          this.bounds = [
+            [0,0],
+            [img.naturalHeight, img.naturalWidth]
+          ];
+          
+          this.toggleState('loaded');
+          this._renderPageOnMap();
+        }.bind(this);
+
+        this.currentImg = url;
+        img.src = url;
+      }
+
+      _selectAndShowPopup(id) {
+        this._showHideControls(false);
+        
+        this.$.priceItem.show(this.marks[id]);
+        
+        this._selectMarker(this.mapMarkers[id], id);
+      }
+
+      _selectMarker(marker, id) {
+
+        if( this.selectedMarker ) {
+          this.selectedMarker.selected = false;
+        }
+
+        this.selectedMarker = marker;
+        if( marker ) {
+          this.selectedMarker.selected = true;
+        }
+
+        if( marker ) {
+          for( var key in this.mapMarkers ) {
+            if( !this.mapMarkers[key] ) continue;
+
+            if( key === id ) {
+              this.mapMarkers[key].show();
+            } else {
+              this.mapMarkers[key].hide();
+            }
+          }
+        } else {
+          for( var key in this.mapMarkers ) {
+            if( !this.mapMarkers[key] ) continue;
+
+            this.mapMarkers[key].show();
+          }
+        }
+      }
+
+      _hidePopup() {
+        this.$.nothingToDo.style.display = 'none';
+      }
+
+      _showPopup() {
+        this.$.nothingToDo.style.display = 'block';
+      }
+    }
+
+    window.customElements.define(AppPageMarkup.is, AppPageMarkup);
+  </script>
+</dom-module>

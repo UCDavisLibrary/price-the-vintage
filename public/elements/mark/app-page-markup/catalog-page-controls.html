@@ -1,0 +1,59 @@
+<script>
+  /***
+   * Handle all mark actions for app-page-markup
+   * */
+  const PageMarkup_CatalogPageMixin = subclass =>
+  
+  class PageMarkup_CatalogPageControls extends subclass {
+    static get properties() {
+      return {
+        selectedPageId : {
+          type : String,
+          value : ''
+        },
+        selectedCatalogId : {
+          type : String,
+          value : ''
+        }
+      }
+    }
+
+    _getCatalogPages() {
+      return super._getCatalogPages(this.selectedCatalogId);
+    }
+
+    _onCatalogPagesUpdate(e) {
+      if( e.id !== this.selectedCatalogId ) return;
+
+      this.toggleState(e.state, 'loading-state');
+      if (e.state !== 'loaded') return;
+
+      this.pages = e.payload;
+      this._reset();
+    }
+
+    _onCatalogSelectedUpdate(selected) {
+      this.selectedCatalogId = selected;
+      this._getCatalogPages();
+    }
+
+    _getCatalogPage() {
+      if( !this.selectedCatalogId ) return;
+      return super._getCatalogPage(this.selectedCatalogId);
+    }
+
+    _onCatalogPageSelectedUpdate(selected) {
+      if( this.selectedPageId ) this._removeTmpMark();
+      if( !selected ) return;
+
+      this.selectedPageId = selected;
+
+      this.toggleState('loading');
+      this._hidePopup();
+
+      this._reset();
+      this._getMarks();
+    }
+
+  }
+</script>
