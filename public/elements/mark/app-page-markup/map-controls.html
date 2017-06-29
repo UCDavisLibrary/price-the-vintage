@@ -33,7 +33,7 @@
           circle: false, // Turns off this drawing tool
           rectangle: false,
           marker: {
-            icon: ''
+            icon: L.divIcon({html: '<app-marker draw-tool-marker></app-marker>'})
           }
         }
       }
@@ -42,6 +42,9 @@
     _renderPageOnMap() {
       if ( !this.bounds ) return
       if( this.map ) this.map.remove();
+
+      // make visible before we show map
+      this.toggleState('loaded');
 
       this.map = L.map(this.$.map, {
         crs: L.CRS.Simple,
@@ -63,8 +66,9 @@
       
       this.map.addLayer(this.marksLayer);
 
-      var myIcon = L.divIcon({html: '<app-marker draw-tool-marker></app-marker>'});
-      this.drawToolOptions.draw.marker.icon = myIcon;
+      // var myIcon = L.divIcon({html: '<app-marker draw-tool-marker></app-marker>'});
+      // var myIcon = L.divIcon({html: '<div>Test</div>'});
+      // this.drawToolOptions.draw.marker.icon = myIcon;
 
       L.drawLocal.draw.handlers.marker.tooltip.start = 'Place by the name of the wine';
       this.drawControl = new L.Control.Draw(this.drawToolOptions);

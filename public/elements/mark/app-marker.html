@@ -54,8 +54,6 @@
   </template>
   <script>
 
-(function() {
-
     L.AppMarker = L.Icon.extend({
       options: {
         className: 'leaflet-div-icon',
@@ -72,73 +70,70 @@
     });
     L.appMarker = new L.AppMarker();
 
-    var AuthStateEventLoop = {
-      req : {event: 'get-auth-state'},
-      resp : {
-        event : 'auth-update',
-        handler : function(e) {
-          this.authState = e;
-          this.render();
+    class AppMarker extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, ToggleStateMixin, AuthMixin) {
+      
+      static get is() { return 'app-marker' }
+
+      static get properties() {
+        return {
+          mark : {
+            type : Object,
+            value : function() {
+              return null;
+            },
+            observer : '_onMarkSet'
+          },
+          selected : {
+            type : Boolean,
+            value : false,
+            observer : 'render'
+          },
+          pageId : {
+            type : String,
+            value : ''
+          },
+          catalogId : {
+            type : String,
+            value : ''
+          },
+          usersMark : {
+            type : Boolean,
+            value : true
+          },
+          moving : {
+            type : Boolean,
+            value : false
+          },
+          icon : {
+            type : String,
+            value : 'device:gps-fixed'
+          },
+          drawToolMarker : {
+            type : Boolean,
+            value : false
+          }
         }
       }
-    };
 
-    Polymer({
-      is: 'app-marker',
+      constructor() {
+        super();
 
-      properties : {
-        mark : {
-          type : Object,
-          value : function() {
-            return null;
-          },
-          observer : '_onMarkSet'
-        },
-        selected : {
-          type : Boolean,
-          value : false,
-          observer : 'render'
-        },
-        pageId : {
-          type : String,
-          value : ''
-        },
-        catalogId : {
-          type : String,
-          value : ''
-        },
-        usersMark : {
-          type : Boolean,
-          value : true
-        },
-        moving : {
-          type : Boolean,
-          value : false
-        },
-        icon : {
-          type : String,
-          value : 'device:gps-fixed'
-        },
-        drawToolMarker : {
-          type : Boolean,
-          value : false
-        }
-      },
+        this.icons = {
+          pending : 'device:gps-fixed',
+          approved : 'check',
+          moving : 'open-with'
+        };
+      }
 
-      icons : {
-        pending : 'device:gps-fixed',
-        approved : 'check',
-        moving : 'open-with'
-      },
+      _onAuthUpdate(e) {
+        this.authState = e;
+        this.render();
+      }
 
-      behaviors : [EventBusBehavior, EventLoopBehavior, StateToggleBehavior],
-
-      eventLoops : {
-        authState : AuthStateEventLoop
-      },
-
-      ready : function() {
-        this.eventLoop.authState.req();
+      ready() {
+        super.ready();
 
         if( this.drawToolMarker ) {
           this.toggleState('creating');
@@ -158,9 +153,9 @@
           this.setLatLng([this.originalXy[1], this.originalXy[0]]);
           this.mark.data.xy = this.originalXy;
         }.bind(this));
-      },
+      }
 
-      _onMarkSet : function() {
+      _onMarkSet() {
         if( !this.mark ) return;
         if( !this.mark.data || this.mark.deleted ) return;
 
@@ -177,9 +172,9 @@
         this.wrapper.on('mousedown', this._onMouseDown.bind(this));
 
         this.render();
-      },
+      }
 
-      _onClick : function() {
+      _onClick() {
         if( this.mark.data.isTemp ) return;
 
         if( !this.mark.data.approved ) {
@@ -187,38 +182,38 @@
         } else {
           window.location.hash = this.catalogId + '/' + this.pageId + '/view/' + this.mark.id;
         }
-      },
+      }
 
-      _onMoveStop : function() {
+      _onMoveStop() {
         this.moving = false;
         this.layer._map.dragging.enable();
         this.render();
-      },
+      }
 
-      _onMouseDown : function(e) {
+      _onMouseDown(e) {
         if( !this.usersMark || this.mark.data.approved || this.mark.data.isTemp ) return;
         if( !this.selected ) return;
 
         this.moving = true;
         this.layer._map.dragging.disable();
         this.render();
-      },
+      }
 
-      _onMouseMove : function(e) {
+      _onMouseMove(e) {
         if( !this.moving ) return;
         this.setLatLng(e.latlng);
         this.mark.data.xy = [e.latlng.lng, e.latlng.lat];
-      },
+      }
 
-      _isUserMark : function() {
+      _isUserMark() {
         if( !this.authState || !this.mark ) return false;
         if( this.authState.user.uid === this.mark.data.user) {
           return true;
         }
         return false;
-      },
+      }
 
-      render : function() {
+      render() {
         if( !this.mark ) return;
         if( this.mark.deleted ) return;
 
@@ -250,36 +245,36 @@
         } else {
           this.icon = this.icons.pending;
         }
-      },
+      }
 
-      hide : function() {
+      hide() {
         this.style.display = 'none';
-      },
+      }
 
-      show : function() {
+      show() {
         this.style.display = 'block';
-      },
+      }
 
-      addTo : function(layer) {
+      addTo(layer) {
         if( !this.wrapper ) return;
         this.layer = layer;
         this.layer._map.on('mousemove', this._onMouseMove.bind(this));
 
         this.wrapper.addTo(layer);
-      },
+      }
 
-      removeFromLayer : function() {
+      removeFromLayer() {
         if( !this.layer ) return;
         this.layer.removeLayer(this.wrapper);
-      },
+      }
 
-      setLatLng : function() {
+      setLatLng() {
         if( !this.wrapper ) return;
         this.wrapper.setLatLng.apply(this.wrapper, arguments);
       }
 
-    });
+    }
 
-})()
+    window.customElements.define(AppMarker.is, AppMarker);
   </script>
 </dom-module>

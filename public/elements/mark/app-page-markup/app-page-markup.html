@@ -12,6 +12,7 @@
   <template>
     <style include="shared-styles"></style>
     <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="bower_components/leaflet-draw/dist/leaflet.draw.css" />
     <style>
         :host {
           display: block;
@@ -141,7 +142,7 @@
           }
           return;
         }
-
+        
         this._checkLoaded();
       }
 
@@ -151,7 +152,13 @@
       }
     
       _onAppStateUpdate(appState) {
-        if( !appState.pageId || !appState.catalogId ) return;
+        console.log(appState);
+        if( !appState.catalogId ) return;
+
+        if( this.selectedCatalogId === appState.catalogId &&
+            this.selectedPageId === appState.pageId ) {
+          return this._renderAppState();
+        }
 
         this.selectedCatalogId = appState.catalogId;
         this.selectedPageId = appState.pageId;
@@ -165,17 +172,16 @@
         this.toggleState('loading');
         this._hidePopup();
 
-        if( !this.active || !this.selectedCatalogId || !this.selectedPageId ) return;
+        if( !this.active || !this.selectedCatalogId ) return;
 
         if( this.selectedCatalogId !== this.loadedCatalog.id ) {
           this.loadedCatalog.id = this.selectedCatalogId;
           this.loadedCatalog.state = '';
           this._getCatalogPages()
-              .then((e) => this._onCatalogPagesUpdate(e))
-              .then(() => this._checkLoaded());
+              .then((e) => this._onCatalogPagesUpdate(e));
         }
         
-        if( this.selectedPageId !== this.requestedMarks ) {
+        if(  this.selectedPageId && this.selectedPageId !== this.requestedMarks ) {
           this.requestedMarks = this.selectedPageId;
           this._getMarks();
         }
@@ -189,7 +195,7 @@
 
       _renderAppState() {
         var state = this.appState;
-  
+
         // there is no /edit stub in url, set map mode to default
         if( !state.editingMark && !state.viewingMark ) {
           this._showHideControls(true);
@@ -238,6 +244,26 @@
       _reset() {
         this.selectedPage = null;
 
+        // if not given a pageId, select the first page
+        if( !this.selectedPageId ) {
+          if( this.pages.length > 0 ) {
+            this._setAppState({
+              pageId : this.pages[0].page_id
+            });
+            return;
+            // this.selectedPageId = this.selectedPage.id;
+            // this.requestedMarks = this.selectedPageId;
+            // this._getMarks();
+          }
+        } else {
+          for( var i = 0; i < this.pages.length; i++ ) {
+            if( this.pages[i].page_id === this.selectedPageId ) {
+              this.selectedPage = this.pages[i];
+              break;
+            }
+          }
+        }
+
         for( var key in this.marks ) {
           if( this.marks[key].pageId !== this.selectedPageId ) {
             delete this.marks[key];
@@ -247,28 +273,19 @@
           }
         }
 
-        for( var i = 0; i < this.pages.length; i++ ) {
-          if( this.pages[i].page_id === this.selectedPageId ) {
-            this.selectedPage = this.pages[i];
-            break;
-          }
-        }
-
-        var img = new Image();
+       
         var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id;
-
         if( this.currentImg == url ) {
-          this.toggleState('loaded');
           return;
         }
 
+        var img = new Image();
         img.onload = function() {
           this.bounds = [
             [0,0],
             [img.naturalHeight, img.naturalWidth]
           ];
           
-          this.toggleState('loaded');
           this._renderPageOnMap();
         }.bind(this);
 

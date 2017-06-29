@@ -28,7 +28,7 @@
 
     class AppHeaderEditing extends 
         Mixin(Polymer.Element)
-        .with(EventBusMixin, AuthMixin, AppStateMixin, CatalogsMixin, PagesMixin) {
+        .with(EventBusMixin, AuthMixin, AppStateMixin) {
       
       static get is() { return 'app-header-editing'; }
     
@@ -53,11 +53,11 @@
         } else if( e.viewingMark ) {
           this.title = 'View Mark';
         }
+
+        this.catalogId = e.catalogId;
+        this.pageId = e.pageId;
       }
 
-      _onSelectedCatalogUpdate(e) {
-        this.catalogId = e.id;
-      }
 
       _onAuthStateUpdate(e) {
         this.userState = e;
@@ -66,12 +66,6 @@
       _cancelEdit() {
         window.location.hash = this.catalogId + '/' + this.pageId;
       }
-
-      _onSelectedCatalogPageUpdate(id) {
-        this.pageId = id;
-      }
-
-
     }
     window.customElements.define(AppHeaderEditing.is, AppHeaderEditing);
   </script>

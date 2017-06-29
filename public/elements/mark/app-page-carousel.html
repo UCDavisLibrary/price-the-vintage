@@ -147,24 +147,25 @@
 
       _onActive() {
         if( !this.active ) return;
-
-        this._getSelectedCatalogPage();
-        this._getCatalogPages();
+        this._render();
       }
 
       _onAppStateUpdate(appState) {
         this.selected = appState.pageId;
         this.catalogId = appState.catalogId;
 
-        this._updateScroll();
-        this._updateButtons();
-        this._getCatalogPages();
+        this._render();
+      }
+
+      _render() {
+        if( !this.selected || !this.catalogId ) return;
+        this._getCatalogPages()
+            .then((e) => this._onCatalogPagesUpdate(e));
       }
 
 
       _getCatalogPages() {
-        if( !this.active || !this.catalogId ) return;
-        super._getCatalogPages(this.catalogId);
+        return super._getCatalogPages(this.catalogId);
       }
 
       _onCatalogPagesUpdate(e) {
