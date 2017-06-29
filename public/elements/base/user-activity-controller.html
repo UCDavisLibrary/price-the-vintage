@@ -16,7 +16,7 @@
       }
 
       _setUserActivity(catalogId, pageId) {
-        return this.emit('get-user-activity', {catalogId, pageId});
+        return this.emit('set-user-activity', {catalogId, pageId});
       }
 
       _onUserActivityUpdate(e) {

@@ -93,6 +93,7 @@
                   no-search-match$="[[page.noMatch]]"
                   catalog-id$="[[catalogId]]" 
                   page="[[page]]" 
+                  active
                   api-host="[[apiHost]]"
                   on-click="_select">
                 </app-page-item>
@@ -311,7 +312,8 @@
         this._updateScroll();
         this._updateButtons();
 
-        var pages = this.querySelectorAll('app-page-item');
+        var pages = this.shadowRoot.querySelectorAll('app-page-item');
+
         for( var i = 0; i < pages.length; i++ ) {
           pages[i].onTmpSelectPageUpdate(this.selected);
         }

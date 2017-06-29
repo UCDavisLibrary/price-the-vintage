@@ -40,6 +40,10 @@
           margin-top: 100px;
         }
 
+        #map {
+          height: 100%;
+        }
+
         #carousel {
           position: absolute;
           bottom: 0;
@@ -138,8 +142,7 @@
           return;
         }
 
-        this._renderAppState();
-        this._updateMapSize();
+        this._checkLoaded();
       }
 
       _onAuthUpdate(e) {
@@ -148,38 +151,45 @@
       }
     
       _onAppStateUpdate(appState) {
-        if( !this.active ) return;
-
         if( !appState.pageId || !appState.catalogId ) return;
-
-        var oldCatalogId = this.selectedCatalogId;
-        var oldPageId = this.selectedPageId;
 
         this.selectedCatalogId = appState.catalogId;
         this.selectedPageId = appState.pageId;
 
-        if( oldCatalogId !== appState.catalogId ) { 
-          this._getMarks()
-              .then(() => this._getCatalogPages());
-        } else if( oldPageId !== appState.pageId ) {
+        this.appState = appState;
+        
+        this._checkLoaded();
+      }
+
+      _checkLoaded() {
+        this.toggleState('loading');
+        this._hidePopup();
+
+        if( !this.active || !this.selectedCatalogId || !this.selectedPageId ) return;
+
+        if( this.selectedCatalogId !== this.loadedCatalog.id ) {
+          this.loadedCatalog.id = this.selectedCatalogId;
+          this.loadedCatalog.state = '';
+          this._getCatalogPages()
+              .then((e) => this._onCatalogPagesUpdate(e))
+              .then(() => this._checkLoaded());
+        }
+        
+        if( this.selectedPageId !== this.requestedMarks ) {
+          this.requestedMarks = this.selectedPageId;
           this._getMarks();
         }
 
-        this._renderAppState(appState);
-        this._getCatalogPages();
+        if( this.loadedCatalog.state !== 'loaded' ) return;
+
+        // data ready to go
+        this._renderAppState();
+        this._reset();
       }
 
-      _renderAppState(state) {
-        if( state ) {
-          this.currentState = state;
-        } else {
-          state = this.currentState;
-        }
-
-        this._hidePopup();
-
-        if( !this.active || !this.currentState ) return;
-
+      _renderAppState() {
+        var state = this.appState;
+  
         // there is no /edit stub in url, set map mode to default
         if( !state.editingMark && !state.viewingMark ) {
           this._showHideControls(true);
@@ -237,16 +247,12 @@
           }
         }
 
-        if( !this.selectedPageId || !this.pages ) return;
-
         for( var i = 0; i < this.pages.length; i++ ) {
           if( this.pages[i].page_id === this.selectedPageId ) {
             this.selectedPage = this.pages[i];
             break;
           }
         }
-
-        if( !this.selectedPage ) return;
 
         var img = new Image();
         var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id;

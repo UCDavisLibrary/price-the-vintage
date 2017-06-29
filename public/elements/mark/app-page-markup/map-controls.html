@@ -83,8 +83,8 @@
         this.mapMarkers[key] = this._drawMark(this.marks[key]);
       }
       
-      if( this.currentState.markId ) {
-        this._selectAndShowPopup(this.currentState.markId);
+      if( this.appState.markId ) {
+        this._selectAndShowPopup(this.appState.markId);
       }
 
       L.control.adminControl({ position: 'topright' }).addTo(this.map);

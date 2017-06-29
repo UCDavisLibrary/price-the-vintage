@@ -183,11 +183,11 @@ Parses URL on hash change and sets appState.
         });
 
         // set the selected catalog (this may be empty)
-        this.emit('select-catalog-page', {id: this.route.page});
+        this.emit('select-catalog-page', {id: this.route.pageId});
 
         // set the user activity, ie which catalog and page the user
         // is currently viewing (this may be empty as well).
-        this._setUserActivity(this.route.catalog, this.route.page);
+        this._setUserActivity(this.route.catalogId, this.route.pageId);
       }
 
       /**
