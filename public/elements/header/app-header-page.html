@@ -239,67 +239,42 @@
   </template>
   <script>
 
-(function(){
+    class AppHeaderPage extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, AuthMixin, CatalogsMixin, AppStateMixin) {
+      
+      static get is() { return 'app-header-page'; }
 
-    var CatalogEventLoop = {
-      req : {
-        event : 'get-catalog',
-        payload : function() {
-          return {id: this.catalog}
-        }
-      },
+      ready() {
+        super.ready();
 
-      resp : {
-        event : 'catalog-update',
-        handle : function(e) {
-          return (e.state === 'loaded' && e.id === this.catalog)
-        },
-        handler : function(e) {
-          this.catalogData = e.payload;
-          this.title = this.catalogData.title;
-        }
-      }
-    };
-
-    var AuthStateEventLoop = {
-      req : {
-        event : 'get-auth-state',
-      },
-
-      resp : {
-        event : 'auth-update',
-        handler : function(e) {
-          this.userState = e;
-        }
-      }
-    };
-
-    Polymer({
-      is: 'app-header-page',
-
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      ebBind : {
-        'selected-catalog-update' : '_onSelectedCatalogUpdate'
-      },
-
-      eventLoops : {
-        catalog : CatalogEventLoop,
-        authState : AuthStateEventLoop
-      },
-
-      ready : function() {
         window.addEventListener('resize', this._resize.bind(this));
-        this.eventLoop.authState.req();
         this._resize();
 
         if( !window.localStorage.getItem('first-catalog-viewing') ) {
           this.$.helpPopup.open();
           window.localStorage.setItem('first-catalog-viewing', 'true');
         } 
-      },
+      }
 
-      _resize : function() {
+      _getCatalog() {
+        return super._getCatalog(this.catalogId);
+      }
+
+      _onCatalogUpdate(e) {
+        if( e.state !== 'loaded' || e.id !== this.catalogId ) {
+          return;
+        }
+
+        this.catalog = e.payload;
+        this.title = this.catalog.title;
+      }
+
+      _onAuthUpdate(e) {
+        this.userState = e;
+      }
+
+      _resize() {
         // 80 px is for padding
         var size = window.innerWidth - 232;
         if( window.innerWidth > 768 ) {
@@ -307,27 +282,27 @@
         }
 
         this.$.title.style.width = size + 'px';
-      },
+      }
 
-      _showHelp : function() {
+      _showHelp() {
         this.$.helpPopup.open();
-      },
+      }
 
-      _hideHelp : function() {
+      _hideHelp() {
         this.$.helpPopup.close();
-      },
+      }
 
-      _onSelectedCatalogUpdate : function(id) {
-        this.catalog = id;
-        this.eventLoop.catalog.req();
-      },
+      _onAppStateUpdate(e) {
+        this.catalogId = e.catalogId;
+        this._getCatalog().then((e) => this._onCatalogUpdate(e));
+      }
 
-      _back : function() {
+      _back() {
         window.location.hash = '/';
       }
 
-    });
+    }
 
-})();
+    window.customElements.define(AppHeaderPage.is, AppHeaderPage);
   </script>
 </dom-module>

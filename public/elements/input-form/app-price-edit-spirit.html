@@ -74,50 +74,51 @@
 
   </template>
   <script>
-    Polymer({
-      is: 'app-price-edit-spirit',
 
-      properties: {
-        pageId : {
-          type : String,
-          value : null,
-        },
-        addSpace : {
-          type : Boolean,
-          value : false
-        },
-        disabled : {
-          type : Boolean,
-          value : false,
-          // have to trigger polymers style shim on update (css vars updated)
-          observer : 'updateStyles'
+    class AppPriceEditSpirit extends Polymer.Element {
+
+      static get is() { return 'app-price-edit-spirit' }
+
+      static get properties() {
+        return {
+          pageId : {
+            type : String,
+            value : null,
+          },
+          addSpace : {
+            type : Boolean,
+            value : false
+          },
+          disabled : {
+            type : Boolean,
+            value : false,
+            // have to trigger polymers style shim on update (css vars updated)
+            observer : 'updateStyles'
+          }
         }
-      },
+      }
 
-      behaviors : [EventBusBehavior],
-
-
-      reset : function() {
+      reset() {
         this.$.name.value = '';
         this.$.price.value = '';
         this.$.casePrice.value = '';
         this.$.country.value = '';
         this.$.spiritType.value = '';
-      },
+      }
 
-      edit : function(data) {
+      edit(data) {
         this.$.name.value = data.name || this.getEmptyValue();
         this.$.spiritType.value = data.spiritType || this.getEmptyValue();
         this.$.country.value = data.country || this.getEmptyValue();
         this.$.price.value = data.price || this.getEmptyValue();
         this.$.casePrice.value = data.casePrice || this.getEmptyValue();
-      },
+      }
 
-      getEmptyValue : function(val) {
+      getEmptyValue(val) {
         return this.disabled ? '-' : (val || '');
-      },
+      }
 
-      getData : function() {
+      getData() {
         return {
            name : this.$.name.value,
            spiritType : this.$.spiritType.value,
@@ -126,6 +127,8 @@
            casePrice : this.$.casePrice.value,
         };
       }
-    });
+    }
+
+    window.customElements.define(AppPriceEditSpirit.is, AppPriceEditSpirit);
   </script>
 </dom-module>

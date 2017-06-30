@@ -79,78 +79,61 @@
   </template>
   <script>
 
-(function(){
+    class AppPriceEditForm extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, AuthMixin, MarksMixin) {
+      
+      static get is() { return 'app-price-edit-form' }
 
-    var AuthStateEventLoop = {
-      req : {
-        event : 'get-auth-state',
-      },
-
-      resp : {
-        event : 'auth-update',
-        handler : function(e) {
-          this.userState = e;
+      static get properties() {
+        return {
+          addSpace : {
+            type : Boolean,
+            value : false
+          },
+          userState : {
+            type : Object,
+            value : function() {
+              return {}
+            }
+          },
+          pageId: {
+            type : String,
+            value : ''
+          },
+          catalogId: {
+            type : String,
+            value : ''
+          },
+          disabled : {
+            type : Boolean,
+            value : false,
+            // have to trigger polymers style shim on update (css vars updated)
+            observer : 'updateStyles'
+          }
         }
       }
-    };
 
-    Polymer({
-      is: 'app-price-edit-form',
+      _onAuthUpdate(e) {
+        this.userState = e;
+      }
 
-      properties : {
-        addSpace : {
-          type : Boolean,
-          value : false
-        },
-        userState : {
-          type : Object,
-          value : function() {
-            return {}
-          }
-        },
-        pageId: {
-          type : String,
-          value : ''
-        },
-        disabled : {
-          type : Boolean,
-          value : false,
-          // have to trigger polymers style shim on update (css vars updated)
-          observer : 'updateStyles'
-        }
-      },
-
-      ebBind : {
-        'ui-delete-mark' : '_delete',
-        'ui-admin-approve-mark' : '_approve',
-      },
-
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      eventLoops : {
-        authState : AuthStateEventLoop
-      },
-
-      ready : function() {
-        this.eventLoop.authState.req();
-      },
-      
-      _setType : function(e) {
+      _setType(e) {
         if( this.$.typeInput.checked ) {
           this.type = 'wine';
         } else {
           this.type = 'spirit';
         }
-      },
+      }
 
-      _reset : function() {
+      _reset() {
         this.type = 'wine';
         this.$.sectionInput.value = '';
         this.$.spirit.reset();
         this.$.wine.reset();
-      },
+      }
 
-      _approve : function() {
+      _approve() {
         var data = this._getData();
 
         this.ebEmit('admin-approve-mark', {
@@ -165,14 +148,14 @@
             this.fire('cancel');
           }.bind(this)
         });
-      },
+      }
 
-      _delete : function() {
+      _delete() {
         if( !confirm('Are you sure you want to delete this mark?!') ) return;
         this.fire('delete', this.editMark);
-      },
+      }
 
-      _getData : function() {
+      _getData() {
         var data = this.$[this.type].getData();
         data.type = this.type;
         data.section = this.$.sectionInput.value;
@@ -197,49 +180,31 @@
         }
 
         return data;
-      },
+      }
 
-      _save : function() {
+      _save() {
         var data = this._getData();
 
         if( !this.editMode ) {
           this.fire('add-mark');
-          this._onAddMark(data);
+          this._addMark(this.pageId, data);
         } else {
           this.editMark.data = data;
-          this._onEditMark();
+          this._editMark(this.pageId, this.editMark.id, data);
         }
 
-        this.fire('cancel');
-      },
-
-      _onAddMark : function(data) {
-        this.ebEmit('add-catalog-page-mark', {
-          pageId : this.pageId,
-          mark : data
-        });
-
         window.location.hash = this.catalogId + '/' + this.pageId;
-      },
-
-      _onEditMark : function() {
-        this.ebEmit('edit-catalog-page-mark', {
-          pageId : this.pageId,
-          markId : this.editMark.id,
-          mark : this.editMark.data
-        });
-
-        window.location.hash = this.catalogId + '/' + this.pageId;
-      },
-
-      _cancel : function() {
         this.fire('cancel');
-      },
+      }
 
-      show : function(mark) {
+      _cancel() {
+        this.fire('cancel');
+      }
+
+      show(mark) {
         this._reset();
 
-        this.ebEmit('ui-mark-edit-start', mark);
+        this.emit('ui-mark-edit-start', mark);
 
         this.editMode = true;
         this.editMark = mark;
@@ -253,15 +218,16 @@
         else this.$.spirit.edit(mark.data);
 
         this.$.voting.show(mark);
-      },
+      }
 
-      create : function(ll) {
+      create(ll) {
         this.ll = ll;
         this.editMode = false;
         this._reset();
       }
-    });
 
-})();
+    }
+
+    window.customElements.define(AppPriceEditForm.is, AppPriceEditForm);
   </script>
 </dom-module>

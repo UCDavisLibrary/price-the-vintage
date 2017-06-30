@@ -39,6 +39,7 @@
       <div>
         <app-price-edit-form
           id="form" 
+          catalog-id="[[catalogId]]"
           page-id="[[pageId]]"
           user-state="[[userState]]"
           disabled$="[[disabled]]"
@@ -54,7 +55,7 @@
 
     class AppPriceForm extends 
       Mixin(Polymer.Element)
-      .with(EventBusMixin, AuthMixin) {
+      .with(EventBusMixin, AuthMixin, AppStateMixin) {
       
       static get is() { return 'app-price-form' }
 
@@ -101,8 +102,13 @@
         // TODO;
       }
 
+      _onAppStateUpdate(e) {
+        this.catalogId = e.catalogId;
+        this.pageId = e.pageId;
+      }
+
       _cancel() {
-        this.hide();
+        window.location.hash = this.catalogId + '/' + this.pageId;
       }
 
       show(mark) {

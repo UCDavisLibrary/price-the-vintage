@@ -47,7 +47,8 @@
     "paper-tabs": "PolymerElements/paper-tabs#^2.0.0",
     "paper-dialog": "PolymerElements/paper-dialog#^2.0.0",
     "webcomponentsjs": "^1.0.1",
-    "paper-styles": "PolymerElements/paper-styles#^2.0.0"
+    "paper-styles": "PolymerElements/paper-styles#^2.0.0",
+    "shadycss": "webcomponents/shadycss#^1.0.1"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

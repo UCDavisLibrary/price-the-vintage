@@ -32,7 +32,7 @@
 
     class AppHeaderCatalogs extends 
           Mixin(Polymer.Element)
-          .with(EventBusMixin, CatalogsMixin) {
+          .with(EventBusMixin, CatalogsMixin, AppStateMixin) {
       
       static get is() { return 'app-header-catalogs'; }
       
@@ -47,10 +47,10 @@
         this.$.title.style.width = (window.innerWidth - 132) + 'px';
       }
 
-      _onCatalogSelectedUpdate(e) {
-        this.catalogId = e.id;
+      _onAppStateUpdate(e) {
+        this.catalogId = e.catalogId;
 
-        this._getCatalog(e.id)
+        this._getCatalog(e.catalogId)
             .then((e) => this._onCatalogUpdate(e));
       }
 

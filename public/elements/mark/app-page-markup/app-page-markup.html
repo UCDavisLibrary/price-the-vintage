@@ -51,6 +51,7 @@
           left: 0;
           right: 0;
           z-index: 1000;
+          box-shadow: 0 0 5px black;
         }
 
         #nothingToDo {
@@ -68,9 +69,20 @@
           color: var(--default-primary-color);
           text-align: left;
           margin: auto;
-          z-index: 500;
+          z-index: 1000;
         }
     </style>
+
+    <div id="nothingToDo">
+      <div style="margin: 0 50px">
+        <paper-material>
+          <div class="layout center">
+            <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking. Don’t despair, plenty more pages do! Click on another!</div>
+            <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
+          </div>
+        </paper-material>
+      </div>
+    </div>
 
     <paper-material id="carousel">
       <app-page-carousel-search 
@@ -94,17 +106,6 @@
     <div state="loading">
       <paper-spinner active></paper-spinner>
     </div>
-
-    <div id="nothingToDo">
-      <div style="margin: 0 50px">
-        <paper-material>
-          <div class="layout center">
-            <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking. Don’t despair, plenty more pages do! Click on another!</div>
-            <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
-          </div>
-        </paper-material>
-      </div>
-    <div>
 
   </template>
   <script>
@@ -152,8 +153,9 @@
       }
     
       _onAppStateUpdate(appState) {
-        console.log(appState);
         if( !appState.catalogId ) return;
+
+        this.appState = appState;
 
         if( this.selectedCatalogId === appState.catalogId &&
             this.selectedPageId === appState.pageId ) {
@@ -161,9 +163,7 @@
         }
 
         this.selectedCatalogId = appState.catalogId;
-        this.selectedPageId = appState.pageId;
-
-        this.appState = appState;
+        this.selectedPageId = appState.pageId;        
         
         this._checkLoaded();
       }
@@ -209,7 +209,7 @@
 
         // the draw tool has fired a create mark event.  This marker has
         // been set as pendingLayer
-        } else if( this.pendingLayer ) {
+      } else if( this.pendingLayer ) {
 
           this._showHideControls(false);
           this.$.priceItem.create(this.pendingLayer._latlng);

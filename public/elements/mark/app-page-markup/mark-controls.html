@@ -97,21 +97,22 @@
       var marker = document.createElement('app-marker');
       marker.mark = mark;
       marker.catalogId = this.catalogId;
-      marker.pageId = this.selected;
+      marker.pageId = this.selectedPageId;
       marker.addTo(this.marksLayer);
 
       return marker;
     }
 
     _onAddMarkCancel() {
+      debugger;
       this._removeTmpMark();
-      window.location.hash = this.catalogId + '/' + this.selected;
+      window.location.hash = this.catalogId + '/' + this.selectedPageId;
     }
 
     _onDeleteMark(e) {
       var mark = e.detail;
-      this._removeMark(this.selected, mark.id);
-      window.location.hash = this.catalogId + '/' + this.selected;
+      this._removeMark(this.selectedPageId, mark.id);
+      window.location.hash = this.catalogId + '/' + this.selectedPageId;
     }
 
     _onAddMark(e) {

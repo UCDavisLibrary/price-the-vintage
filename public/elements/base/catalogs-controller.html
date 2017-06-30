@@ -18,7 +18,7 @@
       }
 
       _getCatalog(id) {
-        return this.emit('get-catalog');
+        return this.emit('get-catalog', {id});
       }
 
       _getSelectedCatalog() {

@@ -87,6 +87,10 @@ class EventBusElement extends subclass {
     });
   }
 
+  fire(event, payload = {}) {
+    this.dispatchEvent(new CustomEvent(event, {detail: payload}));
+  }
+
   debounce(name, callback, timeout) {
     name = `_${name}Debouncer`;
     this[name] = Polymer.Debouncer.debounce(

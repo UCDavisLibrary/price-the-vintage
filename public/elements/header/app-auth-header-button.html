@@ -38,7 +38,7 @@
         text-decoration: none;
       }
 
-      .dropdown-content {
+      [slot="dropdown-content"] {
         color: black;
         white-space: nowrap;
       }
@@ -53,6 +53,10 @@
         text-decoration: none;
         color: black;
       }
+
+      [hidden] {
+        display: none;
+      }
     </style>
 
     <div state="pending">...</div>
@@ -61,13 +65,13 @@
       <paper-icon-button on-click="_loginAuth0" icon="social:person-outline" hidden$="[[!auth.user.isAnonymous]]" ></paper-icon-button>
 
       <paper-menu-button id="menuBtn" hidden$="[[auth.user.isAnonymous]]" horizontal-align="right" vertical-offset="50">
-        <div class="dropdown-trigger">
+        <div slot="dropdown-trigger">
           <div>
             <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
             <img src="[[photo]]" hidden$="[[!hasPhoto]]" alt="User profile image"/>
           </div>
         </div>
-        <div class="dropdown-content">
+        <div slot="dropdown-content">
           <paper-item>[[username]]</paper-item>
           <paper-item on-click="_onLogout" style="cursor:pointer">
             <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout

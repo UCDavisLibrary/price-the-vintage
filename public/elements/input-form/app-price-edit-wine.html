@@ -139,25 +139,27 @@
   </template>
 
   <script>
-    Polymer({
-      is: 'app-price-edit-wine',
-      
-      properties: {
-        pageId : {
-          type : String,
-          value : null,
-        },
-        disabled : {
-          type : Boolean,
-          value : false,
-          // have to trigger polymers style shim on update (css vars updated)
-          observer : 'updateStyles'
-        }
-      },
-      
-      behaviors : [EventBusBehavior],
 
-      reset : function() {
+    class AppPriceEditWine extends Polymer.Element {
+
+      static get is() { return 'app-price-edit-wine' }
+
+      static get properties() {
+        return {
+          pageId : {
+            type : String,
+            value : null,
+          },
+          disabled : {
+            type : Boolean,
+            value : false,
+            // have to trigger polymers style shim on update (css vars updated)
+            observer : 'updateStyles'
+          }
+        }
+      }
+
+      reset() {
         this.$.color.value = 'Red';
         this.$.wineType.value = 'Still';
         this.$.bottleType.value = 'Standard';
@@ -166,9 +168,9 @@
         this.$.casePrice.value = '';
         this.$.year.value = '';
         this.$.country.value = '';
-      },
+      }
 
-      edit : function(data) {
+      edit(data) {
         this.$.color.value = data.color || this.getEmptyValue('Red');
         this.$.wineType.value = data.wineType || this.getEmptyValue('Still');
         this.$.bottleType.value = data.bottleType || this.getEmptyValue('Standard');
@@ -177,13 +179,13 @@
         this.$.casePrice.value = data.casePrice || this.getEmptyValue();
         this.$.country.value = data.country || this.getEmptyValue();
         this.$.year.value = data.year || this.getEmptyValue();
-      },
+      }
 
-      getEmptyValue : function(val) {
+      getEmptyValue(val) {
         return this.disabled ? '-' : (val || '');
-      },
+      }
 
-      getData : function() {
+      getData() {
         return {
           color: this.$.color.value,
           wineType : this.$.wineType.value,
@@ -195,6 +197,9 @@
           year : this.$.year.value
         };
       }
-    });
+
+    }
+
+    window.customElements.define(AppPriceEditWine.is, AppPriceEditWine);
   </script>
 </dom-module>

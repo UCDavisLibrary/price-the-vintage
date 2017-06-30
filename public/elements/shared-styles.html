@@ -1,3 +1,6 @@
+<link rel="import" href="../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+
 <custom-style>
   <style>
       body, html {
@@ -28,6 +31,8 @@
         --primary-background-color: white;
 
 
+        --select-icon: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEVmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaP/QSjAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=");
+
         --select-input: {
           width: 100%;
           border: 0;
@@ -36,28 +41,26 @@
           -moz-appearance: none;
           appearance: none;
           padding-left: 0;
-          padding-right: 0\9;
-          background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAJ1BMVEVmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmaP/QSjAAAADHRSTlMAAgMJC0uWpKa6wMxMdjkoAAAANUlEQVR4AeXJyQEAERAAsNl7Hf3X6xt0QL6JpZWq30pdvdadme+0PMdzvHm8YThHcT1H7K0BtOMDniZhWOgAAAAASUVORK5CYII=);
+          padding-right: 0;
+          background-image: var(--select-icon);
           -webkit-background-size: 13px 13px;
           background-size: 13px;
           background-repeat: no-repeat;
           background-position: right center;
-          -webkit-box-shadow: inset 0 -1px 0 #ddd;
-          box-shadow: inset 0 -1px 0 #ddd;
           font-size: 16px;
           line-height: 1.5;
           display: block;
           height: 37px;
           padding: 6px 0px;
           line-height: 1.846;
-          box-shadow: inset 0 -1px 0 var(--default-primary-color);
+          border-bottom: 1px solid var(--secondary-text-color);
           background-color: transparent;
           -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
           -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
           transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
         }
         --select-input-focus: {
-          box-shadow: inset 0 -2px 0 var(--dark-primary-color);
+          border-bottom: 2px solid var(--dark-primary-color);
         }
 
       }
