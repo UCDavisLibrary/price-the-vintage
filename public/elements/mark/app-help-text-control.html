@@ -9,44 +9,40 @@
         padding: 3px;
         border-radius: 3px;
       }
+      #view {
+        display : none;
+      }
     </style>
 
-    <div state="view">Start by clicking here.</div>
+    <div id="view">Start by clicking here.</div>
 
   </template>
   <script>
 
-(function() {
+
     L.Control.HelpTextControl = L.Control.extend({
       onAdd: function(map) {
           var control = L.DomUtil.create('app-help-text-control');
           return control;
       },
-
-      onRemove: function(map) {
-          // Nothing to do here
-      }
+      onRemove: function(map) {}
     });
 
     L.control.helpTextControl = function(opts) {
-        return new L.Control.HelpTextControl(opts);
+      return new L.Control.HelpTextControl(opts);
     }
 
+    class AppHelpTextControl extends Polymer.Element {
 
-    Polymer({
-      is: 'app-help-text-control',
-
-      behaviors : [StateToggleBehavior],
-
-      // ebBind : {
-      //   'app-state-update' : '_onAppStateUpdate'
-      // },
-
-      ready : function() {
-        this.toggleState('view');
+      static get is() { return 'app-help-text-control' }
+      
+      ready() {
+        super.ready();
+        this.$.view.style.display = 'block'
       }
-    });
 
-})();
+    }
+    window.customElements.define(AppHelpTextControl.is, AppHelpTextControl);
+
   </script>
 </dom-module>

@@ -34,12 +34,12 @@
     
     <div hidden$="[[!show]]">
       <div>
-        <a class="btn" on-click="_toggleDone" marked$="[[isCompleted]]">
+        <a class="btn" on-click="_adminCompletedPage" marked$="[[isCompleted]]">
           <iron-icon icon="done-all"></iron-icon>
         </a>
       </div>
       <div style="margin-top: 5px">
-        <a class="btn" on-click="_toggleIgnore" marked$="[[!isEditable]]">
+        <a class="btn" on-click="_adminIgnorePage" marked$="[[!isEditable]]">
           <iron-icon icon="block"></iron-icon>
         </a>
       </div>
@@ -48,7 +48,7 @@
   </template>
   <script>
 
-(function(){
+
     L.Control.AdminControl = L.Control.extend({
         onAdd: function(map) {
             var control = L.DomUtil.create('app-admin-markup-control');
@@ -59,117 +59,86 @@
             // Nothing to do here
         }
     });
-
     L.control.adminControl = function(opts) {
         return new L.Control.AdminControl(opts);
     }
 
-    var AuthStateEventLoop = {
-      req : {event: 'get-auth-state'},
-      resp : {
-        event : 'auth-update',
-        handler : function(e) {
-          this.authState = e;
 
-          if( e.state === 'loggedIn' && e.user.isAdmin ) {
-            this.show = true;
-          } else {
-            this.show = false;
+    class AppAdminMarkupControl extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, AuthMixin, AppStateMixin, PagesMixin, AdminMixin) {
+
+      static get is() { return 'app-admin-markup-control' };
+
+      static get properties() {
+        return {
+          show : {
+            type : Boolean,
+            value : false
+          },
+          isEditable : {
+            type : Boolean,
+            value : true
+          },
+          isCompleted : {
+            type : Boolean,
+            value : false
           }
-
         }
       }
-    };
+      
+      _onAuthUpdate(e) {
+        this.authState = e;
 
-    var SelectedCatalogPageEventLoop = {
-      req : {
-        event: 'get-selected-catalog-page',
-      },
-      resp : {
-        event : 'selected-catalog-page-update',
-        handler : function(id) {
-          this.pageId = id;
-          if( !this.pageId ) return;
-
-          this.ebEmit('get-page', {
-            id : this.pageId,
-            handler : this._onPageUpdate.bind(this)
-          });
+        if( e.state === 'loggedIn' && e.user.isAdmin ) {
+            this.show = true;
+        } else {
+            this.show = false;
         }
       }
-    };
 
+      _onAppStateUpdate(e) {
+        this.pageId = e.pageId;
+        if( !this.pageId ) return;
 
-    Polymer({
-      is: 'app-admin-markup-control',
+        this._getCatalogPage().then((e) => this._onCatalogPageUpdate(e));
+      }
+      
+      _getCatalogPage() {
+        return super._getCatalogPage(this.pageId);
+      }
 
-      properties : {
-        show : {
-          type : Boolean,
-          value : false
-        },
-        isEditable : {
-          type : Boolean,
-          value : true
-        },
-        isCompleted : {
-          type : Boolean,
-          value : false
-        }
-      },
+      _onCatalogPageUpdate(e) {
+        if( e.state !== 'loaded' || e.id !== this.pageId ) return;
 
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      ebBind : {
-        'catalog-page-update' : '_onPageUpdate'
-      },
-
-      eventLoops : {
-        authState : AuthStateEventLoop,
-        selectedPage : SelectedCatalogPageEventLoop
-      },
-
-      ready : function() {
-        this.eventLoop.authState.req();
-        this.eventLoop.selectedPage.req();
-      },
-
-      _onPageUpdate : function(e) {
-        if( e.state !== 'loaded' ) return;
         this.page = e;
 
-        this.isEditable = this.page.payload.editable;
-        this.isCompleted = this.page.payload.completed;
+        this.isEditable = e.payload.editable;
+        this.isCompleted = e.payload.completed;
 
         if( !this.isEditable || this.isCompleted ) {
-          this.ebEmit('ui-show-mark-noop-popup');
+          this.emit('ui-show-mark-noop-popup');
         }
-      },
+      }
 
-      _toggleDone : function() {
-        this.ebEmit('admin-completed-page', {
-          pageId : this.pageId,
-          completed : !this.page.payload.completed,
-          handler : this._onToggleIgnoreComplete.bind(this)
-        });
-      },
+      _adminCompletedPage() {
+        super._adminCompletedPage(this.pageId, !this.page.payload.completed)
+             .then((err, resp) => this._onToggleDoneComplete(err, resp));
+      }
 
-      _onToggleDoneComplete : function(err, resp) {
-        if( err ) return alert('Failed to update page :(');
-      },
-
-      _toggleIgnore : function() {
-        this.ebEmit('admin-ignore-page', {
-          pageId : this.pageId,
-          ignore : this.page.payload.editable,
-          handler : this._onToggleIgnoreComplete.bind(this)
-        });
-      },
-
-      _onToggleIgnoreComplete : function(err, resp) {
+      _onToggleDoneComplete (err, resp) {
         if( err ) return alert('Failed to update page :(');
       }
-    });
-})();
+
+      _adminIgnorePage() {
+        super._adminIgnorePage(this.pageId, this.page.payload.editable)
+             .then((err, resp) => this._onToggleIgnoreComplete(err, resp));
+      }
+
+      _onToggleIgnoreComplete(err, resp) {
+        if( err ) return alert('Failed to update page :(');
+      }
+    }
+    window.customElements.define(AppAdminMarkupControl.is, AppAdminMarkupControl);
   </script>
 </dom-module>
