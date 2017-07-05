@@ -107,102 +107,64 @@
     
   </template>
   <script>
-    Polymer({
-      is: 'app-review-marks',
 
-      properties : {
-        active : {
-          type : Boolean,
-          value : false,
-          observer : '_onActive'
-        },
-        marks : {
-          type : Array,
-          value : []
-        },
+    class AppReviewMarks extends Mixin(Polymer.Element)
+      .with(EventBusMixin, ConfigMixin, MarksMixin, PagesMixin, AdminMixin) {
 
-        loading : {
-          type : Boolean,
-          value : false
-        },
+      static get is() { return 'app-review-marks' }
 
-        sort : {
-          type : String,
-          value : 'score'
-        },
-
-        hostApi : {
-          type : String,
-          value : ''
-        },
-
-        header : {
-          type : Array,
-          value : function() {
-            return ['Page', 'Data', 'Score', 'Actions'];
-          }
-        },
-
-        pageIndex : {
-          type : Number,
-          value : 0
-        },
-        limit : {
-          type : Number,
-          value : 10
-        },
-        total : {
-          type : Number,
-          value : 0
-        },
-        stop : {
-          type : Number,
-          value : 0
-        },
-        start : {
-          type : Number,
-          value : 0
-        },
-      },
-
-      behaviors : [EventBusBehavior],
-      
-      ebBind : {
-        'pending-mark-search-update' : '_onMarksLoad'
-      },
-
-      ready : function() {
-        this._getApiHost();
-      },
-
-      _onActive : function() {
-        if( !this.active ) return;
-        this._getPendingMarks();
-      },
-
-      _cleanTests : function() {
-        this.ebEmit('admin-clean-test-marks', {
-          handler : function(){
-            alert('Test marks cleared');
-          }.bind(this)
-        });
-      },
-
-      _getPendingMarks : function() {
-        if( !this.active ) return;
-        this.loading = true;
-
-        this.ebEmit('pending-mark-search', {
-          params : {
-            order : this.$.sortInput.value,
-            limit : this.limit,
-            offset : this.limit*this.pageIndex
+      static get properties() {
+        return {
+          marks : {
+            type : Array,
+            value : []
           },
-          handler : this._onMarksLoad.bind(this)
-        });
-      },
 
-      _onMarksLoad : function(e) {
+          loading : {
+            type : Boolean,
+            value : false
+          },
+
+          sort : {
+            type : String,
+            value : 'score'
+          },
+
+          header : {
+            type : Array,
+            value : function() {
+              return ['Page', 'Data', 'Score', 'Actions'];
+            }
+          },
+
+          pageIndex : {
+            type : Number,
+            value : 0
+          },
+          limit : {
+            type : Number,
+            value : 10
+          },
+          total : {
+            type : Number,
+            value : 0
+          },
+          stop : {
+            type : Number,
+            value : 0
+          },
+          start : {
+            type : Number,
+            value : 0
+          }
+        }
+      }
+
+      _onPendingMarkSearchUpdate(e) {
+        this._onMarksLoad(e);
+      }
+
+      _onMarksLoad(e) {
         if( e.state === 'loading' ) return;
         this.loading = false;
 
@@ -224,9 +186,35 @@
 
         this.marks = arr;
         this._updatePaging();
-      },
+      }
 
-      _updatePaging : function() {
+
+      _onActive() {
+        if( !this.active ) return;
+        this._getPendingMarks();
+      }
+
+      _cleanTests() {
+        this._adminClearTestMarks()
+            .then(() => alert('Test marks cleared'));
+      }
+
+      _getPendingMarks () {
+        if( !this.active ) return;
+        this.loading = true;
+
+        var params = {
+          order : this.$.sortInput.value,
+          limit : this.limit,
+          offset : this.limit*this.pageIndex
+        };
+
+        super._pendingMarkSearch(params)
+            .then((e) => this._onMarksLoad(e));
+      }
+
+
+      _updatePaging() {
         this.start = this.searchResults.payload.start+1;
         this.stop = this.searchResults.payload.stop+1;
         this.total = this.searchResults.payload.total;
@@ -241,82 +229,58 @@
         if( this.stop >= this.total ) {
           this.$.nextBtn.setAttribute('disabled', 'disabled');
         }
-      },
+      }
 
-      _prev : function() {
+      _prev() {
         this.pageIndex--;
         this._getPendingMarks();
-      },
+      }
 
-      _next : function() {
+      _next() {
         this.pageIndex++;
         this._getPendingMarks();
-      },
+      }
 
-      _getApiHost : function() {
-        this.ebEmit('get-api-host', {
-          handler : function(host) {
-            this.apiHost = host;
-          }.bind(this)
-        });
-      },
-
-      onDelete : function(e) {
+      onDelete(e) {
         var mark = e.detail.data;
         var index = e.detail.index;
 
         if( !confirm('Are you sure you want to delete this mark?') ) return;
 
-        this.ebEmit('delete-catalog-page-mark', {
-          pageId : mark.page_id,
-          markId : mark.mark_id
-        });
+        this._removeMark(mark.page_id, mark.mark_id);
 
         this.splice('marks', index, 1);
-      },
+      }
 
-      onApprove : function(e) {
+      onApprove(e) {
         var markIndex = e.detail.data;
         var index = e.detail.index;
 
         if( !confirm('Are you sure you want to approve this mark?') ) return;
 
-
-        this.ebEmit('get-catalog-page-mark', {
-          pageId : markIndex.page_id,
-          markId : markIndex.mark_id,
-          callback : function(error, mark) {
-            if( error ) return alert('Failed to get mark');
-
-            this.ebEmit('admin-approve-mark', {
-              pageId : markIndex.page_id,
-              markId : markIndex.mark_id,
-              mark : mark,
-              handler : function(error, success) {
-                if( error ) {
-                  console.error(error);
-                  return alert('Failed to approve mark :(');
-                }
-                this.splice('marks', index, 1);
-              }.bind(this)
+        this._getMark(markIndex.page_id, markIndex.mark_id)
+            .then((mark) => {
+              return this._adminApproveMark(markIndex.page_id,  markIndex.mark_id, mark);
+            })
+            .then(() => {
+              this.splice('marks', index, 1);
+            })
+            .catch((e) => {
+              console.error(e);
+              alert('Failed to approve mark :(');
             });
-
-          }.bind(this) 
-        });
-      },
-
-      onInspect : function(e) {
-        var mark = e.detail.data;
-
-        this.ebEmit('get-page', {
-          id : mark.page_id,
-          handler : function(e) {
-            window.location = '/#'+e.payload.catalog_id+'/'+mark.page_id+'/edit/'+mark.mark_id;
-          }
-        });
       }
 
-      
-    });
+      onInspect(e) {
+        var mark = e.detail.data;
+
+        this._getPage(mark.page_id)
+            .then((e) => {
+              window.location = '/#'+e.payload.catalog_id+'/'+mark.page_id+'/edit/'+mark.mark_id;
+            });
+      }
+    }
+
+    window.customElements.define(AppReviewMarks.is, AppReviewMarks);
   </script>
 </dom-module>

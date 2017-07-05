@@ -48,53 +48,59 @@
 
   </template>
   <script>
-    Polymer({
-      is: 'app-datatable',
+    class AppDatatable extends Mixin(Polymer.Element).with(EventBusMixin) {
 
-      behaviors : [Polymer.Templatizer],
+      static get is() { return 'app-datatable'; } 
 
-      properties : {
-        header : {
-          type : Array,
-          observer : 'render',
-          value : function() {
-            return [];
+      static get properties() {
+        return {
+          header : {
+            type : Array,
+            observer : 'render',
+            value : function() {
+              return [];
+            }
+          },
+          data : {
+            type : Array,
+            observer : 'render'
+          },
+          loading : {
+            type : Boolean,
+            value : false,
+            reflectToAttribute : true
           }
-        },
-        data : {
-          type : Array,
-          observer : 'render'
-        },
-        loading : {
-          type : Boolean,
-          value : false,
-          reflectToAttribute : true
         }
-      },
+      }
 
-      observers: [
-        'render(data.*)',
-        'render(header.*)'
-      ],
+      static get observers() {
+        return [
+          'render(data.*)',
+          'render(header.*)'
+        ]
+      }
 
-      ready : function() {
+      ready() {
+        super.ready();
         this.template = null;
         this.timer = -1;
-      },
+      }
 
-      attached : function() {
-        this.template = Polymer.dom(this).querySelector('template');
-        Polymer.dom(this.root).appendChild(this.template);
-        this.templatize(this.template);
-      },
+      connectedCallback () {
+        super.connectedCallback();
+        
+        this.template = this.querySelector('template');
+        this.root.appendChild(this.template);
+        this.TemplateClass = Polymer.Templatize.templatize(this.template, this);
+      }
 
-      render : function() {
+      render() {
         this.debounce('render', function(){
           this._render();
         }, 100);
-      },
+      }
 
-      _render : function() {
+      _render() {
         this.$.body.innerHTML = '';
 
         if( !this.data ) return this.renderNoResults();
@@ -116,21 +122,23 @@
           row.appendChild(th);
         }
         this.$.head.innerHTML = '';
-        Polymer.dom(this.$.head).appendChild(row);
+        this.$.head.appendChild(row);
 
         if( !this.data ) return;
+
         for( var i = 0; i < this.data.length; i++ ) {
           this.renderRow(this.data[i], i);
         }
-      },
+      }
 
-      renderNoResults : function() {
+      renderNoResults() {
         this.$.table.style.display = 'none';
         this.$.noResults.style.display = 'block';
-      },
+      }
 
-      renderRow : function(data, index) {
-        var clone = this.stamp({item: data});
+      renderRow(data, index) {
+        console.log({item: data});
+        var clone = new this.TemplateClass(data);
 
         var actions = clone.root.querySelectorAll('[trigger]');
         for( var i = 0; i < actions.length; i++ ) {
@@ -149,10 +157,10 @@
           }
         }
 
-        Polymer.dom(this.$.body).appendChild(clone.root);
-      },
+        this.$.body.appendChild(clone.root);
+      }
 
-      triggerActionEvent : function(ele, data, index) {
+      triggerActionEvent(ele, data, index) {
         this.fire(ele.getAttribute('trigger'),
           {
             element : ele,
@@ -162,6 +170,7 @@
         );
       }
 
-    });
+    }
+    window.customElements.define(AppDatatable.is, AppDatatable)
   </script>
 </dom-module>

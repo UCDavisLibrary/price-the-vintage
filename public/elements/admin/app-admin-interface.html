@@ -12,71 +12,38 @@
   </template>
   <script>
 
-(function(){
+    class AppAdminInterface extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, AuthMixin, AppStateMixin) {
 
-    var AuthStateEventLoop = {
-      req : {
-        event : 'get-auth-state'
-      },
-      resp : {
-        event : 'auth-update',
-        handle : function(e) {
-          if( e.state === 'pending' ) return false;
-          return true;
-        },
-        handler : function(e) {
-          this.auth = e;
-          this._onUpdate();
+      static get is() { return 'app-admin-interface' };
+
+      static get properties() {
+        return {
+          selected : {
+            type : Number,
+            value : false
+          }
         }
       }
-    }
 
-    var AppStateEventLoop = {
-      req : {
-        event : 'get-app-state'
-      },
-      resp : {
-        event : 'app-state-update',
-        handler : function(e) {
-          this.appState = e;
-          this._onUpdate();
-        }
+      _onAuthUpdate(e) {
+        if( e.state === 'pending' ) return;
+        this.auth = e;
+        this._onUpdate();
       }
-    }
 
-    Polymer({
-      is: 'app-admin-interface',
-
-      properties : {
-        active : {
-          type : Boolean,
-          value : false,
-        },
-        selected : {
-          type : Number,
-          value : 0
-        }
-      },
-
-      behaviors : [EventBusBehavior, EventLoopBehavior],
-
-      eventLoops : {
-        authState : AuthStateEventLoop,
-        appState : AppStateEventLoop
-      },
-
-      ready : function() {
-        this.eventLoop.authState.req();
-        this.eventLoop.appState.req();
-      },
-
-      _onUpdate : function() {
-        this.debounce('_onUpdate', this._onUpdateAsync.bind(this), 100);
-      },
-
-      _onUpdateAsync : function() {
+      _onAppStateUpdate(e) {
+        this.appState = e;
         if( this.appState.section !== 'admin' ) return;
+        this._onUpdate();
+      }
 
+      _onUpdate() {
+        this.debounce('_onUpdate', this._onUpdateAsync.bind(this), 100);
+      }
+
+      _onUpdateAsync() {
         if( this.auth.state === 'notLoggedIn' || !this.auth.user ) {
           window.location.hash = '';
           return;
@@ -86,8 +53,8 @@
         }
       }
 
-    });
+    }
 
-})();
+    window.customElements.define(AppAdminInterface.is, AppAdminInterface);
   </script>
 </dom-module>

@@ -42,105 +42,70 @@
   </template>
   <script>
 
-(function(){
-  
-    var GetPageEventLoop = {
-      req : {
-        event : 'get-page',
-        payload : function() {
-          return {id: this.mark.page_id}
-        }
-      },
+    class CatalogPageMarksUpdate extends Mixin(Polymer.Element)
+          .with(EventBusMixin, PagesMixin, MarksMixin, ConfigMixin) {
 
-      resp : {
-        event : 'catalog-page-update',
-        handle : function(e) {
-          if( e.state !== 'loaded' || e.id !== this.mark.page_id ) return false;
-          return true;
-        },
-        handler : function(e) {
-          this._renderImage(e);
-        },
-        debounce : 100
+      static get is() {
+        return 'app-page-admin-mark-icon';
       }
-    };
 
-    var GetMarkEventLoop = {
-      req : {
-        event : 'get-catalog-page-mark',
-        payload : function() {
-          return {
-            markId: this.mark.mark_id,
-            pageId: this.mark.page_id,
-          }
-        }
-      },
-
-      resp : {
-        event : 'catalog-page-marks-update',
-        handle : function(e) {
-          if( e.state !== 'loaded' || e.id !== this.mark.mark_id ) return false;
-          return true;
-        },
-        handler : function(e) {
-          this._markReady(e);
-        },
-        debounce : 100
-      }
-    };
-
-    Polymer({
-      is: 'app-page-admin-mark-icon',
-
-      properties : {
-        mark : {
+      static get properties() {
+        return  {
           type : Object,
           observer : '_render',
           value : function() {
             return {};
           }
-        },
-        apiHost : {
-          type : String,
-          value : ''
-        },
-      },
+        }
+      }
 
-      behaviors : [EventBusBehavior, EventLoopBehavior],
+      _getPage() {
+        return super._getPage(this.mark.page_id);
+      }
 
-      eventLoops : {
-        getPage : GetPageEventLoop,
-        getMark : GetMarkEventLoop
-      },
+      _onCatalogPageUpdate(e) {
+        if( e.state !== 'loaded' || e.id !== this.mark.page_id ) return;
+        this._renderImage(e);
+      }
 
-      ready : function() {
+      _getMark(e) {
+        return super._getMark(this.mark.mark_id, this.mark.page_id);
+      }
+
+      _onMarksUpdate(e) {
+        if( e.state !== 'loaded' || e.id !== this.mark.mark_id ) return;
+        this._markReady(e);
+      }
+
+      ready() {
+        super.ready();
         this._render();
-      },
+      }
 
-      _render : function() {
+      _render() {
         if( !this.mark || !this.eventLoop ) return;
         this.imgHeight = -1;
         this.marker = null;
 
-        this.eventLoop.getPage.req();
-        this.eventLoop.getMark.req();
-      },
+        this._getPage();
+        this._getMark();
+      }
 
-      _markReady : function(e) {
+      _markReady(e) {
         this.marker = e;
         if( !this.marker.data ) return; // mark was deleted
         this._setPosition();
-      },
+      }
 
-      _setPosition : function() {
+      _setPosition() {
         if( this.imgHeight !== -1 && this.marker && this.marker.data ) {
           var x = (-1*this.marker.data.xy[0]+20)+'px ';
           var y = (-1*(this.imgHeight - this.marker.data.xy[1])+20)+'px';
           this.$.img.style.backgroundPosition = x+y;
         }
-      },
+      }
 
-      _renderImage : function(e) {
+      _renderImage(e) {
         this.page = e;
 
         var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.page.payload.media_id;
@@ -153,8 +118,7 @@
 
         this.$.img.style.backgroundImage = 'url("'+url+'")';
       }
-    });
 
-})();
+    }
   </script>
 </dom-module>
