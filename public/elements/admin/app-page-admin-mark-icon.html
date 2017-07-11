@@ -51,16 +51,18 @@
 
       static get properties() {
         return  {
-          type : Object,
-          observer : '_render',
-          value : function() {
-            return {};
+          mark : {
+            type : Object,
+            observer : '_render',
+            value : function() {
+              return {};
+            }
           }
         }
       }
 
-      _getPage() {
-        return super._getPage(this.mark.page_id);
+      _getCatalogPage() {
+        return super._getCatalogPage(this.mark.page_id);
       }
 
       _onCatalogPageUpdate(e) {
@@ -69,7 +71,9 @@
       }
 
       _getMark(e) {
-        return super._getMark(this.mark.mark_id, this.mark.page_id);
+        if( !this.mark.mark_id ) return;
+        return super._getMark(this.mark.mark_id, this.mark.page_id)
+                    .then((e) => this._onMarksUpdate(e));
       }
 
       _onMarksUpdate(e) {
@@ -83,21 +87,25 @@
       }
 
       _render() {
-        if( !this.mark || !this.eventLoop ) return;
+        if( !this.mark ) return
+        if( !this.mark.mark_id ) return;
         this.imgHeight = -1;
         this.marker = null;
 
-        this._getPage();
+        this._getCatalogPage();
         this._getMark();
       }
 
       _markReady(e) {
+        debugger;
+        console.log(e);
         this.marker = e;
         if( !this.marker.data ) return; // mark was deleted
         this._setPosition();
       }
 
       _setPosition() {
+        console.log(this.imgHeight, this.marker);
         if( this.imgHeight !== -1 && this.marker && this.marker.data ) {
           var x = (-1*this.marker.data.xy[0]+20)+'px ';
           var y = (-1*(this.imgHeight - this.marker.data.xy[1])+20)+'px';
@@ -120,5 +128,7 @@
       }
 
     }
+
+    window.customElements.define(CatalogPageMarksUpdate.is, CatalogPageMarksUpdate);
   </script>
 </dom-module>

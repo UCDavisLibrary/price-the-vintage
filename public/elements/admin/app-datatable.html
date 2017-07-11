@@ -69,6 +69,12 @@
             type : Boolean,
             value : false,
             reflectToAttribute : true
+          },
+          row : {
+            type : Object,
+            value : function() {
+              return {};
+            }
           }
         }
       }
@@ -89,9 +95,23 @@
       connectedCallback () {
         super.connectedCallback();
         
-        this.template = this.querySelector('template');
-        this.root.appendChild(this.template);
-        this.TemplateClass = Polymer.Templatize.templatize(this.template, this);
+        if( !this.template ) {
+          this.template = this.querySelector('template');
+          this.root.appendChild(this.template);
+          this.TemplateClass = Polymer.Templatize.templatize(
+            this.template, 
+            this, 
+            {
+              instanceProps: {
+                row: {
+                type : Object,
+                value : function() {
+                  return {}
+                }
+              }
+            }
+          });
+        }
       }
 
       render() {
@@ -137,8 +157,7 @@
       }
 
       renderRow(data, index) {
-        console.log({item: data});
-        var clone = new this.TemplateClass(data);
+        var clone = new this.TemplateClass({row: data});
 
         var actions = clone.root.querySelectorAll('[trigger]');
         for( var i = 0; i < actions.length; i++ ) {
@@ -147,17 +166,18 @@
           }.bind(this));
         }
 
-        // HACK for styles
-        if( this.parentElement ) {
-          var eles = clone.root.querySelectorAll('*');
-          for( var i = 0; i < eles.length; i++ ) {
-            eles[i].classList.remove(this.parentElement.nodeName.toLowerCase());
-            eles[i].classList.add('style-scope');
-            eles[i].classList.add('app-datatable');
-          }
-        }
+        // HACK for styless
+        // if( this.parentElement ) {
+        //   var eles = clone.root.querySelectorAll('*');
+        //   for( var i = 0; i < eles.length; i++ ) {
+        //     eles[i].classList.remove(this.parentElement.nodeName.toLowerCase());
+        //     eles[i].classList.add('style-scope');
+        //     eles[i].classList.add('app-datatable');
+        //   }
+        // }
 
         this.$.body.appendChild(clone.root);
+        clone.root.foo = 'bar'
       }
 
       triggerActionEvent(ele, data, index) {

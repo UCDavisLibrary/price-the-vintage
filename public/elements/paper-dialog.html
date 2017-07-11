@@ -47,25 +47,30 @@ JM's custom dialog.  Looks like a paper-dialog acts like a Bootstrap Modal.
     
   </template>
   <script>
-    Polymer({
-      is: 'paper-dialog',
 
-      attached : function() {
+    class PaperDialog extends Polymer.Element {
+
+      static get is() { return 'paper-dialog'; }
+
+      connectedCallback() {
+        super.connectedCallback();
+
         var buttons = this.querySelector('.buttons');
         if( !buttons ) return;
         buttons.style.textAlign = 'right';
         buttons.style.marginTop = '15px';
-      },
+      }
 
-      open : function() {
+      open() {
         document.body.style.overflow = 'hidden';
         this.setAttribute('active','active');
-      },
+      }
 
-      close : function() {
+      close() {
         document.body.style.overflow = '';
         this.removeAttribute('active');
       }
-    });
+    }
+    window.customElements.define(PaperDialog.is, PaperDialog);
   </script>
 </dom-module>

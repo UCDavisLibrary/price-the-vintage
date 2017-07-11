@@ -53,54 +53,40 @@
 
   </template>
   <script>
-    Polymer({
-      is: 'app-page-carousel-search',
 
-      properties : {
-        active : {
-          type : Boolean,
-          value : false,
-          observer : '_onActive'
-        },
-        catalogId : {
-          type : String,
-          value : ''
-        },
-        searching : {
-          type : Boolean,
-          value : false
-        },
-        searchActive : {
-          type : Boolean,
-          value : false,
-          reflectToAttribute : true
-        },
-        showResults : {
-          type : Boolean,
-          value : false
-        },
-        total : {
-          type : String,
-          value : ''
+    class AppPageCarouselSearch extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, ToggleStateMixin, AppStateMixin, PagesMixin ) {
+
+      static get is() { return 'app-page-carousel-search' }
+
+      static get properties() {
+        return {
+          catalogId : {
+            type : String,
+            value : ''
+          },
+          searching : {
+            type : Boolean,
+            value : false
+          },
+          searchActive : {
+            type : Boolean,
+            value : false,
+            reflectToAttribute : true
+          },
+          showResults : {
+            type : Boolean,
+            value : false
+          },
+          total : {
+            type : String,
+            value : ''
+          }
         }
-      },
+      }
 
-      behaviors : [EventBusBehavior],
-
-      ebBind : {
-        'app-state-update' : '_onAppStateUpdate',
-        'search-catalog-pages-update' : '_onSearchUpdate'
-      },
-
-      _onActive : function() {
-        if( !this.active ) return;
-
-        if( this.searchActive ) {
-          this._search();
-        }
-      },
-
-      _onAppStateUpdate : function(e) {
+      _onAppStateUpdate(e) {
         if( e.searchText ) {
           this.searchActive = true;
           this.$.input.value = e.searchText;
@@ -108,10 +94,30 @@
           this.searchActive = false;
           this.$.input.value = '';
         }
-        this.toggleActive
-      },
+      }
 
-      toggleActive : function() {
+      _onCatalogPagesSearchUpdate(e) {
+        if( e.state !== 'loaded' ) return;
+
+        this.searching = false;
+        this.showResults = true;
+
+        if( !this.$.input.value ) {
+          return this.emit('ui-clear-search-catalog-pages');
+        }
+
+        this.total = 'Matches: '+e.results.total;
+      }
+
+      _onActive() {
+        if( !this.active ) return;
+
+        if( this.searchActive ) {
+          this._search();
+        }
+      }
+
+      toggleActive() {
         this.searchActive = !this.searchActive;
         this.showResults = false;
 
@@ -121,51 +127,41 @@
             this.$.input.focus();
           }.bind(this), 500);
         } else {
-          this.ebEmit('ui-clear-search-catalog-pages');
+          this.emit('ui-clear-search-catalog-pages');
         }
-      },
+      }
 
-      _search : function() {
+      _search() {
         this.showResults = false;
 
         if( !this.$.input.value ) {
           this.searching = false;
-          return this.ebEmit('ui-clear-search-catalog-pages');
+          return this.emit('ui-clear-search-catalog-pages');
         }
 
         this.searching = true;
         this.debounce('_searchAsync', this._searchAsync, 200);
-      },
-
-      _searchAsync : function() {
-        if( !this.$.input.value ) {
-          this.searching = false;
-          this.showResults = true;
-          return this.ebEmit('ui-clear-search-catalog-pages');
-        }
-
-        this.ebEmit('search-catalog-pages', {
-          query : {
-            catalogId : this.catalogId,
-            q : this.$.input.value,
-          }
-        });
-      },
-
-      _onSearchUpdate : function(e) {
-        if( e.state !== 'loaded' ) return;
-
-        if( !this.$.input.value ) {
-          this.searching = false;
-          this.showResults = true;
-          return this.ebEmit('ui-clear-search-catalog-pages');
-        }
-
-        this.searching = false;
-        this.showResults = true;
-        this.total = 'Matches: '+e.results.total;
       }
 
-    });
+      _searchAsync() {
+        if( !this.$.input.value ) {
+          this.searching = false;
+          this.showResults = true;
+          return this.emit('ui-clear-search-catalog-pages');
+        }
+
+        this._setAppState({
+          searchText : this.$.input.value
+        });
+
+        this._searchCatalogPages({
+          catalogId : this.catalogId,
+          q : this.$.input.value,
+        });
+      }
+    
+    }
+
+    window.customElements.define(AppPageCarouselSearch.is, AppPageCarouselSearch);
   </script>
 </dom-module>

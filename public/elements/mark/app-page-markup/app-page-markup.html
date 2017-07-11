@@ -181,7 +181,7 @@
               .then((e) => this._onCatalogPagesUpdate(e));
         }
         
-        if(  this.selectedPageId && this.selectedPageId !== this.requestedMarks ) {
+        if( this.selectedPageId && this.selectedPageId !== this.requestedMarks ) {
           this.requestedMarks = this.selectedPageId;
           this._getMarks();
         }
@@ -276,6 +276,7 @@
        
         var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id;
         if( this.currentImg == url ) {
+          this.toggleState('loaded');
           return;
         }
 

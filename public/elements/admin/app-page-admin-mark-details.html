@@ -46,6 +46,7 @@
         }
 
         _getMark() {
+          if( !this.mark.mark_id ) return;
           return super._getMark(this.mark.mark_id, this.mark.page_id);
         }
 

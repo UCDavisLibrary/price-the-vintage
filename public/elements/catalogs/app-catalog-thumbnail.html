@@ -133,7 +133,8 @@
 
       _getCatalogPages() {
         if( !this._isCatalogIdSet() ) return;
-        super._getCatalogPages(this.catalog.catalog_id);
+        super._getCatalogPages(this.catalog.catalog_id)
+            .then((e) => this._onCatalogPagesUpdate(e));
       }
 
       _isCatalogIdSet() {

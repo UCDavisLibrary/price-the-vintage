@@ -74,19 +74,19 @@
             <td>
               <app-page-admin-mark-icon 
                 api-host$="[[apiHost]]"
-                mark="[[item]]"
-                page-id="[[item.page_id]]">
+                mark="[[row]]"
+                page-id="[[row.page_id]]">
               </app-page-admin-mark-icon>
-              <div class="light">Created on [[item.createdStr]]</div>
-              <div class="light">Updated on [[item.updatedStr]]</div>
+              <div class="light">Created on [[row.createdStr]]</div>
+              <div class="light">Updated on [[row.updatedStr]]</div>
             </td>
             <td>
               <app-page-admin-mark-details 
-                mark="[[item]]">
+                mark="[[row]]">
               </app-page-admin-mark-details>
             </td>
             <td style="vertical-align:top; text-align:center">
-              <h1 style="margin:7px">[[item.score]]</h1>
+              <h1 style="margin:7px">[[row.score]]</h1>
             </td>
             <td style="white-space:nowrap;vertical-align:top">
               <paper-icon-button icon="create" trigger="inspect"></paper-icon-button>

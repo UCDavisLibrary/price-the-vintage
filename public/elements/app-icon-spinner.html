@@ -40,26 +40,32 @@
     
   </template>
   <script>
-    Polymer({
-      is: 'app-icon-spinner',
+    class AppIconSpinner extends Polymer.Element {
 
-      properties : {
-        /**
-         * Icon name to be applied to iron-icon.
-         **/
-        icon : {
-          type : String,
-          value : ''
-        },
+      static get is() { return 'app-icon-spinner'; }
 
-        /**
-         * Should the icon spin?
-         **/
-        spin : {
-          type : Boolean,
-          value : false
+      static get properties() {
+        return {
+          /**
+           * Icon name to be applied to iron-icon.
+           **/
+          icon : {
+            type : String,
+            value : ''
+          },
+
+          /**
+           * Should the icon spin?
+           **/
+          spin : {
+            type : Boolean,
+            value : false
+          }
         }
       }
-    });
+
+    }
+
+    window.customElements.define(AppIconSpinner.is, AppIconSpinner);
   </script>
 </dom-module>

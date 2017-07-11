@@ -112,12 +112,16 @@
           }
       }
 
+      _searchCatalogs() {
+        return super._searchCatalogs({
+          q : this.$.input.value,
+          exact : this.appState.searchExact
+        });
+      }
+
       _searchCatalogsDelay() {
         this.debounce('searchCatalog', () => {
-          this._searchCatalogs({
-            q : this.$.input.value,
-            exact : this.appState.searchExact
-          });
+          this._searchCatalogs();
         }, 500);
       }
 
@@ -128,7 +132,7 @@
           this.$.input.focus();
         } else {
           this.$.input.value = '';
-          this.eventLoop.searchCatalogs.req();
+          this._searchCatalogs();
         }
 
         this._setAppState({
