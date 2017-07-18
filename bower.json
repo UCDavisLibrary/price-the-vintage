@@ -48,7 +48,8 @@
     "paper-dialog": "PolymerElements/paper-dialog#^2.0.0",
     "webcomponentsjs": "^1.0.1",
     "paper-styles": "PolymerElements/paper-styles#^2.0.0",
-    "shadycss": "webcomponents/shadycss#^1.0.1"
+    "shadycss": "webcomponents/shadycss#^1.0.1",
+    "cork-common-utils": "cork-elements/cork-common-utils"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

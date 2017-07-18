@@ -14,43 +14,43 @@
       }
 
       _getMarks(pageId) {
-        return this.emit('get-catalog-page-marks', {id: pageId});
+        return this.emit('MarksModel.get', pageId);
       }
 
       _getMark(pageId, markId) {
-        return this.emit('get-catalog-page-mark', {pageId, markId});
+        return this.emit('MarksModel.getMark', pageId, markId);
       }
 
       _listenToMark(pageId, markId) {
-        return this.emit('listen-to-mark', {pageId, markId});
+        return this.emit('MarksModel.listenToMark', pageId, markId);
       }
 
       _addMark(pageId, mark) {
-        return this.emit('add-catalog-page-mark', {pageId, mark});
+        return this.emit('MarksModel.set', pageId, mark);
       }
 
       _editMark(pageId, markId, mark) {
-        return this.emit('edit-catalog-page-mark', {pageId, markId, mark});
+        return this.emit('MarksModel.edit', pageId, markId, mark);
       }
 
       _voteOnMark(pageId, markId, vote) {
-        return this.emit('vote-catalog-page-mark', {pageId, markId, vote});
+        return this.emit('MarksModel.vote', pageId, markId, vote);
       }
 
       _removeMark(pageId, markId) {
-        return this.emit('delete-catalog-page-mark', {pageId, markId});
+        return this.emit('MarksModel.remove', pageId, markId);
       }
 
       _pendingMarkSearch(query) {
-        return this.emit('pending-mark-search', {query});
+        return this.emit('MarksModel.pendingMarkSearch', query);
       }
 
       _updateTempMark(pageId, xy) {
-        return this.emit('update-temp-catalog-page-mark', {pageId, xy});
+        return this.emit('MarksModel.updateTempMark', pageId, xy);
       }
 
       _removeTempMark() {
-        return this.emit('remove-temp-catalog-page-mark');
+        return this.emit('MarksModel.removeTempMark');
       }
 
       _onMarksUpdate(e) {

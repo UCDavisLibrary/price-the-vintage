@@ -7,26 +7,17 @@
           super.bind,
           {
             'catalog-update' : '_onCatalogUpdate',
-            'search-catalogs-update' : '_onCatalogSearchUpdate',
-            'selected-catalog-update' : '_onCatalogSelectedUpdate'
+            'search-catalogs-update' : '_onCatalogSearchUpdate'
           }
         );
       }
 
       _searchCatalogs(query) {
-        return this.emit('search-catalogs', {query});
+        return this.emit('CatalogsModel.search', query);
       }
 
       _getCatalog(id) {
-        return this.emit('get-catalog', {id});
-      }
-
-      _getSelectedCatalog() {
-        return this.emit('get-selected-catalog');
-      }
-
-      _selectCatalog(id) {
-        return this.emit('select-catalog', {id});
+        return this.emit('CatalogsModel.get', id);
       }
 
       _onCatalogUpdate(e) {
@@ -34,10 +25,6 @@
       }
 
       _onCatalogSearchUpdate(e) {
-        // implement me
-      }
-
-      _onCatalogSelectedUpdate(e) {
         // implement me
       }
   }

@@ -7,7 +7,9 @@
     "test": "mkdir -p node_modules && if [ -f ./node_modules/app ]; then rm ./node_modules/app; fi && cd node_modules && ln -s ../lib ./app && cd .. && mocha tests",
     "watch": "./build/build.sh",
     "dist": "./build/build-dist.sh",
-    "init": "npm install && rm ./node_modules/app && ln -s ../lib ./node_modules/app"
+    "init": "npm install && rm ./node_modules/app && ln -s ../lib ./node_modules/app",
+    "start": "webpack-dev-server --open",
+    "build": "webpack"
   },
   "author": "Justin Merz <jrmerz@gmail.com>",
   "license": "ISC",
@@ -22,6 +24,7 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "babel-loader": "^7.1.1",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^7.3.0",

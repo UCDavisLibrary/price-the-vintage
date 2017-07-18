@@ -12,7 +12,7 @@
       }
 
       _sendInterestedPartyResponse(id, types) {
-        return this.emit('interested-party-response', {id, types});
+        return this.emit('InterestedPartyModel.onResponse', {id, types});
       }
 
       _onInterestedPartyRequest(e) {

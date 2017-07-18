@@ -18,20 +18,20 @@
       }
 
       _getAuthState(state) {
-        return this.emit('get-auth-state');
+        return this.emit('AuthModel.getAuthState');
       }
 
       _loginCustom(token) {
-        return this.emit('auth-login-custom', token);
+        return this.emit('AuthModel.loginCustom', token);
       }
 
       _loginAuth0() {
-        return this.emit('login-auth0');
+        return this.emit('AuthModel.loginAuth0');
       }
 
       _logout() {
         localStorage.removeItem('auth0-profile');
-        return this.emit('auth-logout');
+        return this.emit('AuthModel.logout');
       }
 
       _onAuthUpdate(e) {

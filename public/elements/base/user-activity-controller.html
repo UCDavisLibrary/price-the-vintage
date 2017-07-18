@@ -12,11 +12,11 @@
       }
 
       _getUserActivity(id) {
-        return this.emit('get-user-activity', {id});
+        return this.emit('UserActivityModel.listen', id);
       }
 
       _setUserActivity(catalogId, pageId) {
-        return this.emit('set-user-activity', {catalogId, pageId});
+        return this.emit('UserActivityModel.set', catalogId, pageId);
       }
 
       _onUserActivityUpdate(e) {
