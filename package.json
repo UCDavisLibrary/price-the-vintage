@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mkdir -p node_modules && if [ -f ./node_modules/app ]; then rm ./node_modules/app; fi && cd node_modules && ln -s ../lib ./app && cd .. && mocha tests",
-    "watch": "./build/build.sh",
-    "dist": "./build/build-dist.sh",
+    "watch": "./build-scripts/watch.sh",
+    "dist": "./build-scripts/dist.sh",
     "init": "npm install && rm ./node_modules/app && ln -s ../lib ./node_modules/app",
     "start": "webpack-dev-server --open",
     "build": "webpack"
