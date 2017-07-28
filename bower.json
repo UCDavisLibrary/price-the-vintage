@@ -50,7 +50,11 @@
     "paper-styles": "PolymerElements/paper-styles#^2.0.0",
     "shadycss": "webcomponents/shadycss#^1.0.1",
     "cork-common-utils": "cork-elements/cork-common-utils",
-    "cork-style": "cork-elements/cork-style"
+    "cork-style": "cork-elements/cork-style",
+    "cork-icons": "cork-elements/cork-icons",
+    "cork-input": "cork-elements/cork-input",
+    "cork-select": "cork-elements/cork-select",
+    "cork-popup-button": "cork-elements/cork-popup-button"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

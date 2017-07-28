@@ -15,54 +15,31 @@
         color: white;
         background-color: var(--default-primary-color);
       }
+
+      app-price-form-wine-type {
+        padding: 15px 0;
+        margin: 5px 0;
+        border-top: 1px solid var(--medium-background-color);
+        border-bottom: 1px solid var(--medium-background-color);
+      }
     </style>
 
+    <app-price-form-wine-type value="{{type}}" edit="[[!disabled]]"></app-price-form-wine-type>
 
+    <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
+      <app-price-edit-spirit 
+        id="spirit" 
+        disabled$="[[disabled]]"
+        add-space="[[addSpace]]">
+      </app-price-edit-spirit>
 
+      <app-price-edit-wine 
+        id="wine" 
+        disabled$="[[disabled]]"
+        add-space="[[addSpace]]">
+      </app-price-edit-wine>
+    </iron-pages>
 
-    <div class="layout">
-      <div class="flex">
-        <div class="layout center row-form">
-          <div>Spirit</div>
-          <div>
-            <paper-toggle-button 
-              id="typeInput" 
-              checked
-              disabled$="[[disabled]]"
-              on-change="_setType">
-            </paper-toggle-button>
-          </div>
-          <div>Wine</div>
-          <div class="space"></div>
-          <div class="flex">
-            <paper-input 
-              label="Page Section" 
-              disabled$="[[disabled]]"
-              placeholder="ex. Red Burgundies / Scotch Whiskies on Sale"
-              id="sectionInput" 
-              always-float-label>
-            </paper-input>
-          </div>
-        </div>
-
-        <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
-          <app-price-edit-spirit 
-            id="spirit" 
-            disabled$="[[disabled]]"
-            add-space="[[addSpace]]">
-          </app-price-edit-spirit>
-
-          <app-price-edit-wine 
-            id="wine" 
-            disabled$="[[disabled]]"
-            add-space="[[addSpace]]">
-          </app-price-edit-wine>
-        </iron-pages>
-      </div>
-      <div>
-        <app-price-form-voting id="voting"></app-price-form-voting>
-      </div>
-    </div>
 
     <div class="buttons" hidden$="[[disabled]]">
       <div class="layout center">
@@ -128,7 +105,7 @@
 
       _reset() {
         this.type = 'wine';
-        this.$.sectionInput.value = '';
+        // this.$.sectionInput.value = '';
         this.$.spirit.reset();
         this.$.wine.reset();
       }
@@ -158,7 +135,7 @@
       _getData() {
         var data = this.$[this.type].getData();
         data.type = this.type;
-        data.section = this.$.sectionInput.value;
+        // data.section = this.$.sectionInput.value;
 
         if( this.editMode ) {
           data.xy = this.editMark.data.xy;
@@ -209,7 +186,7 @@
         this.editMode = true;
         this.editMark = mark;
         
-        this.$.sectionInput.value = mark.data.section || (this.disabled ? '-' : '');
+        // this.$.sectionInput.value = mark.data.section || (this.disabled ? '-' : '');
         this.type = mark.data.type;
 
         this.$.typeInput.checked = (this.type === 'wine') ? true : false;

@@ -5,19 +5,33 @@
       :host {
         display: block;
       }
+
+      .row {
+        display: flex;
+      }
+
+      .row > div {
+        flex: 1;
+      }
+
+      .padding {
+        padding-top: 15px;
+      }
     </style>
 
-    <div class="form-row layout center">
-      <div class="flex" style="padding-right: 10px">
+    <div class="row">
+      <div>
         <div>Wine Type</div>
+        <cork-select id="wineType" options="[[wineTypeOptions]]" disabled$="[[disabled]]"></cork-select>
+
+        <!-- <div>Wine Type</div>
         <select value="Still" id="wineType" disabled$="[[disabled]]" >
           <option value="Still">Still</option>
           <option value="Sparkling">Sparkling</option>
           <option value="Fortified">Fortified</option>
-        </select>
+        </select> -->
       </div>
-
-      <div class="flex">
+      <div>
         <div>Wine Color</div>
         <select value="Red" id="color" disabled$="[[disabled]]" >
           <option value="Red">Red Wine</option>
@@ -27,112 +41,104 @@
       </div>
     </div>
 
-    <div class="form-row">
-      <div class="layout form-row">
-        <div class="flex" style="padding-right:10px">
-          <paper-input 
-            disabled$="[[disabled]]"
-            always-float-label 
-            id="name" 
-            label="Name" 
-            placeholder="ex. Santenay"
-            type="string" >
-          </paper-input>
-        </div>
-        <div>
-          <paper-input 
-            disabled$="[[disabled]]"
-            always-float-label 
-            id="year" 
-            label="Vintage (year)" 
-            type="number">
-          </paper-input>
-        </div>
+
+    <app-price-form-input
+      class="padding"
+      id="sectionInput"
+      label="Page Section"
+      placeholder="ex. Red Burgundies / Scotch Whiskies on Sale">
+    </app-price-form-input>
+
+    <app-price-form-input
+      class="padding"
+      id="name"
+      disabled$="[[disabled]]"
+      label="Name"
+      placeholder="ex. Santenay">
+    </app-price-form-input>
+
+    <app-price-form-input
+      class="padding"
+      id="country"
+      disabled$="[[disabled]]"
+      label="Country"
+      placeholder="ex. France">
+    </app-price-form-input>
+
+    <div class="row padding">
+      <div>
+        <app-price-form-input
+          id="year"
+          disabled$="[[disabled]]"
+          label="Vintage (year)"
+          type="number"
+          placeholder="YYYY">
+        </app-price-form-input>
+      </div>
+      <div>
+        <div>Bottle Size</div>
+        <select value="Standard" id="bottleType" disabled$="[[disabled]]">
+          <option value="Standard">Standard</option>
+          <option value="Split">Split</option>
+          <option value="Piccolo">Piccolo</option>
+          <option value="Pony">Pony</option>
+          <option value="Split">Split</option>
+          <option value="Quarter Bottle">Quarter Bottle</option>
+          <option value="Snipe">Snipe</option>
+          <option value="Quarter">Quarter</option>
+          <option value="Chopine">Chopine</option>
+          <option value="Demi">Demi</option>
+          <option value="Half Bottle">Half Bottle</option>
+          <option value="Tenth">Tenth</option>
+          <option value="Jennie">Jennie</option>
+          <option value="Demie">Demie</option>
+          <option value="Pinte">Pinte</option>
+          <option value="Clavelin">Clavelin</option>
+          <option value="Standard">Standard</option>
+          <option value="Fifth">Fifth</option>
+          <option value="Litre">Litre</option>
+          <option value="Magnum">Magnum</option>
+          <option value="Marie Jeanne">Marie Jeanne</option>
+          <option value="Jeroboam">Jeroboam</option>
+          <option value="Rehoboam">Rehoboam</option>
+          <option value="McKenzie">McKenzie</option>
+          <option value="Imperial">Imperial</option>
+          <option value="Methuselah">Methuselah</option>
+          <option value="Salmanazar">Salmanazar</option>
+          <option value="Balthazar">Balthazar</option>
+          <option value="Nebuchadnezzar">Nebuchadnezzar</option>
+          <option value="Melchior">Melchior</option>
+          <option value="Solomon">Solomon</option>
+          <option value="Sovereign">Sovereign</option>
+          <option value="Primat">Primat</option>
+          <option value="Goliath">Goliath</option>
+          <option value="Melchizedek">Melchizedek</option>
+          <option value="Midas">Midas</option>
+          <option value="Tenths">Tenths</option>
+          <option value="Pint">Pint</option>
+          <option value="Quar">Quart</option>
+        </select>
       </div>
     </div>
 
-    <div class="form-row">
-      <paper-input 
-        always-float-label
-        disabled$="[[disabled]]" 
-        id="country" 
-        label="Country" 
-        placeholder="ex. France">
-      </paper-input>
-    </div>
-
-    <div class="form-row">
-      <div>Bottle Type</div>
-      <select value="Standard" id="bottleType" disabled$="[[disabled]]">
-        <option value="Standard">Standard</option>
-        <option value="Split">Split</option>
-        <option value="Piccolo">Piccolo</option>
-        <option value="Pony">Pony</option>
-        <option value="Split">Split</option>
-        <option value="Quarter Bottle">Quarter Bottle</option>
-        <option value="Snipe">Snipe</option>
-        <option value="Quarter">Quarter</option>
-        <option value="Chopine">Chopine</option>
-        <option value="Demi">Demi</option>
-        <option value="Half Bottle">Half Bottle</option>
-        <option value="Tenth">Tenth</option>
-        <option value="Jennie">Jennie</option>
-        <option value="Demie">Demie</option>
-        <option value="Pinte">Pinte</option>
-        <option value="Clavelin">Clavelin</option>
-        <option value="Standard">Standard</option>
-        <option value="Fifth">Fifth</option>
-        <option value="Litre">Litre</option>
-        <option value="Magnum">Magnum</option>
-        <option value="Marie Jeanne">Marie Jeanne</option>
-        <option value="Jeroboam">Jeroboam</option>
-        <option value="Rehoboam">Rehoboam</option>
-        <option value="McKenzie">McKenzie</option>
-        <option value="Imperial">Imperial</option>
-        <option value="Methuselah">Methuselah</option>
-        <option value="Salmanazar">Salmanazar</option>
-        <option value="Balthazar">Balthazar</option>
-        <option value="Nebuchadnezzar">Nebuchadnezzar</option>
-        <option value="Melchior">Melchior</option>
-        <option value="Solomon">Solomon</option>
-        <option value="Sovereign">Sovereign</option>
-        <option value="Primat">Primat</option>
-        <option value="Goliath">Goliath</option>
-        <option value="Melchizedek">Melchizedek</option>
-        <option value="Midas">Midas</option>
-        <option value="Tenths">Tenths</option>
-        <option value="Pint">Pint</option>
-        <option value="Quar">Quart</option>
-      </select>
-    </div>
-
-    <div class="layout form-row">
-      <div class="flex">
-        <paper-input 
+    <div class="row padding">
+      <div>
+        <app-price-form-input
+          id="price"
           disabled$="[[disabled]]"
-          always-float-label 
-          id="price" 
-          label="Price per Bottle" 
-          type="number" 
-          min="0" 
-          step="0.01" 
-          size="10" 
-          style="padding-right: 10px">
-          <div prefix>$</div>
-        </paper-input>
+          label="Price Per Bottle"
+          type="number"
+          placeholder="0.00">
+        </app-price-form-input>
       </div>
-
-      <div class="flex">
-        <paper-input 
+      <div>
+        <app-price-form-input
+          id="casePrice"
           disabled$="[[disabled]]"
-          always-float-label 
-          id="casePrice" 
-          label="Price per Case" 
-          type="number" 
-          min="0" 
-          step="0.01">
-          <div prefix>$</div>
-        </paper-input>
+          type="number"
+          label="Price Per Case"
+          placeholder="0.00">
+        </app-price-form-input>
       </div>
     </div>
 
@@ -157,6 +163,19 @@
             observer : 'updateStyles'
           }
         }
+      }
+
+      get wineTypeOptions() {
+        return [
+          {
+            value : 'Still',
+            icon : 'cork:wine-still'
+          },
+          {
+            value : 'Sparkling',
+            icon : 'cork:wine-sparkling'
+          }
+        ]
       }
 
       reset() {

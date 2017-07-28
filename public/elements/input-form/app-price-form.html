@@ -2,6 +2,8 @@
 <link rel="import" href="app-price-edit-form.html">
 <link rel="import" href="app-price-edit-wine.html">
 <link rel="import" href="app-price-edit-spirit.html">
+<link rel="import" href="widgets/app-price-form-wine-type.html">
+<link rel="import" href="widgets/app-price-form-input.html">
 
 <dom-module id="app-price-form">
   <template>
@@ -13,16 +15,17 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: rgba(255, 255, 255, .90);
+        background-color: rgba(255, 255, 255, .95);
         z-index: 1000;
         border-top: 1px solid white;
         box-shadow: 0 0 10px rgba(0,0,0,.4);
       }
 
-      @media(min-width: 640px) {
+      @media(min-width: 768px) {
         :host {
-          left: 10%;
-          right: 10%;
+          max-width: 350px;
+          left: initial;
+          top: 0;
         }
       }
 
@@ -37,6 +40,10 @@
 
     <div id="body">
       <div>
+        <div style="display:flex">
+          <div style="flex:1">Edit Mark</div>
+          <div><paper-button>Cancel</paper-button></div>
+        </div>
         <app-price-edit-form
           id="form" 
           catalog-id="[[catalogId]]"
@@ -93,13 +100,17 @@
       }
 
       _resize() {
-        var h = Math.floor(window.innerHeight * 0.5);
+        if( window.innerWidth < 768 ) {
+          var h = Math.floor(window.innerHeight * 0.5);
 
-        this.style.maxHeight = h+'px';
-        this.$.body.style.maxHeight =  h+'px';
+          this.style.maxHeight = h+'px';
+          this.$.body.style.maxHeight =  h+'px';
 
-        var maxFormSize = 72 * 7;
-        // TODO;
+          var maxFormSize = 72 * 7;
+        } else {
+          this.style.maxHeight = 'initial';
+          this.$.body.style.maxHeight = 'initial';
+        }
       }
 
       _onAppStateUpdate(e) {
