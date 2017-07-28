@@ -8,7 +8,7 @@
           {
             'catalog-pages-update' : '_onCatalogPagesUpdate',
             'catalog-page-update' : '_onCatalogPageUpdate',
-            'page-metadata-update' : '_onCatalogPageMetadataUpdate',
+            // 'page-metadata-update' : '_onCatalogPageMetadataUpdate',
             'search-catalog-pages-update' : '_onCatalogPagesSearchUpdate'
           }
         );
@@ -22,10 +22,6 @@
         return this.emit('PagesModel.get', pageId);
       }
 
-      _getCatalogPageMetadata(pageId) {
-        return this.emit('PagesModel.getMetadata', pageId);
-      }
-
       _searchCatalogPages(query) {
         return this.emit('PagesModel.search', query);
       }
@@ -35,10 +31,6 @@
       }
 
       _onCatalogPageUpdate(e) {
-        // implement me
-      }
-
-      _onCatalogPageMetadataUpdate(e) {
         // implement me
       }
 

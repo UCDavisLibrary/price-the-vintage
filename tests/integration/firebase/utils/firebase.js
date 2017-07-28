@@ -1,7 +1,7 @@
 var admin = require('firebase-admin');
 var firebaseWrapper = require('app/firebase');
-var redux = require('app/redux/store');
 var config = require('app/config').firebase.prod;
+var AuthStore = require('app/stores/AuthStore');
 var serviceAccount = require('app/config/price-the-vintage-firebase-adminsdk');
 
 /**
@@ -17,7 +17,8 @@ firebaseWrapper(admin);
 /**
  * Setup redux store with fake auth account
  */
-redux.getState().auth.user = {
+
+AuthStore.data.user = {
   uid : '_test_'
 }
 

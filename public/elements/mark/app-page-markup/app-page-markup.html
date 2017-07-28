@@ -209,14 +209,16 @@
 
         // the draw tool has fired a create mark event.  This marker has
         // been set as pendingLayer
-      } else if( this.pendingLayer ) {
+        } else if( state.creatingMark ) {
 
-          this._showHideControls(false);
-          this.$.priceItem.create(this.pendingLayer._latlng);
-          this.marksLayer.addLayer(this.pendingLayer);
-          this.addMarker = this.pendingLayer;
-          this._selectMarker(this.addMarker);
-          this.pendingLayer = null;
+          if( this.pendingLayer ) {
+            this._showHideControls(false);
+            this.$.priceItem.create(this.pendingLayer._latlng);
+            this.marksLayer.addLayer(this.pendingLayer);
+            this.addMarker = this.pendingLayer;
+            this._selectMarker(this.addMarker);
+            this.pendingLayer = null;
+          }
 
         // user has clicked a mark to edit
         } else if( state.markId ) {

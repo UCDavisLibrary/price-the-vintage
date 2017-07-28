@@ -177,6 +177,7 @@ Parses URL on hash change and sets appState.
             section: this.route.section,
             editingMark: this.route.edit,
             viewingMark: this.route.viewMark,
+            creatingMark : (this.route.edit && !this.route.markId),
             markId : this.route.markId,
             pageId : this.route.pageId,
             catalogId : this.route.catalogId
