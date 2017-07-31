@@ -30,6 +30,10 @@ Parses URL on hash change and sets appState.
         left: 0;
         bottom: 0;
       }
+
+      #toolbar {
+        z-index: 550;
+      }
     </style>
 
     <paper-header-panel style="height: 100%">
@@ -169,6 +173,10 @@ Parses URL on hash change and sets appState.
 
         // parse app state information based on location in hash route
         parts.forEach(this._parseRoute.bind(this));
+
+        if( firstLoad && this.route.edit && !this.route.markId ) {
+          return window.location.hash = this.route.catalogId+'/'+this.route.pageId
+        }
 
         this.selectedSection = this.route.section;
 

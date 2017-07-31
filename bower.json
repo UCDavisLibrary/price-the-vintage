@@ -54,7 +54,8 @@
     "cork-icons": "cork-elements/cork-icons",
     "cork-input": "cork-elements/cork-input",
     "cork-select": "cork-elements/cork-select",
-    "cork-popup-button": "cork-elements/cork-popup-button"
+    "cork-popup-button": "cork-elements/cork-popup-button",
+    "cork-cancel-button": "cork-elements/cork-cancel-button"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

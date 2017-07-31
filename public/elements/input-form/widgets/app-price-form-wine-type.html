@@ -30,26 +30,41 @@
       }
 
       .edit .btn {
+        display: inline-block;
         cursor: pointer;
+        position: relative;
       }
 
       [hidden] {
         display: none !important;
       }
+
+      iron-icon[check] {
+        --iron-icon-width: 24px;
+        --iron-icon-height: 24px;
+        position: absolute;
+        bottom: 18px;
+        left: 2px;
+      }
+
     </style>
 
     <div class="edit" hidden$="[[!edit]]">
       <div selected$="[[!isWine]]">
-        <span class="btn" on-click="_setValue" value="spirit">
+        <span class="btn" on-click="_setValue" on-keyup="_onKeyUp" value="spirit" tabindex="1">
           <iron-icon hidden$="[[isWine]]" icon="cork:spirit-glass-circle-fill"></iron-icon>
-          <iron-icon hidden$="[[!isWine]]" icon="cork:spirit-glass-circle"></iron-icon><br />
+          <iron-icon hidden$="[[!isWine]]" icon="cork:spirit-glass-circle"></iron-icon>
+          <iron-icon hidden$="[[isWine]]" check icon="cork:wine-check"></iron-icon>
+          <br />
           <span>Spirit</span>
         </span>
       </div>
       <div selected$="[[isWine]]">
-        <span class="btn" on-click="_setValue" value="wine">
+        <span class="btn" on-click="_setValue" on-keyup="_onKeyUp" value="wine" tabindex="1">
           <iron-icon hidden$="[[!isWine]]" icon="cork:wine-glass-circle-fill"></iron-icon>
-          <iron-icon hidden$="[[isWine]]" icon="cork:wine-glass-circle"></iron-icon><br />
+          <iron-icon hidden$="[[isWine]]" icon="cork:wine-glass-circle"></iron-icon>
+          <iron-icon hidden$="[[!isWine]]" check icon="cork:wine-check"></iron-icon>
+          <br />
           <span>Wine</span>
         </span>
       </div>
@@ -93,6 +108,11 @@
 
       _updateIsWine() {
         return (this.value === 'wine');
+      }
+
+      _onKeyUp(e) {
+        if( e.which !== 13 ) return;
+        this._setValue(e);
       }
 
       _setValue(e) {

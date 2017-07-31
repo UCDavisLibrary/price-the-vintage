@@ -6,9 +6,31 @@
     <style>
       :host {
         display: block;
-        overflow: hidden;
         background-color: white;
+
+        transition: bottom 250ms ease-out;
+        position: absolute;
+        bottom: -160px;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        box-shadow: none;
+      }
+
+      :host([open]) {
+        bottom: 0;
+        box-shadow: 0 0 5px black;
+      }
+
+      #container {
+        overflow: hidden;
         height: 160px;
+      }
+
+      app-page-carousel-search {
+        position: absolute;
+        bottom: 180px;
+        left: 10px;
       }
 
       [loading-state="loaded"] {
@@ -47,8 +69,8 @@
       }
 
       paper-fab {
-        background-color: white;
-        color: var(--default-primary-color);
+        background-color: var(--default-primary-color);
+        color: white;
       }
 
       paper-fab.disabled {
@@ -59,14 +81,14 @@
       #nextBtn {
         z-index: 5;
         position: absolute;
-        top: 85px;
+        top: 55px;
         right: 5px;
       }
 
       #previousBtn {
         z-index: 5;
         position: absolute;
-        top: 85px;
+        top: 55px;
         left: 5px;
       }
 
@@ -74,42 +96,77 @@
         opacity: .2;
       }
 
+
+      .toggle-btns {
+        display: flex;
+        color: var(--default-primary-color);
+        right: 0;
+        bottom: 160px;
+        position: absolute;
+      }
+
+      .toggle-btns paper-icon-button {
+        background: white;
+      }
+
+      .triangle {
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 0 40px 40px;
+        border-color: transparent transparent #ffffff transparent;
+      }
     </style>
 
-    <div loading-state="loaded" id="root">
-        <paper-fab 
-          icon="arrow-back" 
-          id="previousBtn" 
-          on-click="_previous">
-        </paper-fab>
+    <app-page-carousel-search 
+      hidden$="[[!open]]"
+      active="[[active]]"
+      catalog-id="[[catalogId]]" 
+      id="carousel-search">
+    </app-page-carousel-search>
 
-        <div id="scrollPanel">
-          <div>
-            <template is="dom-repeat" items="[[pages]]" as="page" style="height:80px">
-                <app-page-item 
-                  style="display:inline-block"
-                  class="grid-item"
-                  active$="[[active]]"
-                  no-search-match$="[[page.noMatch]]"
-                  catalog-id$="[[catalogId]]" 
-                  page="[[page]]" 
-                  active
-                  api-host="[[apiHost]]"
-                  on-click="_select">
-                </app-page-item>
-            </template>
-          </div>
-        </div>
-
-        <paper-fab 
-          icon="arrow-forward" 
-          id="nextBtn" 
-          on-click="_next">
-        </paper-fab>
+    <div class="toggle-btns">
+      <div class="triangle"></div>
+      <paper-icon-button on-click="toggle" hidden$="[[!open]]" icon="expand-more"></paper-icon-button>
+      <paper-icon-button on-click="toggle" hidden$="[[open]]" icon="expand-less"></paper-icon-button>
     </div>
 
-    <div loading-state="loading" style="text-align: center; padding: 15px">
-      <paper-spinner active></paper-spinner>
+    <div id="container">
+      <div loading-state="loaded" id="root">
+          <paper-fab 
+            icon="arrow-back" 
+            id="previousBtn" 
+            on-click="_previous">
+          </paper-fab>
+
+          <div id="scrollPanel">
+            <div>
+              <template is="dom-repeat" items="[[pages]]" as="page" style="height:80px">
+                  <app-page-item 
+                    style="display:inline-block"
+                    class="grid-item"
+                    active$="[[active]]"
+                    no-search-match$="[[page.noMatch]]"
+                    catalog-id$="[[catalogId]]" 
+                    page="[[page]]" 
+                    active
+                    api-host="[[apiHost]]"
+                    on-click="_select">
+                  </app-page-item>
+              </template>
+            </div>
+          </div>
+
+          <paper-fab 
+            icon="arrow-forward" 
+            id="nextBtn" 
+            on-click="_next">
+          </paper-fab>
+      </div>
+
+      <div loading-state="loading" style="text-align: center; padding: 15px">
+        <paper-spinner active></paper-spinner>
+      </div>
     </div>
     
   </template>
@@ -126,6 +183,11 @@
           catalogId: {
             type: String,
             value : ''
+          },
+          open : {
+            type : Boolean,
+            value : true,
+            reflectToAttribute : true
           }
         }
       }
@@ -338,6 +400,10 @@
           }
         }
         return null;
+      }
+
+      toggle() {
+        this.open = !this.open;
       }
     }
 

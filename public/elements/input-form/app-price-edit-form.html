@@ -18,37 +18,44 @@
 
       app-price-form-wine-type {
         padding: 15px 0;
-        margin: 5px 0;
+        margin: 5px 0 15px 0;
         border-top: 1px solid var(--medium-background-color);
         border-bottom: 1px solid var(--medium-background-color);
+      }
+
+      .buttons {
+        margin-top: 15px;
+        padding: 15px 15px 0 15px;
+        border-top: 1px solid var(--medium-background-color);
       }
     </style>
 
     <app-price-form-wine-type value="{{type}}" edit="[[!disabled]]"></app-price-form-wine-type>
 
-    <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
-      <app-price-edit-spirit 
-        id="spirit" 
-        disabled$="[[disabled]]"
-        add-space="[[addSpace]]">
-      </app-price-edit-spirit>
+    <div style="padding: 0 15px">
+      <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
+        <app-price-edit-spirit 
+          id="spirit" 
+          disabled$="[[disabled]]"
+          add-space="[[addSpace]]">
+        </app-price-edit-spirit>
 
-      <app-price-edit-wine 
-        id="wine" 
-        disabled$="[[disabled]]"
-        add-space="[[addSpace]]">
-      </app-price-edit-wine>
-    </iron-pages>
-
+        <app-price-edit-wine 
+          id="wine" 
+          disabled$="[[disabled]]"
+          add-space="[[addSpace]]">
+        </app-price-edit-wine>
+      </iron-pages>
+    </div>
 
     <div class="buttons" hidden$="[[disabled]]">
       <div class="layout center">
+        <cork-cancel-button label="Cancel" on-click="_cancel"></cork-cancel-button>
         <div hidden$="[[!editMode]]">
           <paper-icon-button icon="delete" on-click="_delete"></paper-icon-button>
           <paper-icon-button icon="done" on-click="_approve" hidden$="[[!userState.user.isAdmin]]"></paper-icon-button>
         </div>
         <div class="flex"></div>
-        <paper-button on-click="_cancel">Cancel</paper-button>
         <paper-button save on-click="_save">Save</paper-button>
       </div>
     </div>

@@ -62,101 +62,71 @@
   </template>
   <script>
 
-(function(){
-
-    var AuthStateEventLoop = {
-      req : {
-        event : 'get-auth-state',
-      },
-      resp : {
-        event : 'auth-update',
-        handler : function(e) {
-          this.userState = e;
-          this._updateShowVoting();
+    class AppPriceFormVoting extends 
+        Mixin(Polymer.Element)
+        .with(EventBusMixin, AuthMixin, MarksMixin) {
+      
+      static get is() { return 'app-price-form-voting'; }
+    
+      static get properties() {
+        return {
+          mark : {
+            type : Object,
+            value : function() {
+              return {};
+            }
+          },
+          count : {
+            type : Number,
+            value : 0
+          },
+          userState : {
+            type : Object,
+            value : function() {
+              return {}
+            }
+          },
+          showVoting : {
+            type : Boolean,
+            value : false
+          }
         }
       }
-    };
 
-    var MarkVotingEventLoop = {
-      req : {
-        event : 'vote-catalog-page-mark',
-        payload : function(vote) {
-          return {
-            markId : this.mark.id,
-            pageId : this.mark.pageId,
-            vote : vote
-          }
-        },
-        handler : false
-      },
-
-      resp : {
-        event : 'catalog-page-marks-update',
-        handle : function(e) {
-          return (this.mark.id === e.id && e.state === 'loaded');
-        },
-        handler : function(e) {
-          this.show(e);
-        }
+      ready() {
+        super.ready();
+        this._getAuthState().then(e => this._onAuthUpdate(e));
       }
-    };
 
-    Polymer({
-      is: 'app-price-form-voting',
+      _onAuthUpdate(e) {
+        this.userState = e;
+        this._updateShowVoting();
+      }
 
-      properties : {
-        mark : {
-          type : Object,
-          value : function() {
-            return {};
-          }
-        },
-        count : {
-          type : Number,
-          value : 0
-        },
-        userState : {
-          type : Object,
-          value : function() {
-            return {}
-          }
-        },
-        showVoting : {
-          type : Boolean,
-          value : false
-        }
-      },
+      _voteOnMark(vote) {
+        return super._voteOnMark(this.mark.pageId, this.mark.id, vote);
+      }
 
-      behaviors : [EventBusBehavior, EventLoopBehavior],
+      _onMarksUpdate(e) {
+        if(this.mark.id !== e.id || e.state !== 'loaded') return;
+        this.show(e);
+      }
 
-      eventLoops : {
-        authState : AuthStateEventLoop,
-        markVoting : MarkVotingEventLoop
-      },
+      _upVote() {
+        this._voteOnMark('up');
+      }
 
-      ready : function() {
-        this.eventLoop.authState.req();
-      },
+      _downVote() {
+        this._voteOnMark('down');
+      }
 
-      _upVote : function() {
-        this._vote('up');
-      },
-
-      _downVote : function() {
-        this._vote('down');
-      },
-
-      _vote : function(value) {
-        this.eventLoop.markVoting.req(value);
-      },
-
-      show : function(mark) {
+      show(mark) {
         if( !mark.data || mark.deleted ) return;
 
         this.count = 0;
         this.mark = mark;
 
-        var eles = this.querySelectorAll('.voting');
+        var eles = this.shadowRoot.querySelectorAll('.voting');
         for( var i = 0; i < eles.length; i++ ) {
           eles[i].classList.remove('voted');
         }
@@ -190,9 +160,9 @@
         }
 
         this._updateShowVoting();
-      },
+      }
 
-      _updateShowVoting : function() {
+      _updateShowVoting() {
         if( this.userState.user && 
             this.userState.user.uid && 
             !this.userState.user.isAnonymous &&
@@ -202,8 +172,8 @@
           this.showVoting = false;
         }
       }
-    });
 
-})();
+    }
+
   </script>
 </dom-module>

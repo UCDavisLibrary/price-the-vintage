@@ -21,11 +21,20 @@
           right: 0;
           top: 0;
           bottom:0;
+          overflow: hidden;
         }
 
         .leaflet-div-icon {
           border: none !important;
           background: transparent !important;
+        }
+
+        .leaflet-bar a, .leaflet-bar a:hover {
+          color: var(--default-primary-color) !important;
+        }
+
+        .leaflet-draw-toolbar a {
+          background-image: url(/images/leaflet/draw-spritesheet.png) !important;
         }
 
         [state="loaded"] {
@@ -43,15 +52,6 @@
 
         #map {
           height: 100%;
-        }
-
-        #carousel {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          z-index: 1000;
-          box-shadow: 0 0 5px black;
         }
 
         #nothingToDo {
@@ -84,14 +84,7 @@
       </div>
     </div>
 
-    <paper-material id="carousel">
-      <app-page-carousel-search 
-        active="[[active]]"
-        catalog-id="[[selectedCatalogId]]" 
-        id="carousel-search">
-      </app-page-carousel-search>
-      <app-page-carousel active="[[active]]"></app-page-carousel>
-    </paper-material>
+    <app-page-carousel id="carousel" active="[[active]]"></app-page-carousel>
 
     <div id="map" state="loaded"></div>
 

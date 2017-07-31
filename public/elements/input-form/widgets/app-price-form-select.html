@@ -1,0 +1,85 @@
+<dom-module id="app-price-form-select">
+  <template>
+    <style>
+      :host {
+        display: block
+      }
+
+      .label {
+        text-transform: uppercase;
+        color: var(--accent-color);
+        padding: 5px 0;
+      }
+
+      .label[active] {
+        color: var(--default-primary-color);
+      }
+
+      cork-input {
+        margin: 1px;
+      }
+
+      cork-input[active] {
+        margin: 0;
+        --cork-border-width: 2px;
+        --cork-border-color: var(--default-primary-color);
+      }
+
+    </style>
+
+    <div class="label" active$="[[active]]">[[label]]</div>
+    <cork-select 
+      hidden$="[[disabled]]"
+      value="{{value}}" 
+      active="{{active}}"
+      options="[[options]]">
+    </cork-select>    
+    <div hidden$="[[!disabled]]">[[value]]</div>
+
+  </template>
+
+  <script>
+    class AppPriceFormSelect extends Polymer.Element {
+
+      static get is() { return 'app-price-form-select'; }
+
+      static get properties() {
+        return {
+          value : {
+            type : String,
+            value : '',
+            notify : true
+          },
+          label : {
+            type : String,
+            value : ''
+          },
+          active : {
+            type : Boolean,
+            value : false
+          },
+          disabled : {
+            type : Boolean,
+            value : false
+          },
+          options : {
+            type : Array,
+            value : function() {
+              return [];
+            }
+          }
+        };
+      }
+
+      _onFocus() {
+        this.active = true;
+      }
+
+      _onBlur() {
+        this.active = false;
+      }
+    }
+
+    window.customElements.define(AppPriceFormSelect.is, AppPriceFormSelect);
+  </script>
+</dom-module>

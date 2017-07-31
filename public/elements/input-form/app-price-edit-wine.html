@@ -21,26 +21,22 @@
 
     <div class="row">
       <div>
-        <div>Wine Type</div>
-        <cork-select id="wineType" options="[[wineTypeOptions]]" disabled$="[[disabled]]"></cork-select>
-
-        <!-- <div>Wine Type</div>
-        <select value="Still" id="wineType" disabled$="[[disabled]]" >
-          <option value="Still">Still</option>
-          <option value="Sparkling">Sparkling</option>
-          <option value="Fortified">Fortified</option>
-        </select> -->
+        <app-price-form-select 
+          id="wineType" 
+          label="Wine Type" 
+          options="[[wineTypeOptions]]" 
+          disabled$="[[disabled]]">
+        </app-price-form-select>
       </div>
       <div>
-        <div>Wine Color</div>
-        <select value="Red" id="color" disabled$="[[disabled]]" >
-          <option value="Red">Red Wine</option>
-          <option value="White">White Wine</option>
-          <option value="Rose">Rose</option>
-        </select>
+        <app-price-form-select 
+          id="color" 
+          label="Wine Color" 
+          options="[[wineColorOptions]]" 
+          disabled$="[[disabled]]">
+        </app-price-form-select>
       </div>
     </div>
-
 
     <app-price-form-input
       class="padding"
@@ -76,48 +72,13 @@
         </app-price-form-input>
       </div>
       <div>
-        <div>Bottle Size</div>
-        <select value="Standard" id="bottleType" disabled$="[[disabled]]">
-          <option value="Standard">Standard</option>
-          <option value="Split">Split</option>
-          <option value="Piccolo">Piccolo</option>
-          <option value="Pony">Pony</option>
-          <option value="Split">Split</option>
-          <option value="Quarter Bottle">Quarter Bottle</option>
-          <option value="Snipe">Snipe</option>
-          <option value="Quarter">Quarter</option>
-          <option value="Chopine">Chopine</option>
-          <option value="Demi">Demi</option>
-          <option value="Half Bottle">Half Bottle</option>
-          <option value="Tenth">Tenth</option>
-          <option value="Jennie">Jennie</option>
-          <option value="Demie">Demie</option>
-          <option value="Pinte">Pinte</option>
-          <option value="Clavelin">Clavelin</option>
-          <option value="Standard">Standard</option>
-          <option value="Fifth">Fifth</option>
-          <option value="Litre">Litre</option>
-          <option value="Magnum">Magnum</option>
-          <option value="Marie Jeanne">Marie Jeanne</option>
-          <option value="Jeroboam">Jeroboam</option>
-          <option value="Rehoboam">Rehoboam</option>
-          <option value="McKenzie">McKenzie</option>
-          <option value="Imperial">Imperial</option>
-          <option value="Methuselah">Methuselah</option>
-          <option value="Salmanazar">Salmanazar</option>
-          <option value="Balthazar">Balthazar</option>
-          <option value="Nebuchadnezzar">Nebuchadnezzar</option>
-          <option value="Melchior">Melchior</option>
-          <option value="Solomon">Solomon</option>
-          <option value="Sovereign">Sovereign</option>
-          <option value="Primat">Primat</option>
-          <option value="Goliath">Goliath</option>
-          <option value="Melchizedek">Melchizedek</option>
-          <option value="Midas">Midas</option>
-          <option value="Tenths">Tenths</option>
-          <option value="Pint">Pint</option>
-          <option value="Quar">Quart</option>
-        </select>
+        <app-price-form-select 
+          id="bottleType" 
+          label="Bottle Size" 
+          value="Standard"
+          options="[[bottleTypeOptions]]" 
+          disabled$="[[disabled]]">
+        </app-price-form-select>
       </div>
     </div>
 
@@ -175,6 +136,67 @@
             value : 'Sparkling',
             icon : 'cork:wine-sparkling'
           }
+        ]
+      }
+
+      get wineColorOptions() {
+        return [
+          {
+            value : 'Red',
+            icon : 'cork:wine-red'
+          },
+          {
+            value : 'White',
+            icon : 'cork:wine-white'
+          },
+          {
+            value : 'Rosè',
+            icon : 'cork:wine-rose'
+          }
+        ]
+      }
+
+      get bottleTypeOptions() {
+        return [
+          {value : "Standard"},
+          {value : "Split"},
+          {value : "Piccolo"},
+          {value : "Pony"},
+          {value : "Split"},
+          {value : "Quarter Bottle"},
+          {value : "Snipe"},
+          {value : "Quarter"},
+          {value : "Chopine"},
+          {value : "Demi"},
+          {value : "Half Bottle"},
+          {value : "Tenth"},
+          {value : "Jennie"},
+          {value : "Demie"},
+          {value : "Pinte"},
+          {value : "Clavelin"},
+          {value : "Standard"},
+          {value : "Fifth"},
+          {value : "Litre"},
+          {value : "Magnum"},
+          {value : "Marie Jeanne"},
+          {value : "Jeroboam"},
+          {value : "Rehoboam"},
+          {value : "McKenzie"},
+          {value : "Imperial"},
+          {value : "Methuselah"},
+          {value : "Salmanazar"},
+          {value : "Balthazar"},
+          {value : "Nebuchadnezzar"},
+          {value : "Melchior"},
+          {value : "Solomon"},
+          {value : "Sovereign"},
+          {value : "Primat"},
+          {value : "Goliath"},
+          {value : "Melchizedek"},
+          {value : "Midas"},
+          {value : "Tenths"},
+          {value : "Pint"},
+          {value : "Quart"}
         ]
       }
 

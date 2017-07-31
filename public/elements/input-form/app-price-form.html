@@ -4,6 +4,8 @@
 <link rel="import" href="app-price-edit-spirit.html">
 <link rel="import" href="widgets/app-price-form-wine-type.html">
 <link rel="import" href="widgets/app-price-form-input.html">
+<link rel="import" href="widgets/app-price-form-select.html">
+
 
 <dom-module id="app-price-form">
   <template>
@@ -11,26 +13,29 @@
     <style>
       :host {
         display: none;
-        position: absolute;
+        position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
         background-color: rgba(255, 255, 255, .95);
-        z-index: 1000;
+        z-index: 500;
         border-top: 1px solid white;
         box-shadow: 0 0 10px rgba(0,0,0,.4);
+        overflow: auto;
       }
 
-      @media(min-width: 768px) {
+      @media(min-width: 720px) {
         :host {
           max-width: 350px;
           left: initial;
-          top: 0;
+          top: 64px;
         }
       }
 
-      #body {
-        overflow: auto;
+      .title {
+        flex: 1;
+        font-size: 16px;
+        font-weight: bold;
       }
 
       #body > div {
@@ -38,23 +43,23 @@
       }
     </style>
 
-    <div id="body">
-      <div>
-        <div style="display:flex">
-          <div style="flex:1">Edit Mark</div>
-          <div><paper-button>Cancel</paper-button></div>
+    <div>
+      <div style="display:flex; padding: 10px 15px 0 15px">
+        <div class="title">Edit Mark</div>
+        <div>
+          <cork-cancel-button label="Cancel" on-click="_cancel"></cork-cancel-button>
         </div>
-        <app-price-edit-form
-          id="form" 
-          catalog-id="[[catalogId]]"
-          page-id="[[pageId]]"
-          user-state="[[userState]]"
-          disabled$="[[disabled]]"
-          on-complete="_cancel" 
-          on-delete="_cancel"
-          on-cancel="_cancel">
-        </app-price-edit-form>
       </div>
+      <app-price-edit-form
+        id="form" 
+        catalog-id="[[catalogId]]"
+        page-id="[[pageId]]"
+        user-state="[[userState]]"
+        disabled$="[[disabled]]"
+        on-complete="_cancel" 
+        on-delete="_cancel"
+        on-cancel="_cancel">
+      </app-price-edit-form>
     </div>
 
   </template>
@@ -100,16 +105,14 @@
       }
 
       _resize() {
-        if( window.innerWidth < 768 ) {
+        if( window.innerWidth < 720 ) {
           var h = Math.floor(window.innerHeight * 0.5);
 
           this.style.maxHeight = h+'px';
-          this.$.body.style.maxHeight =  h+'px';
 
           var maxFormSize = 72 * 7;
         } else {
           this.style.maxHeight = 'initial';
-          this.$.body.style.maxHeight = 'initial';
         }
       }
 

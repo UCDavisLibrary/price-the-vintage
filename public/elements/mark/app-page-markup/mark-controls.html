@@ -26,6 +26,7 @@
     }
 
     _onMarkUpdate(e) {
+      console.log(e);
       if( e.pageId !== this.selectedPageId ) return;
 
       if( e.state !== 'loaded' || e.deleted ) {

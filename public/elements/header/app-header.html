@@ -46,9 +46,7 @@
       static get is() { return 'app-header'; }
 
       _onAppStateUpdate(e) {
-        if( e.editingMark || e.viewingMark ) {
-          this.section = 'editing';
-        } else if ( e.section === 'home' ) {
+        if ( e.section === 'home' ) {
           this.section = 'list';
         } else {
           this.section = e.section;

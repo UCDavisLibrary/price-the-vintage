@@ -10,26 +10,6 @@
         cursor: pointer;
       }
 
-      /*.detail {
-        position: absolute;
-        top: -5px;
-        left: -10px;
-        padding: 4px;
-        background-color: var(--default-primary-color);
-        color: white;
-        border-radius: 40px;
-      }*/
-
-      /*.markDetail {
-        position: absolute;
-        bottom: -5px;
-        left: -10px;
-        padding: 4px;
-        background-color: white;
-        color: var(--default-primary-color);
-        border-radius: 40px;
-      }*/
-
       .details {
         height: 24px;
         position: absolute;
@@ -37,7 +17,7 @@
         left: 0px;
         right: 0px;
         padding: 4px;
-        background-color: var(--default-primary-color);
+        background-color: var(--input-border-color);
         color: white;
       }
 
@@ -52,6 +32,10 @@
 
       paper-material.selected {
         border: 2px solid var(--default-primary-color);
+      }
+
+      paper-material.selected .details {
+        background-color: var(--default-primary-color);
       }
 
       iron-icon {
