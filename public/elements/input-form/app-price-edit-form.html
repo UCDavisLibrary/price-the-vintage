@@ -30,7 +30,7 @@
       }
     </style>
 
-    <app-price-form-wine-type value="{{type}}" edit="[[!disabled]]"></app-price-form-wine-type>
+    <app-price-form-wine-type id="wineType" value="{{type}}" edit="[[!disabled]]"></app-price-form-wine-type>
 
     <div style="padding: 0 15px">
       <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
@@ -115,6 +115,10 @@
         // this.$.sectionInput.value = '';
         this.$.spirit.reset();
         this.$.wine.reset();
+
+        setTimeout(() => {
+           this.$.wineType.focus();
+        }, 50);
       }
 
       _approve() {

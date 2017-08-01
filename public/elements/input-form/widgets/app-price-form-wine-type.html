@@ -51,7 +51,7 @@
 
     <div class="edit" hidden$="[[!edit]]">
       <div selected$="[[!isWine]]">
-        <span class="btn" on-click="_setValue" on-keyup="_onKeyUp" value="spirit" tabindex="1">
+        <span id="spirit" class="btn" on-click="_setValue" on-keyup="_onKeyUp" value="spirit" tabindex="1">
           <iron-icon hidden$="[[isWine]]" icon="cork:spirit-glass-circle-fill"></iron-icon>
           <iron-icon hidden$="[[!isWine]]" icon="cork:spirit-glass-circle"></iron-icon>
           <iron-icon hidden$="[[isWine]]" check icon="cork:wine-check"></iron-icon>
@@ -126,6 +126,10 @@
           composed : true
         }
         this.dispatchEvent(new CustomEvent('change', e));
+      }
+
+      focus() {
+        this.$.spirit.focus();
       }
 
     }
