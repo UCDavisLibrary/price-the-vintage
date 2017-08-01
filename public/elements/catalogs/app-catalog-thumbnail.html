@@ -154,7 +154,7 @@
           }
 
           var page = e.payload[0];
-          window.location.hash = this.catalog.catalog_id+'/'+page.page_id;
+          this.emit('ui-set-location', this.catalog.catalog_id+'/'+page.page_id);
         }
       }
 

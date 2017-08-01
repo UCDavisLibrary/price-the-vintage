@@ -154,7 +154,7 @@
 
 
       this.pendingLayer = layer;
-      window.location.hash = this.selectedCatalogId + '/' + this.selectedPageId + '/edit';
+      this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId + '/edit');
     }
 
     _updateMapSize() {

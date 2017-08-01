@@ -263,7 +263,7 @@
             return;
           }
         }
-        window.location.hash = this.catalogId + '/' + this._getPageIdFromPageNumber(page);
+        this.emit('ui-set-location', this.catalogId + '/' + this._getPageIdFromPageNumber(page));
       }
 
       _onSelectedCatalogPageUpdate(pageId) {
@@ -383,7 +383,7 @@
       }
 
       _select(e) {
-        window.location.hash = this.catalogId+'/'+e.currentTarget.page.page_id;
+        this.emit('ui-set-location',  this.catalogId+'/'+e.currentTarget.page.page_id);
       }
 
       _clearSearch() {

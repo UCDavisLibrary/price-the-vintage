@@ -212,6 +212,7 @@
       }
 
       edit(data) {
+        console.log(data);
         this.$.color.value = data.color || this.getEmptyValue('Red');
         this.$.wineType.value = data.wineType || this.getEmptyValue('Still');
         this.$.bottleType.value = data.bottleType || this.getEmptyValue('Standard');

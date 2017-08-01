@@ -22,11 +22,12 @@
 
     _getMarks() {
       return super._getMarks(this.selectedPageId)
-                  .then(marks => marks.forEach(this._onMarksUpdate.bind(this)));
+                  .then(marks => {
+                    marks.forEach(this._onMarksUpdate.bind(this))
+                  });
     }
 
-    _onMarkUpdate(e) {
-      console.log(e);
+    _onMarksUpdate(e) {
       if( e.pageId !== this.selectedPageId ) return;
 
       if( e.state !== 'loaded' || e.deleted ) {
@@ -46,8 +47,8 @@
         this.mapMarkers[e.id] = this._drawMark(e);
       }
 
-      if( this.currentState.markId ) {
-        if( this.currentState.markId === e.id ) {
+      if( this.appState.markId ) {
+        if( this.appState.markId === e.id ) {
           this._selectAndShowPopup(e.id);
         } else if( this.mapMarkers[e.id] ) {
           this.mapMarkers[e.id]._icon.style.display = 'none';
@@ -96,9 +97,7 @@
       if( !this.marksLayer ) return null;
 
       var marker = document.createElement('app-marker');
-      marker.mark = mark;
-      marker.catalogId = this.catalogId;
-      marker.pageId = this.selectedPageId;
+      marker.init(mark, this.selectedCatalogId, this.selectedPageId);
       marker.addTo(this.marksLayer);
 
       return marker;
@@ -106,13 +105,13 @@
 
     _onAddMarkCancel() {
       this._removeTmpMark();
-      window.location.hash = this.catalogId + '/' + this.selectedPageId;
+      this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId);
     }
 
     _onDeleteMark(e) {
       var mark = e.detail;
       this._removeMark(this.selectedPageId, mark.id);
-      window.location.hash = this.catalogId + '/' + this.selectedPageId;
+      this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId);
     }
 
     _onAddMark(e) {

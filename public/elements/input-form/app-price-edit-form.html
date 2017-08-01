@@ -11,6 +11,10 @@
         width: 25px;
       }
 
+      paper-button {
+        color: var(--default-primary-color);
+      }
+
       paper-button[save] {
         color: white;
         background-color: var(--default-primary-color);
@@ -26,6 +30,14 @@
       .buttons {
         margin-top: 15px;
         padding: 15px 15px 0 15px;
+        border-top: 1px solid var(--medium-background-color);
+      }
+
+      .admin {
+        display: flex;
+        align-items: center;
+        padding: 10px; 
+        margin-top: 10px;
         border-top: 1px solid var(--medium-background-color);
       }
     </style>
@@ -51,12 +63,19 @@
     <div class="buttons" hidden$="[[disabled]]">
       <div class="layout center">
         <cork-cancel-button label="Cancel" on-click="_cancel"></cork-cancel-button>
-        <div hidden$="[[!editMode]]">
-          <paper-icon-button icon="delete" on-click="_delete"></paper-icon-button>
-          <paper-icon-button icon="done" on-click="_approve" hidden$="[[!userState.user.isAdmin]]"></paper-icon-button>
-        </div>
         <div class="flex"></div>
+        <paper-button hidden$="[[!editMode]]" on-click="_delete">Delete</paper-button>
         <paper-button save on-click="_save">Save</paper-button>
+      </div>
+    </div>
+
+    <div hidden$="[[!editMode]]">
+      <div class="admin" hidden$="[[!userState.user.isAdmin]]">
+        <div style="flex:1; font-size: 16px; font-weight: bold">Admin</div>
+        <paper-button on-click="_approve">
+          <iron-icon icon="done"></iron-icon>
+          Approve
+        </paper-button>
       </div>
     </div>
     
@@ -100,14 +119,6 @@
 
       _onAuthUpdate(e) {
         this.userState = e;
-      }
-
-      _setType(e) {
-        if( this.$.typeInput.checked ) {
-          this.type = 'wine';
-        } else {
-          this.type = 'spirit';
-        }
       }
 
       _reset() {
@@ -181,7 +192,7 @@
           this._editMark(this.pageId, this.editMark.id, data);
         }
 
-        window.location.hash = this.catalogId + '/' + this.pageId;
+        this.emit('ui-set-location', this.catalogId + '/' + this.pageId);
         this.fire('cancel');
       }
 
@@ -192,7 +203,7 @@
       show(mark) {
         this._reset();
 
-        this.emit('ui-mark-edit-start', mark);
+        // this.emit('ui-mark-edit-start', mark);
 
         this.editMode = true;
         this.editMark = mark;
@@ -200,12 +211,12 @@
         // this.$.sectionInput.value = mark.data.section || (this.disabled ? '-' : '');
         this.type = mark.data.type;
 
-        this.$.typeInput.checked = (this.type === 'wine') ? true : false;
+        this.$.wineType.value = this.type;
 
         if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
         else this.$.spirit.edit(mark.data);
 
-        this.$.voting.show(mark);
+        // this.$.voting.show(mark);
       }
 
       create(ll) {

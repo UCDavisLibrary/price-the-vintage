@@ -47,7 +47,7 @@
       <div style="display:flex; padding: 10px 15px 0 15px">
         <div class="title">Edit Mark</div>
         <div>
-          <cork-cancel-button label="Cancel" on-click="_cancel"></cork-cancel-button>
+          <cork-cancel-button label="Cancel" on-click="_headerCancel"></cork-cancel-button>
         </div>
       </div>
       <app-price-edit-form
@@ -121,8 +121,8 @@
         this.pageId = e.pageId;
       }
 
-      _cancel() {
-        window.location.hash = this.catalogId + '/' + this.pageId;
+      _headerCancel() {
+        this.fire('cancel');
       }
 
       show(mark) {

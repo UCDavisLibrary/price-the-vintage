@@ -64,7 +64,7 @@
       }
 
       _cancelEdit() {
-        window.location.hash = this.catalogId + '/' + this.pageId;
+        this.emit('ui-set-location', this.catalogId + '/' + this.pageId);
       }
     }
     window.customElements.define(AppHeaderEditing.is, AppHeaderEditing);

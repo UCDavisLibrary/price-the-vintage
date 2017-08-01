@@ -82,8 +82,7 @@
             type : Object,
             value : function() {
               return null;
-            },
-            observer : '_onMarkSet'
+            }
           },
           selected : {
             type : Boolean,
@@ -119,12 +118,20 @@
 
       constructor() {
         super();
+        this.active = true;
 
         this.icons = {
           pending : 'device:gps-fixed',
           approved : 'check',
           moving : 'open-with'
         };
+      }
+
+      init(mark, catalogId, pageId) {
+        this.mark = mark;
+        this.catalogId = catalogId;
+        this.pageId = pageId;
+        this._onMarkSet();
       }
 
       _onAuthUpdate(e) {
@@ -178,9 +185,9 @@
         if( this.mark.data.isTemp ) return;
 
         if( !this.mark.data.approved ) {
-          window.location.hash = this.catalogId + '/' + this.pageId + '/edit/' + this.mark.id;
+          this.emit('ui-set-location', this.catalogId + '/' + this.pageId + '/edit/' + this.mark.id);
         } else {
-          window.location.hash = this.catalogId + '/' + this.pageId + '/view/' + this.mark.id;
+          this.emit('ui-set-location', this.catalogId + '/' + this.pageId + '/view/' + this.mark.id);
         }
       }
 

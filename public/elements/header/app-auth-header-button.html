@@ -165,7 +165,7 @@
         this._logout();
 
         if( this.appState.editingMark ) {
-          window.location.hash = this.catalogId + '/' + this.pageId;
+          this.emit('ui-set-location', this.catalogId + '/' + this.pageId);
         }
       }
 
@@ -175,7 +175,7 @@
       }
 
       _gotToAdmin() {
-        window.location.hash = '#admin';
+        this.emit('ui-set-location', 'admin');
         this.$.menuBtn.close();
       }
 

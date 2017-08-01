@@ -80,6 +80,15 @@ Parses URL on hash change and sets appState.
           }
       }
 
+      get bind() {
+        return Object.assign(
+          super.bind,
+          {
+            'ui-set-location' : '_setWindowUrl'
+          }
+        )
+      }
+
       ready() {
         this.active = true;
         super.ready();
@@ -248,6 +257,12 @@ Parses URL on hash change and sets appState.
             break;
         }
       }
+
+      _setWindowUrl(resolve, reject, hash) {
+        debugger;
+        window.location.hash = hash;
+        resolve();
+      } 
 
     }
 

@@ -223,7 +223,7 @@
         // there is a /edit stub in url, but no action required (proly refresh),
         // set to normal (non-edit) mode;
         } else {
-          window.location.hash = this.selectedCatalogId + '/' + this.selectedPageId;
+          this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId);
         }
       }
 
@@ -331,8 +331,9 @@
         this.$.nothingToDo.style.display = 'none';
       }
 
-      _showPopup() {
+      _showPopup(resolve) {
         this.$.nothingToDo.style.display = 'block';
+        resolve();
       }
     }
 

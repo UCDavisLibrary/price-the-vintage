@@ -298,7 +298,7 @@
       }
 
       _back() {
-        window.location.hash = '/';
+        this.emit('ui-set-location', '/');
       }
 
     }

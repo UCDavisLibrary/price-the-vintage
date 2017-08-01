@@ -14,11 +14,11 @@
       }
 
       _getMarks(pageId) {
-        return this.emit('MarksModel.get', pageId);
+        return this.emit('MarksModel.getPageMarks', pageId);
       }
 
-      _getMark(pageId, markId) {
-        return this.emit('MarksModel.getMark', pageId, markId);
+      _getPendingMark(pageId, markId) {
+        return this.emit('MarksModel.getPendingMark', pageId, markId);
       }
 
       _listenToMark(pageId, markId) {
@@ -26,19 +26,19 @@
       }
 
       _addMark(pageId, mark) {
-        return this.emit('MarksModel.set', pageId, mark);
+        return this.emit('MarksModel.setPending', pageId, mark);
       }
 
       _editMark(pageId, markId, mark) {
-        return this.emit('MarksModel.edit', pageId, markId, mark);
+        return this.emit('MarksModel.setPending', pageId, markId, mark);
       }
 
       _voteOnMark(pageId, markId, vote) {
-        return this.emit('MarksModel.vote', pageId, markId, vote);
+        return this.emit('MarksModel.votePending', pageId, markId, vote);
       }
 
       _removeMark(pageId, markId) {
-        return this.emit('MarksModel.remove', pageId, markId);
+        return this.emit('MarksModel.removePending', pageId, markId);
       }
 
       _pendingMarkSearch(query) {

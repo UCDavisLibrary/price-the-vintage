@@ -46,10 +46,10 @@
 
       _onUpdateAsync() {
         if( this.auth.state === 'notLoggedIn' || !this.auth.user ) {
-          window.location.hash = '';
+          this.emit('ui-set-location', '');
           return;
         } else if( !this.auth.user.isAdmin ) {
-          window.location.hash = '';
+          this.emit('ui-set-location', '');
           return;
         }
       }
