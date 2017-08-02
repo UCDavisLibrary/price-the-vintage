@@ -4,17 +4,17 @@
     <style>
       :host {
         display: block;
-        background: rgba(0,0,0,0.2);
-        color: white;
-        padding: 3px;
-        border-radius: 3px;
+        left: -125px !important;
+        top: -2px !important;
+        position: absolute !important;
       }
-      #view {
-        display : none;
+      cork-tag {
+        color: white;
+        height: 30px;
       }
     </style>
 
-    <div id="view">Start by clicking here.</div>
+    <cork-tag right-arrow id="view" on-click="hide">Select marker<br /> to begin</cork-tag>
 
   </template>
   <script>
@@ -35,10 +35,9 @@
     class AppHelpTextControl extends Polymer.Element {
 
       static get is() { return 'app-help-text-control' }
-      
-      ready() {
-        super.ready();
-        this.$.view.style.display = 'block'
+
+      hide() {
+        this.style.display = 'none';
       }
 
     }

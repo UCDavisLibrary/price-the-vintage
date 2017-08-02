@@ -34,6 +34,14 @@
         return this.emit('AuthModel.logout');
       }
 
+      _continueAuth0Login(hash) {
+        return this.emit('AuthModel.continueAuth0Login', hash);
+      }
+
+      _initAuthRenewAuth0() {
+        return this.emit('AuthModel.initAuthRenewAuth0');
+      }
+
       _onAuthUpdate(e) {
         // implement me
       }

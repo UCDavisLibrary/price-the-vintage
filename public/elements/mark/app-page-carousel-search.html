@@ -39,17 +39,29 @@
       :host([search-active]) #overflow {
         width: 275px;
       }
+
+      paper-spinner-lite {
+        --paper-spinner-color: white;
+      }
+
+      #tag {
+        display: block;
+        height: 35px;
+        color: white;
+      }
     </style>
 
-    <div class="layout center">
+    <div style="display: flex; align-items: center">
       <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[searchActive]]"></paper-icon-button>
       <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!searchActive]]"></paper-icon-button>
       <div id="overflow">
-        <input type="text" id="input" placeholder="Search Catalog Pages"  hidden$="[[!searchActive]]" on-keyup="_search" />
+        <input type="text" id="input" placeholder="Search Catalog Pages"  hidden$="[[!searchActive]]" on-keyup="_search" autocomplete="off" />
       </div>
-      <div style="padding-left: 15px">
-        <paper-spinner active hidden$="[[!searching]]"></paper-spinner>
-        <div hidden$="[[!showResults]]">[[total]]</div>
+      <div hidden$="[[!showTag]]">
+        <cork-tag id="tag">
+          <paper-spinner-lite active hidden$="[[!searching]]"></paper-spinner-lite>
+          <div hidden$="[[!showResults]]">[[total]]</div>
+        </cork-tag>
       </div>
     </div>
 
@@ -82,11 +94,25 @@
             type : Boolean,
             value : false
           },
+          showTag : {
+            type : Boolean,
+            computed : '_computeShowTag(showResults, searching)',
+            observer : '_onTagShow'
+          },
           total : {
             type : String,
             value : ''
           }
         }
+      }
+
+      _computeShowTag(showResults, searching) {
+        return showResults || searching;
+      }
+
+      _onTagShow() {
+        if( !this.showTag ) return;
+        this.$.tag.resize();
       }
 
       _onAppStateUpdate(e) {
@@ -100,6 +126,11 @@
       }
 
       _onCatalogPagesSearchUpdate(e) {
+        if( e.state === 'error' ) {
+          this.searching = false;
+          alert('Server error :(');
+          return;
+        }
         if( e.state !== 'loaded' ) return;
 
         this.searching = false;
@@ -109,7 +140,7 @@
           return this.emit('ui-clear-search-catalog-pages');
         }
 
-        this.total = 'Matches: '+e.results.total;
+        this.total = 'Matches: '+e.payload.total;
       }
 
       _onActive() {

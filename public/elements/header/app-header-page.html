@@ -19,67 +19,7 @@
           padding-left: 80px;
         }
       }
-
-      paper-dialog {
-        color: black;
-      }
-
-      paper-dialog .panel {
-        padding: 5px;
-        margin-top: 15px;
-      }
-
-      paper-button {
-        color: var(--default-primary-color);
-      }
-
-      table.legend {
-        width: 235px;
-        text-align: left;
-        margin: auto;
-      }
-
-      table.legend td {
-        padding: 5px;
-      }
-
-      table.legend td:first-child {
-        text-align: center;
-      }
-
-      .mark {
-        width: 40px;
-        height: 40px;
-        border-radius: 20px 20px 0 20px;
-      }
-
-      .othersmark {
-        background: var(--default-primary-color);
-      }
-
-      .selected {
-        border: 2px solid #FF9800;
-        width: 36px;
-        height: 36px;
-      }
-
-      [layout] {
-        @apply(--layout-horizontal)
-      }
-
-      .mymark {
-        background: var(--accent-color);
-      }
-
-      .legend-panel {
-        text-align: center;
-        border-top: 1px solid #eee;
-        margin-top: 10px;
-      }
     </style>
-
-    <iron-media-query query="(min-width: 600px)" query-matches="{{notSmall}}"></iron-media-query>
-
 
     <table style="width: 100%">
       <tr>
@@ -102,139 +42,7 @@
       </tr>
     </table>
 
-    
-    <paper-dialog modal id="helpPopup">
-      <div class="layout">
-        <h2 class="flex">Ready to Price the Vintage?  Here's how:</h2>
-        <paper-icon-button icon="close" on-click="_hideHelp"></paper-icon-button>
-      </div>
-
-      <div class="layout panel">
-        <div>
-          <img src="/images/help/zoom.png" alt="zoom controls icon" />
-        </div>
-        <div class="flex" style="padding: 0 10px">
-          The magnification tools on the elft allow you to zoom in and out of the catalog page you're on.  Use the able of contents at the bottom of the screen to go to the other pages in this catalog.
-        </div>
-      </div>
-
-      <div class="layout panel">
-        <div>
-          <img src="/images/help/marker.png" alt="marker icon" />
-        </div>
-        <div class="flex" style="padding: 0 10px">
-          Use the marker tool on the right to place a mark on the <b>top left</b> corner of an entry in the catalog.  Then fill out the form that comes up to help use identify the essential information.
-        </div>
-      </div>
-
-      <div style="text-align: center" class="panel">
-        <img src="/images/help/overview.png" alt="help overview image" style="max-width: 75%" />
-      </div>
-
-      <div layout$="[[notSmall]]"  class="legend-panel">
-        <div class="flex">
-
-          <table class="legend">
-            <tr>
-              <td colspan="2">
-                <h2 style="text-align: left">Marker Legend</h2>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="device:gps-fixed"></iron-icon>
-              </td><td>
-                <div>Pending Mark</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="done"></iron-icon>
-              </td><td>
-                <div>Approved Mark</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="open-with"></iron-icon>
-              </td><td>
-                <div>Editing Mark (Movable)</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="settings"></iron-icon>
-              </td><td>
-                <div>Creating Mark</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="othersmark mark"></div>
-              </td><td>
-                <div>Other Users Mark</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="mymark mark"></div>
-              </td><td>
-                <div>Your Mark</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="selected mark"></div>
-              </td><td>
-                <div>Selected Mark</div>
-              </td>
-            </tr>
-          </table>
-        
-        </div>
-        <div class="flex">
-          <table class="legend">
-            <tr>
-              <td colspan="2">
-                <h2 style="text-align: left">Page Legend</h2>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="social:group"></iron-icon>
-              </td><td>
-                <div>Active Users</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="block"></iron-icon>
-              </td><td>
-                <div>Nothing to Mark</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="done"></iron-icon>
-              </td><td>
-                <div>Approved Marks</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="done-all"></iron-icon>
-              </td><td>
-                <div>Page Completed</div>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </div>
-
-      <div class="buttons">
-        <paper-button on-click="_hideHelp">Got it</paper-button>
-      </div>
-    </paper-dialog>
+    <app-mark-help-popup id="helpPopup"></app-mark-help-popup>
 
   </template>
   <script>
@@ -250,6 +58,9 @@
 
         window.addEventListener('resize', this._resize.bind(this));
         this._resize();
+
+        this.shadowRoot.removeChild(this.$.helpPopup);
+        document.body.appendChild(this.$.helpPopup);
 
         if( !window.localStorage.getItem('first-catalog-viewing') ) {
           this.$.helpPopup.open();

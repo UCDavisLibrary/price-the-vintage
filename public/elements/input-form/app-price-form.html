@@ -27,7 +27,7 @@
 
       @media(min-width: 720px) {
         :host {
-          max-width: 350px;
+          width: 350px;
           left: initial;
           top: 64px;
         }
@@ -46,9 +46,11 @@
 
     <div>
       <div style="display:flex; padding: 10px 15px 0 15px">
-        <div class="title">Edit Mark</div>
+        <div class="title" hidden$="[[disabled]]">Edit Mark</div>
+        <div class="title" hidden$="[[!disabled]]">View Mark</div>
         <div>
-          <cork-cancel-button label="Cancel" on-click="_headerCancel"></cork-cancel-button>
+          <cork-cancel-button label="Cancel" hidden$="[[disabled]]" on-click="_headerCancel"></cork-cancel-button>
+          <cork-cancel-button label="Close" hidden$="[[!disabled]]" on-click="_headerCancel"></cork-cancel-button>
         </div>
       </div>
       <app-price-edit-form

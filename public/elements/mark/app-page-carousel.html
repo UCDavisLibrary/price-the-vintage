@@ -43,13 +43,9 @@
 
       #scrollPanel {
         text-align: center;
-        padding: 0 10px;
+        padding: 10px;
         overflow-x: auto;
         overflow-y: hidden;
-      }
-
-      .nav {
-        padding: 3px;
       }
 
       .nav {
@@ -249,10 +245,10 @@
       _onCatalogPagesSearchUpdate(e) {
         if( e.state !== 'loaded' ) return;
 
-        this.searchResults = e.results.results;
+        this.searchResults = e.payload.results;
 
         this.pages.forEach(function(page, index) {
-          var matched = this._getResultsPageById(e.results.results, page.page_id);
+          var matched = this._getResultsPageById(e.payload.results, page.page_id);
           this.set('pages.'+index+'.noMatch', !matched ? true : false);
         }.bind(this));
 

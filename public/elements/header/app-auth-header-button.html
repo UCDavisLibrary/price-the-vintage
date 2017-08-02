@@ -54,17 +54,56 @@
         color: black;
       }
 
+      cork-popup-button {
+        --cork-border: none;
+        --cork-background-color-open: transparent;
+      }
+
+      .option {
+        padding: 10px;
+        white-space: nowrap;
+        color: var(--text-primary-color);
+      }
+
+      .option.selectable {
+        cursor: pointer;
+      }
+      .option.selectable:hover {
+        color: var(--default-primary-color);
+      }
+
       [hidden] {
         display: none;
       }
     </style>
 
     <div state="pending">...</div>
-    
-    <div state="loggedIn">
-      <paper-icon-button on-click="_loginAuth0" icon="social:person-outline" hidden$="[[!auth.user.isAnonymous]]" ></paper-icon-button>
 
-      <paper-menu-button id="menuBtn" hidden$="[[auth.user.isAnonymous]]" horizontal-align="right" vertical-offset="50">
+    <div state="loggedIn">
+      <cork-popup-button no-btn-arrow>
+        <div slot="btn-content">
+          <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
+          <img src="[[photo]]" hidden$="[[!hasPhoto]]" alt="User profile image"/>
+        </div>
+        <div>
+          <div class="option">[[username]]</div>
+          <div class="option selectable" on-click="_onLogout">
+            <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
+          </div>
+          <!-- TODO: enable when user dashboard is ready -->
+          <!--<paper-item style="cursor:pointer">
+            <a href="#user"><iron-icon icon="dashboard"></iron-icon>&nbsp;My Dashboard</a>
+          </paper-item>-->
+          <div class="option selectable" hidden$="[[!isAdmin]]" on-click="_gotToAdmin">
+            <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface</a>
+          </div>
+          <div class="option selectable" hidden$="[[!isAnonymous]]" on-click="_switch">Login with user account</div>
+        </div>
+      </cork-popup-button>
+
+      <paper-icon-button on-click="_loginAuth0" icon="social:person-outline" hidden$="[[!isAnonymous]]" ></paper-icon-button>
+
+      <!-- <paper-menu-button id="menuBtn" hidden$="[[isAnonymous]]" horizontal-align="right" vertical-offset="50">
         <div slot="dropdown-trigger">
           <div>
             <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
@@ -76,20 +115,16 @@
           <paper-item on-click="_onLogout" style="cursor:pointer">
             <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
           </paper-item>
-          <!-- TODO: enable when user dashboard is ready -->
-          <!--<paper-item style="cursor:pointer">
-            <a href="#user"><iron-icon icon="dashboard"></iron-icon>&nbsp;My Dashboard</a>
-          </paper-item>-->
           <paper-item hidden$="[[!isAdmin]]" on-click="_gotToAdmin" style="cursor:pointer">
             <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface</a>
           </paper-item>
-          <paper-item hidden$="[[!auth.user.isAnonymous]]"><a on-click="_switch">Login with user account</a></paper-item>
+          <paper-item hidden$="[[!isAnonymous]]"><a on-click="_switch">Login with user account</a></paper-item>
         </div>
-      </paper-menu-button>
+      </paper-menu-button> -->
     </div>
 
     <div state="notLoggedIn">
-      <paper-icon-button on-click="_login" icon="social:person-outline"></paper-icon-button>
+      <paper-icon-button on-click="_loginAuth0" icon="social:person-outline"></paper-icon-button>
     </div>
 
 
@@ -112,6 +147,11 @@
             isAdmin : {
               type : Boolean,
               value : false
+            },
+
+            isAnonymous : {
+              type : Boolean,
+              value : false
             }
           }
       }
@@ -121,17 +161,19 @@
 
         this.toggleState('pending');
 
-        window.addEventListener('hashchange', function() {
-          this.$.menuBtn.close();
-        }.bind(this));
+        // window.addEventListener('hashchange', function() {
+        //   this.$.menuBtn.close();
+        // }.bind(this));
       }
 
       _onAuthUpdate(e) {
         this.auth = e;
         this.hasPhoto = false;
         this.isAdmin = false;
+        this.isAnonymous = false;
 
         if( this.auth.user ) {
+          this.isAnonymous = this.auth.user.isAnonymous;
 
           if( this.auth.user.photoURL ) {
             this.photo = this.auth.user.photoURL;

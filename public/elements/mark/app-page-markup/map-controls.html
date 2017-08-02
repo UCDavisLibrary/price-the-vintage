@@ -20,6 +20,10 @@
         bounds: {
           type: Object,
           value: null
+        },
+        helpTextShow : {
+          type : Boolean,
+          value : false
         }
       }
     }
@@ -74,7 +78,11 @@
       this.drawControl = new L.Control.Draw(this.drawToolOptions);
 
       if( this.selectedPage.editable && !this.selectedPage.completed ) {
-        this.helpTextControl = L.control.helpTextControl({ position: 'topright' }).addTo(this.map);
+        if( !this.helpTextShow ) {
+          this.helpTextControl = L.control.helpTextControl({ position: 'topright' }).addTo(this.map);
+          this.helpTextShow = true;
+        }
+        
         this.map.addControl(this.drawControl);
 
         this.map.on(L.Draw.Event.DRAWSTART, this._onDrawToolDrawStart.bind(this));
@@ -126,16 +134,16 @@
 
       if( !this.userState ) {
         this.drawControl._container.style.display = 'none';
-        this.helpTextControl._container.style.display = 'none';
+        if( this.helpTextControl) this.helpTextControl._container.style.display = 'none';
         return 
       } else if ( this.userState.state === 'notLoggedIn' ) {
         this.drawControl._container.style.display = 'none';
-        this.helpTextControl._container.style.display = 'none';
+        if( this.helpTextControl) this.helpTextControl._container.style.display = 'none';
         return 
       }
 
       this.drawControl._container.style.display = 'block';
-      this.helpTextControl._container.style.display = 'block';
+      // this.helpTextControl._container.style.display = 'block';
     }
 
     _onDrawToolDrawStart(e){
@@ -143,6 +151,7 @@
         alert('Reminder, you are creating marks as an anonymous user.');
         this.isAnonymousAlertShow = true;
       }
+      if( this.helpTextControl ) this.helpTextControl._container.style.display = 'none';
     }
 
     _onDrawToolCreated(e) {

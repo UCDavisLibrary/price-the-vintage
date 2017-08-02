@@ -19,7 +19,7 @@ Parses URL on hash change and sets appState.
 
       paper-header-panel {
         --paper-header-panel-shadow: {
-          z-index: 600;
+          z-index: 500;
         }
       }
 
@@ -121,10 +121,10 @@ Parses URL on hash change and sets appState.
             (this._getParamByName('access_token', hash) && 
             this._getParamByName('id_token', hash)) ) {
 
-            this.emit('continue-login-auth0', {hash : window.location.hash});
+            this._continueAuth0Login(window.location.hash);
             return true;
         } else {
-          this.emit('init-auth-renew-auth0');
+          this._initAuthRenewAuth0();
         }
         return false;
       }
