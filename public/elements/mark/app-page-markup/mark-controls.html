@@ -31,8 +31,7 @@
       if( e.pageId !== this.selectedPageId ) return;
 
       if( e.state !== 'loaded' || e.deleted ) {
-        this._removeMark(e.id);
-        return;
+        return this._cleanOutMark(e.id);
       }
 
       this.marks[e.id] = e;
@@ -75,14 +74,23 @@
       });
     }
 
-    _removeMark(id) {
-      if( this.marks[id] ) {
-        delete this.marks[id];
+    _removeMarkStart(pageId, markId) {
+      this._removeMark(pageId, markId)
+           .then(() => this._cleanOutMark(markId))
+          .catch(e => {
+            alert('Failed to remove mark');
+            console.error(e);
+          })
+    }
+
+    _cleanOutMark(markId) {
+      if( this.marks[markId] ) {
+        delete this.marks[markId];
       }
 
-      if( this.mapMarkers[id] ) {
-        this.mapMarkers[id].removeFromLayer();
-        delete this.mapMarkers[id];
+      if( this.mapMarkers[markId] ) {
+        this.mapMarkers[markId].removeFromLayer();
+        delete this.mapMarkers[markId];
       }
     }
 
@@ -110,7 +118,7 @@
 
     _onDeleteMark(e) {
       var mark = e.detail;
-      this._removeMark(this.selectedPageId, mark.id);
+      this._removeMarkStart(this.selectedPageId, mark.id);
       this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId);
     }
 

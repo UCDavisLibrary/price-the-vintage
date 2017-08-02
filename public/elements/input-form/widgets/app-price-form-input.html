@@ -6,6 +6,7 @@
       }
 
       .label {
+        white-space: nowrap;
         text-transform: uppercase;
         color: var(--accent-color);
         padding: 5px 0;
@@ -25,6 +26,9 @@
         --cork-border-color: var(--default-primary-color);
       }
 
+      [hidden] {
+        display: none;
+      }
     </style>
 
     <div class="label" active$="[[active]]">[[label]]</div>
@@ -38,7 +42,7 @@
       on-blur="_onBlur">
     </cork-input>
 
-    <div >[[value]]</div>
+    <div hidden$="[[!disabled]]">[[value]]</div>
 
   </template>
 
@@ -56,8 +60,7 @@
           },
           placeholder : {
             type : String,
-            value : '',
-            notify : true
+            value : ''
           },
           type : {
             type : String,

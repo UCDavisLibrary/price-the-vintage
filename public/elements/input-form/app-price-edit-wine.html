@@ -38,20 +38,22 @@
       </div>
     </div>
 
-    <app-price-form-input
+    <app-price-form-section
       class="padding"
-      id="sectionInput"
+      id="section"
+      page-id="[[pageId]]"
+      disabled$="[[disabled]]"
       label="Page Section"
       placeholder="ex. Red Burgundies / Scotch Whiskies on Sale">
-    </app-price-form-input>
+    </app-price-form-section>
 
-    <app-price-form-input
+    <app-price-form-name
       class="padding"
       id="name"
       disabled$="[[disabled]]"
       label="Name"
       placeholder="ex. Santenay">
-    </app-price-form-input>
+    </app-price-form-name>
 
     <app-price-form-input
       class="padding"
@@ -115,7 +117,7 @@
         return {
           pageId : {
             type : String,
-            value : null,
+            value : '',
           },
           disabled : {
             type : Boolean,
@@ -209,13 +211,14 @@
         this.$.casePrice.value = '';
         this.$.year.value = '';
         this.$.country.value = '';
+        this.$.section.value = '';
       }
 
       edit(data) {
-        console.log(data);
         this.$.color.value = data.color || this.getEmptyValue('Red');
         this.$.wineType.value = data.wineType || this.getEmptyValue('Still');
         this.$.bottleType.value = data.bottleType || this.getEmptyValue('Standard');
+        this.$.section.value = data.section || this.getEmptyValue();
         this.$.name.value = data.name || this.getEmptyValue();
         this.$.price.value = data.price || this.getEmptyValue();
         this.$.casePrice.value = data.casePrice || this.getEmptyValue();
@@ -236,7 +239,8 @@
           price : this.$.price.value,
           casePrice : this.$.casePrice.value,
           country : this.$.country.value,
-          year : this.$.year.value
+          year : this.$.year.value,
+          section : this.$.section.value
         };
       }
 

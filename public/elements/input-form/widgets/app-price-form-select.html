@@ -6,6 +6,7 @@
       }
 
       .label {
+        white-space: nowrap;
         text-transform: uppercase;
         color: var(--accent-color);
         padding: 5px 0;
@@ -25,16 +26,22 @@
         --cork-border-color: var(--default-primary-color);
       }
 
+      [hidden] {
+        display: none;
+      }
     </style>
 
     <div class="label" active$="[[active]]">[[label]]</div>
     <cork-select 
+      id="select"
       hidden$="[[disabled]]"
       value="{{value}}" 
       active="{{active}}"
       options="[[options]]">
     </cork-select>    
-    <div hidden$="[[!disabled]]">[[value]]</div>
+    <div hidden$="[[!disabled]]">
+      <iron-icon icon$="[[icon]]"></iron-icon> [[value]]
+    </div>
 
   </template>
 
@@ -48,7 +55,12 @@
           value : {
             type : String,
             value : '',
+            observer : '_onValueChange',
             notify : true
+          },
+          icon : {
+            type : String,
+            value : ''
           },
           label : {
             type : String,
@@ -69,6 +81,12 @@
             }
           }
         };
+      }
+
+      _onValueChange() {
+        setTimeout(() => {
+          this.icon = this.$.select.icon;
+        }, 50);
       }
 
       _onFocus() {

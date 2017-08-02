@@ -117,7 +117,10 @@
 
       ready() {
         super.ready();
-        this.addEventListener('click', e => this._getCatalogPages(e));
+        this.addEventListener('click', e => {
+          this.pendingPagesLoad = true;
+          this._getCatalogPages(e)
+        });
       }
 
       _onUserActivityUpdate(e) {
@@ -145,9 +148,9 @@
 
       _onCatalogPagesUpdate(e) {
         if( e.id === this.catalog.catalog_id && 
-            e.state === 'loaded' ) {
+            e.state === 'loaded' && this.pendingPagesLoad ) {
 
-          // this.loading = false;
+          this.pendingPagesLoad = false;
 
           if( e.payload.length === 0 ) {
             return alert('This catalog has no pages :(');
