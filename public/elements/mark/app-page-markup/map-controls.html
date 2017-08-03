@@ -140,7 +140,7 @@
         this.drawControl._container.style.display = 'none';
         if( this.helpTextControl) this.helpTextControl._container.style.display = 'none';
         return 
-      } else if ( this.userState.state === 'notLoggedIn' ) {
+      } else if ( this.userState.state === 'notLoggedIn' && this.userState.user && !this.userState.user.isAnonymous ) {
         this.drawControl._container.style.display = 'none';
         if( this.helpTextControl) this.helpTextControl._container.style.display = 'none';
         return 
