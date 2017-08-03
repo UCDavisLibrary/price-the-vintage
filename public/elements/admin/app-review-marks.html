@@ -274,10 +274,14 @@
       onInspect(e) {
         var mark = e.detail.data;
 
-        this._getPage(mark.page_id)
+        this._getCatalogPage(mark.page_id)
             .then((e) => {
-              window.location = '/#'+e.payload.catalog_id+'/'+mark.page_id+'/edit/'+mark.mark_id;
+              this.emit('ui-set-location', e.payload.catalog_id+'/'+mark.page_id+'/edit/'+mark.mark_id);
             });
+      }
+      
+      _onCatalogPageUpdate() {
+        
       }
     }
 

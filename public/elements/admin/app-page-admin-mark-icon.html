@@ -70,9 +70,9 @@
         this._renderImage(e);
       }
 
-      _getMark(e) {
+      _getPendingMark(e) {
         if( !this.mark.mark_id ) return;
-        return super._getMark(this.mark.mark_id, this.mark.page_id)
+        return super._getPendingMark(this.mark.page_id, this.mark.mark_id)
                     .then((e) => this._onMarksUpdate(e));
       }
 
@@ -93,18 +93,15 @@
         this.marker = null;
 
         this._getCatalogPage();
-        this._getMark();
+        this._getPendingMark();
       }
 
       _markReady(e) {
-        console.log(e);
         this.marker = e;
-        if( !this.marker.data ) return; // mark was deleted
         this._setPosition();
       }
 
       _setPosition() {
-        console.log(this.imgHeight, this.marker);
         if( this.imgHeight !== -1 && this.marker && this.marker.data ) {
           var x = (-1*this.marker.data.xy[0]+20)+'px ';
           var y = (-1*(this.imgHeight - this.marker.data.xy[1])+20)+'px';

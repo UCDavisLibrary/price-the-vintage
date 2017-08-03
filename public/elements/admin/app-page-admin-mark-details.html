@@ -45,9 +45,9 @@
           }
         }
 
-        _getMark() {
+        _getPendingMark() {
           if( !this.mark.mark_id ) return;
-          return super._getMark(this.mark.mark_id, this.mark.page_id);
+          return super._getPendingMark(this.mark.mark_id, this.mark.page_id);
         }
 
         _onMarksUpdate(e) {
@@ -57,7 +57,7 @@
 
         _render() {
           if( !this.mark ) return;
-          this._getMark();
+          this._getPendingMark();
         }
 
         _markReady(e) {
@@ -77,7 +77,7 @@
             }
             html += '</td>';
           }
-          this.innerHTML = html+'</table>';
+          this.shadowRoot.innerHTML = html+'</table>';
         }
 
         getLabel(key) {
