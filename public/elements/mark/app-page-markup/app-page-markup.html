@@ -71,6 +71,10 @@
           margin: auto;
           z-index: 1000;
         }
+
+        paper-spinner-lite {
+          --paper-spinner-color: var(--accent-color);
+        }
     </style>
 
     <div id="nothingToDo">
@@ -97,7 +101,7 @@
     </app-price-form>
 
     <div state="loading">
-      <paper-spinner active></paper-spinner>
+      <paper-spinner-lite active></paper-spinner-lite>
     </div>
 
   </template>

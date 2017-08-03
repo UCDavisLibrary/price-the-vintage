@@ -25,7 +25,8 @@
           height: 60px;
         }
 
-        .loadingIndicator paper-spinner {
+        paper-spinner-lite {
+          --paper-spinner-color: var(--accent-color);
           margin-right: 20px;
           vertical-align: middle;
         }
@@ -148,7 +149,7 @@
             </div>
 
             <div loading-state="loading">
-              <paper-spinner active></paper-spinner>
+              <paper-spinner-lite active></paper-spinner-lite>
             </div>
 
             <div loading-state="error">

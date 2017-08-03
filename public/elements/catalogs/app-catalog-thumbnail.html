@@ -38,7 +38,8 @@
         width: 175px;
         height: 192px;
       }
-      #loading paper-spinner {
+      #loading paper-spinner-lite {
+        --paper-spinner-color: var(--accent-color);
         padding: 25px;
       }
     </style>
@@ -65,7 +66,7 @@
       </div>
 
       <div id="loading" hidden$="[[!loading]]">
-        <paper-spinner active></paper-spinner>
+        <paper-spinner-lite active></paper-spinner-lite>
       </div>
     </paper-material>
     
