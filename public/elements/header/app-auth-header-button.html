@@ -42,12 +42,6 @@
         color: black;
         white-space: nowrap;
       }
-      paper-menu-button {
-        z-index: 1000;
-        --paper-menu-button-content : {
-          z-index: 1000;
-        }
-      }
 
       a {
         text-decoration: none;
@@ -72,6 +66,10 @@
         color: var(--default-primary-color);
       }
 
+      paper-icon-button {
+        color: white;
+      }
+
       [hidden] {
         display: none;
       }
@@ -80,7 +78,7 @@
     <div state="pending">...</div>
 
     <div state="loggedIn">
-      <cork-popup-button no-btn-arrow>
+      <cork-popup-button id="menuBtn" no-btn-arrow>
         <div slot="btn-content">
           <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
           <img src="[[photo]]" hidden$="[[!hasPhoto]]" alt="User profile image"/>
@@ -90,10 +88,7 @@
           <div class="option selectable" on-click="_onLogout">
             <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
           </div>
-          <!-- TODO: enable when user dashboard is ready -->
-          <!--<paper-item style="cursor:pointer">
-            <a href="#user"><iron-icon icon="dashboard"></iron-icon>&nbsp;My Dashboard</a>
-          </paper-item>-->
+
           <div class="option selectable" hidden$="[[!isAdmin]]" on-click="_gotToAdmin">
             <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface</a>
           </div>
@@ -102,25 +97,6 @@
       </cork-popup-button>
 
       <paper-icon-button on-click="_loginAuth0" icon="social:person-outline" hidden$="[[!isAnonymous]]" ></paper-icon-button>
-
-      <!-- <paper-menu-button id="menuBtn" hidden$="[[isAnonymous]]" horizontal-align="right" vertical-offset="50">
-        <div slot="dropdown-trigger">
-          <div>
-            <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
-            <img src="[[photo]]" hidden$="[[!hasPhoto]]" alt="User profile image"/>
-          </div>
-        </div>
-        <div slot="dropdown-content">
-          <paper-item>[[username]]</paper-item>
-          <paper-item on-click="_onLogout" style="cursor:pointer">
-            <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
-          </paper-item>
-          <paper-item hidden$="[[!isAdmin]]" on-click="_gotToAdmin" style="cursor:pointer">
-            <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface</a>
-          </paper-item>
-          <paper-item hidden$="[[!isAnonymous]]"><a on-click="_switch">Login with user account</a></paper-item>
-        </div>
-      </paper-menu-button> -->
     </div>
 
     <div state="notLoggedIn">
@@ -203,7 +179,7 @@
       }
 
       _onLogout() {
-        this.$.menuBtn.close();
+        this.$.menuBtn.hide();
         this._logout();
 
         if( this.appState.editingMark ) {
@@ -218,7 +194,7 @@
 
       _gotToAdmin() {
         this.emit('ui-set-location', 'admin');
-        this.$.menuBtn.close();
+        this.$.menuBtn.hide();
       }
 
     }

@@ -30,6 +30,7 @@
       }
 
       _logout() {
+        console.log('Removing user profile', localStorage.getItem('auth0-profile'));
         localStorage.removeItem('auth0-profile');
         return this.emit('AuthModel.logout');
       }

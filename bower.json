@@ -19,32 +19,20 @@
     "paper-spinner": "PolymerElements/paper-spinner#^2.0.0",
     "iron-image": "PolymerElements/iron-image#^2.1.1",
     "paper-icon-button": "PolymerElements/paper-icon-button#^2.0.0",
-    "polymer": "^2.0.1",
-    "paper-card": "PolymerElements/paper-card#^2.0.0",
     "paper-header-panel": "PolymerElements/paper-header-panel#^2.0.0",
     "paper-toolbar": "PolymerElements/paper-toolbar#^2.0.0",
     "paper-drawer-panel": "PolymerElements/paper-drawer-panel#^2.0.0",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.0",
-    "paper-menu": "PolymerElements/paper-menu#^1.3.0",
     "paper-button": "PolymerElements/paper-button#^2.0.0",
-    "paper-menu-button": "PolymerElements/paper-menu-button#^2.0.0",
     "iron-icon": "PolymerElements/iron-icon#^2.0.0",
-    "paper-item": "PolymerElements/paper-item#^2.0.0",
     "paper-fab": "PolymerElements/paper-fab#^2.0.0",
     "paper-material": "PolymerElements/paper-material#^2.0.0",
-    "event-bus-behavior": "jrmerz/event-bus-behavior",
-    "state-toggle-behavior": "jrmerz/state-toggle-behavior",
-    "leaflet": "^1.0.3",
-    "leaflet-draw": "leaflet.draw#^0.4.9",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0",
-    "event-loop-behavior": "jrmerz/event-loop-behavior",
     "paper-progress": "PolymerElements/paper-progress#^2.0.1",
     "iron-media-query": "PolymerElements/iron-media-query#^2.0.0",
     "iron-icons": "PolymerElements/iron-icons#^2.0.1",
     "iron-pages": "PolymerElements/iron-pages#^2.0.0",
     "iron-list": "PolymerElements/iron-list#^2.0.1",
-    "paper-input": "PolymerElements/paper-input#^2.0.1",
-    "paper-tabs": "PolymerElements/paper-tabs#^2.0.0",
     "paper-dialog": "PolymerElements/paper-dialog#^2.0.0",
     "webcomponentsjs": "^1.0.1",
     "paper-styles": "PolymerElements/paper-styles#^2.0.0",
@@ -57,15 +45,13 @@
     "cork-popup-button": "cork-elements/cork-popup-button",
     "cork-cancel-button": "cork-elements/cork-cancel-button",
     "cork-typeahead": "cork-elements/cork-typeahead",
-    "cork-tag": "cork-elements/cork-tag"
+    "cork-tag": "cork-elements/cork-tag",
+    "polymer": "Polymer/polymer#^2.0.2",
+    "leaflet": "1.0.3",
+    "leaflet-draw": "^0.4.10",
+    "cork-pagination": "cork-elements/cork-pagination"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
-  },
-  "resolutions": {
-    "paper-styles": "^1.1.4",
-    "iron-form": "^1.0.0",
-    "paper-icon-button": "~1.1.0",
-    "polymer": "^1.4.0"
   }
 }

@@ -17,16 +17,6 @@
         top: 65px;
         width: 80%;
       }
-      
-      paper-input {
-        --paper-input-container-color: white;
-        --paper-input-container-focus-color: white;
-        --paper-input-container-input-color: white;
-        color: white;
-        --paper-input-container : {
-          margin: 0;
-        }
-      }
 
       paper-dialog {
         color: black;
@@ -40,10 +30,11 @@
         padding: 5px;
         font-size: 22px;
         width: 100%;
-        background: var(--dark-primary-color);
-        color: white;
-        border: 2px solid white;
+        background: white;
+        color: var(--accent-color);
+        border: 2px solid var(--accent-color);
         border-radius: 4px;
+        outline: none;
       }
       #input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
         color: white;
@@ -68,7 +59,7 @@
       <div hidden$="[[!searchBoxActive]]">
         <iron-icon icon="search"></iron-icon>
       </div>
-      <iron-icon icon="cork:wine-bottle"></iron-icon>
+      <iron-icon icon="cork:wine-bottle" hidden$="[[searchBoxActive]]"></iron-icon>
       <div class="flex">
         
         <h2 hidden$="[[searchBoxActive]]" style="padding-left: 10px">
@@ -113,6 +104,10 @@
       }
 
       _searchCatalogs() {
+        this._setAppState({
+          searchText : this.$.input.value
+        });
+
         return super._searchCatalogs({
           q : this.$.input.value,
           exact : this.appState.searchExact

@@ -6,6 +6,10 @@
       :host {
         display: block;
       }
+
+      paper-icon-button {
+        color: var(--default-primary-color);
+      }
     </style>
 
     <div class="layout center">
@@ -15,7 +19,7 @@
         disabled$="[[backDisabled]]">
       </paper-icon-button>
 
-      <div class="flex" style="text-align: center">
+      <div class="flex" style="text-align: center; font-style:italic">
         <span id="text" hidden$="[[!showTotal]]" >Showing [[displayStart]] to [[displayStop]] of [[results.total]]</span>
       </div>
       

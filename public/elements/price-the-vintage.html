@@ -49,10 +49,8 @@ Parses URL on hash change and sets appState.
 
         <app-admin-interface section="admin"></app-admin-interface>
         <app-catalogs-list section="list"></app-catalogs-list>
-        <app-pages-list section="catalog"></app-pages-list>
         <app-page-markup section="page"></app-page-markup>
         <app-user-dashboard section="user"></app-user-dashboard>
-        <!--<app-home section="home"></app-home>-->
       </iron-pages>
 
     </paper-header-panel>
@@ -162,11 +160,6 @@ Parses URL on hash change and sets appState.
           catalogId : '',
           pageId : ''
         }
-
-        // if( !window.localStorage.getItem('first-viewing') ) {
-        //   this.route.section = 'list';
-        //   window.localStorage.setItem('first-viewing', 'true');
-        // }
 
         // split up the hash state
         var parts = window

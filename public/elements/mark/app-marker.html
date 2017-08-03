@@ -160,6 +160,8 @@
           this.setLatLng([this.originalXy[1], this.originalXy[0]]);
           this.mark.data.xy = this.originalXy;
         }.bind(this));
+
+        this.render();
       }
 
       _onMarkSet() {
@@ -221,6 +223,7 @@
       }
 
       render() {
+        if( !this.shadowRoot ) return;
         if( !this.mark ) return;
         if( this.mark.deleted ) return;
 

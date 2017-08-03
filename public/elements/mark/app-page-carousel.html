@@ -49,7 +49,7 @@
 
       #scrollPanel {
         text-align: center;
-        padding: 10px;
+        padding: 2px;
         overflow-x: auto;
         overflow-y: hidden;
       }
@@ -235,13 +235,23 @@
       _onCatalogPagesUpdate(e) {
         if( e.id !== this.catalogId ) return false;
 
+        this.debounce('_onCatalogPagesUpdate', () => {
+          this._asyncOnCatalogPagesUpdate(e);
+        }, 100);
+      }
+
+      _asyncOnCatalogPagesUpdate(e) {
         this.toggleState(e.state, 'loading-state');
         if( e.state !== 'loaded' ) return;
+
+        if( e.id === this.renderedPageId ) return;
+        this.renderedPageId = e.id;
 
         this.pages = e.payload;
         this.pageOffset = this.pages[0].page;
         this._updateButtons();
         this._updateScroll();
+        this._setPageMatches();
       }
 
       _onCatalogUpdate() {
@@ -252,12 +262,18 @@
         if( e.state !== 'loaded' ) return;
 
         this.searchResults = e.payload.results;
+        this._setPageMatches();
+      }
 
+      _setPageMatches() {
+        if( !this.searchResults ) return;
+        
         this.pages.forEach(function(page, index) {
-          var matched = this._getResultsPageById(e.payload.results, page.page_id);
+          var matched = this._getResultsPageById(this.searchResults, page.page_id);
           this.set('pages.'+index+'.noMatch', !matched ? true : false);
         }.bind(this));
 
+        // make sure the first page is showing
         var page = 0;
         while( !this._getResultsPageById(this.searchResults, this._getPageIdFromPageNumber(page)) ) {
           page++;
@@ -265,6 +281,7 @@
             return;
           }
         }
+        
         this.emit('ui-set-location', this.catalogId + '/' + this._getPageIdFromPageNumber(page));
       }
 
@@ -390,6 +407,7 @@
 
       _clearSearch() {
         this.searchResults = null;
+
         this.pages.forEach(function(page, index){
           this.set('pages.'+index+'.noMatch', false);
         }.bind(this));

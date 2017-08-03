@@ -122,12 +122,22 @@
       this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId);
     }
 
+    /**
+     * Called from form
+     */
     _onAddMark(e) {
       this._removeTmpMark();
     }
 
     _removeTmpMark() {
       super._removeTempMark();
+
+      for( var key in this.marks ) {
+        if( this.marks[key].data && this.marks[key].data.isTemp ) {
+          this._cleanOutMark(key);
+        }
+      }
+
       this._selectMarker();
     }
 
