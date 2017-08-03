@@ -22,7 +22,7 @@ cp $APP/index-dist.html $DIST/index.html
 # HACKNESS for leaflet images
 mkdir -p $DIST/bower_components/leaflet/dist/images
 cp -r $APP/bower_components/leaflet/dist/images/* $DIST/bower_components/leaflet/dist/images
-cp -r $APP/bower_components/leaflet/dist/css/* $DIST/bower_components/leaflet/dist/css
+cp -r $APP/bower_components/leaflet/dist/leaflet.css $DIST/bower_components/leaflet/dist/leaflet.css
 
 # HACKNESS for leaflet draw images
 mkdir -p $DIST/bower_components/leaflet-draw/dist/images
