@@ -57,21 +57,21 @@
       #input:-moz-placeholder { /* Firefox 18- */
         color: white;
       }
+
+      [icon] {
+        --iron-icon-width: 48px;
+        --iron-icon-height: 48px;
+      }
     </style>
 
     <div class="layout center">
       <div hidden$="[[!searchBoxActive]]">
         <iron-icon icon="search"></iron-icon>
       </div>
-      <img 
-          alt="Application Icon"
-          src="/images/wine-icon-48.png" 
-          srcset="/images/wine-icon-48.png 1x, /images/wine-icon-64.png 1.5x, /images/wine-icon-96.png 2x"  
-          hidden$="[[searchBoxActive]]" 
-          style="padding-right: 10px" />
+      <iron-icon icon="cork:wine-bottle"></iron-icon>
       <div class="flex">
         
-        <h2 hidden$="[[searchBoxActive]]">
+        <h2 hidden$="[[searchBoxActive]]" style="padding-left: 10px">
           Price the Vintage <span style="font-size:12px">Alpha</span>
         </h2>
 

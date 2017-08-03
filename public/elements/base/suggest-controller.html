@@ -5,7 +5,8 @@
           return Object.assign(
             super.bind,
             {
-              'suggest-wine-name-update' : '_onWineNameSuggestUpdate'
+              'suggest-wine-name-update' : '_onWineNameSuggestUpdate',
+              'suggest-country-update' : '_onCountrySuggestUpdate'
             }
           );
         }
@@ -14,11 +15,19 @@
           return this.emit('SuggestModel.wineName', text);
         }
 
+        _suggestCountry(prefix) {
+          return this.emit('SuggestModel.country', prefix);
+        }
+
         _suggestPageSection(pageId) {
           return this.emit('SuggestModel.pageSection', pageId);
         }
 
         _onWineNameSuggestUpdate(e) {
+          // implement me
+        }
+
+        _onCountrySuggestUpdate(e) {
           // implement me
         }
     }

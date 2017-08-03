@@ -21,7 +21,7 @@
           type: Object,
           value: null
         },
-        helpTextShow : {
+        helpTextDismissed : {
           type : Boolean,
           value : false
         }
@@ -41,6 +41,11 @@
           }
         }
       }
+    }
+
+    ready() {
+      super.ready();
+      this.$.map.addEventListener('help-text-dismissed', this._onHelpTextDismissed.bind(this));
     }
 
     _renderPageOnMap() {
@@ -78,9 +83,8 @@
       this.drawControl = new L.Control.Draw(this.drawToolOptions);
 
       if( this.selectedPage.editable && !this.selectedPage.completed ) {
-        if( !this.helpTextShow ) {
+        if( !this.helpTextDismissed ) {
           this.helpTextControl = L.control.helpTextControl({ position: 'topright' }).addTo(this.map);
-          this.helpTextShow = true;
         }
         
         this.map.addControl(this.drawControl);
@@ -151,7 +155,15 @@
         alert('Reminder, you are creating marks as an anonymous user.');
         this.isAnonymousAlertShow = true;
       }
-      if( this.helpTextControl ) this.helpTextControl._container.style.display = 'none';
+
+      if( this.helpTextControl ) {
+        this.helpTextDismissed = true;
+        this.helpTextControl._container.style.display = 'none';
+      }
+    }
+
+    _onHelpTextDismissed() {
+      this.helpTextDismissed = true;
     }
 
     _onDrawToolCreated(e) {

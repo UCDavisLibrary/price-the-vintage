@@ -38,6 +38,8 @@
 
       hide() {
         this.style.display = 'none';
+        var event = new CustomEvent('help-text-dismissed', {bubbles: true, composed: true});
+        this.dispatchEvent(event);
       }
 
     }

@@ -17,19 +17,6 @@
         border: none;
         border-radius: 0 3px 3px 0;
       }
-      input:focus {
-        outline: none;
-      }
-
-      paper-icon-button {
-        background: var(--default-primary-color);
-        color: white;
-        border-radius: 3px;
-      }
-
-      :host([search-active]) paper-icon-button {
-        border-radius: 3px 0 0 3px;
-      }
 
       #overflow {
         width: 0;
@@ -38,6 +25,30 @@
 
       :host([search-active]) #overflow {
         width: 275px;
+      }
+
+      :host([search-active]) paper-icon-button {
+        border-radius: 3px 0 0 3px;
+      }
+
+      @media(max-width: 500px) {
+        input {
+          width: 170px;
+        }
+
+        :host([search-active]) #overflow {
+          width: 190px;
+        }
+      }
+
+      input:focus {
+        outline: none;
+      }
+
+      paper-icon-button {
+        background: var(--default-primary-color);
+        color: white;
+        border-radius: 3px;
       }
 
       paper-spinner-lite {
