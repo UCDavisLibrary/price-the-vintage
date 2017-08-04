@@ -32,6 +32,10 @@
       }
 
       @media(max-width: 500px) {
+        #matchesLabel {
+          display: none;
+        }
+
         input {
           width: 170px;
         }
@@ -71,7 +75,10 @@
       <div hidden$="[[!showTag]]">
         <cork-tag id="tag">
           <paper-spinner-lite active hidden$="[[!searching]]"></paper-spinner-lite>
-          <div hidden$="[[!showResults]]">[[total]]</div>
+          <div hidden$="[[!showResults]]">
+            <span id="matchesLabel">Matches: </span>
+            <span>[[total]]</span>
+          </div>
         </cork-tag>
       </div>
     </div>
@@ -111,8 +118,8 @@
             observer : '_onTagShow'
           },
           total : {
-            type : String,
-            value : ''
+            type : Number,
+            value : 0
           }
         }
       }
@@ -151,7 +158,7 @@
           return this.emit('ui-clear-search-catalog-pages');
         }
 
-        this.total = 'Matches: '+e.payload.total;
+        this.total = e.payload.total;
       }
 
       _onActive() {

@@ -3,6 +3,10 @@
 <dom-module id="shared-styles">
   <template>
     <style>
+      a {
+        color : var(--default-primary-color);
+      }
+
       [hidden] {
         display: none;
       }
@@ -73,54 +77,13 @@
         font-size: 22px;
       }
 
-      .grid-card {
+      /* .grid-card {
         position: relative;
         width: 275px;
         height: 136px;
         padding: 8px;
-      }
+      } */
 
-      .grid-thumbnail {
-        position: relative;
-        width: 175px;
-        height: 192px;
-        padding: 8px;
-      }
-
-      .grid-card-img {
-        display: block;
-        background-color: #ddd;
-
-        width: 175px;
-        height: 192px;
-      }
-
-      .grid-item .detail {
-        display: none;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: rgba(0,0,0,.8);
-      }
-
-      .grid-item:hover .detail {
-        display: block;
-      }
-
-      .grid-item {
-        position: relative;
-        width: 98px;
-        /*height: 144px;*/
-        padding: 8px;
-      }
-
-      .grid-item-img {
-        display: block;
-        background-color: #ddd;
-        width: 94px;
-        height: 124px;
-      }
 
       .form-row {
         height: 72px;
