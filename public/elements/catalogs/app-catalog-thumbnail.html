@@ -61,6 +61,10 @@
         --paper-spinner-color: var(--accent-color);
         padding: 25px;
       }
+
+      .icon-label {
+        margin-right: 5px;
+      }
     </style>
 
     <paper-material>
@@ -71,12 +75,12 @@
               <div class="layout">
                 <div class="flex" style="text-align:left">
                   <span hidden$="[[!showUserCount]]">
-                    <span>[[userCount]]</span>
+                    <span class="icon-label">[[userCount]]</span>
                     <iron-icon icon="social:group"></iron-icon>
                   </span>
                 </div>
                 <div style="text-align: right">
-                  <span>[[percentComplete]]</span>
+                  <span class="icon-label">[[percentComplete]]</span>
                   <iron-icon icon="done-all"></iron-icon>
                 </div>
               </div>
