@@ -96,14 +96,9 @@ Parses URL on hash change and sets appState.
 
         // trigger update of app state on first load
         this._setPageAndAppState(null, true);
-
-        this._getAuthState().then((e) => this._onAuthStateUpdate(e));
-
-        // hack
-        // this.$.toolbar.$.topBar.style.padding = '0 8px';
       }
 
-      _onAuthStateUpdate(e) {
+      _onAuthUpdate(e) {
         this.authState = e;
 
         if( this.route && e.state === 'loggedIn' && this.route.catalogId && this.route.pageId ) {
@@ -211,9 +206,11 @@ Parses URL on hash change and sets appState.
 
               if( this.authState ) {
                 if( this.authState.state === 'notLoggedIn' || !this.authState.user ) {
+                  console.warn('No user, admin page not allowed, redirecting', this.authState);
                   window.location.hash = '';
                   return;
                 } else if( !this.authState.user.isAdmin ) {
+                  console.warn('User is not an admin, redirecting', this.authState.user);
                   window.location.hash = '';
                   return;
                 }
@@ -225,14 +222,9 @@ Parses URL on hash change and sets appState.
               this.route.section = 'user';
               return;
             }
-            // } else if( value === 'home' ) {
-            //   this.route.section = 'home';
-            //   return;
-            // }
 
             this.route.section = 'page';
             this.route.catalogId = value;
-            // this._selectCatalog(value);
 
             break;
           case 1:
