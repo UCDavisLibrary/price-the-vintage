@@ -1,8 +1,8 @@
 var admin = require('firebase-admin');
-var firebaseWrapper = require('app/firebase');
-var config = require('app/config').firebase.prod;
-var AuthStore = require('app/stores/AuthStore');
-var serviceAccount = require('app/config/price-the-vintage-firebase-adminsdk');
+var firebaseWrapper = require('../../../../lib/firebase');
+var config = require('../../../../lib/config').firebase.prod;
+var AuthStore = require('../../../../lib/stores/AuthStore');
+var serviceAccount = require('../../../../lib/config/price-the-vintage-firebase-adminsdk');
 
 /**
  * Inject admin firebase in place of client (Oauth) verion

@@ -1,12 +1,11 @@
 var assert = require('assert');
 var firebase = require('./utils/firebase');
 var waitForFBConnection = require('./utils/connect');
-var eventBus = require('app/eventBus');
-var MultiStateTestRig = require('../MultiStateTestRig');
-var controller = require('app/controllers/activity');
+
+var ActivityModel = require('../../../lib/ActivityModel');
 
 
-describe('Integration: Firebase - Activity', function() {
+describe('Models: ActivityModel', function() {
 
   before((done) => {
     this.timeout(5000);

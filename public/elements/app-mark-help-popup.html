@@ -49,8 +49,17 @@
         height: 36px;
       }
 
-      .mymark {
+      .creating {
+        color: white;
         background: var(--secondary-accent-color);
+      }
+
+      .creating iron-icon {
+        margin-top: 8px;
+      }
+
+      .mymark {
+        background: var(--accent-color);
       }
 
       .legend-panel {
@@ -105,7 +114,7 @@
             </tr>
             <tr>
               <td>
-                <iron-icon icon="device:gps-fixed"></iron-icon>
+                <iron-icon icon="more-horiz"></iron-icon>
               </td><td>
                 <div>Pending Mark</div>
               </td>
@@ -119,14 +128,9 @@
             </tr>
             <tr>
               <td>
-                <iron-icon icon="open-with"></iron-icon>
-              </td><td>
-                <div>Editing Mark (Movable)</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="settings"></iron-icon>
+                <div class="creating mark">
+                  <iron-icon icon="settings"></iron-icon>
+                </div>
               </td><td>
                 <div>Creating Mark</div>
               </td>

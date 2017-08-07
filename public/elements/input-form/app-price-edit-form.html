@@ -20,6 +20,10 @@
         background-color: var(--default-primary-color);
       }
 
+      paper-icon-button {
+        color: var(--default-primary-color);
+      }
+
       app-price-form-wine-type {
         padding: 15px 0;
         margin: 5px 0 15px 0;
@@ -69,18 +73,9 @@
       <div class="layout center">
         <cork-cancel-button label="Cancel" on-click="_cancel"></cork-cancel-button>
         <div class="flex"></div>
-        <paper-button hidden$="[[!editMode]]" on-click="_delete">Delete</paper-button>
+        <paper-icon-button hidden$="[[!editMode]]" icon="delete" on-click="_delete"></paper-icon-button>
+        <paper-icon-button hidden$="[[!canApprove]]" icon="check" on-click="_approve"></paper-icon-button>
         <paper-button save on-click="_save">Save</paper-button>
-      </div>
-    </div>
-
-    <div hidden$="[[!editMode]]">
-      <div class="admin" hidden$="[[!userState.user.isAdmin]]">
-        <div style="flex:1; font-size: 16px; font-weight: bold">Admin</div>
-        <paper-button on-click="_approve">
-          <iron-icon icon="done"></iron-icon>
-          Approve
-        </paper-button>
       </div>
     </div>
     
@@ -96,6 +91,10 @@
       static get properties() {
         return {
           addSpace : {
+            type : Boolean,
+            value : false
+          },
+          editMode : {
             type : Boolean,
             value : false
           },
@@ -118,8 +117,19 @@
             value : false,
             // have to trigger polymers style shim on update (css vars updated)
             observer : 'updateStyles'
+          },
+          canApprove : {
+            type : Boolean,
+            computed : '_computeCanApprove(editMode, userState)'
           }
         }
+      }
+
+      _computeCanApprove() {
+        if( this.editMode && this.userState.user && this.userState.user.isAdmin ) {
+          return true;
+        }
+        return false;
       }
 
       _onAuthUpdate(e) {

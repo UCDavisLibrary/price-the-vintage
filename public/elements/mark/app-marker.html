@@ -28,8 +28,12 @@
         border-radius: 20px 20px 0 20px;
       }
 
-      app-icon-spinner[users-mark], paper-icon-button[users-mark] {
+      app-icon-spinner[users-mark] {
         background: var(--secondary-accent-color);
+      }
+
+      paper-icon-button[users-mark] {
+        background: var(--accent-color);
       }
 
       paper-icon-button[selected] {
@@ -107,7 +111,7 @@
           },
           icon : {
             type : String,
-            value : 'device:gps-fixed'
+            value : 'more-horiz'
           },
           drawToolMarker : {
             type : Boolean,
@@ -121,9 +125,9 @@
         this.active = true;
 
         this.icons = {
-          pending : 'device:gps-fixed',
+          pending : 'more-horiz',
           approved : 'check',
-          moving : 'open-with'
+          moving : 'more-horiz'
         };
       }
 

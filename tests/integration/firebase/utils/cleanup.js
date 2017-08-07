@@ -32,7 +32,7 @@ module.exports = function cleanup(path, callback) {
             return callback();
           })
           .catch((error) => {
-            console.error('Failed to cleanup games');
+            console.error('Failed to cleanup');
             console.error(error);
             return callback();
           });
