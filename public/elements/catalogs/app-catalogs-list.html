@@ -129,7 +129,13 @@
             </div>
           </div>
 
-          <app-catalogs-pagination results="[[results]]" show-total></app-catalogs-pagination>
+          <cork-pagination 
+            text-mode 
+            items-per-page="[[itemsPerPage]]" 
+            current-index="[[results.start]]" 
+            total-results="[[results.total]]" 
+            on-nav="_onPageNav" >
+          </cork-pagination>
 
           <div style="min-height: 685px;">
             <div loading-state="loaded" style="max-width: 800px; text-align: center" >
@@ -154,7 +160,12 @@
           </div>
 
           <div style="text-align:center; padding-bottom: 25px">
-            <cork-pagination items-per-page="[[itemsPerPage]]" current-index="[[results.start]]" total-results="[[results.total]]" on-nav="_onPageNav" ></cork-pagination>
+            <cork-pagination 
+              items-per-page="[[itemsPerPage]]" 
+              current-index="[[results.start]]" 
+              total-results="[[results.total]]" 
+              on-nav="_onPageNav" >
+            </cork-pagination>
           </div>
         </div>
 

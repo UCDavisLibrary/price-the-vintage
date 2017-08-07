@@ -1,116 +1,140 @@
 var assert = require('assert');
-var store = require('app/redux/store');
-var actions = require('app/redux/actions/collections/pages');
-var eventBus = require('app/eventBus');
+var EventBus = require('cork-app-utils').EventBus;
+var PagesStore = require('../../lib/stores/PagesStore');
 
 var pageId = '';
 var catalogId = 'a60bb267-fe06-4fae-81db-4da9518b95ab';
 
-describe('Redux: pages', function() {
+var page1 = {
+  page_id : '1234332',
+  catalog_id : catalogId,
+  last_updated : 12330809823
+}
+var page2 = {
+  page_id : '12234433772',
+  catalog_id : catalogId,
+  last_updated : 12349009234
+}
+var pages = [page1, page2];
 
-    it('should search catalog pages', (next) => {
-      var count = 0;
-      function listener(e) {
-        if( count === 0 ) {
-          count++;
-          assert.equal(e.state, 'loading');
-          eventBus.once('search-catalog-pages-update', listener);
-        } else {
-          assert.equal(e.state, 'loaded');
-          assert.equal(typeof e.results, 'object');
-          assert.equal(e.results.start, 0);
-          assert.equal(e.results.stop > 0, true);
-          assert.equal(e.results.total > 0, true);
-          assert.equal(typeof e.results.results, 'object');
 
-          // validate a results as well
-          var result = e.results.results[0];
-          assert.equal(typeof result.page_id, 'string');
-          assert.equal(result.catalog_id, catalogId);
-          assert.equal(typeof result.page, 'number');
-          assert.equal(typeof result.media_id, 'string');
-          assert.equal(typeof result.editable, 'boolean');
-          assert.equal(typeof result.completed, 'boolean');
-          assert.equal(typeof result.created_at, 'string');
+var searchResults = {
+  total : 2,
+  start : 0,
+  itemsPerPage : 10,
+  results : pages
+}
+var searchParams = {
+  foo : 'bar'
+}
 
-          pageId = result.page_id; // for next test
+describe('Stores: PagesStore', function() {
 
-          next();
-        }
-        
-      }
-      eventBus.once('search-catalog-pages-update', listener);
-
-      store.dispatch(
-        actions.search({
-          catalogId: catalogId
-        })
-      )
+  it('should set pages', (next) => {
+    EventBus.on(PagesStore.PAGE_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.LOADED);
     });
 
-    it('should get a catalog page', (next) => {
-      var count = 0;
-      function listener(e) {
-        if( count === 0 ) {
-          count++;
-          assert.equal(e.state, 'loading');
-          eventBus.once('catalog-page-update', listener);
-        } else {
-          assert.equal(e.state, 'loaded');
-          assert.equal(typeof e.payload, 'object');
-
-
-          // validate a results as well
-          var result = e.payload;
-          assert.equal(typeof result.page_id, 'string');
-          assert.equal(typeof result.catalog_id, 'string');
-          assert.equal(typeof result.page, 'number');
-          assert.equal(typeof result.media_id, 'string');
-          assert.equal(typeof result.editable, 'boolean');
-          assert.equal(typeof result.completed, 'boolean');
-
-          next();
-        }
-        
-      }
-      eventBus.once('catalog-page-update', listener);
-
-      store.dispatch(
-        actions.get(pageId)
-      )
+    EventBus.once(PagesStore.CATALOG_PAGES_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.LOADED);
+      assert.deepEqual(e.payload, pages);
+      assert.equal(e.id, catalogId);
+      EventBus.removeAllListeners();
+      next();
     });
 
-    it('should get catalog pages', (next) => {
-      var count = 0;
-      function listener(e) {
-        if( count === 0 ) {
-          count++;
-          assert.equal(e.state, 'loading');
-          eventBus.once('catalog-pages-update', listener);
-        } else {
-          assert.equal(e.state, 'loaded');
-          assert.equal(Array.isArray(e.payload), true);
-          assert.equal(e.payload.length > 0, true);
+    PagesStore.setPages(catalogId, pages);
+  });
 
-          // validate a results as well
-          var result = e.payload[0];
-          assert.equal(typeof result.page_id, 'string');
-          assert.equal(result.catalog_id, catalogId);
-          assert.equal(typeof result.page, 'number');
-          assert.equal(typeof result.media_id, 'string');
-          assert.equal(typeof result.editable, 'boolean');
-          assert.equal(typeof result.completed, 'boolean');
-          assert.equal(typeof result.marks, 'number');
-
-          next();
-        }
-        
-      }
-      eventBus.once('catalog-pages-update', listener);
-
-      store.dispatch(
-        actions.getPages(catalogId)
-      )
+  it('should set pages loading', (next) => {
+    EventBus.once(PagesStore.CATALOG_PAGES_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.LOADING);
+      assert.equal(e.id, catalogId);
+      next();
     });
+
+    PagesStore.setPagesLoading(catalogId);
+  });
+
+  it('should set pages error', (next) => {
+    var error = new Error('Something went wrong');
+
+    EventBus.once(PagesStore.CATALOG_PAGES_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.ERROR);
+      assert.equal(e.error, error);
+      assert.equal(e.id, catalogId);
+      next();
+    });
+
+    PagesStore.setPagesError(catalogId, error);
+  });
+
+  it('should set page', (next) => {
+    EventBus.once(PagesStore.PAGE_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.LOADED);
+      assert.deepEqual(e.payload, page1);
+      assert.equal(e.id, page1.page_id);
+      next();
+    });
+
+    PagesStore.setPage(page1);
+  });
+
+  it('should set page loading', (next) => {
+    EventBus.once(PagesStore.PAGE_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.LOADING);
+      assert.equal(e.id, page1.page_id);
+      next();
+    });
+
+    PagesStore.setPageLoading(page1.page_id);
+  });
+
+  it('should set page error', (next) => {
+    var error = new Error('Something went wrong');
+
+    EventBus.once(PagesStore.PAGE_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.ERROR);
+      assert.equal(e.error, error);
+      assert.equal(e.id, page1.page_id);
+      next();
+    });
+
+    PagesStore.setPageError(page1.page_id, error);
+  });
+
+  it('should set search loaded', (next) => {
+    EventBus.once(PagesStore.SEARCH_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.LOADED);
+      assert.deepEqual(e.params, searchParams);
+      assert.deepEqual(e.payload, searchResults);
+      next();
+    });
+
+    PagesStore.setSearch(searchResults, searchParams);
+  });
+
+  it('should set search loading', (next) => {
+    EventBus.once(PagesStore.SEARCH_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.LOADING);
+      assert.deepEqual(e.params, searchParams);
+      next();
+    });
+
+    PagesStore.setSearchLoading(searchParams);
+  });
+
+  it('should set search error', (next) => {
+    var error = new Error('Something went wrong');
+
+    EventBus.once(PagesStore.SEARCH_UPDATE, (e) => {
+      assert.equal(e.state, PagesStore.STATE.ERROR);
+      assert.equal(e.error, error);
+      assert.deepEqual(e.params, searchParams);
+      next();
+    });
+
+    PagesStore.setSearchError(error, searchParams);
+  });
 
 });

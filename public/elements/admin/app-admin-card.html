@@ -1,0 +1,146 @@
+<dom-module id="app-admin-card">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        --card-height: 290px;
+        --card-width: 200px;
+
+        cursor: pointer;
+        display: inline-block;
+        vertical-align: top;
+        width: var(--thumbnail-width);
+        height: var(--thumbnail-height);
+        position: relative;
+        margin: 8px;
+        text-align: center;
+        background: white;
+      }
+
+      paper-material {
+        display: block;
+        height: var(--card-height);
+        width: var(--card-width);
+      }
+
+      iron-image {
+        width: var(--card-width);
+        height: 100px;
+      }
+
+      .updated-text {
+        font-style: italic;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, .8);
+        color: white;
+        padding: 6px;
+        overflow: hidden;
+        font-size: 11px;
+      }
+
+      .details {
+        height: 90px;
+      }
+
+      h1 {
+        font-weight: bold;
+        margin: 0 0 5px 0;
+        padding: 0;
+      }
+      
+      .title {
+        padding-top: 15px;
+        width: calc(var(--card-width) - 30);
+        height: 50px;
+        display: flex;
+        align-items: center;
+        border-top: 1px solid var(--input-border-color);
+        
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: var(--accent-color);
+        text-transform: uppercase;
+      }
+
+      .title span {
+        width: calc(var(--card-width) - 30);
+        display: block;
+        text-overflow: ellipsis;
+      }
+
+      @media( max-width: 600px ) {
+        :host {
+          /* --thumbnail-height: 144px;
+          --thumbnail-width: 131px; */
+        }
+      }
+
+    </style>
+
+    <paper-material>
+       <div style="position: relative">
+        <iron-image sizing="cover" src$="[[imgUrl]]"></iron-image>
+        <div class="updated-text">[[lastUpdated]]</div>
+      </div>
+
+      <div style="padding: 15px">
+        <div class="details">
+          <h1>[[data.mark_count]]</h1>
+          <div>marks pending</div>
+          <div>on page [[data.page]]</div>
+        </div>
+        <div class="title"><span>[[data.catalog_title]]</span></div>
+      </div> 
+    </paper-material>
+    
+  </template>
+  <script>
+
+    class AppAdminCard extends Mixin(Polymer.Element)
+        .with(EventBusMixin, ConfigMixin) {
+      
+      static get is() { return 'app-admin-card'; }
+    
+      static get properties() {
+        return {
+          data : {
+            type : Object,
+            value : null
+          },
+          lastUpdated : {
+            type : String,
+            computed : '_computeLastUpdated(data)'
+          },
+          imgUrl : {
+            type : String,
+            computed : '_computeImgUrl(data, apiHost)'
+          }
+        }
+      }
+
+      ready() {
+        super.ready();
+        this.addEventListener('click', e => this.goToPage());
+      }
+
+      goToPage() {
+        this.emit('ui-set-location', this.data.catalog_id+'/'+this.data.page_id);
+      }
+
+      _computeImgUrl() {
+        if( !this.data ) return '';
+        return this.apiHost + '/media?select=thumbnail_png&media_id=eq.' + this.data.media_id;
+      }
+
+      _computeLastUpdated() {
+        if( !this.data ) return '';
+        return 'Updated '+new Date(this.data.lastUpdated).toLocaleString();
+      }
+    }
+    window.customElements.define(AppAdminCard.is, AppAdminCard);
+
+  </script>
+</dom-module>

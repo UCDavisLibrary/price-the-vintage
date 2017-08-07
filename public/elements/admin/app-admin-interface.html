@@ -1,59 +1,44 @@
+ <link rel="import" href="app-admin-card.html"> 
 
 <dom-module id="app-admin-interface">
   <template>
     <style>
       :host {
-        display: block;
+        display: block
       }
     </style>
 
-    <app-review-marks page="reviewMarks" active$="[[active]]"></app-review-marks>
+    <template is="dom-repeat" items="[[results]]">
+      <app-admin-card data="[[item]]"></app-admin-card>
+    </template>
 
   </template>
+
   <script>
+    class AppAdminInterface extends Polymer.Element {
 
-    class AppAdminInterface extends 
-      Mixin(Polymer.Element)
-      .with(EventBusMixin, AuthMixin, AppStateMixin) {
-
-      static get is() { return 'app-admin-interface' };
+      static get is() { return 'app-admin-interface'; }
 
       static get properties() {
         return {
-          selected : {
-            type : Number,
-            value : false
+          results : {
+            type : Array,
+            value : function() {
+              return [
+                {
+                  mark_count : 6,
+                  page : 3,
+                  page_id : 'dc9ca8fe-6549-4768-89ea-f915f30f1a87',
+                  catalog_id : 'bb707dae-2fd1-4cb5-be98-f00c5dd58163',
+                  media_id : '46e84d6c-4ddc-4a40-912c-8b648755c441',
+                  lastUpdated : '2017-08-04T20:20:07.083Z',
+                  catalog_title : 'Seasons Greetings 1978 this is a really long title'
+                }
+              ];
+            }
           }
-        }
+        };
       }
-
-      _onAuthUpdate(e) {
-        if( e.state === 'pending' ) return;
-        this.auth = e;
-        this._onUpdate();
-      }
-
-      _onAppStateUpdate(e) {
-        this.appState = e;
-        if( this.appState.section !== 'admin' ) return;
-        this._onUpdate();
-      }
-
-      _onUpdate() {
-        if( !this.active ) return;
-        this.debounce('_onUpdate', this._onUpdateAsync.bind(this), 100);
-      }
-
-      _onUpdateAsync() {
-        if( this.auth.state === 'notLoggedIn' || !this.auth.user ) {
-          this.emit('ui-set-location', '');
-          return;
-        } else if( !this.auth.user.isAdmin ) {
-          this.emit('ui-set-location', '');
-          return;
-        }
-      }
-
     }
 
     window.customElements.define(AppAdminInterface.is, AppAdminInterface);

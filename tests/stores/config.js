@@ -1,16 +1,18 @@
 var assert = require('assert');
-var store = require('app/redux/store');
-var actions = require('app/redux/actions/config');
-var eventBus = require('app/eventBus');
+var EventBus = require('cork-app-utils').EventBus;
+var ConfigStore = require('../../lib/stores/ConfigStore');
 
-describe('Redux: config', function() {
+describe('Stores: ConfigStore', function() {
 
     var host = 'https://foo.com';
 
-    it('should set host', () => {
-      store.dispatch(
-        actions.setConfigHost(host)
-      );
-      assert.equal(store.getState().config.apiHost, host);
+    it('should set host', (next) => {
+      EventBus.once('app-config-update', (e) => {
+        assert.equal(e.apiHost, host);
+        assert.equal(ConfigStore.data.apiHost, host);
+        next();
+      });
+
+      ConfigStore.setHost(host);
     });
 });
