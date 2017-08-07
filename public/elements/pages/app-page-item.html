@@ -12,25 +12,6 @@
         padding: 8px;
       }
 
-      /* .grid-item .detail {
-        display: none;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: rgba(0,0,0,.8);
-      }
-
-      .grid-item:hover .detail {
-        display: block;
-      } */
-/* 
-      .grid-item {
-        position: relative;
-        width: 98px;
-        padding: 8px;
-      } */
-
       .grid-item-img {
         display: block;
         background-color: #ddd;
@@ -62,7 +43,7 @@
         border: 2px solid var(--default-primary-color);
       }
 
-      paper-material.selected .details {
+      paper-material.current-page .details {
         background-color: var(--default-primary-color);
       }
 
@@ -84,11 +65,13 @@
 
       <div class="layout center details" hidden$="[[!showDetails]]">
         <div hidden$="[[!showUserCount]]">
-          <iron-icon icon="social:group"></iron-icon> [[userCount]]
+          <span>[[userCount]]</span>
+          <iron-icon icon="social:group"></iron-icon> 
         </div>
         <div class="flex"></div>
         <div hidden$="[[!showMarkCount]]">
-          <iron-icon icon="check"></iron-icon> [[page.marks]]
+          <span>[[page.marks]]</span>
+          <iron-icon icon="check"></iron-icon> 
         </div>
         <div hidden$="[[!showNotEditable]]">
           <iron-icon icon="block"></iron-icon>
@@ -209,13 +192,15 @@
 
         if( this.active && this.page && this.$.root ) {
           if( this.page.page_id+'' == selectedPageId ) {
-            this.$.root.classList.add('selected');
+            this.$.root.classList.add('current-page');
           } else {
-            this.$.root.classList.remove('selected');
+            this.$.root.classList.remove('current-page');
           }
         } else {
-          this.$.root.classList.remove('selected');
+          this.$.root.classList.remove('current-page');
         }
+
+        this.onTmpSelectPageUpdate(selectedPageId);
       }
 
       onTmpSelectPageUpdate(selectedPageId) {
