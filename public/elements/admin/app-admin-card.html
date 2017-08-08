@@ -92,7 +92,7 @@
           <div>marks pending</div>
           <div>on page [[data.page]]</div>
         </div>
-        <div class="title"><span>[[data.catalog_title]]</span></div>
+        <div class="title"><span>[[data.title]]</span></div>
       </div> 
     </paper-material>
     
@@ -137,7 +137,7 @@
 
       _computeLastUpdated() {
         if( !this.data ) return '';
-        return 'Updated '+new Date(this.data.lastUpdated).toLocaleString();
+        return 'Updated '+new Date(this.data.updated).toLocaleString();
       }
     }
     window.customElements.define(AppAdminCard.is, AppAdminCard);
