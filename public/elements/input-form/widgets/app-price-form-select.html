@@ -21,6 +21,10 @@
         margin-right: 2px;
       }
 
+      .value-label {
+        font-size: var(--cork-font-size, 16px);
+      }
+
       [hidden] {
         display: none;
       }
@@ -34,8 +38,8 @@
       active="{{active}}"
       options="[[options]]">
     </cork-select>    
-    <div hidden$="[[!disabled]]">
-      <iron-icon icon$="[[icon]]"></iron-icon> [[value]]
+    <div hidden$="[[!disabled]]" class="value-label">
+      <iron-icon hidden$="[[!icon]]" icon$="[[icon]]" style="margin-right: 5px"></iron-icon> [[value]]
     </div>
 
   </template>

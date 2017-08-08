@@ -17,10 +17,14 @@
       .padding {
         padding-top: 15px;
       }
+
+      .col-margin {
+        margin-right: 5px;
+      }
     </style>
 
     <div class="row">
-      <div>
+      <div class="col-margin">
         <app-price-form-select 
           id="wineType" 
           label="Wine Type" 
@@ -64,7 +68,7 @@
     </app-price-form-country>
 
     <div class="row padding">
-      <div>
+      <div class="col-margin">
         <app-price-form-input
           id="year"
           disabled$="[[disabled]]"
@@ -85,18 +89,20 @@
     </div>
 
     <div class="row padding">
-      <div>
+      <div class="col-margin">
         <app-price-form-input
           id="price"
           disabled$="[[disabled]]"
           label="Price Per Bottle"
           type="number"
+          is-dollar
           placeholder="0.00">
         </app-price-form-input>
       </div>
       <div>
         <app-price-form-input
           id="casePrice"
+          is-dollar
           disabled$="[[disabled]]"
           type="number"
           label="Price Per Case"

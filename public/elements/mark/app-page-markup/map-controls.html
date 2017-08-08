@@ -64,7 +64,7 @@
       });
 
       L.imageOverlay(
-        this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id,
+        this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.page_id,
         this.bounds
       ).addTo(this.map);
       

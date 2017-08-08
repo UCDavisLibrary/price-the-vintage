@@ -6,7 +6,7 @@
     <style>
       :host {
         display: block;
-        background-color: white;
+        background-color: rgba(255, 255, 255, .95);
 
         transition: bottom 250ms ease-out;
         position: absolute;
@@ -19,7 +19,7 @@
 
       :host([open]) {
         bottom: 0;
-        box-shadow: 0 0 5px black;
+        /* box-shadow: 0 0 10px rgba(0,0,0,.4); */
       }
 
       #container {
@@ -108,19 +108,37 @@
       }
 
       .toggle-btns paper-icon-button {
-        background: white;
+        background: rgba(255, 255, 255, .95);
+        box-shadow: 0 0 10px rgba(0,0,0,.4);
+        margin-top: 10px;
       }
 
       .triangle {
+        filter: drop-shadow(0 0 3px rgba(0,0,0,.4));
+        margin-top: 10px;
         width: 0;
         height: 0;
         border-style: solid;
         border-width: 0 0 40px 40px;
-        border-color: transparent transparent #ffffff transparent;
+        border-color: transparent transparent rgba(255, 255, 255, .95) transparent;
       }
 
       paper-spinner-lite {
         --paper-spinner-color: var(--accent-color);
+      }
+
+      .btn-clip {
+        height: 50px;
+        width: 40px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      app-shadow-line {
+        position: absolute;
+        left: 0;
+        right: 80px;
+        top: 0;
       }
     </style>
 
@@ -132,12 +150,18 @@
     </app-page-carousel-search>
 
     <div class="toggle-btns">
-      <div class="triangle"></div>
-      <paper-icon-button on-click="toggle" hidden$="[[!open]]" icon="expand-more"></paper-icon-button>
-      <paper-icon-button on-click="toggle" hidden$="[[open]]" icon="expand-less"></paper-icon-button>
-    </div>
+      <div class="btn-clip">
+        <div class="triangle"></div>
+      </div>
 
+      <div class="btn-clip">
+        <paper-icon-button on-click="toggle" hidden$="[[!open]]" icon="expand-more"></paper-icon-button>
+        <paper-icon-button on-click="toggle" hidden$="[[open]]" icon="expand-less"></paper-icon-button>
+      </div>
+    </div>
+<app-shadow-line top hidden$="[[!open]]"></app-shadow-line>
     <div id="container">
+      
       <div loading-state="loaded" id="root">
           <paper-fab 
             icon="arrow-back" 

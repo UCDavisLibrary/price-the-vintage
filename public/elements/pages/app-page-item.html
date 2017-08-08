@@ -20,6 +20,7 @@
       }
 
       .details {
+        opacity: .9;
         height: 24px;
         position: absolute;
         bottom: 0px;
@@ -49,6 +50,10 @@
 
       iron-icon {
         color: white;
+      }
+
+      [hidden] {
+        display: none;
       }
     </style>
 
@@ -143,7 +148,7 @@
       }
 
       _createImgUrl(apiHost, page) {
-        return apiHost + '/media?select=thumbnail_png&media_id=eq.' + page.media_id;
+        return apiHost + '/media?select=thumbnail_png&media_id=eq.' + page.page_id;
       }
 
       _showDetails(showUserCount, showMarkCount, showNotEditable, showCompleted) {

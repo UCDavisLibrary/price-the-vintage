@@ -22,6 +22,10 @@
         --cork-border-color: var(--default-primary-color);
       }
 
+      .value-label {
+        font-size: var(--cork-font-size, 16px);
+      }
+
       [hidden] {
         display: none;
       }
@@ -38,7 +42,7 @@
       on-blur="_onBlur">
     </cork-input>
 
-    <div hidden$="[[!disabled]]">[[value]]</div>
+    <div hidden$="[[!disabled]]" class="value-label">[[formattedValue]]</div>
 
   </template>
 
@@ -53,6 +57,10 @@
             type : String,
             value : '',
             notify : true
+          },
+          formattedValue : {
+            type : String,
+            computed : '_computeFormattedValue(value, isDollar)'
           },
           placeholder : {
             type : String,
@@ -73,8 +81,17 @@
           disabled : {
             type : Boolean,
             value : false
+          },
+          isDollar : {
+            type : Boolean,
+            value : false
           }
         };
+      }
+
+      _computeFormattedValue(value, isDollar) {
+        if( !isDollar ) return value;
+        return '$'+parseFloat(value).toFixed(2);
       }
 
       _onFocus() {

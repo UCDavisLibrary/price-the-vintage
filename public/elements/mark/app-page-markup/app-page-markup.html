@@ -273,7 +273,7 @@
         }
 
        
-        var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.media_id;
+        var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.page_id;
         if( this.currentImg == url ) {
           this.toggleState('loaded');
           return;

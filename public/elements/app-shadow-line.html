@@ -1,0 +1,32 @@
+
+<dom-module id="app-shadow-line">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 6px;
+        pointer-events: none;
+        position: absolute;
+      }
+
+      :host([top]) {
+        box-shadow: inset 0px -10px 10px -10px var(--cork-shadow, rgba(0, 0, 0, 0.4));
+        margin-top: -6px;
+      }
+
+      :host([bottom]) {
+        box-shadow: inset 0px -10px 10px -10px var(--cork-shadow, rgba(0, 0, 0, 0.4));
+      }
+    </style>
+
+  </template>
+
+  <script>
+    class AppShadowLine extends Polymer.Element {
+
+      static get is() { return 'app-shadow-line'; }
+    }
+
+    window.customElements.define(AppShadowLine.is, AppShadowLine);
+  </script>
+</dom-module>

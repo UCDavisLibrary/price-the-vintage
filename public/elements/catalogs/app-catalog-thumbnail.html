@@ -188,7 +188,7 @@
 
       _createImgUrl(catalog) {
         this.$.image.style.display = 'none';
-        var url = this.apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.media_id;
+        var url = this.apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.catalog_id;
         var img = new Image();
 
         img.onload = function() {
@@ -201,7 +201,7 @@
       }
 
       _createSrcSet(catalog) {
-        return this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + catalog.media_id;
+        return this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + catalog.catalog_id;
       }
 
       _onUpdate() {
