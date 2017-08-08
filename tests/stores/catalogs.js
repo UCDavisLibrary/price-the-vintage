@@ -24,7 +24,7 @@ describe('Stores: CatalogsStore', function() {
       title : "test"
     }
     var search = {
-      data : [catalog, catalog2],
+      results : [catalog, catalog2],
       start : 0,
       stop : 2,
       total: 2
