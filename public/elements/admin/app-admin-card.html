@@ -132,7 +132,7 @@
 
       _computeImgUrl() {
         if( !this.data ) return '';
-        return this.apiHost + '/media?select=thumbnail_png&media_id=eq.' + this.data.catalog_id;
+        return this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + this.data.page_id;
       }
 
       _computeLastUpdated() {

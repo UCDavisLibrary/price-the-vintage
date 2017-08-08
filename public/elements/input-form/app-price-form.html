@@ -127,6 +127,8 @@
       }
 
       show(mark) {
+        if( !mark ) return;
+
         if( !mark.data.approved &&
             this.userState && 
             this.userState.user &&

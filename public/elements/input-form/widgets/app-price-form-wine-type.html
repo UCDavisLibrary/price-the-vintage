@@ -44,12 +44,16 @@
         display: none !important;
       }
 
-      iron-icon[check] {
+      .edit iron-icon[check] {
         --iron-icon-width: 24px;
         --iron-icon-height: 24px;
         position: absolute;
-        bottom: 18px;
+        top: 42px;
         left: 2px;
+      }
+
+      .label {
+        margin-top: 10px;
       }
 
     </style>
@@ -57,20 +61,22 @@
     <div class="edit" hidden$="[[!edit]]">
       <div selected$="[[!isWine]]">
         <span id="spirit" class="btn" on-click="_setValue" on-keyup="_onKeyUp" value="spirit" tabindex="1">
-          <iron-icon hidden$="[[isWine]]" icon="cork:spirit-glass-circle-fill"></iron-icon>
-          <iron-icon hidden$="[[!isWine]]" icon="cork:spirit-glass-circle"></iron-icon>
-          <iron-icon hidden$="[[isWine]]" check icon="cork:wine-check"></iron-icon>
-          <br />
-          <span>Spirit</span>
+          <div>
+            <iron-icon hidden$="[[isWine]]" icon="cork:spirit-glass-circle-fill"></iron-icon>
+            <iron-icon hidden$="[[!isWine]]" icon="cork:spirit-glass-circle"></iron-icon>
+            <iron-icon hidden$="[[isWine]]" check icon="cork:wine-check"></iron-icon>
+          </div>
+          <div class="label">Spirit</div>
         </span>
       </div>
       <div selected$="[[isWine]]">
         <span class="btn" on-click="_setValue" on-keyup="_onKeyUp" value="wine" tabindex="1">
-          <iron-icon hidden$="[[!isWine]]" icon="cork:wine-glass-circle-fill"></iron-icon>
-          <iron-icon hidden$="[[isWine]]" icon="cork:wine-glass-circle"></iron-icon>
-          <iron-icon hidden$="[[!isWine]]" check icon="cork:wine-check"></iron-icon>
-          <br />
-          <span>Wine</span>
+          <div>
+            <iron-icon hidden$="[[!isWine]]" icon="cork:wine-glass-circle-fill"></iron-icon>
+            <iron-icon hidden$="[[isWine]]" icon="cork:wine-glass-circle"></iron-icon>
+            <iron-icon hidden$="[[!isWine]]" check icon="cork:wine-check"></iron-icon>
+          </div>
+          <div class="label">Wine</div>
         </span>
       </div>
     </div>

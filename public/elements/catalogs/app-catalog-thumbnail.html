@@ -69,23 +69,25 @@
 
     <paper-material>
       <div hidden$="[[loading]]">
-        <img id="image" style="display:none" class="grid-card-img" src$="[[imgSrc]]" srcset$="[[imgSrcSet]]" alt$="[[catalog.title]]" />
-          <div class="align-bottom">
-          
-              <div class="layout">
-                <div class="flex" style="text-align:left">
-                  <span hidden$="[[!showUserCount]]">
-                    <span class="icon-label">[[userCount]]</span>
-                    <iron-icon icon="social:group"></iron-icon>
-                  </span>
-                </div>
-                <div style="text-align: right">
-                  <span class="icon-label">[[percentComplete]]</span>
-                  <iron-icon icon="done-all"></iron-icon>
-                </div>
+
+        <div class="grid-card-img" id="image"></div>
+
+        <div class="align-bottom">
+        
+            <div class="layout">
+              <div class="flex" style="text-align:left">
+                <span hidden$="[[!showUserCount]]">
+                  <span class="icon-label">[[userCount]]</span>
+                  <iron-icon icon="social:group"></iron-icon>
+                </span>
               </div>
-          
-          </div>
+              <div style="text-align: right">
+                <span class="icon-label">[[percentComplete]]</span>
+                <iron-icon icon="done-all"></iron-icon>
+              </div>
+            </div>
+        
+        </div>
       </div>
 
       <div id="loading" hidden$="[[!loading]]">
@@ -192,11 +194,17 @@
         var img = new Image();
 
         img.onload = function() {
+          this.$.image.innerHTML = `<img 
+            class="grid-card-img" 
+            src="${this.imgSrc}" 
+            srcset="${this.imgSrcSet}" 
+            alt="${this.catalog.title}" />`;
+
           this.$.image.style.display = 'block';
           this.loading = false;
         }.bind(this);
-        img.src = url;
         
+        img.src = url;
         return url;
       }
 

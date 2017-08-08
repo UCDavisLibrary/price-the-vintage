@@ -91,7 +91,8 @@
 
       _computeFormattedValue(value, isDollar) {
         if( !isDollar ) return value;
-        return '$'+parseFloat(value).toFixed(2);
+        if( value === '-' ) return value;
+        return '$'+parseFloat(value || 0).toFixed(2);
       }
 
       _onFocus() {

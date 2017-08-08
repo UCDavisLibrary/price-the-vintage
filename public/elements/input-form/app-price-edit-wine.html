@@ -145,7 +145,7 @@
             icon : 'cork:wine-sparkling'
           },
           {
-            value : 'Foritifed',
+            value : 'Fortified',
             icon : 'cork:wine-fortified'
           }
         ]
@@ -170,11 +170,9 @@
 
       get bottleTypeOptions() {
         return [
-          {value : "Standard"},
           {value : "Split"},
           {value : "Piccolo"},
           {value : "Pony"},
-          {value : "Split"},
           {value : "Quarter Bottle"},
           {value : "Snipe"},
           {value : "Quarter"},
@@ -183,7 +181,6 @@
           {value : "Half Bottle"},
           {value : "Tenth"},
           {value : "Jennie"},
-          {value : "Demie"},
           {value : "Pinte"},
           {value : "Clavelin"},
           {value : "Standard"},
@@ -209,7 +206,11 @@
           {value : "Tenths"},
           {value : "Pint"},
           {value : "Quart"}
-        ]
+        ].sort((a, b) => {
+          if( a.value > b.value ) return 1;
+          if( a.value < b.value ) return -1;
+          return 0;
+        })
       }
 
       reset() {
