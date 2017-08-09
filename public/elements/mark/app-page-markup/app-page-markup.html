@@ -7,7 +7,6 @@
 <link rel="import" href="catalog-page-controls.html">
 <link rel="import" href="map-controls.html">
 
-
 <dom-module id="app-page-markup">
   <template>
     <style include="shared-styles"></style>
@@ -61,8 +60,9 @@
           right: 0;
           top: 0px;
         }
+
         #nothingToDo paper-material {
-          display: inline-block;
+          display: block;
           padding: 0 10px;
           max-width: 600px;
           background: white;
@@ -78,14 +78,15 @@
     </style>
 
     <div id="nothingToDo">
-      <div style="margin: 0 50px">
+      <div style="margin: 0 50px"> 
         <paper-material>
-          <div class="layout center">
-            <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking. Don’t despair, plenty more pages do! Click on another!</div>
-            <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
-          </div>
+          
+            <div class="layout center">
+              <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking. Don’t despair, plenty more pages do! Click on another!</div>
+              <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
+            </div>
         </paper-material>
-      </div>
+      </div> 
     </div>
 
     <app-page-carousel id="carousel" active="[[active]]"></app-page-carousel>
@@ -127,6 +128,7 @@
 
       ready() { 
         super.ready();
+        this.toggleStateDelay = 100;
         this.approvedMarks = {};
       }
 
@@ -185,6 +187,7 @@
 
         if( this.loadedCatalog.state !== 'loaded' ) return;
 
+        
         // data ready to go
         this._renderAppState();
         this._reset();

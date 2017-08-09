@@ -233,6 +233,7 @@
 
       ready() {
         super.ready();
+
         this.toggleState('loading', 'loading-state');
         this.animateScroll = new AnimateScroll();
       }
@@ -251,8 +252,13 @@
 
       _render() {
         if( !this.selected || !this.catalogId ) return;
+
         this._getCatalogPages()
-            .then((e) => this._onCatalogPagesUpdate(e));
+            .then((e) => this._onCatalogPagesUpdate({
+                id: this.catalogId,
+                state: 'loaded',
+                payload: e
+              }));
       }
 
 
@@ -265,7 +271,7 @@
 
         this.debounce('_onCatalogPagesUpdate', () => {
           this._asyncOnCatalogPagesUpdate(e);
-        }, 100);
+        }, 200);
       }
 
       _asyncOnCatalogPagesUpdate(e) {
@@ -274,8 +280,6 @@
 
         if( e.id === this.renderedPageId ) return;
         this.renderedPageId = e.id;
-
-        console.log('RENDERING PAGES');
 
         this.pages = e.payload;
         this.pageOffset = this.pages[0].page;

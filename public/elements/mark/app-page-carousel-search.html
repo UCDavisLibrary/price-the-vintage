@@ -16,14 +16,19 @@
         margin: 0;
         border: none;
         border-radius: 0 3px 3px 0;
+       /* z-index: 1000;  safari hack */
       }
 
       #overflow {
+        /* display: none;
+        width: 275px; */
         width: 0;
         overflow: hidden;
+        transition: width 250ms linear;
       }
 
-      :host([search-active]) #overflow {
+      #overflow[search-active] {
+        /* display: block; */
         width: 275px;
       }
 
@@ -40,7 +45,7 @@
           width: 170px;
         }
 
-        :host([search-active]) #overflow {
+        #overflow[search-active] {
           width: 190px;
         }
       }
@@ -69,7 +74,7 @@
     <div style="display: flex; align-items: center">
       <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[searchActive]]"></paper-icon-button>
       <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!searchActive]]"></paper-icon-button>
-      <div id="overflow">
+      <div id="overflow" search-active$="[[searchActive]]">
         <input type="text" id="input" placeholder="Search Catalog Pages"  hidden$="[[!searchActive]]" on-keyup="_search" autocomplete="off" />
       </div>
       <div hidden$="[[!showTag]]">
