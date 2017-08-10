@@ -23,12 +23,32 @@
         }
       } */
 
+      @keyframes fadeIn {
+        from {
+          transform: scale(.9);
+          -moz-transform: scale(.9);
+          opacity: .3;
+        }
+        to {
+          transform: scale(1.2);
+          -moz-transform: scale(1.2);
+          opacity: 1;
+        }
+      }
+
       .grid-card-img {
         display: block;
         background-color: #ddd;
         width: var(--thumbnail-width);
         height: var(--thumbnail-height);
+
+        animation-duration: 1.75s;
+        animation-name: fadeIn;
+        transform: scale(1.2);
+        -moz-transform: scale(1.2);
       }
+
+
 
       #loading {
         text-align: center;
@@ -71,7 +91,7 @@
     <paper-material>
       <div hidden$="[[loading]]">
 
-        <div class="grid-card-img" id="image"></div>
+        <div  id="image" style="overflow: hidden"></div>
 
         <div class="align-bottom">
         
@@ -222,12 +242,15 @@
         var img = new Image();
 
         img.onload = function() {
-          this.$.image.innerHTML = `<img 
-            class="grid-card-img" 
-            src="${this.imgSrc}" 
-            srcset="${this.imgSrcSet}" 
-            alt="${this.catalog.title}" />`;
-
+          setTimeout(() => {
+            this.$.image.innerHTML = `<img 
+              class="grid-card-img" 
+              src="${url}" 
+              srcset="${this.imgSrcSet}" 
+              alt="${this.catalog.title}" />`;
+          }, 25);
+          
+          this.$.image.innerHTML = '';
           this.$.image.style.display = 'block';
           this.loading = false;
         }.bind(this);
