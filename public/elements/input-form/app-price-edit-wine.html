@@ -29,7 +29,7 @@
           id="wineType" 
           label="Wine Type" 
           options="[[wineTypeOptions]]" 
-          disabled$="[[disabled]]">
+          view-mode$="[[viewMode]]">
         </app-price-form-select>
       </div>
       <div>
@@ -37,7 +37,7 @@
           id="color" 
           label="Wine Color" 
           options="[[wineColorOptions]]" 
-          disabled$="[[disabled]]">
+          view-mode$="[[viewMode]]">
         </app-price-form-select>
       </div>
     </div>
@@ -46,7 +46,7 @@
       class="padding"
       id="section"
       page-id="[[pageId]]"
-      disabled$="[[disabled]]"
+      view-mode$="[[viewMode]]"
       label="Page Section"
       placeholder="ex. Red Burgundies / Scotch Whiskies on Sale">
     </app-price-form-section>
@@ -54,7 +54,7 @@
     <app-price-form-name
       class="padding"
       id="name"
-      disabled$="[[disabled]]"
+      view-mode$="[[viewMode]]"
       label="Name"
       placeholder="ex. Santenay">
     </app-price-form-name>
@@ -62,7 +62,7 @@
     <app-price-form-country
       class="padding"
       id="country"
-      disabled$="[[disabled]]"
+      view-mode$="[[viewMode]]"
       label="Country"
       placeholder="ex. France">
     </app-price-form-country>
@@ -71,7 +71,7 @@
       <div class="col-margin">
         <app-price-form-input
           id="year"
-          disabled$="[[disabled]]"
+          view-mode$="[[viewMode]]"
           label="Vintage (year)"
           type="number"
           placeholder="YYYY">
@@ -83,7 +83,7 @@
           label="Bottle Size" 
           value="Standard"
           options="[[bottleTypeOptions]]" 
-          disabled$="[[disabled]]">
+          view-mode$="[[viewMode]]">
         </app-price-form-select>
       </div>
     </div>
@@ -92,7 +92,7 @@
       <div class="col-margin">
         <app-price-form-input
           id="price"
-          disabled$="[[disabled]]"
+          view-mode$="[[viewMode]]"
           label="Price Per Bottle"
           type="number"
           is-dollar
@@ -103,7 +103,7 @@
         <app-price-form-input
           id="casePrice"
           is-dollar
-          disabled$="[[disabled]]"
+          view-mode$="[[viewMode]]"
           type="number"
           label="Price Per Case"
           placeholder="0.00">
@@ -125,7 +125,7 @@
             type : String,
             value : '',
           },
-          disabled : {
+          viewMode : {
             type : Boolean,
             value : false,
             // have to trigger polymers style shim on update (css vars updated)
@@ -238,7 +238,7 @@
       }
 
       getEmptyValue(val) {
-        return this.disabled ? '-' : (val || '');
+        return this.viewMode ? '-' : (val || '');
       }
 
       getData() {

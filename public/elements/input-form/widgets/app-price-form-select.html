@@ -33,12 +33,12 @@
     <div class="label" active$="[[active]]">[[label]]</div>
     <cork-select 
       id="select"
-      hidden$="[[disabled]]"
+      hidden$="[[viewMode]]"
       value="{{value}}" 
       active="{{active}}"
       options="[[options]]">
     </cork-select>    
-    <div hidden$="[[!disabled]]" class="value-label">
+    <div hidden$="[[!viewMode]]" class="value-label">
       <iron-icon hidden$="[[!icon]]" icon$="[[icon]]" style="margin-right: 5px"></iron-icon> [[value]]
     </div>
 
@@ -69,7 +69,7 @@
             type : Boolean,
             value : false
           },
-          disabled : {
+          viewMode : {
             type : Boolean,
             value : false
           },

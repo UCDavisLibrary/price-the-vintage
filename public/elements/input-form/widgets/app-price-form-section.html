@@ -39,7 +39,7 @@
         value="{{value}}"
         label$="[[label]]"
         placeholder$="[[placeholder]]"
-        disabled="[[disabled]]"
+        view-mode="[[viewMode]]"
         on-focus="_onFocus">
       </app-price-form-input>
     </cork-typeahead>
@@ -69,7 +69,7 @@
             type : String,
             value : ''
           },
-          disabled : {
+          viewMode : {
             type : Boolean,
             value : false
           },

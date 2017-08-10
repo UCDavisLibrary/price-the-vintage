@@ -33,7 +33,7 @@
 
     <div class="label" active$="[[active]]">[[label]]</div>
     <cork-input 
-      hidden$="[[disabled]]"
+      hidden$="[[viewMode]]"
       type="[[type]]" 
       value="{{value}}" 
       active$="[[active]]"
@@ -42,7 +42,7 @@
       on-blur="_onBlur">
     </cork-input>
 
-    <div hidden$="[[!disabled]]" class="value-label">[[formattedValue]]</div>
+    <div hidden$="[[!viewMode]]" class="value-label">[[formattedValue]]</div>
 
   </template>
 
@@ -78,7 +78,7 @@
             type : Boolean,
             value : false
           },
-          disabled : {
+          viewMode : {
             type : Boolean,
             value : false
           },

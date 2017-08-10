@@ -28,7 +28,7 @@
       id="name" 
       placeholder="ex. Glen Alan" 
       label="Name" 
-      disabled$="[[disabled]]">
+      view-mode$="[[viewMode]]">
     </app-price-form-name>
 
     <app-price-form-country
@@ -36,13 +36,13 @@
       id="country" 
       placeholder="ex. Scotland" 
       label="Country" 
-      disabled$="[[disabled]]">
+      view-mode$="[[viewMode]]">
     </app-price-form-country>
 
     <div class="row padding">
       <div class="col-margin">
         <app-price-form-input
-          disabled$="[[disabled]]"
+          view-mode$="[[viewMode]]"
           id="price" 
           is-dollar
           label="Price per Bottle" 
@@ -57,7 +57,7 @@
       </div>
       <div>
         <app-price-form-input
-          disabled$="[[disabled]]"
+          view-mode$="[[viewMode]]"
           is-dollar
           id="casePrice" 
           label="Price per Case" 
@@ -74,7 +74,7 @@
 
     <app-price-form-input
       class="padding"
-      disabled$="[[disabled]]"
+      view-mode$="[[viewMode]]"
       id="spiritType" 
       placeholder="Scotch" 
       label="Spirit Type">
@@ -97,7 +97,7 @@
             type : Boolean,
             value : false
           },
-          disabled : {
+          viewMode : {
             type : Boolean,
             value : false,
             // have to trigger polymers style shim on update (css vars updated)
@@ -123,7 +123,7 @@
       }
 
       getEmptyValue(val) {
-        return this.disabled ? '-' : (val || '');
+        return this.viewMode ? '-' : (val || '');
       }
 
       getData() {

@@ -50,26 +50,28 @@
       }
     </style>
 
-    <app-price-form-wine-type id="wineType" value="{{type}}" edit="[[!disabled]]"></app-price-form-wine-type>
+    <app-price-form-wine-type id="wineType" value="{{type}}" edit="[[!viewMode]]"></app-price-form-wine-type>
 
     <div style="padding: 0 15px">
+      <!-- <div>app-price-form-edit viewMode: [[viewMode]]</div> -->
+
       <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
         <app-price-edit-spirit 
           id="spirit" 
-          disabled$="[[disabled]]"
-          add-space="[[addSpace]]">
+          view-mode$="[[viewMode]]"
+          add-space="[[viewMode]]">
         </app-price-edit-spirit>
 
         <app-price-edit-wine 
           id="wine" 
           page-id="[[pageId]]"
-          disabled$="[[disabled]]"
+          view-mode$="[[viewMode]]"
           add-space="[[addSpace]]">
         </app-price-edit-wine>
       </iron-pages>
     </div>
 
-    <div class="buttons" hidden$="[[disabled]]">
+    <div class="buttons" hidden$="[[viewMode]]">
       <div class="layout center">
         <cork-cancel-button label="Cancel" on-click="_cancel"></cork-cancel-button>
         <div class="flex"></div>
@@ -112,7 +114,7 @@
             type : String,
             value : ''
           },
-          disabled : {
+          viewMode : {
             type : Boolean,
             value : false,
             // have to trigger polymers style shim on update (css vars updated)
@@ -223,7 +225,6 @@
         this.editMode = true;
         this.editMark = mark;
         
-        // this.$.sectionInput.value = mark.data.section || (this.disabled ? '-' : '');
         this.type = mark.data.type;
 
         this.$.wineType.value = this.type;

@@ -47,11 +47,12 @@
 
     <div>
       <div style="display:flex; padding: 10px 15px 0 15px">
-        <div class="title" hidden$="[[disabled]]">Edit Mark</div>
-        <div class="title" hidden$="[[!disabled]]">View Mark</div>
+        <!-- debug <div>app-price-form viewMode: [[viewMode]]</div> -->
+        <div class="title" hidden$="[[viewMode]]">Edit Mark</div>
+        <div class="title" hidden$="[[!viewMode]]">View Mark</div>
         <div>
-          <cork-cancel-button label="Cancel" hidden$="[[disabled]]" on-click="_headerCancel"></cork-cancel-button>
-          <cork-cancel-button label="Close" hidden$="[[!disabled]]" on-click="_headerCancel"></cork-cancel-button>
+          <cork-cancel-button label="Cancel" hidden$="[[viewMode]]" on-click="_headerCancel"></cork-cancel-button>
+          <cork-cancel-button label="Close" hidden$="[[!viewMode]]" on-click="_headerCancel"></cork-cancel-button>
         </div>
       </div>
       <app-price-edit-form
@@ -59,7 +60,7 @@
         catalog-id="[[catalogId]]"
         page-id="[[pageId]]"
         user-state="[[userState]]"
-        disabled$="[[disabled]]">
+        view-mode$="[[viewMode]]">
       </app-price-edit-form>
     </div>
 
@@ -88,7 +89,7 @@
             type : String,
             value : ''
           },
-          disabled : {
+          viewMode : {
             type : Boolean,
             value : false
           }
@@ -97,6 +98,7 @@
 
       _onAuthUpdate(e) {
         this.userState = e;
+        this._updateViewMode();
       }
 
       ready() {
@@ -129,24 +131,39 @@
       show(mark) {
         if( !mark ) return;
 
-        if( !mark.data.approved &&
-            this.userState && 
-            this.userState.user &&
-            (this.userState.user.isAdmin || 
-            mark.data.user === this.userState.user.uid) ) {
-          
-          this.disabled = false;
-        } else {
-          this.disabled = true;
-        }
+        this.mark = mark;
+        this.creating = false;
+
+        this._updateViewMode();
 
         this.$.form.show(mark);
         this.style.display = 'block';
       }
 
+      _updateViewMode() {
+        if( this.creating ) {
+          this.viewMode = true;
+          return;
+        }
+
+        if( !this.mark.data.approved &&
+            this.userState && 
+            this.userState.user &&
+            (this.userState.user.isAdmin || 
+            this.mark.data.user === this.userState.user.uid) ) {
+
+          this.viewMode = false;
+        } else {
+          this.viewMode = true;
+        }
+      }
+
       create(ll) {
-        this.type = 'edit';
-        this.disabled = false;
+        this.mark = null;
+        this.creating = true;
+
+        this._updateViewMode();
+        
         this.$.form.create(ll);
         this.style.display = 'block';
       }
