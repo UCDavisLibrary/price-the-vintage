@@ -15,12 +15,13 @@
         padding: 8px;
       }
 
-      @media( max-width: 600px ) {
+      /* Doesn't work in Edge/IE */
+      /* @media(max-width: 600px) {
         :host {
           --thumbnail-height: 144px;
           --thumbnail-width: 131px;
         }
-      }
+      } */
 
       .grid-card-img {
         display: block;
@@ -147,6 +148,33 @@
           this.pendingPagesLoad = true;
           this._getCatalogPages(e)
         });
+
+        this._resize = this._resize.bind(this);
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this._resize();
+        window.addEventListener('resize', this._resize);
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener('resize', this._resize);
+      }
+
+      _resize() {
+        if( window.innerWidth <= 600 ) {
+          this.updateStyles({
+            '--thumbnail-height': '144px',
+            '--thumbnail-width': '131px'
+          });
+        } else {
+          this.updateStyles({
+            '--thumbnail-height': '192px',
+            '--thumbnail-width': '175px'
+          });
+        }
       }
 
       _onUserActivityUpdate(e) {

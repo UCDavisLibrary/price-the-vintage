@@ -8,7 +8,7 @@ DEV_BUILD_ROOT=$DIR/build-scripts
 BUNDLE_ROOT=$DIR/build
 BUNDLE_FILE=$BUNDLE_ROOT/es5-bundled/public/require.html
 
-CP=("$APP/js" "$APP/webcomponentsjs" "$APP/images" "$APP/silent-login.html" "$APP/offline.html" "$APP/sw.js" "$APP/manifest.json")
+CP=("$APP/js" "$APP/css" "$APP/webcomponentsjs" "$APP/images" "$APP/silent-login.html" "$APP/offline.html" "$APP/sw.js" "$APP/manifest.json")
 
 echo "Cleaning dist dir..."
 rm -rf $DIST

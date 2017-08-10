@@ -16,8 +16,8 @@
       :host {
         display: none;
         position: fixed;
-        bottom: 0;
         left: 0;
+        bottom: 0;
         right: 0;
         background-color: rgba(255, 255, 255, .95);
         z-index: 500;
@@ -29,7 +29,7 @@
       @media(min-width: 720px) {
         :host {
           width: 350px;
-          left: initial;
+          left: auto;
           top: 64px;
         }
       }
@@ -113,7 +113,7 @@
 
           var maxFormSize = 72 * 7;
         } else {
-          this.style.maxHeight = 'initial';
+          this.style.maxHeight = '';
         }
       }
 

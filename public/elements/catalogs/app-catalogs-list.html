@@ -75,7 +75,7 @@
           padding: 5px;
         }
 
-        [loading-state="loading"] {
+        [loading] {
           text-align: center;
           margin-top: 100px;
         }
@@ -133,11 +133,12 @@
             items-per-page="[[itemsPerPage]]" 
             current-index="[[results.start]]" 
             total-results="[[results.total]]" 
+            loading="[[loading]]"
             on-nav="_onPageNav" >
           </cork-pagination>
 
           <div style="min-height: 685px;">
-            <div loading-state="loaded" style="max-width: 800px; text-align: center" >
+            <div hidden$="[[loading]]" style="max-width: 800px; text-align: center" >
                 <template is="dom-repeat" items="[[results.results]]" as="catalog">
                   <app-catalog-thumbnail 
                       style="display:inline-block"
@@ -149,12 +150,8 @@
                 </template>
             </div>
 
-            <div loading-state="loading">
+            <div hidden$="[[!loading]]" loading>
               <paper-spinner-lite active></paper-spinner-lite>
-            </div>
-
-            <div loading-state="error">
-              Failed to load wine catalogs :(
             </div>
           </div>
 
@@ -215,7 +212,7 @@
 
     class AppCatalogsList extends 
         Mixin(Polymer.Element)
-        .with(EventBusMixin, AppStateMixin, ToggleStateMixin, CatalogsMixin, ConfigMixin) {
+        .with(EventBusMixin, AppStateMixin, CatalogsMixin, ConfigMixin) {
 
       static get is() { return 'app-catalogs-list' }
 
@@ -227,29 +224,36 @@
             results : {
               type : Object,
               value : function() {
-                return null
+                return {
+                  init: true,
+                  start : 0,
+                  total : 0,
+                  results : []
+                }
               }
             },
             
             itemsPerPage : {
               type : Number,
               value : 12
+            },
+            loading : {
+              type : Boolean,
+              value : false
             }
           }
       }
 
       ready() {
         super.ready();
-
-        // start of in the loading UI state
-        this.toggleState('loading', 'loading-state');
+        this.loading = true;
       }
       
       _onActive() {
         if( !this.active ) return;
 
         // on active, start a catalog search for current search state
-        if( this.results ) return;
+        if( !this.results.init ) return;
 
         this._searchCatalogs({
           offset : 0,
@@ -259,14 +263,14 @@
 
       _onCatalogSearchUpdate(e) {
         if( e.state === 'loading' ) {
-          this.toggleState('loading', 'loading-state');
+          this.loading = true;
           return;
         }
 
         if( e.state !== 'loaded' ) return;
         
         this.results = e.results;
-        this.toggleState('loaded', 'loading-state');
+        this.loading = false;
       }
 
       _onPageNav(e) {
