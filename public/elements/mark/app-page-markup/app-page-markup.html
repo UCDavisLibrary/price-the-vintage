@@ -126,10 +126,24 @@
         )
       }
 
+      static get properties() {
+        return {
+          // should be one of: view, edit or create
+          viewState : {
+            type : String,
+            value : 'view'
+          },
+
+          // for this to be set, everything must be rendered as this page.
+          renderedPageId : {
+            type : String,
+            value : '--'
+          }
+        }
+      }
+
       ready() { 
         super.ready();
-        this.toggleStateDelay = 100;
-        this.approvedMarks = {};
       }
 
       _onActive() {
@@ -143,96 +157,112 @@
           return;
         }
         
-        this._checkLoaded();
+        this._render();
       }
 
       _onAuthUpdate(e) {
         this.userState = e;
-        this._renderMarkControls();
+        this._renderMapControls();
       }
     
       _onAppStateUpdate(appState) {
         if( !appState.catalogId ) return;
-
         this.appState = appState;
 
-        if( this.selectedCatalogId === appState.catalogId &&
-            this.selectedPageId === appState.pageId ) {
-          return this._renderAppState();
-        }
-
         this.selectedCatalogId = appState.catalogId;
-        this.selectedPageId = appState.pageId;        
+        this.selectedPageId = appState.pageId;  
         
-        this._checkLoaded();
+        // helper
+        this.viewState = '';
+        if( appState.viewingMark ) this.viewState = 'view';
+        else if( appState.creatingMark ) this.viewState = 'create';
+        else if( appState.editingMark ) this.viewState = 'edit';
+
+        this._render();
       }
 
-      _checkLoaded() {
-        this.toggleState('loading');
+      _render() {
+        this.debounce('_render', () => this._renderAsync(), 50);
+      }
+
+      _renderAsync() {
         this._hidePopup();
 
+        // we need to be active and have a selected catalog
         if( !this.active || !this.selectedCatalogId ) return;
 
-        if( this.selectedCatalogId !== this.loadedCatalog.id ) {
-          this.loadedCatalog.id = this.selectedCatalogId;
-          this.loadedCatalog.state = '';
-          this._getCatalogPages()
-              .then((e) => this._onCatalogPagesUpdate(e));
-        }
-        
-        if( this.selectedPageId && this.selectedPageId !== this.requestedMarks ) {
-          this.requestedMarks = this.selectedPageId;
-          this._getMarks();
+        // if we are not creating a mark, make sure we remove tmp mark
+        if( this.viewState !== 'create' ) {
+          this._removeTmpMark()
         }
 
-        if( this.loadedCatalog.state !== 'loaded' ) return;
+        // don't repeat yourself.  if the currently rendered page is
+        // the same as the selected page there is nothing todo
+        if( this.selectedPageId === this.renderedPageId ) {
+          // render map controls visibility states
+          this._renderMapControls();
 
-        
-        // data ready to go
-        this._renderAppState();
-        this._reset();
+          // render edit form state
+          this._renderForm();
+
+          // make sure map size is good
+          this._updateMapSize();
+          return;
+        }
+
+        // show we are loading
+        this.toggleState('loading');
+
+        this._getCatalogPages()
+            .then((pages) => {
+              this.pages = pages;
+
+              this._selectPage();
+
+              // url only had a catalog id, go select first page
+              // this will trip a state change and redo the render loop
+              // so we will go ahead and quit out
+              // there could have also been a bad page id passed
+              if( !this.selectedPage ) {  
+                return;
+              }
+
+              return this._loadImage();
+            })
+            .then(() => {
+              // render the leaflet map and add controls
+              this._renderMap();
+
+              // render controls visibility states
+              this._renderMapControls();
+
+              // go grab pending and active marks for page
+              // this will trigger _onMarksUpdate and will render a selected
+              // mark when it's loaded
+              this._loadMarks();
+
+              this.renderedPageId = this.selectedPageId;
+            });
       }
 
-      _renderAppState() {
-        var state = this.appState;
-
-        // there is no /edit stub in url, set map mode to default
-        if( !state.editingMark && !state.viewingMark ) {
-          this._showHideControls(true);
-          this.$.priceItem.hide();
-          if( this.addMarker && this.marksLayer ) {
-            this.marksLayer.removeLayer(this.addMarker);
+      // called from _onMarksUpdate after selected mark is loaded
+      _renderForm() {
+        if( this.viewState === 'create' ) {
+          // handle from the pendingAddMark from the draw control
+          if( this.pendingAddMark ) {
+            this.$.priceItem.create(this.pendingAddMark._latlng);
+            this.marksLayer.addLayer(this.pendingAddMark);
+            this.addMarker = this.pendingAddMark;
+            this.pendingAddMark = null;
           }
-          this.addMarker = null;
-          this._removeTmpMark();
-          this._selectMarker();
-
-        // the draw tool has fired a create mark event.  This marker has
-        // been set as pendingLayer
-        } else if( state.creatingMark ) {
-
-          if( this.pendingLayer ) {
-            this._showHideControls(false);
-            this.$.priceItem.create(this.pendingLayer._latlng);
-            this.marksLayer.addLayer(this.pendingLayer);
-            this.addMarker = this.pendingLayer;
-            this._selectMarker(this.addMarker);
-            this.pendingLayer = null;
-          }
-
-        // user has clicked a mark to edit
-        } else if( state.markId ) {
-
-          if( this.marks[state.markId] ) {
-            this._selectAndShowPopup(state.markId);
-          }
-
-        // there is a /edit stub in url, but no action required (proly refresh),
-        // set to normal (non-edit) mode;
+        } else if( this.viewState === 'edit' || this.viewState === 'view' ) {
+          this.$.priceItem.show(this.marks[this.appState.markId]);
         } else {
-          this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId);
+          this.$.priceItem.hide();
         }
       }
+
+
 
       _onInterestedPartyRequest(e) {
         if( !this.selectedPageId ) return;
@@ -241,97 +271,6 @@
 
       _sendInterestedPartyResponse() {
         super._sendInterestedPartyResponse(this.selectedPageId, ['markup']);
-      }
-
-      _reset() {
-        this.selectedPage = null;
-
-        // if not given a pageId, select the first page
-        if( !this.selectedPageId ) {
-          if( this.pages.length > 0 ) {
-            this._setAppState({
-              pageId : this.pages[0].page_id
-            });
-            return;
-            // this.selectedPageId = this.selectedPage.id;
-            // this.requestedMarks = this.selectedPageId;
-            // this._getMarks();
-          }
-        } else {
-          for( var i = 0; i < this.pages.length; i++ ) {
-            if( this.pages[i].page_id === this.selectedPageId ) {
-              this.selectedPage = this.pages[i];
-              break;
-            }
-          }
-        }
-
-        for( var key in this.marks ) {
-          if( this.marks[key].pageId !== this.selectedPageId ) {
-            delete this.marks[key];
-            if( this.mapMarkers[key] ) {
-              delete this.mapMarkers[key];
-            }
-          }
-        }
-
-       
-        var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.page_id;
-        if( this.currentImg == url ) {
-          this.toggleState('loaded');
-          return;
-        }
-
-        var img = new Image();
-        img.onload = function() {
-          this.bounds = [
-            [0,0],
-            [img.naturalHeight, img.naturalWidth]
-          ];
-          
-          this._renderPageOnMap();
-        }.bind(this);
-
-        this.currentImg = url;
-        img.src = url;
-      }
-
-      _selectAndShowPopup(id) {
-        this._showHideControls(false);
-        
-        this.$.priceItem.show(this.marks[id]);
-        
-        this._selectMarker(this.mapMarkers[id], id);
-      }
-
-      _selectMarker(marker, id) {
-
-        if( this.selectedMarker ) {
-          this.selectedMarker.selected = false;
-        }
-
-        this.selectedMarker = marker;
-        if( marker ) {
-          this.selectedMarker.selected = true;
-        }
-
-        if( marker ) {
-          for( var key in this.mapMarkers ) {
-            if( !this.mapMarkers[key] ) continue;
-
-            if( key === id ) {
-              this.mapMarkers[key].show();
-            } else {
-              this.mapMarkers[key].hide();
-            }
-          }
-        } else {
-          for( var key in this.mapMarkers ) {
-            if( !this.mapMarkers[key] ) continue;
-
-            this.mapMarkers[key].show();
-          }
-        }
       }
 
       _hidePopup() {

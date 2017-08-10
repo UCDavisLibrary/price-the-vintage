@@ -48,8 +48,8 @@
       this.$.map.addEventListener('help-text-dismissed', this._onHelpTextDismissed.bind(this));
     }
 
-    _renderPageOnMap() {
-      if ( !this.bounds ) return
+    _renderMap() {
+      if( !this.bounds ) return
       if( this.map ) this.map.remove();
 
       // make visible before we show map
@@ -75,10 +75,6 @@
       
       this.map.addLayer(this.marksLayer);
 
-      // var myIcon = L.divIcon({html: '<app-marker draw-tool-marker></app-marker>'});
-      // var myIcon = L.divIcon({html: '<div>Test</div>'});
-      // this.drawToolOptions.draw.marker.icon = myIcon;
-
       L.drawLocal.draw.handlers.marker.tooltip.start = 'Place by the name of the wine';
       this.drawControl = new L.Control.Draw(this.drawToolOptions);
 
@@ -93,46 +89,32 @@
         this.map.on(L.Draw.Event.CREATED, this._onDrawToolCreated.bind(this));
       }
 
-      this.mapMarkers = {};
-      for( var key in this.marks ) {
-        if( this.mapMarkers[key] ) continue;
-        this.mapMarkers[key] = this._drawMark(this.marks[key]);
-      }
-      
-      if( this.appState.markId ) {
-        this._selectAndShowPopup(this.appState.markId);
-      }
-
       L.control.adminControl({ position: 'topright' }).addTo(this.map);
       
-
       // hack
       var controls = this.$.map.querySelectorAll('.leaflet-control, .leaflet-top, .leaflet-bottom');
       for( var i = 0; i < controls.length; i++ ) {
         controls[i].style.zIndex = 500;
       }
-
-      this._updateMapSize();
-      this._renderMarkControls();
     }
 
-    /**
-     * Global hide/show of all controls
-     **/
-    _showHideControls(show) {
-      if( this.$.carousel ) {
-        this.$.carousel.style.display = show ? 'block' : 'none';
+    _renderMapControls() {
+      var mapControlLayer = this.$.map.querySelector('.leaflet-top.leaflet-right');
+
+      if( this.viewState !== '' ) {
+        this.$.carousel.style.display = 'none';
+        if( mapControlLayer ) {
+          mapControlLayer.style.display = 'none';
+        }
+        return;
       }
 
-      var ele = this.$.map.querySelector('.leaflet-top.leaflet-right');
-      if( !ele ) return;
-      ele.style.display = show ? 'block' : 'none';
-    }
+      this.$.carousel.style.display = 'block';
+      if( mapControlLayer ) {
+        mapControlLayer.style.display = 'block';
+      }
 
-    /**
-     * Renders controls based on auth state
-     **/
-    _renderMarkControls() {
+      // render draw controls based on auth state
       if( !this.drawControl ) return;
       if( !this.drawControl._container ) return;
 
@@ -147,7 +129,24 @@
       }
 
       this.drawControl._container.style.display = 'block';
-      // this.helpTextControl._container.style.display = 'block';
+    }
+
+    _loadImage() {
+      return new Promise((resolve, reject) => {
+        var url = this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.page_id;
+        
+        var img = new Image();
+        img.onload = function() {
+          this.bounds = [
+            [0,0],
+            [img.naturalHeight, img.naturalWidth]
+          ];
+          resolve();
+        }.bind(this);
+
+        this.currentImg = url;
+        img.src = url;
+      });
     }
 
     _onDrawToolDrawStart(e){
@@ -173,8 +172,7 @@
 
       this._updateTempMark(this.selectedPageId, [e.layer._latlng.lng, e.layer._latlng.lat]);
 
-
-      this.pendingLayer = layer;
+      this.pendingAddMark = layer;
       this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId + '/edit');
     }
 

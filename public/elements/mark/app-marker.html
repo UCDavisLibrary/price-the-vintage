@@ -76,7 +76,7 @@
 
     class AppMarker extends 
       Mixin(Polymer.Element)
-      .with(EventBusMixin, ToggleStateMixin, AuthMixin) {
+      .with(EventBusMixin, ToggleStateMixin, AppStateMixin, AuthMixin) {
       
       static get is() { return 'app-marker' }
 
@@ -136,6 +136,7 @@
         this.catalogId = catalogId;
         this.pageId = pageId;
         this._onMarkSet();
+        this._updateVisibility();
       }
 
       _onAuthUpdate(e) {
@@ -232,14 +233,8 @@
         if( this.mark.deleted ) return;
 
         var state = '';
-        this.style.display = 'block';
  
         if( this._isUserMark() ) {
-          // don't show our own tmp mark
-          if( this.mark.data.isTemp ) {
-            return this.hide();
-          }
-
           this.usersMark = true;
         } else {
           this.usersMark = false;
@@ -251,7 +246,6 @@
           this.toggleState('created');
         }
 
-
         if( this.mark.data.approved ) {
           this.icon = this.icons.approved;
         } else if( this.moving || this.selected ) {
@@ -261,11 +255,44 @@
         }
       }
 
-      hide() {
+      _onAppStateUpdate(e) {
+        this.appState = e;
+        this._updateVisibility();
+      }
+
+      _updateVisibility() {
+        if( !this.mark || !this.appState ) return;
+
+        // don't show our own tmp mark
+        if( this.mark.data.isTemp ) {
+          this.selected = false;
+          return this._hide();
+        }
+
+        if( this.appState.markId ) {
+          // there is a selected mark and it's not this mark
+          if( this.appState.markId !== this.mark.id ) {
+            this.selected = false;
+            this._hide();
+          
+          // this is the selected mark
+          } else {
+            this.selected = true;
+            this._show();
+          }
+
+        // there is no selected marks, just show
+        } else {
+          this.selected = false;
+          this._show();
+        }
+      }
+
+      _hide() {
         this.style.display = 'none';
       }
 
-      show() {
+      _show() {
         this.style.display = 'block';
       }
 
@@ -275,6 +302,7 @@
         this.layer._map.on('mousemove', this._onMouseMove.bind(this));
 
         this.wrapper.addTo(layer);
+        this._updateVisibility();
       }
 
       removeFromLayer() {
