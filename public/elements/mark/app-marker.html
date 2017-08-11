@@ -205,7 +205,11 @@
       }
 
       _onMouseDown(e) {
-        if( !this.usersMark || this.mark.data.approved || this.mark.data.isTemp ) return;
+        if( !this.authState.user.isAdmin ) {
+          if( !this.usersMark || this.mark.data.approved || this.mark.data.isTemp ) {
+            return;
+          }
+        }
         if( !this.selected ) return;
 
         this.moving = true;
