@@ -60,6 +60,9 @@
         minZoom: -2
       });
 
+      // this is enabled on some browsers, not on others.  keeping css consistent
+      this.$.map.classList.remove('leaflet-touch');
+
       L.imageOverlay(
         this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.page_id,
         this.bounds

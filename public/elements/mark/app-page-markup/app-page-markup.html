@@ -23,17 +23,37 @@
           overflow: hidden;
         }
 
+        .leaflet-draw-toolbar-nobottom a:last-child {
+          border-radius: 4px !important;
+        }
+        .leaflet-draw-toolbar-notop a:first-child {
+          border-radius: 4px !important;
+        }
+
         .leaflet-div-icon {
           border: none !important;
           background: transparent !important;
         }
 
+        .leaflet-right .leaflet-draw-actions {
+          right: 35px !important;
+          top: 3px !important;
+        }
+
+        .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+          line-height: 35px !important;
+        }
+
         .leaflet-bar a, .leaflet-bar a:hover {
           color: var(--default-primary-color) !important;
+          width: 35px !important;
+          height: 35px !important;
         }
 
         .leaflet-draw-toolbar a {
-          background-image: url(/images/leaflet/draw-spritesheet.png) !important;
+          background-image: url(/images/icons/leaflet-addmarker.png) !important;
+          background-position: 0px 0px !important;
+          background-size: 35px 35px !important;
         }
 
         [state="loaded"] {

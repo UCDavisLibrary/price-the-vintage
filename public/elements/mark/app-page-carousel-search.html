@@ -16,20 +16,26 @@
         margin: 0;
         border: none;
         border-radius: 0 3px 3px 0;
-       /* z-index: 1000;  safari hack */
+        height: 15px;
       }
 
       #overflow {
         /* display: none;
         width: 275px; */
-        width: 0;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+        width: 35px;
         overflow: hidden;
         transition: width 250ms linear;
+        border-radius: 3px;
+      }
+
+      #overflow > div {
+        width: 300px;
       }
 
       #overflow[search-active] {
         /* display: block; */
-        width: 275px;
+        width: 300px;
       }
 
       :host([search-active]) paper-icon-button {
@@ -46,7 +52,7 @@
         }
 
         #overflow[search-active] {
-          width: 190px;
+          width: 225px;
         }
       }
 
@@ -58,6 +64,8 @@
         background: var(--default-primary-color);
         color: white;
         border-radius: 3px;
+        height: 35px;
+        width: 35px;
       }
 
       paper-spinner-lite {
@@ -72,10 +80,12 @@
     </style>
 
     <div style="display: flex; align-items: center">
-      <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[searchActive]]"></paper-icon-button>
-      <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!searchActive]]"></paper-icon-button>
       <div id="overflow" search-active$="[[searchActive]]">
-        <input type="text" id="input" placeholder="Search Catalog Pages"  hidden$="[[!searchActive]]" on-keyup="_search" autocomplete="off" />
+        <div style="display: flex; align-items: center;">
+          <paper-icon-button icon="search" on-click="toggleActive" hidden$="[[searchActive]]"></paper-icon-button>
+          <paper-icon-button icon="close" on-click="toggleActive" hidden$="[[!searchActive]]"></paper-icon-button>
+          <input type="text" id="input" placeholder="Search Catalog Pages" on-keyup="_search" autocomplete="off" />
+        </div>
       </div>
       <div hidden$="[[!showTag]]">
         <cork-tag id="tag">
