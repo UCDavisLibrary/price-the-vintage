@@ -47,7 +47,6 @@
 
     <div>
       <div style="display:flex; padding: 10px 15px 0 15px">
-        <!-- debug <div>app-price-form viewMode: [[viewMode]]</div> -->
         <div class="title" hidden$="[[viewMode]]">Edit Mark</div>
         <div class="title" hidden$="[[!viewMode]]">View Mark</div>
         <div>
@@ -130,19 +129,20 @@
 
       show(mark) {
         if( !mark ) return;
-
         this.mark = mark;
         this.creating = false;
 
         this._updateViewMode();
 
         this.$.form.show(mark);
-        this.style.display = 'block';
+        this._show();
       }
 
       _updateViewMode() {
+        if( !this.mark ) return;
+
         if( this.creating ) {
-          this.viewMode = true;
+          this.viewMode = false;
           return;
         }
 
@@ -165,6 +165,10 @@
         this._updateViewMode();
         
         this.$.form.create(ll);
+        this._show();
+      }
+
+      _show() {
         this.style.display = 'block';
       }
 

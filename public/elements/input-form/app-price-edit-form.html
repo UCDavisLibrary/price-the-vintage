@@ -53,22 +53,18 @@
     <app-price-form-wine-type id="wineType" value="{{type}}" edit="[[!viewMode]]"></app-price-form-wine-type>
 
     <div style="padding: 0 15px">
-      <!-- <div>app-price-form-edit viewMode: [[viewMode]]</div> -->
-
-      <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active">
+      <iron-pages selected="[[type]]" attr-for-selected="id" selected-attribute="active"> 
         <app-price-edit-spirit 
           id="spirit" 
-          view-mode$="[[viewMode]]"
-          add-space="[[viewMode]]">
-        </app-price-edit-spirit>
+          view-mode$="[[viewMode]]">
+        </app-price-edit-spirit> 
 
         <app-price-edit-wine 
           id="wine" 
           page-id="[[pageId]]"
-          view-mode$="[[viewMode]]"
-          add-space="[[addSpace]]">
-        </app-price-edit-wine>
-      </iron-pages>
+          view-mode$="[[viewMode]]">
+        </app-price-edit-wine> 
+      </iron-pages> 
     </div>
 
     <div class="buttons" hidden$="[[viewMode]]">
@@ -92,9 +88,9 @@
 
       static get properties() {
         return {
-          addSpace : {
+          testing : {
             type : Boolean,
-            value : false
+            value : true
           },
           editMode : {
             type : Boolean,
@@ -117,8 +113,6 @@
           viewMode : {
             type : Boolean,
             value : false,
-            // have to trigger polymers style shim on update (css vars updated)
-            observer : 'updateStyles'
           },
           canApprove : {
             type : Boolean,
@@ -140,7 +134,7 @@
 
       _reset() {
         this.type = 'wine';
-        // this.$.sectionInput.value = '';
+
         this.$.spirit.reset();
         this.$.wine.reset();
 
@@ -174,7 +168,6 @@
       _getData() {
         var data = this.$[this.type].getData();
         data.type = this.type;
-        // data.section = this.$.sectionInput.value;
 
         if( this.editMode ) {
           data.xy = this.editMark.data.xy;
@@ -220,8 +213,6 @@
       show(mark) {
         this._reset();
 
-        // this.emit('ui-mark-edit-start', mark);
-
         this.editMode = true;
         this.editMark = mark;
         
@@ -231,8 +222,6 @@
 
         if( mark.data.type === 'wine' ) this.$.wine.edit(mark.data);
         else this.$.spirit.edit(mark.data);
-
-        // this.$.voting.show(mark);
       }
 
       create(ll) {

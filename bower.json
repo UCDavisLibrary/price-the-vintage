@@ -34,7 +34,7 @@
     "iron-pages": "PolymerElements/iron-pages#^2.0.0",
     "iron-list": "PolymerElements/iron-list#^2.0.1",
     "paper-dialog": "PolymerElements/paper-dialog#^2.0.0",
-    "webcomponentsjs": "1.0.1",
+    "webcomponentsjs": "1.0.7",
     "paper-styles": "PolymerElements/paper-styles#^2.0.0",
     "shadycss": "webcomponents/shadycss#^1.0.1",
     "cork-common-utils": "cork-elements/cork-common-utils",

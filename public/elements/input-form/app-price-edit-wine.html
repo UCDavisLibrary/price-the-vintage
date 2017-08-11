@@ -22,7 +22,7 @@
         margin-right: 5px;
       }
     </style>
-
+ 
     <div class="row">
       <div class="col-margin">
         <app-price-form-select 
@@ -109,7 +109,7 @@
           placeholder="0.00">
         </app-price-form-input>
       </div>
-    </div>
+    </div> 
 
   </template>
 
@@ -127,9 +127,7 @@
           },
           viewMode : {
             type : Boolean,
-            value : false,
-            // have to trigger polymers style shim on update (css vars updated)
-            observer : 'updateStyles'
+            value : false          
           }
         }
       }
