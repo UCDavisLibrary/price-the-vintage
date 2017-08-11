@@ -19,7 +19,6 @@
 
       :host([open]) {
         bottom: 0;
-        /* box-shadow: 0 0 10px rgba(0,0,0,.4); */
       }
 
       #container {
@@ -54,22 +53,6 @@
         overflow-y: hidden;
       }
 
-      .nav {
-        padding: 3px;
-        box-shadow: 0 0 5px #333;
-        z-index: 5;
-      }
-
-      .nav paper-icon-button {
-        color: var(--default-primary-color);
-        margin-top: 55px;
-      }
-
-      .nav paper-icon-button[disabled] {
-        color: var(--disabled-text-color);
-        margin-top: 55px;
-      }
-
       paper-fab {
         background-color: var(--default-primary-color);
         color: white;
@@ -98,8 +81,12 @@
         opacity: .2;
       }
 
-
       .toggle-btns {
+        background-image: url('/images/CollapseTab.png');
+        background-position: -10px 0;
+        width: 80px;
+        opacity: .95;
+
         display: flex;
         color: var(--default-primary-color);
         right: 0;
@@ -108,30 +95,12 @@
       }
 
       .toggle-btns paper-icon-button {
-        background: rgba(255, 255, 255, .95);
-        box-shadow: 0 0 10px rgba(0,0,0,.4);
         margin-top: 10px;
-      }
-
-      .triangle {
-        filter: drop-shadow(0 0 3px rgba(0,0,0,.4));
-        margin-top: 10px;
-        width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 0 0 40px 40px;
-        border-color: transparent transparent rgba(255, 255, 255, .95) transparent;
+        margin-left: 40px;
       }
 
       paper-spinner-lite {
         --paper-spinner-color: var(--accent-color);
-      }
-
-      .btn-clip {
-        height: 50px;
-        width: 40px;
-        position: relative;
-        overflow: hidden;
       }
 
       app-shadow-line {
@@ -150,16 +119,11 @@
     </app-page-carousel-search>
 
     <div class="toggle-btns">
-      <div class="btn-clip">
-        <div class="triangle"></div>
-      </div>
-
-      <div class="btn-clip">
-        <paper-icon-button on-click="toggle" hidden$="[[!open]]" icon="expand-more"></paper-icon-button>
-        <paper-icon-button on-click="toggle" hidden$="[[open]]" icon="expand-less"></paper-icon-button>
-      </div>
+      <paper-icon-button on-click="toggle" hidden$="[[!open]]" icon="expand-more"></paper-icon-button>
+      <paper-icon-button on-click="toggle" hidden$="[[open]]" icon="expand-less"></paper-icon-button>
     </div>
-<app-shadow-line top hidden$="[[!open]]"></app-shadow-line>
+    
+    <app-shadow-line top hidden$="[[!open]]"></app-shadow-line>
     <div id="container">
       
       <div loading-state="loaded" id="root">

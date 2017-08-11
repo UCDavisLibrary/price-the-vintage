@@ -91,6 +91,10 @@
           viewMode : {
             type : Boolean,
             value : false
+          },
+          open : {
+            type : Boolean,
+            value : false
           }
         }
       }
@@ -102,8 +106,16 @@
 
       ready() {
         super.ready();
+        window.addEventListener('keyup', this._onKeyUp.bind(this));
         window.addEventListener('resize', this._resize.bind(this));
         this._resize();
+      }
+
+      _onKeyUp(e) {
+        console.log('form', e);
+        if( !this.open || e.keyCode !== 27 ) return;
+        this.hide();
+        this.fire('cancel');
       }
 
       _resize() {
@@ -169,10 +181,12 @@
       }
 
       _show() {
+        this.open = true;
         this.style.display = 'block';
       }
 
       hide() {
+        this.open = false;
         this.style.display = 'none';
       }
     }
