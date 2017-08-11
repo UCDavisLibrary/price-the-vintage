@@ -122,20 +122,18 @@
 
       _adminCompletedPage() {
         super._adminCompletedPage(this.pageId, !this.page.payload.completed)
-             .then((err, resp) => this._onToggleDoneComplete(err, resp));
-      }
-
-      _onToggleDoneComplete (err, resp) {
-        if( err ) return alert('Failed to update page :(');
+             .catch((e) => {
+               console.error(e);
+               alert('Failed to update page :( ');
+             });
       }
 
       _adminIgnorePage() {
         super._adminIgnorePage(this.pageId, this.page.payload.editable)
-             .then((err, resp) => this._onToggleIgnoreComplete(err, resp));
-      }
-
-      _onToggleIgnoreComplete(err, resp) {
-        if( err ) return alert('Failed to update page :(');
+             .catch((e) => {
+               console.error(e);
+               alert('Failed to update page :(');
+             });
       }
     }
     window.customElements.define(AppAdminMarkupControl.is, AppAdminMarkupControl);

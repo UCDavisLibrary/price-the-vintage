@@ -82,7 +82,7 @@
 
     class AppPriceEditForm extends 
       Mixin(Polymer.Element)
-      .with(EventBusMixin, AuthMixin, MarksMixin) {
+      .with(EventBusMixin, AuthMixin, MarksMixin, AdminMixin) {
       
       static get is() { return 'app-price-edit-form' }
 
@@ -146,18 +146,14 @@
       _approve() {
         var data = this._getData();
 
-        this.ebEmit('admin-approve-mark', {
-          pageId : this.editMark.pageId,
-          markId : this.editMark.id,
-          mark : data,
-          handler : function(error, success) {
-            if( error ) {
-              console.error(error);
-              return alert('Failed to approve mark :(');
-            }
-            this.fire('cancel');
-          }.bind(this)
-        });
+        this._adminApproveMark(this.editMark.pageId, this.editMark.id, data)
+            .then(() => {
+              this.fire('cancel');
+            })
+            .catch((e) => {
+              console.error(e);
+              alert('Failed to approve mark :(\n'+e.response.body.message);
+            });
       }
 
       _delete() {

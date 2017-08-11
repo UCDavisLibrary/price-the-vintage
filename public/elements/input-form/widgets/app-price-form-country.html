@@ -85,14 +85,14 @@
       }
 
       _useSuggestion(e) {
-        var text = e.detail.value;
-        var parts = this.$.input
-          .value
-          .split(' ')
-          .filter(val => val.length ? true : false);
+        // var text = e.detail.value;
+        // var parts = this.$.input
+        //   .value
+        //   .split(' ')
+        //   .filter(val => val.length ? true : false);
 
-        parts[parts.length-1] = text;
-        this.$.input.value = parts.join(' ');
+        // parts[parts.length-1] = text;
+        this.$.input.value = e.detail.value;
       }
 
       // called from typeahead widget
