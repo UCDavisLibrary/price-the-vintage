@@ -112,10 +112,9 @@
       }
 
       _onKeyUp(e) {
-        console.log('form', e);
         if( !this.open || e.keyCode !== 27 ) return;
         this.hide();
-        this.fire('cancel');
+        this.fire('cancel', {resetMark: true});
       }
 
       _resize() {
@@ -136,7 +135,7 @@
       }
 
       _headerCancel() {
-        this.fire('cancel');
+        this.fire('cancel', {resetMark: true});
       }
 
       show(mark) {

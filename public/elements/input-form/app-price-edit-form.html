@@ -203,7 +203,7 @@
       }
 
       _cancel() {
-        this.fire('cancel');
+        this.fire('cancel', {resetMark : true});
       }
 
       show(mark) {

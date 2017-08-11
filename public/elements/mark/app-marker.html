@@ -158,15 +158,15 @@
           this._onMoveStop();
         }.bind(this));
 
-        window.addEventListener('hashchange', function(){
-          if( !this.mark || !this.wrapper ) return;
-          
-          // always reset marks to starting location on hash change
-          this.setLatLng([this.originalXy[1], this.originalXy[0]]);
-          this.mark.data.xy = this.originalXy;
-        }.bind(this));
-
         this.render();
+      }
+
+      _resetLocation() {
+        if( !this.mark || !this.wrapper ) return;
+          
+        // always reset marks to starting location on hash change
+        this.setLatLng([this.originalXy[1], this.originalXy[0]]);
+        this.mark.data.xy = this.originalXy;
       }
 
       _onMarkSet() {
@@ -316,6 +316,12 @@
 
       setLatLng() {
         if( !this.wrapper ) return;
+        
+        console.log(arguments);
+
+        try { throw new Error('StackTrace') }
+        catch(e) { console.log(e); }
+
         this.wrapper.setLatLng.apply(this.wrapper, arguments);
       }
 

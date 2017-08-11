@@ -131,7 +131,12 @@
       return marker;
     }
 
-    _onAddMarkCancel() {
+    _onAddMarkCancel(e) {
+      // set mark back to where it was
+      if( e.detail.resetMark && this.mapMarkers[this.appState.markId] ) {
+        this.mapMarkers[this.appState.markId]._resetLocation();
+      }
+
       this._removeTmpMark();
       this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId);
     }
