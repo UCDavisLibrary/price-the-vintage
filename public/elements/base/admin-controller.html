@@ -21,7 +21,7 @@
       }
 
       _adminCompletedPage(pageId, completed) {
-        return this.emit('AdminModel.pageCompleted', {pageId, completed});
+        return this.emit('AdminModel.pageCompleted', pageId, completed);
       }
 
       _adminClearTestMarks() {

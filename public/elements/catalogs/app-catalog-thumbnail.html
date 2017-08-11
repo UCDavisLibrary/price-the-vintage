@@ -246,7 +246,7 @@
             this.$.image.innerHTML = `<img 
               class="grid-card-img" 
               src="${url}" 
-              srcset="${this.imgSrcSet}" 
+              srcset="${url} 1x, ${this.imgSrcSet} 2x" 
               alt="${this.catalog.title}" />`;
           }, 25);
           

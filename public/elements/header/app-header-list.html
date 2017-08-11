@@ -49,9 +49,9 @@
         color: white;
       }
 
-      [icon] {
-        --iron-icon-width: 48px;
-        --iron-icon-height: 48px;
+      img {
+        width: 48px;
+        height: 48px;
       }
     </style>
 
@@ -59,7 +59,7 @@
       <div hidden$="[[!searchBoxActive]]">
         <iron-icon icon="search"></iron-icon>
       </div>
-      <iron-icon icon="cork:wine-bottle" hidden$="[[searchBoxActive]]"></iron-icon>
+      <img src="/images/icons/PTVLogo-48px.png" srcset="/images/icons/PTVLogo-48px.png 1x, /images/icons/PTVLogo-96px.png 2x" hidden$="[[searchBoxActive]]"></iron-icon>
       <div class="flex">
         
         <h2 hidden$="[[searchBoxActive]]" style="padding-left: 10px">
