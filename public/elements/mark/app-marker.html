@@ -316,12 +316,6 @@
 
       setLatLng() {
         if( !this.wrapper ) return;
-        
-        console.log(arguments);
-
-        try { throw new Error('StackTrace') }
-        catch(e) { console.log(e); }
-
         this.wrapper.setLatLng.apply(this.wrapper, arguments);
       }
 
