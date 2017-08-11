@@ -1,11 +1,11 @@
-var CACHE_NAME = 'price-the-vintage-cache-v1.3';
+var CACHE_NAME = 'price-the-vintage-cache-v1.4';
 var urlsToCache = [
   '/offline.html',
   '/images/library.png',
-  '/images/wine-icon-32.png',
-  '/images/wine-icon-48.png',
-  '/images/wine-icon-64.png',
-  '/images/wine-icon-192.png'
+  '/images/icons/PTVLogo-32px.png',
+  '/images/icons/PTVLogo-48px.png',
+  '/images/icons/PTVLogo-64px.png',
+  '/images/icons/PTVLogo-192px.png'
 ];
 
 self.addEventListener('install', function(event) {
