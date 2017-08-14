@@ -50,6 +50,11 @@
         text-align: center;
       }
 
+      td.match-icon-size {
+        height: 40px;
+        width: 40px;
+      }
+
       .mark {
         color: white;
         width: 40px;
@@ -107,6 +112,10 @@
 
       [layout] {
         @apply(--layout-horizontal)
+      }
+
+      [topPadding] {
+        margin-top: 10px;
       }
     </style>
 
@@ -211,35 +220,35 @@
         
         </div>
         <div class="flex">
-          <table class="legend">
+          <table class="legend" topPadding$="[[!notSmall]]" >
             <tr>
               <td colspan="2">
                 <h2 style="text-align: left">Page Legend</h2>
               </td>
             </tr>
             <tr>
-              <td>
+              <td class="match-icon-size">
                 <iron-icon icon="social:group"></iron-icon>
               </td><td>
                 <div>Active Users</div>
               </td>
             </tr>
             <tr>
-              <td>
+              <td class="match-icon-size">
                 <iron-icon icon="block"></iron-icon>
               </td><td>
                 <div>Nothing to Mark</div>
               </td>
             </tr>
             <tr>
-              <td>
+              <td class="match-icon-size">
                 <iron-icon icon="done"></iron-icon>
               </td><td>
                 <div>Approved Marks</div>
               </td>
             </tr>
             <tr>
-              <td>
+              <td class="match-icon-size">
                 <iron-icon icon="done-all"></iron-icon>
               </td><td>
                 <div>Page Completed</div>
