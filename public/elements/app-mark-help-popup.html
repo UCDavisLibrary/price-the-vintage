@@ -3,7 +3,17 @@
     <style include="shared-styles"></style>
     <style>
       :host {
-        display: block
+        display: block;
+        font-size: 16px;
+      }
+
+      h2 {
+        font-size: 21px;
+        color: var(--accent-color);
+      }
+
+      table h2 {
+        margin-bottom: 5px;
       }
 
       paper-dialog {
@@ -19,10 +29,17 @@
         color: var(--default-primary-color);
       }
 
+      paper-icon-button {
+        color: var(--default-primary-color);
+      }
+
       table.legend {
-        width: 235px;
         text-align: left;
-        margin: auto;
+        margin-left: 15px;
+      }
+
+      table.top td {
+         vertical-align: top;
       }
 
       table.legend td {
@@ -34,9 +51,22 @@
       }
 
       .mark {
+        color: white;
         width: 40px;
         height: 40px;
         border-radius: 20px 20px 0 20px;
+      }
+
+      .mark iron-icon {
+        margin-top: 8px;
+      }
+
+      .mark iron-icon[icon="star"] {
+        position: absolute;
+        bottom: 3px;
+        right: 1px;
+        --iron-icon-height: 13px;
+        --iron-icon-width: 13px;
       }
 
       .othersmark {
@@ -49,13 +79,8 @@
         height: 36px;
       }
 
-      .creating {
-        color: white;
+      .creating { 
         background: var(--secondary-accent-color);
-      }
-
-      .creating iron-icon {
-        margin-top: 8px;
       }
 
       .mymark {
@@ -64,8 +89,20 @@
 
       .legend-panel {
         text-align: center;
-        border-top: 1px solid #eee;
+        border-top: 1px solid var(--light-background-color);
         margin-top: 10px;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--light-background-color);
+        margin-bottom: 10px;
+      }
+
+      .header h2 {
+        flex: 1;
+        padding-left: 22px;
       }
 
       [layout] {
@@ -76,28 +113,30 @@
     <iron-media-query query="(min-width: 600px)" query-matches="{{notSmall}}"></iron-media-query>
 
     <paper-dialog modal id="helpPopup">
-      <div class="layout">
-        <h2 class="flex">Ready to Price the Vintage?  Here's how:</h2>
+      <div class="header">
+        <h2>Ready to Price the Vintage?  Here's how:</h2>
         <paper-icon-button icon="close" on-click="close"></paper-icon-button>
       </div>
 
-      <div class="layout panel">
-        <div>
-          <img src="/images/help/zoom.png" alt="zoom controls icon" />
-        </div>
-        <div class="flex" style="padding: 0 10px">
-          The magnification tools on the elft allow you to zoom in and out of the catalog page you're on.  Use the able of contents at the bottom of the screen to go to the other pages in this catalog.
-        </div>
-      </div>
-
-      <div class="layout panel">
-        <div>
-          <img src="/images/help/marker.png" alt="marker icon" />
-        </div>
-        <div class="flex" style="padding: 0 10px">
-          Use the marker tool on the right to place a mark on the <b>top left</b> corner of an entry in the catalog.  Then fill out the form that comes up to help use identify the essential information.
-        </div>
-      </div>
+      <table class="legend top">
+        <tr>
+          <td>
+            <img src="/images/help/zoom.png" alt="zoom controls icon" />
+          </td><td>
+            <div>The magnification tools in the upper left allow you to zoom in and out of the catalog page 
+              you're on. Use the page browser at the bottom of the screen to go to the other pages in this catalog.</div>
+          </td>
+        </tr>
+        
+        <tr>
+          <td>
+            <img src="/images/help/marker.png" alt="marker icon" />
+          </td><td>
+            <div>Use the marker tool on the right to place a mark on the <b>top left</b> corner of an entry in the 
+              catalog.  Then fill out the form that comes up to help use identify the essential information.</div>
+          </td>
+        </tr>
+      </table>
 
       <div style="text-align: center" class="panel">
         <img src="/images/help/overview.png" alt="help overview image" style="max-width: 75%" />
@@ -112,20 +151,7 @@
                 <h2 style="text-align: left">Marker Legend</h2>
               </td>
             </tr>
-            <tr>
-              <td>
-                <iron-icon icon="more-horiz"></iron-icon>
-              </td><td>
-                <div>Pending Mark</div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <iron-icon icon="done"></iron-icon>
-              </td><td>
-                <div>Approved Mark</div>
-              </td>
-            </tr>
+            
             <tr>
               <td>
                 <div class="creating mark">
@@ -135,20 +161,27 @@
                 <div>Creating Mark</div>
               </td>
             </tr>
+
             <tr>
               <td>
-                <div class="othersmark mark"></div>
+                <div class="mymark mark">
+                  <iron-icon icon="more-horiz"></iron-icon>
+                </div>
               </td><td>
-                <div>Other Users Mark</div>
+                <div>Pending Mark</div>
               </td>
             </tr>
+
             <tr>
               <td>
-                <div class="mymark mark"></div>
+                <div class="othersmark mark">
+                  <iron-icon icon="done"></iron-icon>
+                </div>
               </td><td>
-                <div>Your Mark</div>
+                <div>Approved Mark</div>
               </td>
             </tr>
+
             <tr>
               <td>
                 <div class="selected mark"></div>
@@ -156,6 +189,24 @@
                 <div>Selected Mark</div>
               </td>
             </tr>
+
+
+            <tr>
+              <td style="position: relative">
+                
+                <div class="othersmark mark" style="position: absolute; top: 3px; right: 0px;">
+                  <iron-icon icon="done"></iron-icon>
+                  <iron-icon icon="star"></iron-icon>
+                </div>
+                <div class="mymark mark" style="position: absolute; top: 15px; right: 15px;">
+                  <iron-icon icon="more-horiz"></iron-icon>
+                  <iron-icon icon="star"></iron-icon>
+                </div>
+              </td><td>
+                <div>Your Marks</div>
+              </td>
+            </tr>
+            
           </table>
         
         </div>

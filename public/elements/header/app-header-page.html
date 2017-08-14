@@ -42,8 +42,6 @@
       </tr>
     </table>
 
-    <app-mark-help-popup id="helpPopup"></app-mark-help-popup>
-
   </template>
   <script>
 
@@ -59,8 +57,7 @@
         window.addEventListener('resize', this._resize.bind(this));
         this._resize();
 
-        this.shadowRoot.removeChild(this.$.helpPopup);
-        document.body.appendChild(this.$.helpPopup);
+        this.$.helpPopup = document.querySelector('app-mark-help-popup');
 
         if( !window.localStorage.getItem('first-catalog-viewing') ) {
           this.$.helpPopup.open();

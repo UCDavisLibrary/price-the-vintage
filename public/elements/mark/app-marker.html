@@ -28,16 +28,16 @@
         border-radius: 20px 20px 0 20px;
       }
 
-      app-icon-spinner[users-mark] {
-        background: var(--secondary-accent-color);
-      }
-
-      paper-icon-button[users-mark] {
-        background: var(--accent-color);
-      }
-
       paper-icon-button[selected] {
         border: 2px solid var(--secondary-accent-color);
+      }
+
+      iron-icon[icon="star"] {
+        color: white;
+        bottom: 17px;
+        right: 13px;
+        --iron-icon-width: 13px;
+        --iron-icon-height: 13px;
       }
     </style>
 
@@ -45,16 +45,17 @@
       state="creating"
       icon="settings"
       spin 
-      users-mark$="[[usersMark]]"
       style="padding:8px">
     </app-icon-spinner>
       
     <paper-icon-button 
       state="created"
-      users-mark$="[[usersMark]]"
       selected$="[[selected]]"
       icon="[[icon]]">
     </paper-icon-button>
+
+    <iron-icon icon="star" hidden$="[[!usersMark]]"></iron-icon>
+
   </template>
   <script>
 
@@ -238,7 +239,7 @@
 
         var state = '';
  
-        if( this._isUserMark() ) {
+        if( this._isUserMark() && !this.mark.data.isTemp ) {
           this.usersMark = true;
         } else {
           this.usersMark = false;

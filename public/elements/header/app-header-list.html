@@ -37,16 +37,16 @@
         outline: none;
       }
       #input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-        color: white;
+        color: var(--accent-color);
       }
       #input::-moz-placeholder { /* Firefox 19+ */
-        color: white;
+        color: var(--accent-color);
       }
       #input:-ms-input-placeholder { /* IE 10+ */
-        color: white;
+        color: var(--accent-color);
       }
       #input:-moz-placeholder { /* Firefox 18- */
-        color: white;
+        color: var(--accent-color);
       }
 
       img {
@@ -71,12 +71,20 @@
         </div>
 
       </div>
+
       <div hidden$="[[!searchBoxActive]]">
         <paper-icon-button state="list" icon="close" on-click="_toggleSearch"></paper-icon-button>
       </div>
       <div hidden$="[[searchBoxActive]]">
         <paper-icon-button state="list" icon="search" on-click="_toggleSearch"></paper-icon-button>
       </div>
+
+      <paper-icon-button 
+        hidden$="[[searchBoxActive]]"
+        style="margin-right: 8px"
+        icon="info" 
+        on-click="_showHelp">
+      </paper-icon-button>
     </div>
 
   </template>
@@ -101,6 +109,11 @@
               }
             }
           }
+      }
+
+      ready() {
+        super.ready();
+        this.$.helpPopup = document.querySelector('app-mark-help-popup');
       }
 
       _searchCatalogs() {
@@ -133,6 +146,10 @@
         this._setAppState({
           searchBoxActive : this.searchBoxActive
         });
+      }
+
+      _showHelp() {
+        this.$.helpPopup.open();
       }
     }
 
