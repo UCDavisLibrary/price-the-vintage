@@ -4,7 +4,7 @@
     <style>
       :host {
         display: block;
-        position: relative;
+        position: relative; 
       }
 
       paper-icon-button {
@@ -33,9 +33,10 @@
       }
 
       iron-icon[icon="star"] {
+        position: absolute;
         color: white;
-        bottom: 17px;
-        right: 13px;
+        bottom: 2px;
+        right: 0px;
         --iron-icon-width: 13px;
         --iron-icon-height: 13px;
       }
@@ -54,7 +55,7 @@
       icon="[[icon]]">
     </paper-icon-button>
 
-    <iron-icon icon="star" hidden$="[[!usersMark]]"></iron-icon>
+     <iron-icon icon="star" hidden$="[[!usersMark]]"></iron-icon> 
 
   </template>
   <script>
@@ -182,6 +183,7 @@
           [this.mark.data.xy[1], this.mark.data.xy[0]],
           {icon: this.appMarkerAnchor}
         );
+        
 
         this.wrapper.on('click', this._onClick.bind(this));
         this.wrapper.on('mousedown', this._onMouseDown.bind(this));
