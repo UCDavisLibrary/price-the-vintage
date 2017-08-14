@@ -150,12 +150,14 @@
       }
 
       _updateViewMode() {
-        if( !this.mark ) return;
+        this.viewMode = true;
 
         if( this.creating ) {
           this.viewMode = false;
           return;
         }
+
+        if( !this.mark ) return;
 
         if( !this.mark.data.approved &&
             this.userState && 
@@ -164,8 +166,6 @@
             this.mark.data.user === this.userState.user.uid) ) {
 
           this.viewMode = false;
-        } else {
-          this.viewMode = true;
         }
       }
 
