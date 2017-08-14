@@ -23,9 +23,20 @@
         position : absolute;
 
         box-shadow : 0 0 8px black;
-        background: var(--default-primary-color);
         color: white;
         border-radius: 20px 20px 0 20px;
+      }
+
+      app-icon-spinner {
+        background: var(--secondary-accent-color);
+      }
+
+      paper-icon-button {
+        background-color: var(--default-primary-color);
+      }
+
+      paper-icon-button[pending] {
+        background: var(--accent-color);
       }
 
       paper-icon-button[selected] {
@@ -40,6 +51,10 @@
         --iron-icon-width: 13px;
         --iron-icon-height: 13px;
       }
+
+      [hidden] {
+        display: none;
+      }
     </style>
 
     <app-icon-spinner 
@@ -52,10 +67,11 @@
     <paper-icon-button 
       state="created"
       selected$="[[selected]]"
+      pending$="[[pending]]"
       icon="[[icon]]">
     </paper-icon-button>
 
-     <iron-icon icon="star" hidden$="[[!usersMark]]"></iron-icon> 
+    <iron-icon icon="star" hidden$="[[!usersMark]]"></iron-icon> 
 
   </template>
   <script>
@@ -99,13 +115,17 @@
             type : String,
             value : ''
           },
+          pending : {
+            type : Boolean,
+            value : false
+          },
           catalogId : {
             type : String,
             value : ''
           },
           usersMark : {
             type : Boolean,
-            value : true
+            value : false
           },
           moving : {
             type : Boolean,
@@ -253,12 +273,14 @@
           this.toggleState('created');
         }
 
+        this.pending = false;
         if( this.mark.data.approved ) {
           this.icon = this.icons.approved;
         } else if( this.moving || this.selected ) {
           this.icon = this.icons.moving;
         } else {
           this.icon = this.icons.pending;
+          this.pending = true;
         }
       }
 

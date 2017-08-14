@@ -30,6 +30,8 @@
 
       .updated-text {
         font-style: italic;
+        font-size: 12px;
+        font-weight: 400;
         position: absolute;
         left: 0;
         right: 0;
@@ -38,37 +40,41 @@
         color: white;
         padding: 6px;
         overflow: hidden;
-        font-size: 11px;
       }
 
       .details {
         height: 90px;
+        margin-bottom: 10px;
+        font-size: 16px;
       }
 
       h1 {
+        font-size: 36px;
         font-weight: bold;
-        margin: 0 0 5px 0;
+        margin: 0;
         padding: 0;
       }
       
       .title {
-        padding-top: 15px;
+        padding-top: 10px;
         width: calc(var(--card-width) - 30);
-        height: 50px;
+        height: 45px;
         display: flex;
         align-items: center;
         border-top: 1px solid var(--input-border-color);
-        
-        text-overflow: ellipsis;
-        overflow: hidden;
-        color: var(--accent-color);
-        text-transform: uppercase;
       }
 
-      .title span {
+      .title > div {
+        height: 45px;
+        color: var(--accent-color);
+        text-transform: uppercase;
+        text-align: center;
         width: calc(var(--card-width) - 30);
         display: block;
+        overflow: auto;
         text-overflow: ellipsis;
+        flex: 1;
+        font-size: 12px;
       }
 
       @media( max-width: 600px ) {
@@ -92,7 +98,10 @@
           <div>marks pending</div>
           <div>on page [[data.page]]</div>
         </div>
-        <div class="title"><span>[[data.title]]</span></div>
+        <div class="title">
+           <div>[[data.title]]</div> 
+          <!-- <div>REally long titles are really long but are they longer than the longest titles</div> -->
+        </div>
       </div> 
     </paper-material>
     

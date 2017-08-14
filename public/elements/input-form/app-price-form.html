@@ -59,7 +59,8 @@
         catalog-id="[[catalogId]]"
         page-id="[[pageId]]"
         user-state="[[userState]]"
-        view-mode$="[[viewMode]]">
+        view-mode$="[[viewMode]]"
+        on-cancel$="hide">
       </app-price-edit-form>
     </div>
 
@@ -132,10 +133,15 @@
       _onAppStateUpdate(e) {
         this.catalogId = e.catalogId;
         this.pageId = e.pageId;
+
+        if( !e.editingMark && !e.creatingMark && !e.viewingMark ) {
+          this.hide();
+        }
       }
 
       _headerCancel() {
         this.fire('cancel', {resetMark: true});
+        this.hide();
       }
 
       show(mark) {
