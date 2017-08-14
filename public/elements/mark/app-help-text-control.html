@@ -10,11 +10,13 @@
       }
       cork-tag {
         color: white;
-        height: 30px;
+        /* height: 30px; */
       }
     </style>
 
-    <cork-tag right-arrow id="view" on-click="hide">Select marker<br /> to begin</cork-tag>
+    <cork-tag right-arrow id="view" on-click="hide">
+      <div style="padding: 2px 0 2px 2px; line-height: 14px;">Select marker<br /> to begin</div>
+    </cork-tag>
 
   </template>
   <script>

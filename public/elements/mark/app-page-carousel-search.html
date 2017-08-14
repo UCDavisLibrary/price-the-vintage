@@ -43,10 +43,6 @@
       }
 
       @media(max-width: 500px) {
-        #matchesLabel {
-          display: none;
-        }
-
         input {
           width: 170px;
         }
@@ -74,7 +70,7 @@
 
       #tag {
         display: block;
-        height: 35px;
+        height: 25px;
         color: white;
       }
     </style>
@@ -91,8 +87,7 @@
         <cork-tag id="tag">
           <paper-spinner-lite active hidden$="[[!searching]]"></paper-spinner-lite>
           <div hidden$="[[!showResults]]">
-            <span id="matchesLabel">Matches: </span>
-            <span>[[total]]</span>
+            <span style="padding-right: 5px">[[total]]</span>
           </div>
         </cork-tag>
       </div>
