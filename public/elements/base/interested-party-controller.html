@@ -2,17 +2,17 @@
   const InterestedPartyMixin = subclass =>
   
   class InterestedPartyController extends subclass {
-      get bind() {
-        return Object.assign(
-          super.bind,
-          {
-            'interested-party-request' : '_onInterestedPartyRequest'
-          }
-        );
-      }
+      // get bind() {
+      //   return Object.assign(
+      //     super.bind,
+      //     {
+      //       'interested-party-request' : '_onInterestedPartyRequest'
+      //     }
+      //   );
+      // }
 
       _sendInterestedPartyResponse(id, types) {
-        return this.emit('InterestedPartyModel.onResponse', {id, types});
+        return this.callMethod('InterestedPartyModel.onResponse', {id, types});
       }
 
       _onInterestedPartyRequest(e) {

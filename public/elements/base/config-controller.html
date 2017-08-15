@@ -23,7 +23,7 @@
       }
 
       _getApiHost() {
-        return this.emit('ConfigModel.getApiHost');
+        return this.callMethod('ConfigModel.getApiHost');
       }
 
       _onApiSet() {

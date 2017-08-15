@@ -1,30 +1,27 @@
 <script>
   const AppStateMixin = subclass => 
     class AppStateController extends subclass {
-        get bind() {
-          return Object.assign(
-            super.bind,
-            {
-              'app-state-update' : '_onAppStateUpdate'
-            }
-          );
+
+        constructor() {
+          super();
+          this._iocInject('AppStateModel');
         }
 
         ready() {
           super.ready();
-          this._getAppState().then((e) => this._onAppStateUpdate(e));
+          this._onAppStateUpdate(this._getAppState());
         }
 
         _setAppState(state) {
-          return this.emit('AppStateModel.set', state);
+          return this.AppStateModel.set(state);
         }
 
         _getAppState() {
-          return this.emit('AppStateModel.get');
+          return this.AppStateModel.get();
         }
 
         _onAppStateUpdate(e) {
-          // implement me
+          // stub
         }
     }
   

@@ -2,21 +2,26 @@
   const UserActivityMixin = subclass =>
   
   class UserActivityController extends subclass {
-      get bind() {
-        return Object.assign(
-          super.bind,
-          {
-            'user-activity-update' : '_onUserActivityUpdate'
-          }
-        );
+      // get bind() {
+      //   return Object.assign(
+      //     super.bind,
+      //     {
+      //       'user-activity-update' : '_onUserActivityUpdate'
+      //     }
+      //   );
+      // }
+
+      constructor() {
+        super();
+        this._iocInject('UserActivityModel');
       }
 
       _getUserActivity(id) {
-        return this.emit('UserActivityModel.listen', id);
+        return this.UserActivityModel.listen(id);
       }
 
       _setUserActivity(catalogId, pageId) {
-        return this.emit('UserActivityModel.set', catalogId, pageId);
+        return this.UserActivityModel.set(catalogId, pageId);
       }
 
       _onUserActivityUpdate(e) {

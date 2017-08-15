@@ -2,45 +2,49 @@
   const AuthMixin = subclass =>
   
   class AuthController extends subclass {
-      get bind() {
-        return Object.assign(
-          super.bind,
-          {
-            'auth-update' : '_onAuthUpdate'
-          }
-        );
+      // get bind() {
+      //   return Object.assign(
+      //     super.bind,
+      //     {
+      //       'auth-update' : '_onAuthUpdate'
+      //     }
+      //   );
+      // }
+
+      constructor() {
+        super();
+        this._iocInject('AuthModel');
       }
 
       ready() {
         super.ready();
-        this._getAuthState()
-            .then((e) => this._onAuthUpdate(e));
+        this._onAuthUpdate(this._getAuthState());
       }
 
       _getAuthState() {
-        return this.emit('AuthModel.getAuthState');
+        return this.AuthModel.getAuthState();
       }
 
       _loginCustom(token) {
-        return this.emit('AuthModel.loginCustom', token);
+        return this.AuthModel.loginCustom(token);
       }
 
       _loginAuth0() {
-        return this.emit('AuthModel.loginAuth0');
+        return this.AuthModel('loginAuth0');
       }
 
       _logout() {
         console.log('Removing user profile', localStorage.getItem('auth0-profile'));
         localStorage.removeItem('auth0-profile');
-        return this.emit('AuthModel.logout');
+        return this.AuthModel('logout');
       }
 
       _continueAuth0Login(hash) {
-        return this.emit('AuthModel.continueAuth0Login', hash);
+        return this.AuthModel.continueAuth0Login(hash);
       }
 
       _initAuthRenewAuth0() {
-        return this.emit('AuthModel.initAuthRenewAuth0');
+        return this.AuthModel.initAuthRenewAuth0();
       }
 
       _onAuthUpdate(e) {

@@ -3,33 +3,38 @@
   
   class adminController extends subclass {
 
-      get bind() {
-        return Object.assign(
-          super.bind,
-          {
-            'admin-search-update' : '_onAdminSearchUpdate'
-          }
-        );
+      // get bind() {
+      //   return Object.assign(
+      //     super.bind,
+      //     {
+      //       'admin-search-update' : '_onAdminSearchUpdate'
+      //     }
+      //   );
+      // }
+
+      constructor() {
+        super();
+        this._iocInject('AdminModel');
       }
 
       _adminApproveMark(pageId, markId, mark) {
-        return this.emit('AdminModel.approveMark', pageId, markId, mark);
+        return this.AdminModel.approveMark(pageId, markId, mark);
       }
 
       _adminIgnorePage(pageId, ignore) {
-        return this.emit('AdminModel.ignorePage', pageId, ignore);
+        return this.AdminModel.ignorePage(pageId, ignore);
       }
 
       _adminCompletedPage(pageId, completed) {
-        return this.emit('AdminModel.pageCompleted', pageId, completed);
+        return this.AdminModel.pageCompleted(pageId, completed);
       }
 
       _adminClearTestMarks() {
-        return this.emit('AdminModel.clearTestMarks');
+        return this.AdminModel.clearTestMarks();
       }
 
       _adminSearchPendingMarkPages(offset, limit) {
-        return this.emit('AdminModel.searchPendingMarkPages', {offset, limit});
+        return this.callMethod('AdminModel.searchPendingMarkPages', {offset, limit});
       }
 
       _onAdminSearchUpdate(e) {

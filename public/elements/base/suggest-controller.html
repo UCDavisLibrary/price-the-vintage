@@ -1,26 +1,26 @@
 <script>
   const SuggestMixin = subclass => 
     class SuggestController extends subclass {
-        get bind() {
-          return Object.assign(
-            super.bind,
-            {
-              'suggest-wine-name-update' : '_onWineNameSuggestUpdate',
-              'suggest-country-update' : '_onCountrySuggestUpdate'
-            }
-          );
-        }
+        // get bind() {
+        //   return Object.assign(
+        //     super.bind,
+        //     {
+        //       'suggest-wine-name-update' : '_onWineNameSuggestUpdate',
+        //       'suggest-country-update' : '_onCountrySuggestUpdate'
+        //     }
+        //   );
+        // }
 
         _suggestWineName(text) {
-          return this.emit('SuggestModel.wineName', text);
+          return this.callMethod('SuggestModel.wineName', text);
         }
 
         _suggestCountry(prefix) {
-          return this.emit('SuggestModel.country', prefix);
+          return this.callMethod('SuggestModel.country', prefix);
         }
 
         _suggestPageSection(pageId) {
-          return this.emit('SuggestModel.pageSection', pageId);
+          return this.callMethod('SuggestModel.pageSection', pageId);
         }
 
         _onWineNameSuggestUpdate(e) {

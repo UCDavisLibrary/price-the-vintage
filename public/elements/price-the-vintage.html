@@ -78,13 +78,12 @@ Parses URL on hash change and sets appState.
           }
       }
 
-      get bind() {
-        return Object.assign(
-          super.bind,
-          {
-            'ui-set-location' : '_setWindowUrl'
-          }
-        )
+      constructor() {
+        super();
+
+        this.bind = {
+          'ui-set-location' : '_setWindowUrl'
+        };
       }
 
       ready() {

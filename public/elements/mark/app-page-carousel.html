@@ -186,13 +186,11 @@
         }
       }
 
-      get bind() {
-        return Object.assign(
-          super.bind,
-          {
-            'ui-clear-search-catalog-pages' : '_clearSearch'
-          }
-        )
+      constructor() {
+        super();
+        this.bind = {
+          'ui-clear-search-catalog-pages' : '_clearSearch'
+        }
       }
 
       ready() {

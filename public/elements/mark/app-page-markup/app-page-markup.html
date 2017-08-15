@@ -137,15 +137,6 @@
       
       static get is() { return 'app-page-markup' }
 
-      get bind() {
-        return Object.assign(
-          super.bind,
-          {
-            'ui-show-mark-noop-popup' : '_showPopup'
-          }
-        )
-      }
-
       static get properties() {
         return {
           // should be one of: view, edit or create
@@ -159,6 +150,14 @@
             type : String,
             value : '--'
           }
+        }
+      }
+
+      constructor() {
+        super();
+
+        this.bind = {
+          'ui-show-mark-noop-popup' : '_showPopup'
         }
       }
 
