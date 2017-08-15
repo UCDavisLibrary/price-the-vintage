@@ -30,13 +30,13 @@
       }
 
       _loginAuth0() {
-        return this.AuthModel('loginAuth0');
+        return this.AuthModel.loginAuth0();
       }
 
       _logout() {
         console.log('Removing user profile', localStorage.getItem('auth0-profile'));
         localStorage.removeItem('auth0-profile');
-        return this.AuthModel('logout');
+        return this.AuthModel.logout();
       }
 
       _continueAuth0Login(hash) {

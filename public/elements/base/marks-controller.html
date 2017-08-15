@@ -13,56 +13,61 @@
       //   );
       // }
 
+      constructor() {
+        super();
+        this._iocInject('MarksModel');
+      }
+
       _getMarks(pageId) {
-        return this.callMethod('MarksModel.getPageMarks', pageId);
+        return this.MarksModel.getPageMarks(pageId);
       }
 
       _getPendingMark(pageId, markId) {
-        return this.callMethod('MarksModel.getPendingMark', pageId, markId);
+        return this.MarksModel.getPendingMark(pageId, markId);
       }
 
       _listenToMark(pageId, markId) {
-        return this.callMethod('MarksModel.listenToMark', pageId, markId);
+        return this.MarksModel.listenToMark(pageId, markId);
       }
 
       _addMark(pageId, mark) {
-        return this.callMethod('MarksModel.setPending', pageId, mark);
+        return this.MarksModel.setPending(pageId, mark);
       }
 
       _editMark(pageId, markId, mark) {
-        return this.callMethod('MarksModel.setPending', pageId, markId, mark);
+        return this.MarksModel.setPending(pageId, markId, mark);
       }
 
       _voteOnMark(pageId, markId, vote) {
-        return this.callMethod('MarksModel.votePending', pageId, markId, vote);
+        return this.MarksModel.votePending(pageId, markId, vote);
       }
 
       _removeMark(pageId, markId) {
-        return this.callMethod('MarksModel.removePending', pageId, markId);
+        return this.MarksModel.removePending(pageId, markId);
       }
 
       _pendingMarkSearch(query) {
-        return this.callMethod('MarksModel.pendingMarkSearch', query);
+        return this.MarksModel.pendingMarkSearch(query);
       }
 
       _updateTempMark(pageId, xy) {
-        return this.callMethod('MarksModel.updateTempMark', pageId, xy);
+        return this.MarksModel.updateTempMark(pageId, xy);
       }
 
       _removeTempMark() {
-        return this.callMethod('MarksModel.removeTempMark');
+        return this.MarksModel.removeTempMark();
       }
 
-      _onMarksUpdate(e) {
-        // implement me
-      }
+      // _onMarksUpdate(e) {
+      //   // implement me
+      // }
 
-      _onMarksApproved(e) {
-        // implement me
-      }
+      // _onMarksApproved(e) {
+      //   // implement me
+      // }
 
-      _onPendingMarkSearchUpdate(e) {
-        // implement me
-      }
+      // _onPendingMarkSearchUpdate(e) {
+      //   // implement me
+      // }
   }
 </script>

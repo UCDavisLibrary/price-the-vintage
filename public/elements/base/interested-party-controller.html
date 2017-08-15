@@ -12,11 +12,11 @@
       // }
 
       _sendInterestedPartyResponse(id, types) {
-        return this.callMethod('InterestedPartyModel.onResponse', {id, types});
+        return this.InterestedPartyModel.onResponse({id, types});
       }
 
-      _onInterestedPartyRequest(e) {
-        // implement me
-      }
+      // _onInterestedPartyRequest(e) {
+      //   // implement me
+      // }
   }
 </script>

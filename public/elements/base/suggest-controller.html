@@ -11,24 +11,29 @@
         //   );
         // }
 
+        constructor() {
+          super();
+          this._injectIOC('SuggestModel');
+        }
+
         _suggestWineName(text) {
-          return this.callMethod('SuggestModel.wineName', text);
+          return this.SuggestModel.wineName(text);
         }
 
         _suggestCountry(prefix) {
-          return this.callMethod('SuggestModel.country', prefix);
+          return this.SuggestModel.country(prefix);
         }
 
         _suggestPageSection(pageId) {
-          return this.callMethod('SuggestModel.pageSection', pageId);
+          return this.SuggestModel.pageSection(pageId);
         }
 
-        _onWineNameSuggestUpdate(e) {
-          // implement me
-        }
+        // _onWineNameSuggestUpdate(e) {
+        //   // implement me
+        // }
 
-        _onCountrySuggestUpdate(e) {
-          // implement me
-        }
+        // _onCountrySuggestUpdate(e) {
+        //   // implement me
+        // }
     }
 </script>

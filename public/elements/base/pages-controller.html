@@ -15,27 +15,27 @@
       // }
 
       _getCatalogPages(catalogId) {
-        return this.callMethod('PagesModel.getPages', catalogId);
+        return this.PagesModel.getPages(catalogId);
       }
 
       _getCatalogPage(pageId) {
-        return this.callMethod('PagesModel.get', pageId);
+        return this.PagesModel.get(pageId);
       }
 
       _searchCatalogPages(query) {
-        return this.callMethod('PagesModel.search', query);
+        return this.PagesModel.search(query);
       }
       
-      _onCatalogPagesUpdate(e) {
-        // implement me
-      }
+      // _onCatalogPagesUpdate(e) {
+      //   // implement me
+      // }
 
-      _onCatalogPageUpdate(e) {
-        // implement me
-      }
+      // _onCatalogPageUpdate(e) {
+      //   // implement me
+      // }
 
-      _onCatalogPagesSearchUpdate(e) {
-        // implement me
-      }
+      // _onCatalogPagesSearchUpdate(e) {
+      //   // implement me
+      // }
   }
 </script>
