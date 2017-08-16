@@ -112,8 +112,13 @@
         this.$.name.value = data.name || this.getEmptyValue();
         this.$.spiritType.value = data.spiritType || this.getEmptyValue();
         this.$.country.value = data.country || this.getEmptyValue();
-        this.$.price.value = data.price || this.getEmptyValue();
-        this.$.casePrice.value = data.casePrice || this.getEmptyValue();
+        this.$.price.value = this.getDollarValue(data.price);
+        this.$.casePrice.value = this.getDollarValue(data.casePrice);
+      }
+
+      getDollarValue(val) {
+        if( !val ) return this.getEmptyValue();
+        return parseFloat(val).toFixed(2);
       }
 
       getEmptyValue(val) {

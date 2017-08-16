@@ -229,10 +229,15 @@
         this.$.bottleType.value = data.bottleType || this.getEmptyValue('Standard');
         this.$.section.value = data.section || this.getEmptyValue();
         this.$.name.value = data.name || this.getEmptyValue();
-        this.$.price.value = data.price || this.getEmptyValue();
-        this.$.casePrice.value = data.casePrice || this.getEmptyValue();
+        this.$.price.value = this.getDollarValue(data.price);
+        this.$.casePrice.value = this.getDollarValue(data.casePrice);
         this.$.country.value = data.country || this.getEmptyValue();
         this.$.year.value = data.year || this.getEmptyValue();
+      }
+
+      getDollarValue(val) {
+        if( !val ) return this.getEmptyValue();
+        return parseFloat(val).toFixed(2);
       }
 
       getEmptyValue(val) {
