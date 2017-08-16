@@ -190,6 +190,9 @@
           }.bind(this), 500);
         } else {
           this.emit('ui-clear-search-catalog-pages');
+          this._setAppState({
+            searchText : ''
+          });
         }
       }
 
