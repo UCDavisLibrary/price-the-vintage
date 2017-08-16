@@ -79,6 +79,7 @@
           left: 0; 
           right: 0;
           top: 0px;
+          z-index: 500;
         }
 
         #nothingToDo paper-material {
@@ -89,7 +90,7 @@
           color: var(--default-primary-color);
           text-align: left;
           margin: auto;
-          z-index: 1000;
+          z-index: 500;
         }
 
         paper-spinner-lite {
@@ -100,11 +101,10 @@
     <div id="nothingToDo">
       <div style="margin: 0 50px"> 
         <paper-material>
-          
-            <div class="layout center">
-              <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking. Don’t despair, plenty more pages do! Click on another!</div>
-              <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
-            </div>
+          <div class="layout center">
+            <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking. Don’t despair, plenty more pages do! Click on another!</div>
+            <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
+          </div>
         </paper-material>
       </div> 
     </div>

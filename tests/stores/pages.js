@@ -31,11 +31,11 @@ var searchParams = {
 describe('Stores: PagesStore', function() {
 
   it('should set pages', (next) => {
-    EventBus.on(PagesStore.PAGE_UPDATE, (e) => {
+    EventBus.on(PagesStore.events.CATALOG_PAGE_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.LOADED);
     });
 
-    EventBus.once(PagesStore.CATALOG_PAGES_UPDATE, (e) => {
+    EventBus.once(PagesStore.events.CATALOG_PAGES_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.LOADED);
       assert.deepEqual(e.payload, pages);
       assert.equal(e.id, catalogId);
@@ -47,7 +47,7 @@ describe('Stores: PagesStore', function() {
   });
 
   it('should set pages loading', (next) => {
-    EventBus.once(PagesStore.CATALOG_PAGES_UPDATE, (e) => {
+    EventBus.once(PagesStore.events.CATALOG_PAGES_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.LOADING);
       assert.equal(e.id, catalogId);
       next();
@@ -59,7 +59,7 @@ describe('Stores: PagesStore', function() {
   it('should set pages error', (next) => {
     var error = new Error('Something went wrong');
 
-    EventBus.once(PagesStore.CATALOG_PAGES_UPDATE, (e) => {
+    EventBus.once(PagesStore.events.CATALOG_PAGES_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.ERROR);
       assert.equal(e.error, error);
       assert.equal(e.id, catalogId);
@@ -70,7 +70,7 @@ describe('Stores: PagesStore', function() {
   });
 
   it('should set page', (next) => {
-    EventBus.once(PagesStore.PAGE_UPDATE, (e) => {
+    EventBus.once(PagesStore.events.CATALOG_PAGE_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.LOADED);
       assert.deepEqual(e.payload, page1);
       assert.equal(e.id, page1.page_id);
@@ -81,7 +81,7 @@ describe('Stores: PagesStore', function() {
   });
 
   it('should set page loading', (next) => {
-    EventBus.once(PagesStore.PAGE_UPDATE, (e) => {
+    EventBus.once(PagesStore.events.CATALOG_PAGE_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.LOADING);
       assert.equal(e.id, page1.page_id);
       next();
@@ -93,7 +93,7 @@ describe('Stores: PagesStore', function() {
   it('should set page error', (next) => {
     var error = new Error('Something went wrong');
 
-    EventBus.once(PagesStore.PAGE_UPDATE, (e) => {
+    EventBus.once(PagesStore.events.CATALOG_PAGE_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.ERROR);
       assert.equal(e.error, error);
       assert.equal(e.id, page1.page_id);
@@ -104,7 +104,7 @@ describe('Stores: PagesStore', function() {
   });
 
   it('should set search loaded', (next) => {
-    EventBus.once(PagesStore.SEARCH_UPDATE, (e) => {
+    EventBus.once(PagesStore.events.CATALOG_PAGES_SEARCH_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.LOADED);
       assert.deepEqual(e.params, searchParams);
       assert.deepEqual(e.payload, searchResults);
@@ -115,7 +115,7 @@ describe('Stores: PagesStore', function() {
   });
 
   it('should set search loading', (next) => {
-    EventBus.once(PagesStore.SEARCH_UPDATE, (e) => {
+    EventBus.once(PagesStore.events.CATALOG_PAGES_SEARCH_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.LOADING);
       assert.deepEqual(e.params, searchParams);
       next();
@@ -127,7 +127,7 @@ describe('Stores: PagesStore', function() {
   it('should set search error', (next) => {
     var error = new Error('Something went wrong');
 
-    EventBus.once(PagesStore.SEARCH_UPDATE, (e) => {
+    EventBus.once(PagesStore.events.CATALOG_PAGES_SEARCH_UPDATE, (e) => {
       assert.equal(e.state, PagesStore.STATE.ERROR);
       assert.equal(e.error, error);
       assert.deepEqual(e.params, searchParams);

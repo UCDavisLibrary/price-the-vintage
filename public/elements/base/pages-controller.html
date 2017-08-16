@@ -2,17 +2,10 @@
   const PagesMixin = subclass =>
   
   class PagesController extends subclass {
-      // get bind() {
-      //   return Object.assign(
-      //     super.bind,
-      //     {
-      //       'catalog-pages-update' : '_onCatalogPagesUpdate',
-      //       'catalog-page-update' : '_onCatalogPageUpdate',
-      //       // 'page-metadata-update' : '_onCatalogPageMetadataUpdate',
-      //       'search-catalog-pages-update' : '_onCatalogPagesSearchUpdate'
-      //     }
-      //   );
-      // }
+      constructor() {
+        super();
+        this._iocInject('PagesModel');
+      }
 
       _getCatalogPages(catalogId) {
         return this.PagesModel.getPages(catalogId);
@@ -25,17 +18,5 @@
       _searchCatalogPages(query) {
         return this.PagesModel.search(query);
       }
-      
-      // _onCatalogPagesUpdate(e) {
-      //   // implement me
-      // }
-
-      // _onCatalogPageUpdate(e) {
-      //   // implement me
-      // }
-
-      // _onCatalogPagesSearchUpdate(e) {
-      //   // implement me
-      // }
   }
 </script>

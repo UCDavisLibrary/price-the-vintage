@@ -55,7 +55,7 @@ var approvedPageId = '12345';
 describe('Stores: MarksStore', function() {
 
   it('should let me set pending mark search state', (next) => {
-    EventBus.once(MarksStore.PENDING_SEARCH_UPDATE_EVENT, (e) => {
+    EventBus.once(MarksStore.events.PENDING_MARK_SEARCH_UPDATE, (e) => {
       assert.equal(e.state, MarksStore.STATE.LOADING);
       assert.deepEqual(e.params, pendingMarkSearchParams);
       assert.deepEqual(MarksStore.data.pendingSearch, e);
@@ -68,7 +68,7 @@ describe('Stores: MarksStore', function() {
   it('should let me set pending mark search error', (next) => {
     var error = new Error('Something went wrong');
     
-    EventBus.once(MarksStore.PENDING_SEARCH_UPDATE_EVENT, (e) => {
+    EventBus.once(MarksStore.events.PENDING_MARK_SEARCH_UPDATE, (e) => {
       assert.equal(e.state, MarksStore.STATE.ERROR);
       assert.deepEqual(e.params, pendingMarkSearchParams);
       assert.equal(e.error, error);
@@ -82,7 +82,7 @@ describe('Stores: MarksStore', function() {
   it('should let me set pending mark loaded', (next) => {
     var payload = {marks: []};
     
-    EventBus.once(MarksStore.PENDING_SEARCH_UPDATE_EVENT, (e) => {
+    EventBus.once(MarksStore.events.PENDING_MARK_SEARCH_UPDATE, (e) => {
       assert.equal(e.state, MarksStore.STATE.LOADED);
       assert.deepEqual(e.params, pendingMarkSearchParams);
       assert.equal(e.payload, payload);
@@ -94,7 +94,7 @@ describe('Stores: MarksStore', function() {
   });
 
   it('should let me set approved loading state', (next) => {
-    EventBus.once(MarksStore.APPROVE_PAGE_MARK_UPDATE_EVENT, (e) => {
+    EventBus.once(MarksStore.events.MARKS_APPROVED, (e) => {
       assert.equal(e.state, MarksStore.STATE.LOADING);
       assert.deepEqual(MarksStore.data.approvedPageRequestState[approvedPageId], e);
       next();
@@ -106,7 +106,7 @@ describe('Stores: MarksStore', function() {
   it('should let me set approved error state', (next) => {
     var error = new Error('Something went wrong');
 
-    EventBus.once(MarksStore.APPROVE_PAGE_MARK_UPDATE_EVENT, (e) => {
+    EventBus.once(MarksStore.events.MARKS_APPROVED, (e) => {
       assert.equal(e.state, MarksStore.STATE.ERROR);
       assert.equal(e.error, error);
       assert.deepEqual(MarksStore.data.approvedPageRequestState[approvedPageId], e);
@@ -118,11 +118,11 @@ describe('Stores: MarksStore', function() {
 
   it('should let me set approved loaded state', (next) => {
 
-    EventBus.on(MarksStore.MARK_UPDATE_EVENT, (e) => {
+    EventBus.on(MarksStore.events.MARKS_UPDATE, (e) => {
       assert.equal(e.state, MarksStore.STATE.LOADED);
     });
 
-    EventBus.once(MarksStore.APPROVE_PAGE_MARK_UPDATE_EVENT, (e) => {
+    EventBus.once(MarksStore.events.MARKS_APPROVED, (e) => {
       assert.equal(e.state, MarksStore.STATE.LOADED);
       assert.deepEqual(e.marks, marks);
       EventBus.removeAllListeners();
@@ -133,7 +133,7 @@ describe('Stores: MarksStore', function() {
   });
 
   it('should let me set loaded mark', (next) => {
-    EventBus.once(MarksStore.MARK_UPDATE_EVENT, (e) => {
+    EventBus.once(MarksStore.events.MARKS_UPDATE, (e) => {
       assert.equal(e.state, MarksStore.STATE.LOADED);
       assert.deepEqual(e, mark1);
       next();
@@ -143,7 +143,7 @@ describe('Stores: MarksStore', function() {
   });
 
   it('should let me set mark loading state', (next) => {
-    EventBus.once(MarksStore.MARK_UPDATE_EVENT, (e) => {
+    EventBus.once(MarksStore.events.MARKS_UPDATE, (e) => {
       assert.equal(e.state, MarksStore.STATE.LOADING);
       assert.equal(e.markId, mark1.markId);
       assert.equal(e.pageId, mark1.pageId);
@@ -157,7 +157,7 @@ describe('Stores: MarksStore', function() {
   it('should let me set mark error state', (next) => {
     var error = new Error('Something went wrong');
 
-    EventBus.once(MarksStore.MARK_UPDATE_EVENT, (e) => {
+    EventBus.once(MarksStore.events.MARKS_UPDATE, (e) => {
       assert.equal(e.state, MarksStore.STATE.ERROR);
       assert.equal(e.markId, mark1.markId);
       assert.equal(e.pageId, mark1.pageId);

@@ -2,15 +2,6 @@
   const AuthMixin = subclass =>
   
   class AuthController extends subclass {
-      // get bind() {
-      //   return Object.assign(
-      //     super.bind,
-      //     {
-      //       'auth-update' : '_onAuthUpdate'
-      //     }
-      //   );
-      // }
-
       constructor() {
         super();
         this._iocInject('AuthModel');

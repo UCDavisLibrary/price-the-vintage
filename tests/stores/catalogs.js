@@ -31,7 +31,7 @@ describe('Stores: CatalogsStore', function() {
     }
 
     it('should let me set catalog data', (next) => {
-      EventBus.once(CatalogsStore.UPDATE_EVENT, (e) => {
+      EventBus.once(CatalogsStore.events.CATALOG_UPDATE, (e) => {
         assert.equal(e.id, catalog.catalog_id);
         assert.equal(e.state, CatalogsStore.STATE.LOADED);
         assert.deepEqual(e.payload, catalog);
@@ -45,7 +45,7 @@ describe('Stores: CatalogsStore', function() {
     it('should let set error state', (next) => {
       var error = new Error('Something went wrong');
 
-      EventBus.once(CatalogsStore.UPDATE_EVENT, (e) => {
+      EventBus.once(CatalogsStore.events.CATALOG_UPDATE, (e) => {
         assert.equal(e.id, catalog.catalog_id);
         assert.equal(e.state, CatalogsStore.STATE.ERROR);
         assert.equal(e.error, error);
@@ -57,7 +57,7 @@ describe('Stores: CatalogsStore', function() {
     });
 
     it('should set loading state', (next) => {
-      EventBus.once(CatalogsStore.UPDATE_EVENT, (e) => {
+      EventBus.once(CatalogsStore.events.CATALOG_UPDATE, (e) => {
         assert.equal(e.state, CatalogsStore.STATE.LOADING);
         assert.deepEqual(CatalogsStore.data.byId[catalog.catalog_id], e);
         next();
@@ -76,12 +76,12 @@ describe('Stores: CatalogsStore', function() {
         next();
       }
 
-      EventBus.addListener(CatalogsStore.UPDATE_EVENT, (e) => {
+      EventBus.addListener(CatalogsStore.events.CATALOG_UPDATE, (e) => {
         assert.equal(CatalogsStore.STATE.LOADED, e.state);
         done();
       });
 
-      EventBus.once(CatalogsStore.SEARCH_UPDATE_EVENT, (e) => {
+      EventBus.once(CatalogsStore.events.CATALOG_SEARCH_UDPATE, (e) => {
         assert.equal(e.state, CatalogsStore.STATE.LOADED);
         assert.deepEqual(e.results, search);
         assert.deepEqual(CatalogsStore.data.search, e);
@@ -95,7 +95,7 @@ describe('Stores: CatalogsStore', function() {
     it('should let set search error state', (next) => {
       var error = new Error('Something went wrong');
 
-      EventBus.once(CatalogsStore.SEARCH_UPDATE_EVENT, (e) => {
+      EventBus.once(CatalogsStore.events.CATALOG_SEARCH_UDPATE, (e) => {
         assert.equal(e.state, CatalogsStore.STATE.ERROR);
         assert.equal(e.error, error);
         assert.deepEqual(CatalogsStore.data.search, e);
@@ -106,7 +106,7 @@ describe('Stores: CatalogsStore', function() {
     });
 
     it('should set loading state', (next) => {
-      EventBus.once(CatalogsStore.SEARCH_UPDATE_EVENT, (e) => {
+      EventBus.once(CatalogsStore.events.CATALOG_SEARCH_UDPATE, (e) => {
         assert.equal(e.state, CatalogsStore.STATE.LOADING);
         assert.deepEqual(CatalogsStore.data.search, e);
         next();

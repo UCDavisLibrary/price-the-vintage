@@ -2,16 +2,6 @@
   const CatalogsMixin = subclass =>
   
   class CatalogsController extends subclass {
-      // get bind() {
-      //   return Object.assign(
-      //     super.bind,
-      //     {
-      //       'catalog-update' : '_onCatalogUpdate',
-      //       'search-catalogs-update' : '_onCatalogSearchUpdate'
-      //     }
-      //   );
-      // }
-
       constructor() {
         super();
         this._iocInject('CatalogsModel');
@@ -24,13 +14,5 @@
       _getCatalog(id) {
         return this.CatalogsModel.get(id);
       }
-
-      // _onCatalogUpdate(e) {
-      //   // implement me
-      // }
-
-      // _onCatalogSearchUpdate(e) {
-      //   // implement me
-      // }
   }
 </script>

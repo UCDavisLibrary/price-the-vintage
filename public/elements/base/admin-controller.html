@@ -2,16 +2,6 @@
   const AdminMixin = subclass =>
   
   class adminController extends subclass {
-
-      // get bind() {
-      //   return Object.assign(
-      //     super.bind,
-      //     {
-      //       'admin-search-update' : '_onAdminSearchUpdate'
-      //     }
-      //   );
-      // }
-
       constructor() {
         super();
         this._iocInject('AdminModel');
@@ -36,9 +26,5 @@
       _adminSearchPendingMarkPages(offset, limit) {
         return this.AdminModel.searchPendingMarkPages({offset, limit});
       }
-
-      // _onAdminSearchUpdate(e) {
-      //   // implement me
-      // }
   }
 </script>

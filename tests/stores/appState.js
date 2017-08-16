@@ -13,7 +13,7 @@ describe('Stores: AppStateStore', function() {
     }
 
     it('should set appState', (next) => {
-      EventBus.once('app-state-update', (e) => {
+      EventBus.once(AppStateStore.events.APP_STATE_UPDATE, (e) => {
         assert.deepEqual(e, state);
         next();
       });

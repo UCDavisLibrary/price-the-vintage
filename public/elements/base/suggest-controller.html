@@ -1,19 +1,10 @@
 <script>
   const SuggestMixin = subclass => 
+  
     class SuggestController extends subclass {
-        // get bind() {
-        //   return Object.assign(
-        //     super.bind,
-        //     {
-        //       'suggest-wine-name-update' : '_onWineNameSuggestUpdate',
-        //       'suggest-country-update' : '_onCountrySuggestUpdate'
-        //     }
-        //   );
-        // }
-
         constructor() {
           super();
-          this._injectIOC('SuggestModel');
+          this._iocInject('SuggestModel');
         }
 
         _suggestWineName(text) {
@@ -27,13 +18,5 @@
         _suggestPageSection(pageId) {
           return this.SuggestModel.pageSection(pageId);
         }
-
-        // _onWineNameSuggestUpdate(e) {
-        //   // implement me
-        // }
-
-        // _onCountrySuggestUpdate(e) {
-        //   // implement me
-        // }
     }
 </script>

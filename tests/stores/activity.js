@@ -10,7 +10,7 @@ describe('Stores: ActivityStore', function() {
     it('should let set users activity', (next) => {
       var timestamp = Date.now();
 
-      EventBus.once(ActivityStore.UPDATE_EVENT, (e) => {
+      EventBus.once(ActivityStore.events.USER_ACTIVITY_UPDATE, (e) => {
         assert.equal(e.state, ActivityStore.STATE.LOADED);
         assert.equal(e.id, objectId);
         assert.equal(e.users[uid], timestamp);
@@ -27,7 +27,7 @@ describe('Stores: ActivityStore', function() {
     it('should remove users activity', (next) => {
       var timestamp = Date.now();
 
-      EventBus.once(ActivityStore.UPDATE_EVENT, (e) => {
+      EventBus.once(ActivityStore.events.USER_ACTIVITY_UPDATE, (e) => {
         assert.equal(e.state, ActivityStore.STATE.LOADED);
         assert.equal(e.id, objectId);
         assert.deepEqual(e.users, {});

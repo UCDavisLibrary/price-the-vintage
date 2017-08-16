@@ -11,7 +11,7 @@ describe('Stores: AuthStore', function() {
     }
 
     it('should set auth user', (next) => {
-      EventBus.once('auth-update', (e) => {
+      EventBus.once(AuthStore.events.AUTH_UPDATE, (e) => {
         assert.equal(e.state, AuthStore.CUSTOM_STATES.LOGGED_IN);
         assert.deepEqual(e.user, user);
         next();
@@ -21,7 +21,7 @@ describe('Stores: AuthStore', function() {
     });
 
     it('should logout', (next) => {
-      EventBus.once('auth-update', (e) => {
+      EventBus.once(AuthStore.events.AUTH_UPDATE, (e) => {
         assert.equal(e.state, AuthStore.CUSTOM_STATES.NOT_LOGGED_IN);
         assert.deepEqual(e.user, {});
         next();

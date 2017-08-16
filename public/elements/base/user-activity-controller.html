@@ -2,15 +2,6 @@
   const UserActivityMixin = subclass =>
   
   class UserActivityController extends subclass {
-      // get bind() {
-      //   return Object.assign(
-      //     super.bind,
-      //     {
-      //       'user-activity-update' : '_onUserActivityUpdate'
-      //     }
-      //   );
-      // }
-
       constructor() {
         super();
         this._iocInject('UserActivityModel');
@@ -22,10 +13,6 @@
 
       _setUserActivity(catalogId, pageId) {
         return this.UserActivityModel.set(catalogId, pageId);
-      }
-
-      _onUserActivityUpdate(e) {
-        // implement me
       }
   }
 </script>

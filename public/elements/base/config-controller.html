@@ -12,9 +12,13 @@
         };
       }
 
+      constructor() {
+        super();
+        this._iocInject('ConfigModel');
+      }
+
       ready() {
         super.ready();
-
         this._getApiHost()
             .then((host) => {
               this.apiHost = host;
@@ -23,7 +27,7 @@
       }
 
       _getApiHost() {
-        return this.callMethod('ConfigModel.getApiHost');
+        return this.ConfigModel.getApiHost();
       }
 
       _onApiSet() {

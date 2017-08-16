@@ -2,17 +2,6 @@
   const MarksMixin = subclass =>
   
   class MarksController extends subclass {
-      // get bind() {
-      //   return Object.assign(
-      //     super.bind,
-      //     {
-      //       'catalog-page-marks-update' : '_onMarksUpdate',
-      //       'approved-catalog-page-marks-update' : '_onMarksApproved',
-      //       'pending-mark-search-update' : '_onPendingMarkSearchUpdate'
-      //     }
-      //   );
-      // }
-
       constructor() {
         super();
         this._iocInject('MarksModel');
@@ -57,17 +46,5 @@
       _removeTempMark() {
         return this.MarksModel.removeTempMark();
       }
-
-      // _onMarksUpdate(e) {
-      //   // implement me
-      // }
-
-      // _onMarksApproved(e) {
-      //   // implement me
-      // }
-
-      // _onPendingMarkSearchUpdate(e) {
-      //   // implement me
-      // }
   }
 </script>
