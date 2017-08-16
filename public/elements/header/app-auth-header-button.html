@@ -135,7 +135,7 @@
       ready() {
         super.ready();
 
-        this.toggleState('pending');
+        this.toggleState(this.auth ? this.auth.state : 'pending');
 
         // window.addEventListener('hashchange', function() {
         //   this.$.menuBtn.close();
