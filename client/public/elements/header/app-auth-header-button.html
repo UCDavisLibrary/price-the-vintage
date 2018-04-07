@@ -1,0 +1,203 @@
+
+<dom-module id="app-auth-header-button">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      img {
+        width: 36px;
+        height: 36px;
+        border-radius: 20px;
+        border: 1px solid white;
+        cursor: pointer;
+      }
+
+      img:hover {
+        border: 1px solid var(--light-primary-color);
+      }
+
+      [state="loggedIn"] {
+        position: relative;
+      }
+
+      #logout {
+        z-index: 1000;
+        color: black;
+        display: none;
+        position: absolute;
+        top: 45px;
+        background-color: white;
+        right: 0px;
+        padding: 10px;
+        box-shadow: 0 0 8px rgba(0,0,0,.5);
+      }
+      a {
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      [slot="dropdown-content"] {
+        color: black;
+        white-space: nowrap;
+      }
+
+      a {
+        text-decoration: none;
+        color: black;
+      }
+
+      cork-popup-button {
+        --cork-border: none;
+        --cork-background-color-open: transparent;
+      }
+
+      .option {
+        padding: 10px;
+        white-space: nowrap;
+        color: var(--text-primary-color);
+      }
+
+      .option.selectable {
+        cursor: pointer;
+      }
+      .option.selectable:hover {
+        color: var(--default-primary-color);
+      }
+
+      paper-icon-button {
+        color: white;
+      }
+
+      [hidden] {
+        display: none;
+      }
+    </style>
+
+    <div state="pending">...</div>
+
+    <div state="loggedIn">
+      <cork-popup-button id="menuBtn" no-btn-arrow>
+        <div slot="btn-content">
+          <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
+          <img src="[[photo]]" hidden$="[[!hasPhoto]]" alt="User profile image"/>
+        </div>
+        <div>
+          <div class="option">[[username]]</div>
+          <div class="option selectable" on-click="_onLogout">
+            <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
+          </div>
+
+          <div class="option selectable" hidden$="[[!isAdmin]]" on-click="_gotToAdmin">
+            <iron-icon icon="gavel"></iron-icon>&nbsp;Admin Interface</a>
+          </div>
+          <div class="option selectable" hidden$="[[!isAnonymous]]" on-click="_switch">Login with user account</div>
+        </div>
+      </cork-popup-button>
+
+      <paper-icon-button on-click="_loginAuth0" icon="social:person-outline" hidden$="[[!isAnonymous]]" ></paper-icon-button>
+    </div>
+
+    <div state="notLoggedIn">
+      <paper-icon-button on-click="_loginAuth0" icon="social:person-outline"></paper-icon-button>
+    </div>
+
+
+    
+  </template>
+  <script>
+    class AppAuthHeaderButton extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, ToggleStateMixin, AuthMixin, AppStateMixin, CatalogsMixin, PagesMixin) {
+
+      static get is(){ return 'app-auth-header-button' }
+
+      static get properties() {
+        return {
+            user : {
+              type : Object,
+              value : null
+            },
+
+            isAdmin : {
+              type : Boolean,
+              value : false
+            },
+
+            isAnonymous : {
+              type : Boolean,
+              value : false
+            }
+          }
+      }
+
+      ready() {
+        super.ready();
+
+        this.toggleState(this.auth ? this.auth.state : 'pending');
+
+        // window.addEventListener('hashchange', function() {
+        //   this.$.menuBtn.close();
+        // }.bind(this));
+      }
+
+      _onAuthUpdate(e) {
+        this.auth = e;
+        this.hasPhoto = false;
+        this.isAdmin = false;
+        this.isAnonymous = false;
+
+        if( this.auth.user ) {
+          this.isAnonymous = this.auth.user.isAnonymous;
+
+          if( this.auth.user.photoURL ) {
+            this.photo = this.auth.user.photoURL;
+            this.hasPhoto = true;
+          }
+
+          if( this.auth.user.roles  && this.auth.user.roles.indexOf('admin') > -1 ) {
+            this.isAdmin = true;
+          }
+
+          this.username = this.auth.user.name || this.auth.user.email || 'Anonymous';
+        }
+
+        this.toggleState(this.auth.state);
+      }
+
+      _onAppStateUpdate(e) {
+        this.appState = e;
+      }
+
+      _onCatalogSelectedUpdate(e) {
+        this.catalogId = e.id;
+      }
+
+      _onCatalogPageSelectedUpdate(e) {
+        this.pageId = e.id;
+      }
+
+      _onLogout() {
+        this.$.menuBtn.hide();
+        this._logout();
+        
+        // if( this.appState.editingMark ) {
+        //   this.emit('ui-set-location', this.appState.catalogId + '/' + this.appState.pageId);
+        // }
+      }
+
+      _switch() {
+        this._onLogout();
+        this._loginAuth0();
+      }
+
+      _gotToAdmin() {
+        this.emit('ui-set-location', 'admin');
+        this.$.menuBtn.hide();
+      }
+
+    }
+    window.customElements.define(AppAuthHeaderButton.is, AppAuthHeaderButton);
+  </script>
+</dom-module>

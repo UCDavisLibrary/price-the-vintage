@@ -1,0 +1,30 @@
+<script>
+  const AdminMixin = subclass =>
+  
+  class adminController extends subclass {
+      constructor() {
+        super();
+        this._iocInject('AdminModel');
+      }
+
+      _adminApproveMark(pageId, markId, mark) {
+        return this.AdminModel.approveMark(pageId, markId, mark);
+      }
+
+      _adminIgnorePage(pageId, ignore) {
+        return this.AdminModel.ignorePage(pageId, ignore);
+      }
+
+      _adminCompletedPage(pageId, completed) {
+        return this.AdminModel.pageCompleted(pageId, completed);
+      }
+
+      _adminClearTestMarks() {
+        return this.AdminModel.clearTestMarks();
+      }
+
+      _adminSearchPendingMarkPages(offset, limit) {
+        return this.AdminModel.searchPendingMarkPages({offset, limit});
+      }
+  }
+</script>

@@ -1,0 +1,201 @@
+<link rel="import" href="app-price-form-voting.html">
+<link rel="import" href="app-price-edit-form.html">
+<link rel="import" href="app-price-edit-wine.html">
+<link rel="import" href="app-price-edit-spirit.html">
+<link rel="import" href="widgets/app-price-form-wine-type.html">
+<link rel="import" href="widgets/app-price-form-input.html">
+<link rel="import" href="widgets/app-price-form-select.html">
+<link rel="import" href="widgets/app-price-form-name.html">
+<link rel="import" href="widgets/app-price-form-section.html">
+<link rel="import" href="widgets/app-price-form-country.html">
+
+<dom-module id="app-price-form">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: none;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background-color: rgba(255, 255, 255, .95);
+        z-index: 500;
+        border-top: 1px solid white;
+        box-shadow: 0 0 10px rgba(0,0,0,.4);
+        overflow: auto;
+      }
+
+      @media(min-width: 720px) {
+        :host {
+          width: 350px;
+          left: auto;
+          top: 64px;
+        }
+      }
+
+      .title {
+        flex: 1;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      #body > div {
+        padding: 15px;
+      }
+    </style>
+
+    <div>
+      <div style="display:flex; padding: 10px 15px 0 15px">
+        <div class="title" hidden$="[[viewMode]]">Edit Mark</div>
+        <div class="title" hidden$="[[!viewMode]]">View Mark</div>
+        <div>
+          <cork-cancel-button label="Cancel" hidden$="[[viewMode]]" on-click="_headerCancel"></cork-cancel-button>
+          <cork-cancel-button label="Close" hidden$="[[!viewMode]]" on-click="_headerCancel"></cork-cancel-button>
+        </div>
+      </div>
+      <app-price-edit-form
+        id="form" 
+        catalog-id="[[catalogId]]"
+        page-id="[[pageId]]"
+        user-state="[[userState]]"
+        view-mode$="[[viewMode]]"
+        on-cancel$="hide">
+      </app-price-edit-form>
+    </div>
+
+  </template>
+  <script>
+
+    class AppPriceForm extends 
+      Mixin(Polymer.Element)
+      .with(EventBusMixin, AuthMixin, AppStateMixin) {
+      
+      static get is() { return 'app-price-form' }
+
+      static get properties() {
+        return {
+          addSpace : {
+            type : Boolean,
+            value : false
+          },
+          userState : {
+            type : Object,
+            value : function() {
+              return {}
+            }
+          },
+          pageId: {
+            type : String,
+            value : ''
+          },
+          viewMode : {
+            type : Boolean,
+            value : false
+          },
+          open : {
+            type : Boolean,
+            value : false
+          }
+        }
+      }
+
+      _onAuthUpdate(e) {
+        this.userState = e;
+        this._updateViewMode();
+      }
+
+      ready() {
+        super.ready();
+        window.addEventListener('keyup', this._onKeyUp.bind(this));
+        window.addEventListener('resize', this._resize.bind(this));
+        this._resize();
+      }
+
+      _onKeyUp(e) {
+        if( !this.open || e.keyCode !== 27 ) return;
+        this.hide();
+        this.fire('cancel', {resetMark: true});
+      }
+
+      _resize() {
+        if( window.innerWidth < 720 ) {
+          var h = Math.floor(window.innerHeight * 0.5);
+
+          this.style.maxHeight = h+'px';
+
+          var maxFormSize = 72 * 7;
+        } else {
+          this.style.maxHeight = '';
+        }
+      }
+
+      _onAppStateUpdate(e) {
+        this.catalogId = e.catalogId;
+        this.pageId = e.pageId;
+
+        if( !e.editingMark && !e.creatingMark && !e.viewingMark ) {
+          this.hide();
+        }
+      }
+
+      _headerCancel() {
+        this.fire('cancel', {resetMark: true});
+        this.hide();
+      }
+
+      show(mark) {
+        if( !mark ) return;
+        this.mark = mark;
+        this.creating = false;
+
+        this._updateViewMode();
+
+        this.$.form.show(mark);
+        this._show();
+      }
+
+      _updateViewMode() {
+        this.viewMode = true;
+
+        if( this.creating ) {
+          this.viewMode = false;
+          return;
+        }
+
+        if( !this.mark ) return;
+
+        if( !this.mark.data.approved &&
+            this.userState && 
+            this.userState.user &&
+            (this.userState.user.isAdmin || 
+            this.mark.data.user === this.userState.user.uid) ) {
+
+          this.viewMode = false;
+        }
+      }
+
+      create(ll) {
+        this.mark = null;
+        this.creating = true;
+
+        this._updateViewMode();
+        
+        this.$.form.create(ll);
+        this._show();
+      }
+
+      _show() {
+        this.open = true;
+        this.style.display = 'block';
+      }
+
+      hide() {
+        this.open = false;
+        this.style.display = 'none';
+      }
+    }
+
+    window.customElements.define(AppPriceForm.is, AppPriceForm);
+  </script>
+</dom-module>

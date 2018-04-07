@@ -1,0 +1,65 @@
+
+<dom-module id="app-header-catalogs">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      .overflow {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+      }
+    </style>
+
+    <table style="width: 100%">
+      <tr>
+        <td>
+          <a href="#">
+            <paper-icon-button icon="close"></paper-icon-button>
+          </a>
+        </td>
+        <td>
+          <h2 class="overflow" id="title">[[title]]</h2>
+        </td>
+      </tr>
+    </table>
+
+  </template>
+  <script>
+
+    class AppHeaderCatalogs extends 
+          Mixin(Polymer.Element)
+          .with(EventBusMixin, CatalogsMixin, AppStateMixin) {
+      
+      static get is() { return 'app-header-catalogs'; }
+      
+      ready() {
+        super.ready();
+        
+        window.addEventListener('resize', this._resize.bind(this));
+        this._resize();
+      }
+
+      _resize() {
+        this.$.title.style.width = (window.innerWidth - 132) + 'px';
+      }
+
+      _onAppStateUpdate(e) {
+        this.catalogId = e.catalogId;
+
+        this._getCatalog(e.catalogId)
+            .then((e) => this._onCatalogUpdate(e));
+      }
+
+      _onCatalogUpdate(e) {
+        if( this.catalogId !== e.id || e.state !== 'loaded' ) return;
+        this.title = e.payload.title;
+      }
+    }
+    window.customElements.define(AppHeaderCatalogs.is, AppHeaderCatalogs);
+
+  </script>
+</dom-module>

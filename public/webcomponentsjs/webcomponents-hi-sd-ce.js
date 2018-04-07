@@ -1,1 +1,0 @@
-../bower_components/webcomponentsjs/webcomponents-hi-sd-ce.js

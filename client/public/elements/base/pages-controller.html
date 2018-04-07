@@ -1,0 +1,22 @@
+<script>
+  const PagesMixin = subclass =>
+  
+  class PagesController extends subclass {
+      constructor() {
+        super();
+        this._iocInject('PagesModel');
+      }
+
+      _getCatalogPages(catalogId) {
+        return this.PagesModel.getPages(catalogId);
+      }
+
+      _getCatalogPage(pageId) {
+        return this.PagesModel.get(pageId);
+      }
+
+      _searchCatalogPages(query) {
+        return this.PagesModel.search(query);
+      }
+  }
+</script>

@@ -1,0 +1,128 @@
+
+<dom-module id="app-price-form-country">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+      }
+      
+      [hidden] {
+        display: none;
+      }
+
+      .suggestions {
+        position: absolute;
+        padding: 15px;
+        background: white;
+        left: 0;
+        right: 0;
+        z-index: 100;
+      }
+
+      .suggestions a {
+        cursor: pointer;
+        color: var(--default-primary-color);
+        margin-right: 25px;
+      }
+
+      cork-typeahead {
+        display: block;
+      }
+
+    </style>
+
+    <cork-typeahead id="suggest" on-select="_useSuggestion">
+      <app-price-form-input 
+        id="input" 
+        value="{{value}}"
+        label$="[[label]]"
+        placeholder$="[[placeholder]]"
+        view-mode="[[viewMode]]">
+      </app-price-form-input>
+    </cork-typeahead>
+
+  </template>
+
+  <script>
+    class AppPriceFormCountry extends 
+        Mixin(Polymer.Element)
+        .with(EventMixin, SuggestMixin) {
+
+      static get is() { return 'app-price-form-country'; }
+      
+      static get properties() {
+        return {
+          value : {
+            type : String,
+            value : '',
+            notify : true
+          },
+          placeholder : {
+            type : String,
+            value : '',
+            notify : true
+          },
+          label : {
+            type : String,
+            value : ''
+          },
+          viewMode : {
+            type : Boolean,
+            value : false
+          }
+        }
+      }
+
+      get SUGGEST_KEY() {
+        return 'name-suggest'
+      }
+
+      ready() {
+        super.ready();
+        this.$.suggest.search = this.suggest.bind(this);
+      }
+
+      _useSuggestion(e) {
+        // var text = e.detail.value;
+        // var parts = this.$.input
+        //   .value
+        //   .split(' ')
+        //   .filter(val => val.length ? true : false);
+
+        // parts[parts.length-1] = text;
+        this.$.input.value = e.detail.value;
+      }
+
+      // called from typeahead widget
+      suggest(value) {
+        return new Promise((resolve, reject) => {
+          this.suggestOn = value;
+          if( this.suggestOn.length < 1 ) {
+            return resolve([]);
+          }
+          this.resolveSuggest = resolve;
+
+          this._suggestCountry(this.suggestOn);
+        });
+      }
+
+      _cancelHide(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      _onCountrySuggestUpdate(e) {
+        if( e.state !== 'loaded' ) return;
+        if( !this.resolveSuggest ) return;
+
+        this.resolveSuggest({results: e.payload, valueUsed: this.suggestOn});
+        this.resolveSuggest = null;
+      }
+
+    }
+
+    window.customElements.define(AppPriceFormCountry.is, AppPriceFormCountry);
+  </script>
+</dom-module>

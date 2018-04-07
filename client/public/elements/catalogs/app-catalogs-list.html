@@ -1,0 +1,309 @@
+<link rel="import" href="app-catalog-thumbnail.html">
+<link rel="import" href="app-catalogs-search-results.html">∂
+
+<!--
+  This is the main catalog list view.  Contains a list of catalog cards as well as 
+  the bottom (popup) section of the search results.
+-->
+<dom-module id="app-catalogs-list" >
+  <template>
+      <style include="shared-styles"></style>
+      <style>
+        :host {
+          display: block;
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom:0;
+        }
+
+        .loadingIndicator {
+          font-size: 16px;
+          text-align: center;
+          height: 60px;
+        }
+
+        paper-spinner-lite {
+          --paper-spinner-color: var(--accent-color);
+          margin-right: 20px;
+          vertical-align: middle;
+        }
+
+        .pages > .detail {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: rgba(0, 0, 0, .8);
+          color: white;
+          font-weight: 100;
+          padding: 5px;
+          opacity: 1;
+          transition: opacity 0.1s;
+        }
+
+        .detail {
+          padding: 5px;
+        }
+
+        .introText {
+          text-align: center; 
+          overflow: auto;
+          font-size: 16px;
+        }
+
+        .introText[info] {
+          background-color: var(--medium-background-color);
+        }
+
+        .introText > div {
+          padding: 0 10px;
+          max-width: 800px; 
+          text-align: left; 
+          margin: auto;
+        }
+
+        .introText[top] > div {
+          border-bottom: 1px solid var(--input-border-color);
+          margin-bottom: 15px;
+          padding-bottom: 15px;
+        }
+
+        paper-fab {
+          width: 32px; 
+          height: 32px;
+          padding: 5px;
+        }
+
+        [loading] {
+          text-align: center;
+          margin-top: 100px;
+        }
+
+        app-catalogs-search-results {
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          z-index: 50;
+        }
+
+        paper-material {
+          padding: 5px 10px;
+          margin: 5px;
+          background: white;
+        }
+
+        [flex] {
+          display: flex;
+        }
+
+        h2 {
+          color: var(--accent-color);
+          font-size: 21px;
+        }
+
+        cork-pagination {
+          --cork-color: var(--default-primary-color);
+        }
+      </style>
+
+      <!-- This is the popup section of the catalog search results -->
+      <!--<app-catalogs-search-results></app-catalogs-search-results>-->
+      <iron-media-query query="(max-width: 600px)" query-matches="{{isSmall}}"></iron-media-query>
+
+      <div class="layout" style="justify-content: center">
+
+        <div>
+          <div class="introText" top>
+            <div>
+
+              <h2>Sherry-Lehmann catalogs</h2>
+
+              <p>We’ve digitized hundreds of catalogs from the famed distributor, Sherry-Lehmann. 
+                From the late 1930s through the 1950s, these beautiful illustrated brochures 
+                list prices from thousands of now rare bottles, helping to chart America’s 
+                appreciation for wine from France, Spain, Italy, and beyond. Help us make it 
+                searchable by transcribing the information that you see on the pages.</p>
+
+            </div>
+          </div>
+
+          <cork-pagination 
+            text-mode 
+            items-per-page="[[itemsPerPage]]" 
+            current-index="[[results.start]]" 
+            total-results="[[results.total]]" 
+            loading="[[loading]]"
+            on-nav="_onPageNav" >
+          </cork-pagination>
+
+          <div style="min-height: 685px;">
+            <div hidden$="[[loading]]" style="max-width: 800px; text-align: center" >
+                <template is="dom-repeat" items="[[results.results]]" as="catalog">
+                  <app-catalog-thumbnail 
+                      style="display:inline-block"
+                      class="grid-thumbnail" 
+                      active="[[active]]"
+                      catalog="[[catalog]]"
+                      api-host="[[apiHost]]">
+                    </app-catalog-thumbnail>
+                </template>
+            </div>
+
+            <div hidden$="[[!loading]]" loading>
+              <paper-spinner-lite active></paper-spinner-lite>
+            </div>
+          </div>
+
+          <div style="text-align:center; padding-bottom: 25px">
+            <cork-pagination 
+              items-per-page="[[itemsPerPage]]" 
+              current-index="[[results.start]]" 
+              total-results="[[results.total]]" 
+              on-nav="_onPageNav" >
+            </cork-pagination>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="introText" info>
+        <div>
+          <div flex$="[[!isSmall]]">
+            <div style="flex:1">
+              <h2>Questions? Comments?</h2>
+              <p>If you have questions about the project or how to use this site, you can reach us 
+                at <a href="mailto:labelthis@ucdavis.edu">labelthis@ucdavis.edu.</a></p>
+              
+              <p>To learn more about opportunities to support this project or the UC Davis Library’s 
+                world-class wine archives, contact Jane Fortner, Assistant Director of Development, at 
+                <a href="mailto:jefortner@ucdavis.edu">jefortner@ucdavis.edu</a> or (530) 752-9842.</p>
+              
+              <p>For media inquiries, please contact Jessica Nusbaum, at 
+                <a href="mailto:jlnusbaum@ucdavis.edu">jlnusbaum@ucdavis.edu</a> or (530) 752-4145.</p>
+
+              <h2>Blog</h2>
+              <p>Checkout the UC Davis Library <a href="https://www.library.ucdavis.edu/category/uncorking-wine/">wine blog</a>.</p>
+            </div>
+            <div style="width:15px"></div>
+            <div style="flex:1">
+              <h2>The Team</h2>
+              <p>
+                <div><b>Peter Brantley</b>, Director of Online Strategy, UC Davis Libraries</div>
+                <div><b>Amy Azzarito</b>, Product Manager, Assistant Director of Online Strategy, UC Davis Libraries</div>
+                <div><b>Neil Weingarten</b>, Project Manager</div>
+                <div><b>Kimmy Hescock</b>, UX Designer</div>
+                <div><b>Pablo Defendini</b>, UX Designer</div>
+                <div><b>Quinn Hart</b>, Digital Applications Manager</div>
+                <div><b>Justin Merz</b>, Application Developer.</div>
+                <div><b>Axel Borg</b>, Project Curator and Subject Specialist</div>
+                <div>Special thanks to the Social Apps Lab at CITRIS.</div>
+              </p>
+
+              <h2>About Collection</h2>
+              <p>The Sherry-Lehmann catalogs are part of the 
+                <a href="http://www.oac.cdlib.org/findaid/ark:/13030/c8xk8hg8/?query=sherry+lehmann">Roy Brady collection</a>, 
+                held in the the <a href="https://www.library.ucdavis.edu/special-collections/">UC Davis Library, Special Collections.</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; padding: 25px 0;">
+        <h4>Powered By</h4>
+        <img src="/images/library.png" style="width: 200px" alt="UC Davis Library logo" />
+      </div>
+
+  </template>
+
+  <script>
+
+    class AppCatalogsList extends 
+        Mixin(Polymer.Element)
+        .with(EventBusMixin, AppStateMixin, CatalogsMixin, ConfigMixin) {
+
+      static get is() { return 'app-catalogs-list' }
+
+      static get properties() {
+        return {
+            /**
+             * Current list of catalog results
+             **/
+            results : {
+              type : Object,
+              value : function() {
+                return {
+                  init: true,
+                  start : 0,
+                  total : 0,
+                  results : []
+                }
+              }
+            },
+            
+            itemsPerPage : {
+              type : Number,
+              value : 12
+            },
+            loading : {
+              type : Boolean,
+              value : false
+            }
+          }
+      }
+
+      ready() {
+        super.ready();
+        this.loading = true;
+      }
+      
+      _onActive() {
+        if( !this.active ) return;
+
+        // on active, start a catalog search for current search state
+        if( !this.results.init ) return;
+
+        this._searchCatalogs({
+          offset : 0,
+          limit : 12
+        });
+      }
+
+      _onCatalogSearchUpdate(e) {
+        console.log(e);
+        if( e.state === 'loading' ) {
+          this.loading = true;
+          return;
+        }
+
+        if( e.state !== 'loaded' ) return;
+        
+        this.results = e.results;
+        this.loading = false;
+      }
+
+      _onPageNav(e) {
+        var offset = e.detail.startIndex;
+        this._search(offset);
+      }
+
+      _onAppStateUpdate(e) {
+        this.searchText = e.searchText;
+      }
+
+      _search(offset) {
+        this._searchCatalogs({
+            q : this.searchText,
+            exact : true,
+            limit : this.itemsPerPage,
+            offset : offset
+        });
+      }
+
+    }
+    window.customElements.define(AppCatalogsList.is, AppCatalogsList);
+  </script>
+
+</dom-module>

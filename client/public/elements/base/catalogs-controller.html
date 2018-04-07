@@ -1,0 +1,18 @@
+<script>
+  const CatalogsMixin = subclass =>
+  
+  class CatalogsController extends subclass {
+      constructor() {
+        super();
+        this._iocInject('CatalogsModel');
+      }
+
+      _searchCatalogs(query) {
+        return this.CatalogsModel.search(query);
+      }
+
+      _getCatalog(id) {
+        return this.CatalogsModel.get(id);
+      }
+  }
+</script>

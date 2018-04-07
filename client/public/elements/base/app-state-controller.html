@@ -1,0 +1,29 @@
+<script>
+  const AppStateMixin = subclass => 
+  
+    class AppStateController extends subclass {
+        constructor() {
+          super();
+          this._iocInject('AppStateModel');
+        }
+
+        ready() {
+          super.ready();
+          this._getAppState()
+              .then(e => this._onAppStateUpdate(e));
+        }
+
+        _setAppState(state) {
+          return this.AppStateModel.set(state);
+        }
+
+        _getAppState() {
+          return this.AppStateModel.get();
+        }
+
+        _onAppStateUpdate(e) {
+          // stub
+        }
+    }
+  
+</script>

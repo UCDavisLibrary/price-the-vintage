@@ -1,0 +1,92 @@
+<!--
+JM's custom dialog.  Looks like a paper-dialog acts like a Bootstrap Modal.
+-->
+<dom-module id="paper-dialog">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+      :host([active]) {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,.5);
+        overflow-x: hidden;
+        overflow-y: auto;
+        z-index: 10000;
+      }
+      .modal {
+        max-width: 600px;
+        margin: 30px auto;
+      }
+      .modal-inner {
+        box-shadow: 0 0 10px black;
+        padding: 10px;
+        background-color: white;
+        margin: 0 15px;
+      }
+      @media(min-width: 768px) {
+        .modal {
+          padding: 20px;
+        }
+      }
+      .buttons {
+        text-align: right;
+      }
+    </style>
+
+    <div class="modal">
+      <div class="modal-inner">
+        <slot></slot>
+      </div>
+    </div>
+    
+  </template>
+  <script>
+
+    class PaperDialog extends Polymer.Element {
+
+      static get is() { return 'paper-dialog'; }
+
+      static get properties() {
+        return {
+          active : {
+            type : Boolean,
+            value : false,
+            reflectToAttribute : true
+          }
+        }
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+
+        window.addEventListener('keyup', (e) => {
+          if( this.active && e.which === 27 ) {
+            this.close();
+          }
+        })
+
+        var buttons = this.querySelector('.buttons');
+        if( !buttons ) return;
+        buttons.style.textAlign = 'right';
+        buttons.style.marginTop = '15px';
+      }
+
+      open() {
+        document.body.style.overflow = 'hidden';
+        this.active = true;
+      }
+
+      close() {
+        document.body.style.overflow = '';
+        this.active = false;
+      }
+    }
+    window.customElements.define(PaperDialog.is, PaperDialog);
+  </script>
+</dom-module>

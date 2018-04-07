@@ -1,0 +1,72 @@
+
+<dom-module id="app-header-editing">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-icon-button {
+        color: white;
+      }
+    </style>
+
+    <div class="layout center">
+      <paper-icon-button icon="close" on-click="_cancelEdit"></paper-icon-button>
+      <h2 class="flex">[[title]]</h2>
+      <div>
+        <div id="icons">
+
+          <a href="#admin" hidden$="[[!userState.user.isAdmin]]"><paper-icon-button icon="gavel"></paper-icon-button></a>
+
+        </div>
+      </div>
+    </div>
+    
+  </template>
+  <script>
+
+    class AppHeaderEditing extends 
+        Mixin(Polymer.Element)
+        .with(EventBusMixin, AuthMixin, AppStateMixin) {
+      
+      static get is() { return 'app-header-editing'; }
+    
+      static get properties() {
+        return {
+            userState : {
+              type : Object,
+              value : function() {
+                return {};
+              }
+            },
+            title : {
+              type : String,
+              value : ''
+            }
+          }
+      }
+
+      _onAppStateUpdate(e) {
+        if( e.editingMark ) {
+          this.title = 'Edit Mark';
+        } else if( e.viewingMark ) {
+          this.title = 'View Mark';
+        }
+
+        this.catalogId = e.catalogId;
+        this.pageId = e.pageId;
+      }
+
+
+      _onAuthUpdate(e) {
+        this.userState = e;
+      }
+
+      _cancelEdit() {
+        this.emit('ui-set-location', this.catalogId + '/' + this.pageId);
+      }
+    }
+    window.customElements.define(AppHeaderEditing.is, AppHeaderEditing);
+  </script>
+</dom-module>

@@ -1,0 +1,29 @@
+
+<dom-module id="app-header-admin">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-icon-button {
+        color: white;
+      }
+    </style>
+
+    <div class="layout center">
+      
+      <div>
+        <a href="#"><paper-icon-button icon="arrow-back"></paper-icon-button></a>
+      </div>
+      <h2 class="flex" style="text-align: center">Admin Interface</h2>
+    </div>
+
+  </template>
+  <script>
+    class AppHeaderAdmin extends Polymer.Element {
+      static get is() { return 'app-header-admin'; }
+    }
+    window.customElements.define(AppHeaderAdmin.is, AppHeaderAdmin);
+  </script>
+</dom-module>
