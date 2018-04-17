@@ -1,4 +1,4 @@
-var BaseStore = require('cork-app-utils').BaseStore;
+var BaseStore = require('@ucd-lib/cork-app-utils').BaseStore;
 
 class MarksStore extends BaseStore {
 
@@ -86,7 +86,7 @@ class MarksStore extends BaseStore {
 
   setPendingMarkLoaded(pageId, markId, mark) {
     this.setMark({
-      state : this.store.STATE.LOADED,
+      state : mark ? this.STATE.LOADED : this.STATE.DELETED,
       markId, pageId,
       approved: false,
       payload : mark

@@ -1,5 +1,5 @@
-const firebase = require('firebase');
-const config = require('./config').firebase;
+let firebase = require('firebase');
+let config = require('./config').firebase;
 
 if( typeof window !== 'undefined' ) {
   if( window.location.host === 'ptv.library.ucdavis.edu' ||

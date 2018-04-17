@@ -1,9 +1,4 @@
-var ConfigStore = require('../stores/ConfigStore');
 var request = require('superagent');
-
-function getHost() {
-  return ConfigStore.data.apiHost;
-}
 
 // txtInfo in format: 10-20/196
 /**
@@ -29,6 +24,7 @@ function setResultInfo(txtInfo, result) {
   }
 }
 
+// TODO: switch this to iso fetch
 function escapeTSVector(text) {
   return request
     .post(`${getHost()}/rpc/strto_tsquery`)
@@ -36,7 +32,6 @@ function escapeTSVector(text) {
 }
 
 module.exports = {
-  getHost,
   setResultInfo,
   escapeTSVector
 }

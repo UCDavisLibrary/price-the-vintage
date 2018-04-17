@@ -14,10 +14,6 @@ config = {
 admin.initializeApp(config);
 firebaseWrapper(admin);
 
-/**
- * Setup redux store with fake auth account
- */
-
 AuthStore.data.user = {
   uid : '_test_'
 }

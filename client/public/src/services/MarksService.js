@@ -49,11 +49,12 @@ class MarksService extends BaseService {
    * 
    * @return {Promise}
    */
-  pendingMarkSearch(params = {}) {
+  pendingMarkSearch(params = {}, jwt) {
     return this.request({
       url : `${API_HOST}/pending_mark_index`,
       fetchOptions : {
         headers : {
+          Authorization: `Bearer ${jwt}`,
           Prefer: 'count=exact'
         },
         qs: params
@@ -183,7 +184,7 @@ class MarksService extends BaseService {
       state : mark ? this.store.STATE.SAVING : this.store.STATE.DELETING,
       markId, pageId,
       approved: false,
-      data : mark
+      payload : mark
     });
 
     try {
@@ -196,14 +197,14 @@ class MarksService extends BaseService {
         state : mark ? this.store.STATE.LOADED : this.store.STATE.DELETED,
         markId, pageId,
         approved: false,
-        data : mark
+        payload : mark
       });
     } catch(e) {
       this.store.setMark({
         state : mark ? this.store.STATE.SAVE_ERROR : this.store.STATE.DELETE_ERROR,
         markId, pageId, error,
         approved: false,
-        data : mark,
+        payload : mark,
         error : e
       });
     }
@@ -225,7 +226,7 @@ class MarksService extends BaseService {
   votePending(userId, pageId, markId, vote) {
     return firebase
       .database()
-      .ref(`marks/${pageId}/${markId}/votes/${uid}`)
+      .ref(`marks/${pageId}/${markId}/votes/${userId}`)
       .set({type: vote});
   }
 
@@ -255,7 +256,14 @@ class MarksService extends BaseService {
     return this.store.data.byId[markId];
   }
 
-  listenToPage(pageId) {
+  /**
+   * @method listenToPageMarks
+   * @description This will setup a firebase listener.  Will listen for child 'add',
+   * 'remove' and 'change' events.  Will ignore stale tmp marks.
+   * 
+   * @param {string} pageId - page id to listen for
+   */
+  listenToPageMarks(pageId) {
     if( this.refs[pageId] ) return;
 
     var ref = firebase.database().ref(`marks/${pageId}`);
@@ -264,6 +272,116 @@ class MarksService extends BaseService {
     ref.on('child_added', (snapshot, key) => this._onPageChildAdded(pageId, snapshot, key));
     ref.on('child_changed', (snapshot, key) => this._onPageChildChanged(pageId, snapshot, key));
     ref.on('child_removed', (snapshot, key) => this._onPageChildRemoved(pageId, snapshot, key));
+  }
+
+  listenToMark(pageId, markId) {
+    if( this.refs[markId] ) return;
+
+    var ref = firebase.database().ref(`marks/${pageId}/${markId}`);
+    this.refs[markId] = ref;
+
+    ref.on('value', (snapshot) => this._onMarkChanged(pageId, markId, snapshot));
+  }
+
+  /**
+   * @method updateTempMark
+   * @description Set or update a tmp user mark.  Will set
+   * disconnect handlers to remove tmp mark if user connection
+   * is lost
+   * 
+   * @param {Object} update firebase multipath update object
+   * 
+   * @returns {Promise}
+   */
+  async updateTempMark(update) {
+    await this.setTmpMarkDisconnectRefs(update);
+    return firebase
+      .database()
+      .ref()
+      .update(update)
+  }
+
+  /**
+   * @method setTmpMarkDisconnectRefs
+   * @description If we lose connection, make sure that activity paths 
+   * are set to null.
+   * 
+   * @param {Object} update - Firebase multi-path update object 
+   * 
+   * @returns {Promise}
+   */
+  async setTmpMarkDisconnectRefs(update = {}) {
+    // cancel any current disconnectRefs
+    for( var i = 0; i < this.model.tmpMark.disconnect.length; i++  ) {
+      let key = this.model.tmpMark.disconnect[i];
+      await firebase
+        .database()
+        .ref(key)
+        .onDisconnect()
+        .cancel()
+    }
+    this.model.tmpMark.disconnect = [];
+
+    var count = 0;
+    var total = Object.keys(update).length;
+    
+    if( total === 0 ) return;
+
+    // set new disconnectRefs
+    for( var key in update ) {
+      await firebase
+        .database()
+        .ref(key)
+        .onDisconnect()
+        .set(null);
+      this.model.tmpMark.disconnect.push(key)
+    }
+  }
+
+  /**
+   * @method unlistenRef
+   * @description Stop listening to firebase reference.  Mostly called from cleanup().
+   * 
+   * @param {string} pageId - page id to stop listening to
+   */
+  unlistenRef(id) {
+    if( !this.refs[id] ) return;
+
+    if( this.log ) {
+      console.warn(`Unlistening to mark(s): ${id}`);
+    }
+
+    this.refs[id].off();
+    delete this.refs[id];
+  }
+
+  /**
+   * @method cleanup
+   * @description After interested parties request, this will be called.  It will let you know
+   * all the resource ids that elements are still interested in.  You are free to 
+   * remove any Firebase Reference that is NOT in this list.
+   * 
+   * @param {Object} interested - hash of interested resource ids
+   */
+  cleanup(interested = {}) {
+    for( var id in this.refs ) {
+      if( !interested[id] ) {
+        this.unlistenRef(id);
+      }
+    } 
+  }
+
+  _onMarkChanged(pageId, markId, snapshot) {
+    var val = snapshot.val();
+
+    if( this.model.isStale(val) ) {
+      if( this.log ) {
+        console.log(`Ignoring stale mark ${markId}`);
+      }
+      return;
+    }
+
+    this.store.setPendingMarkLoaded(pageId, markId, val);
   }
 
   _onPageChildAdded(pageId, childSnapshot, prevChildKey) {
@@ -294,7 +412,7 @@ class MarksService extends BaseService {
     this.store.setPendingMarkLoaded(pageId, markId, val);
   }
 
-  _onPageChildRemoved(childSnapshot, prevChildKey) {
+  _onPageChildRemoved(pageId, childSnapshot, prevChildKey) {
     var markId = childSnapshot.key;
 
     this.store.setMark({

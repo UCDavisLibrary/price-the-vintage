@@ -14,9 +14,10 @@ class MarksModel extends BaseModel {
   constructor() {
     super();
 
-
     this.store = MarksStore;
     this.service = MarksService;
+    // the mark service does some stale mark checking, method
+    // included in this class...
     MarksService.model = this;
 
     // Used for hanging temp marks.  anything over 5min old 
@@ -29,27 +30,11 @@ class MarksModel extends BaseModel {
       id : uuid.v4(),
       // page id
       pageId : '',
-      // disconnect references
-      disconnect : {}
+      // disconnect keys
+      disconnect : []
     }
 
-    // open firebase refs
-    this.refs = {};
-
-    // cleanup hanging sessions
-    this.cleanupSessions();
-
-    this.user = {};
-
-    // when auth state changes, if we have set a location but
-    // not sent to FB cause we had no userId, do it now
-    this.MasterController.on('auth-update', (e) => {
-      // also, cleanup hanging sessions
-      this.cleanupSessions();
-    });
-
     setInterval(this.checkStaleMarks.bind(this), 30 * 1000);
-
     this.register('MarksModel');
   }
 
@@ -62,10 +47,6 @@ class MarksModel extends BaseModel {
    * @returns {Promise} 
    */
   async cleanupStaleTmpMarks(uid) {
-    // get the current User ID and database namespace
-    var uid = this.getUser().uid;
-    if( !uid ) return;
-
     // grab last know activity from user object in FB
     let snapshot = await this.service.getTmpMarks();
 
@@ -99,48 +80,39 @@ class MarksModel extends BaseModel {
 
   /**
    * @method setPending
-   * @description Create or update an existing mark
+   * @description Create or update an existing mark.  Mark should
+   * contain user (userid) and isAnonumous flag
    * 
-   * @param {String} userId - user id
    * @param {string} pageId - page id to add mark to 
    * @param {string|object} markId - mark id if update, or mark object if new mark
    * @param {object} [mark] - mark data if update
    * 
    * @return {Promise}
    */
-  async setPending(userId, pageId, markId, mark) {
-    // user must be logged in to create a mark
-    if( !userId ) {
-      throw(new Error('You must be logged in to create a mark'));
-    }
-
+  async setPending(pageId, markId, mark) {
     // we are creating a mark
     if( typeof markId === 'object' ) {
       mark = markId;
       markId = uuid.v4();
     }
 
-    // make sure the current userId is set
-    if( !mark.user ) {
-      mark.user = uid;
-      mark.isAnonymous = user.isAnonymous ? true : false;
-    }
-
     // set timestamps
     if( !mark.created ) mark.created = Date.now();
     mark.updated = Date.now();
 
-    return await this.service.setFirebaseMark(pageId, markId, mark);    
+    await this.service.setFirebaseMark(pageId, markId, mark);
+
+    return {markId, mark};
   }
 
   /**
    * @method votePending
    * @description Vote a page mark up or down
    * 
-   * @param {String} userId - user id
-   * @param {string} pageId - page id for mark
-   * @param {string} markId - mark id to vote on
-   * @param {string} vote - vote type.  Should be 'up' or 'down'
+   * @param {String} userId user id
+   * @param {string} pageId page id for mark
+   * @param {string} markId mark id to vote on
+   * @param {string} vote vote type.  Should be 'up' or 'down'
    * 
    * @return {Promise} firebase response
    */
@@ -157,13 +129,13 @@ class MarksModel extends BaseModel {
    * @method removePending
    * @description Remove a mark
    * 
-   * @param {string} pageId - page id for mark
-   * @param {string} markId - mark id to remove
+   * @param {string} pageId page id for mark
+   * @param {string} markId mark id to remove
    * 
    * @returns {Promise} resolves to mark state
    */
   removePending(pageId, markId) {
-    return this.setFirebaseMark(parkId, markId, null);    
+    return this.service.setFirebaseMark(pageId, markId, null);    
   }
 
   /**
@@ -177,7 +149,7 @@ class MarksModel extends BaseModel {
     await this.getApprovedMarks(pageId);
 
     if( !this.refs[pageId] ) {
-      this.listenToPage(pageId);
+      this.listenToPageMarks(pageId);
     }
 
     var marks = this.store.data.byId;
@@ -205,55 +177,52 @@ class MarksModel extends BaseModel {
   }
 
   /**
-   * @method listenToPage
+   * @method listenToPageMarks
    * @description This will setup a firebase listener.  Will listen for child 'add',
    * 'remove' and 'change' events.  Will ignore stale tmp marks.  Fires
    * updates to redux.
    * 
    * @param {string} pageId - page id to listen for
    */
-  listenToPage(pageId) {
-    this.service.listenToPage(pageId);
+  listenToPageMarks(pageId) {
+    this.service.listenToPageMarks(pageId);
   }
 
+  /**
+   * @method listenToMark
+   * @description This will setup a firebase listener.  Will listen for change 
+   * events for a specific mark
+   * 
+   * @param {string} pageId - page id to listen for
+   * @param {string} pageId - mark id to listen for
+   */
   listenToMark(pageId, markId) {
-    if( this.refs[markId] ) return;
-
-    if( this.log ) {
-      console.warn('Setting up page marks listener for pageId: '+pageId+', markId: '+markId);
-    }
-
-    var ref = firebase.database().ref(`marks/${pageId}/${markId}`);
-    this.refs[markId] = ref;
-
-    ref.on('value', (snapshot) => {
-      var val = snapshot.val();
-
-      if( this.isStale(val) ) {
-        if( this.log ) {
-          console.log(`Ignoring stale mark ${markId}`);
-        }
-        return;
-      }
-
-      this.store.setPendingMarkLoaded(pageId, markId, val);
-    });
+    this.service.listenToMark(pageId, markId);
   }
 
+  /**
+   * @method getApprovedMarks
+   * @description Get approved marks for page
+   * 
+   * @param {string} pageId - page id to get marks for
+   * 
+   * @return {Promise}
+   */
   getApprovedMarks(pageId) {
     return this.service.getApprovedMarks(pageId);
   }
 
   /**
-   * Set or update a tmp user mark
+   * @method updateTempMark
+   * @description Set or update a tmp user mark
    * 
-   * @param {string} pageId - page id for mark
-   * @param {array} xy - array for the mark
+   * @param {String} uid user id
+   * @param {String} pageId page id for mark
+   * @param {Array} xy array for the mark
+   * 
+   * @returns {Promise}
    */
-  updateTempMark(pageId, xy) {
-    var uid = this.getUser().uid;
-    if( !uid ) return;
-    
+  updateTempMark(uid, pageId, xy) {
     var tmpMark = {
       isTemp : true,
       user : uid,
@@ -262,140 +231,69 @@ class MarksModel extends BaseModel {
       xy : xy
     }
 
-    var update = {};
-    update[`/users/${uid}/tempMarks/${this.tmpMark.id}`] = tmpMark;
-    update[`/marks/${pageId}/${this.tmpMark.id}`] = tmpMark;
+    var update = {
+      [`/users/${uid}/tempMarks/${this.tmpMark.id}`] : tmpMark,
+      [`/marks/${pageId}/${this.tmpMark.id}`] : tmpMark
+    };
 
-    if( this.tmpMark.pageId ) {
+    if( this.tmpMark.pageId && this.tmpMark.pageId !== tmpMark.pageId ) {
       update[`/marks/${this.tmpMark.pageId}/${this.tmpMark.id}`] = null;
     }
 
     this.tmpMark.pageId = pageId;
-
-    // setup disconnect information before we do anything
-    // this will wait for verification that disconnect ref is set.
-    this.setDisconnectRefs(update, () => {
-
-      // update FB
-      firebase
-        .database()
-        .ref()
-        .update(update)
-        .then((ref) => {
-          // TODO: this is when we have really saved...
-        })
-        .catch((error) => {
-          throw error;
-        });
-    });
+    return this.service.updateTempMark(update);
   }
 
   /**
-   * If we lose connection, make sure that activity paths are set to null.
+   * @method removeTempMark
+   * @description Remove a tmp user mark
    * 
-   * @param {Object} update - Firebase multi-path update object 
+   * @param {String} uid user id
    */
-  setDisconnectRefs(update, callback) {
-    // cancel any current disconnectRefs
-    for( var key in this.tmpMark.disconnect ) {
-      this.tmpMark.disconnect[key].cancel();
-    }
-
-    var count = 0;
-    var total = Object.keys(update).length;
+  async removeTempMark(uid) {
+    if( !this.tmpMark.pageId ) return;
     
-    if( total === 0 && callback ) callback();
-    
-    var onComplete = function() {
-      count++;
-      if( count === total && callback ) callback();
-    }
+    await this.service.setTmpMarkDisconnectRefs();
 
-    // set new disconnectRefs
-    for( var key in update ) {
-      var ref = firebase.database().ref(key).onDisconnect();
-      ref.set(null, onComplete);
-      this.tmpMark.disconnect[key] = ref;
-    }
+    let removeUpdate = {
+      [`/users/${uid}/tempMarks/${this.tmpMark.id}`] : null,
+      [`/marks/${this.tmpMark.pageId}/${this.tmpMark.id}`] : null
+    };
+
+    this.tmpMark.pageId = '';
+
+    return firebase
+      .database()
+      .ref()
+      .update(removeUpdate)   
   }
 
   /**
-   * Remove a tmp user mark
+   * @method pendingMarkSearch
+   * @description Search pending marks
    * 
+   * @param {Object} params - postgrest search params
+   * @param {String} jwt - access token
    */
-  removeTempMark() {
-    return new Promise((resolve, reject) => {
-      if( !this.tmpMark.pageId ) return resolve();
-
-      var uid = this.getUser().uid;
-      if( !uid ) return resolve();
-
-      this.setDisconnectRefs({}, () => {
-        var removeUpdate = {};
-
-        removeUpdate[`/users/${uid}/tempMarks/${this.tmpMark.id}`] = null;
-        removeUpdate[`/marks/${this.tmpMark.pageId}/${this.tmpMark.id}`] = null;
-
-        this.tmpMark.pageId = '';
-
-        // set new disconnectRefs
-        firebase
-          .database()
-          .ref()
-          .update(removeUpdate)
-          .then(resolve)
-          .catch(reject);
-      });
-    });
-   
+  pendingMarkSearch(params, jwt) {
+    return this.service.pendingMarkSearch(params, jwt);
   }
 
   /**
-   * Search pending marks
-   * 
-   * @param {object} params - postgrest search params
-   */
-  pendingMarkSearch(params) {
-    if( !this.getUser().auth0Token ) {
-      throw new Error('Must have a token');
-    }
-
-    return this.service.pendingMarkSearch(params);
-  }
-
-  /**
-   * Stop listening to firebase reference.  Mostly called from cleanup().
-   * 
-   * @param {string} pageId - page id to stop listening to
-   */
-  unlisten(id) {
-    if( !this.refs[id] ) return;
-
-    if( this.log ) {
-      console.warn(`Unlistening to mark(s): ${id}`);
-    }
-
-    this.refs[id].off();
-    delete this.refs[id];
-  }
-
-  /**
-   * After interested parties request, this will be called.  It will let you know
+   * @method cleanup
+   * @description After interested parties request, this will be called.  It will let you know
    * all the resource ids that elements are still interested in.  You are free to 
    * remove any Firebase Reference that is NOT in this list.
    * 
-   * @param {object} interested - hash of interested resource ids
+   * @param {Object} interested - hash of interested resource ids
    */
   cleanup(interested) {
-    for( var id in this.refs ) {
-      if( !interested[id] ) {
-        this.unlisten(id);
-      }
-    } 
+    this.service.cleanup(interested);
   }
 
   /**
-   * Check if a tmp mark is stale
+   * @method isStale
+   * @description Check if a tmp mark is stale
    * 
    * @param {object} mark - tmp mark 
    */
@@ -409,7 +307,8 @@ class MarksModel extends BaseModel {
   }
 
   /**
-   * Check for stale tmp marks
+   * @method checkStaleMarks
+   * @description Check for stale tmp marks
    */
   checkStaleMarks() {
     var marks = this.store.data.byId;
