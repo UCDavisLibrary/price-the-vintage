@@ -15,15 +15,27 @@ if( typeof window !== 'undefined' ) {
 
 console.log(`Using firebase database: ${config.databaseURL}`);
 
+let init = false;
 
-firebase.initializeApp(config);
 
 /**
  * Inject method is for command line utility allowing you to 
  * inject the firebase-admin library if you want.
  */
 module.exports = function(inject) {
-  if( inject ) firebase = inject;
+  if( inject ) {
+    // destory current context first
+    if( init ) firebase.app.delete();
+
+    firebase = inject;
+    init = true;
+  } else if( !init ) {
+    console.log('here');
+    firebase.initializeApp(config);
+    init = true;
+  }
+
+
   return firebase;
 }
 

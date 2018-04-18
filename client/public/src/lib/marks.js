@@ -48,7 +48,7 @@ class MarksModel extends BaseModel {
    */
   async cleanupStaleTmpMarks(uid) {
     // grab last know activity from user object in FB
-    let snapshot = await this.service.getTmpMarks();
+    let snapshot = await this.service.getTmpMarks(uid);
 
     var marks = snapshot.val();
     if( !marks ) return; // noop
@@ -87,7 +87,7 @@ class MarksModel extends BaseModel {
    * @param {string|object} markId - mark id if update, or mark object if new mark
    * @param {object} [mark] - mark data if update
    * 
-   * @return {Promise}
+   * @return {Promise} resolves to mark state
    */
   async setPending(pageId, markId, mark) {
     // we are creating a mark
@@ -102,7 +102,7 @@ class MarksModel extends BaseModel {
 
     await this.service.setFirebaseMark(pageId, markId, mark);
 
-    return {markId, mark};
+    return this.store.data.byId[markId];
   }
 
   /**
@@ -146,11 +146,10 @@ class MarksModel extends BaseModel {
    * @param {string} pageId - page id to listen for
    */
   async getPageMarks(pageId) {
-    await this.getApprovedMarks(pageId);
+    let resp = await this.getApprovedMarks(pageId);
+    await this.service.getPendingMarks(pageId);
 
-    if( !this.refs[pageId] ) {
-      this.listenToPageMarks(pageId);
-    }
+    this.listenToPageMarks(pageId);
 
     var marks = this.store.data.byId;
     var currentMarks = [];
@@ -174,6 +173,21 @@ class MarksModel extends BaseModel {
    */
   getPendingMark(pageId, markId) {
     return this.service.getPendingMark(pageId, markId);
+  }
+
+  /**
+   * @method approveMark 
+   * @description Approve mark (admin)
+   * 
+   * @param {object} mark - mark data
+   * @param {string} markId - mark id
+   * @param {string} pageId - page id
+   * @param {string} jwt - user token
+   * 
+   * @returns {Promise}
+   */
+  approveMark(mark, markId, pageId, jwt) {
+    return this.service.approveMark(mark, markId, pageId, jwt);
   }
 
   /**
@@ -319,7 +333,7 @@ class MarksModel extends BaseModel {
 
       if( mark.state !== 'loaded' ) continue;
 
-      if( this.isStale(mark.data) ) {
+      if( this.isStale(mark.payload) ) {
         if( this.log ) {
           console.warn(`Removing stale tmp mark: ${markId}`);
         }

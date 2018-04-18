@@ -27,17 +27,14 @@ class MarksService extends BaseService {
   getApprovedMarks(pageId) {
     return this.request({
       url : `${API_HOST}/marks`,
-      fetchOptions : {
-        qs : {
-          page_id: `eq.${pageId}`
-        }
+      qs : {
+        page_id: `eq.${pageId}`
       },
       onLoading : promise => this.store.setApprovedByPageLoading(pageId, promise), 
-      onSuccess : resp => {
-        let body = JSON.parse(resp.body);
-        this.store.setApprovedByPageLoaded(pageId, body.map(fromPgMark))
+      onLoad : (result) => {
+        this.store.setApprovedByPageLoaded(pageId, result.body.map(fromPgMark));
       },
-      onError : e => this.store.setApprovedByPageError(pageId, e)
+      onError : e => console.error(e)
     });
   }
 
@@ -61,7 +58,7 @@ class MarksService extends BaseService {
       },
       onLoading : promise => this.store.setPendingSearchLoading(params, promise),
       onError : e => this.store.setPendingSearchError(e, params),
-      onSuccess : (resp) => {
+      onLoad : (resp) => {
         var result = {
           results : JSON.parse(resp.body)
         };
@@ -97,35 +94,14 @@ class MarksService extends BaseService {
         body : JSON.stringify(pgMark)
       },
       onLoading : promise => {
-        this.store.setMark({
-          state : this.store.STATE.SAVING,
-          markId,
-          pageId,
-          approved : true,
-          data : mark,
-          request : promise
-        });
+        this.store.setApprovingMarkLoading(markId, pageId, mark, promise);
       },
       onError : error => {
-        this.store.setMark({
-          state : this.store.STATE.SAVE_ERROR,
-          error,
-          markId,
-          pageId,
-          approved : true,
-          data : mark 
-        });
+        this.setApprovingMarkError(markId, pageId, mark, error);
       },
-      onSuccess : resp => {
-        // TODO: check status code?!
-
-        this.store.setMark({
-          state : this.store.STATE.LOADED,
-          markId,
-          pageId,
-          approved : true,
-          data : mark 
-        });
+      onLoad : resp => {
+        this.store.setApprovingMarkLoaded(markId, pageId, mark);
+        this.setFirebaseMark(pageId, markId, null);
       }
     });
   }
@@ -254,6 +230,27 @@ class MarksService extends BaseService {
     }
 
     return this.store.data.byId[markId];
+  }
+
+  /**
+   * @method getPendingMarks
+   * @description get all pending marks for a page
+   * 
+   * @param {String} pageId page id
+   * 
+   * @returns {Promise} resolves to Array of mark states
+   */
+  async getPendingMarks(pageId) {
+    let resp = await firebase.database().ref(`marks/${pageId}`).once('value')
+    resp = resp.val() || {};
+
+    let marks = [];
+    for( var markId in resp ) {
+      this.store.setPendingMarkLoaded(pageId, markId, resp[markId]);
+      marks.push(this.store.data.byId[markId]);
+    }
+
+    return marks;
   }
 
   /**
@@ -432,6 +429,8 @@ class MarksService extends BaseService {
  * Transfer from firebase/app pending mark structure to pg mark structure
  */
 function toPgMark(mark, markId, pageId) {
+  mark.xy = mark.xy || [0,0];
+
   return {
     mark_id : markId,
     page_id : pageId,

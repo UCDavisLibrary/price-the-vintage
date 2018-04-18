@@ -11,16 +11,15 @@ config = {
   credential: admin.credential.cert(serviceAccount)
 };
 
-
+// so we can text connecting/disconnecting from firebase
 admin.connect = function() {
   admin.initializeApp(config);
 }
-
-admin.disconnect = function() {
+admin.disconnect = async function() {
+  await admin.database().goOffline();
   return admin.app().delete();
 }
 
-admin.connect();
 firebaseWrapper(admin);
 
 global.TEST_UID = '_test_';

@@ -1,26 +1,36 @@
 const assert = require('assert');
 const firebase = require('../utils/firebase');
 const marks = require('../../public/src/lib/marks');
+const jwt = require('../utils/jwt');
 
-let testPageId = '_testing_framework_123_';
+let testPageId = '00000000-0000-0000-0000-000000000001';
 
 let pendingMark = {
   name : 'foo',
-  type : 'red',
+  wineType : 'Still',
+  color : 'Red',
+  section : 'test',
   user : TEST_UID,
   isAnonymous : false
 }
 let testMarkId = '';
+let testUser = 'tester@ucdavis.edu';
+
+let token = jwt(testUser);
 
 describe('marks library', function() {
 
   before(async () => {
+    firebase.connect();
+
     await firebase.database().ref(`marks/${testPageId}`).set(null);
+    // clear marks db
+    await marks.service.clearApprovedTestMarks(token);
   });
 
   it(`should set a pending mark`, async () => {
-    let result = await marks.setPending(testPageId, pendingMark);
-    testMarkId = result.markId;
+    let mark = await marks.setPending(testPageId, pendingMark);
+    testMarkId = mark.id;
 
     assert.notEqual(testMarkId, '');
   });
@@ -91,10 +101,8 @@ describe('marks library', function() {
   it('should listen to page marks', () => {
     return new Promise(async (resolve, reject) => {
       let eventCount = 0;
-      // note, you see multiple 'loaded' and 'deleted' event because the update 
-      // function fires one and the page listener fires the other
-      let eventOrder = ['saving', 'loaded', 'loaded', 'saving', 'loaded', 'loaded',
-      'deleting', 'deleted', 'deleted'];
+      let eventOrder = ['saving', 'loaded', 'saving', 'loaded',
+      'deleting', 'deleted'];
       
       marks.MasterController.on(marks.store.events.MARKS_UPDATE, (e) => {
         assert.equal(e.state, eventOrder[eventCount]);
@@ -110,8 +118,8 @@ describe('marks library', function() {
       assert.notEqual(marks.service.refs[testPageId], undefined);
 
       // set a new mark
-      let result = await marks.setPending(testPageId, pendingMark);
-      testMarkId = result.markId;
+      let mark = await marks.setPending(testPageId, pendingMark);
+      testMarkId = mark.markId;
       pendingMark.bottle = 'tall';
 
       // update new mark
@@ -119,6 +127,12 @@ describe('marks library', function() {
 
       // delete new mark
       await marks.removePending(testPageId, testMarkId);
+    });
+  });
+
+  it('should wait a sec so we don\'t pollute next test', () => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), 1000);
     });
   });
 
@@ -138,6 +152,7 @@ describe('marks library', function() {
         eventCount++;
         if( eventCount === eventOrder.length ) {
           marks.MasterController.removeAllListeners(marks.store.events.MARKS_UPDATE);
+          marks.cleanup();
           resolve();
         }
       });
@@ -155,9 +170,101 @@ describe('marks library', function() {
     });
   });
 
+  it('let you approve a mark', function() {
+    // check event order is as we expect
+    return new Promise(async (resolve, reject) => {
+      let eventCount = 0;
+      let eventOrder = [{
+        state : 'saving', 
+        approved : false
+      }, {
+        state : 'loaded', 
+        approved : false
+      }, {
+        state: 'saving', 
+        approved : true
+      }, {
+        state : 'loaded',
+        approved : true
+      }];
+      
+      marks.MasterController.on(marks.store.events.MARKS_UPDATE, (e) => {
+        assert.equal(e.state, eventOrder[eventCount].state);
+        assert.equal(e.approved, eventOrder[eventCount].approved);
+
+        eventCount++;
+        if( eventCount === eventOrder.length ) {
+          marks.MasterController.removeAllListeners(marks.store.events.MARKS_UPDATE);
+          marks.cleanup();
+          resolve();
+        }
+      });
+
+      // add mark
+      let mark = await marks.setPending(testPageId, pendingMark);
+
+      // now approve mark
+      response = await marks.approveMark(mark.payload, mark.id, mark.pageId, token);
+    });
+  });
+
+  it('let you get all marks for page (pending and approved)', async function() {
+    // add another mark so we have on pending (firebase) and one
+    // approved (postgresql)
+    let pm = await marks.setPending(testPageId, pendingMark);
+
+    let resp = await marks.getPageMarks(testPageId);
+    // we are only checking loaded marks.  the tests above will leave
+    // deleted stubs in state store
+    resp = resp.filter(mark => mark.state === 'loaded');
+
+    assert.equal(resp.length, 2);
+    assert.equal(resp.findIndex(mark => mark.approved === true) > -1 , true);
+    assert.equal(resp.findIndex(mark => mark.approved === false) > -1 , true);
+  });
+
+  it('should check and remove stale tmp marks', async function() {
+    // first, let's cleanup from prior tests
+    await firebase.database().ref(`marks/${testPageId}`).set(null);
+    marks.store.data.byId = {};
+
+    // now lets add two tmp marks
+    await marks.setPending(testPageId, Object.assign({isTemp: true}, pendingMark));
+    await marks.setPending(testPageId, Object.assign({isTemp: true}, pendingMark));
+
+    // verify we have two marks
+    let loaded = [];
+    for( var key in marks.store.data.byId ) {
+      if( marks.store.data.byId[key].state === 'loaded' ) {
+        loaded.push(marks.store.data.byId[key]);
+      }
+    }
+    assert.equal(loaded.length, 2);
+
+    // now set our stale time to 0
+    marks.CLEANUP_TIME = 0;
+
+    // now tell it to check for stale marks
+    marks.checkStaleMarks();
+
+    // no marks should be in a loaded state
+    loaded = [];
+    for( var key in marks.store.data.byId ) {
+      if( marks.store.data.byId[key].state === 'loaded' ) {
+        loaded.push(marks.store.data.byId[key]);
+      }
+    }
+    assert.equal(loaded.length, 0);
+  });
+
   after(async () => {
     // clean test page
     await firebase.database().ref(`marks/${testPageId}`).set(null);
+
+    // clear marks db
+    await marks.service.clearApprovedTestMarks(token);
+
+    await firebase.disconnect();
   });
 
 });

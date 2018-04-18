@@ -1,4 +1,5 @@
-var BaseStore = require('@ucd-lib/cork-app-utils').BaseStore;
+const BaseStore = require('@ucd-lib/cork-app-utils').BaseStore;
+const deepEqual = require('fast-deep-equal');
 
 class MarksStore extends BaseStore {
 
@@ -84,6 +85,33 @@ class MarksStore extends BaseStore {
     this.emit(this.events.MARKS_APPROVED, this.data.approvedPageRequestState[pageId]);
   }
 
+  setApprovingMarkLoading(markId, pageId, mark, request) {
+    this.setMark({
+      state : this.STATE.SAVING,
+      markId, pageId, request,
+      approved : true,
+      payload : mark
+    });
+  }
+
+  setApprovingMarkError(markId, pageId, mark, error) {
+    this.setMark({
+      state : this.STATE.SAVE_ERROR,
+      error, markId, pageId,
+      approved : false, 
+      payload : mark 
+    });
+  }
+
+  setApprovingMarkLoaded(markId, pageId, mark) {
+    this.setMark({
+      state : this.STATE.LOADED,
+      markId, pageId,
+      approved : true, 
+      payload : mark 
+    });
+  }
+
   setPendingMarkLoaded(pageId, markId, mark) {
     this.setMark({
       state : mark ? this.STATE.LOADED : this.STATE.DELETED,
@@ -101,8 +129,8 @@ class MarksStore extends BaseStore {
    * @param {string} mark.id - mark id
    * @param {string} mark.pageId - page id
    * @param {boolean} mark.approved - is mark approved
-   * @param {object} mark.data - actual mark data
-   * @param {object} mark.error - actual mark data
+   * @param {object} mark.payload - actual mark data
+   * @param {object} mark.error - error object
    */
   setMark(mark) {
     if( !mark.state ) {
@@ -112,11 +140,21 @@ class MarksStore extends BaseStore {
     if( !mark.id ) mark.id = mark.markId;
     if( !mark.markId ) mark.markId = mark.id;
 
-    var newData = {
-      [mark.id] : mark
-    };
+    // check that this isn't a delete pending mark event after
+    // a user has approved a mark
+    if( this.data.byId[mark.id] && 
+      this.data.byId[mark.id].approved && !mark.approved ) {
+      return; 
+    }
 
-    this.data.byId = Object.assign({}, this.data.byId, newData);
+    // check that something actually changed...
+    if( this.data.byId[mark.id] && 
+        this.data.byId[mark.id].state === mark.state &&
+        deepEqual(this.data.byId[mark.id], mark) ) {
+      return; // no change, skip event
+    }
+
+    this.data.byId[mark.id] = mark;
     this.emitMarkUpdateEvent(mark.id);
   }
 

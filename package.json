@@ -24,6 +24,7 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
+    "async_hooks": "^1.0.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.1",
