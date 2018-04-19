@@ -1,5 +1,5 @@
-var BaseStore = require('cork-app-utils').BaseStore;
-
+const BaseStore = require('@ucd-lib/cork-app-utils').BaseStore;
+const deepEqual = require('fast-deep-equal');
 
 class CatalogsStore extends BaseStore {
 
@@ -19,76 +19,69 @@ class CatalogsStore extends BaseStore {
     }
   }
 
-
-  setData(id, catalog) {
+  setCatalogLoading(id, promise) {
     this.data.byId[id] = {
+      id, 
+      request : promise,
+      state: this.STATE.LOADING
+    };
+
+    this.emit(this.events.CATALOG_UPDATE, this.data.byId[id]);
+  }
+
+  setCatalogLoaded(id, catalog) {
+    catalog = {
       id: id, 
       payload: catalog, 
       state: this.STATE.LOADED
     };
 
+    // nothing changed
+    if( this.data.byId[id] && 
+        this.data.byId[id].state === this.STATE.LOADED &&
+        deepEqual(this.data.byId[id], catalog) ) {
+      return;
+    }
+
+    this.data.byId[id] = catalog;
     this.emit(this.events.CATALOG_UPDATE, this.data.byId[id]);
   }
 
-  setError(id, error) {
+  setCatalogError(id, error) {
     this.data.byId[id] = {
-      id: id, 
-      error: error, 
-      state: 'error'
+      id, error, 
+      state: this.STATE.ERROR
     };
 
     this.emit(this.events.CATALOG_UPDATE, this.data.byId[id]);
   }
 
-  setState(id, state) {
-    this.data.byId[id] = Object.assign(
-                                  {}, 
-                                  this.data.byId[id], 
-                                  {id: id, state: state}
-                                );
-    
-    this.emit(this.events.CATALOG_UPDATE, this.data.byId[id]);
-  }
-
-  setSearchData(payload) {
-    var newIds = {};
-
-    if( payload && payload.results ) {
-      payload.results.forEach(item => { 
-        newIds[item.catalog_id] = {
-          id: item.catalog_id, 
-          payload: item, 
-          state: this.STATE.LOADED
-        }
-      });
-    }
-
-    var newSearch = {
-      state : this.STATE.LOADED,
-      results : payload
-    }
-
-    var newState = {
-      search : Object.assign({}, this.data.search, newSearch),
-      byId : Object.assign({}, this.data.byId, newIds)
-    }
-
-    this.data = Object.assign({}, this.data, newState);
-
+  setSearchLoading(params, text = '') {
+    this.data.search = {
+      state : this.STATE.LOADING,
+      params,
+      originalText : text
+    };
 
     this.emit(this.events.CATALOG_SEARCH_UDPATE, this.data.search);
-    for( var id in newIds ) {
-      this.emit(this.events.CATALOG_UPDATE, newIds[id]);
+  }
+
+  setSearchLoaded(payload) {
+    // first set and send search update
+    this.data.search = {
+      state : this.STATE.LOADED,
+      payload
+    }
+    this.emit(this.events.CATALOG_SEARCH_UDPATE, this.data.search);
+
+    // set and send individual catalog updates
+    if( payload && payload.results ) {
+      payload.results.forEach(item => this.setCatalogLoaded(item.catalog_id, item));
     }
   }
 
   setSearchError(error) {
     this.data.search = {state: this.STATE.ERROR, error: error};
-    this.emit(this.events.CATALOG_SEARCH_UDPATE, this.data.search);
-  }
-
-  setSearchState(state) {
-    this.data.search = {state};
     this.emit(this.events.CATALOG_SEARCH_UDPATE, this.data.search);
   }
 

@@ -206,17 +206,19 @@ class MarksModel extends BaseModel {
    * @method listenToMark
    * @description This will setup a firebase listener.  Will listen for change 
    * events for a specific mark
-   * 
+   *
+   * TODO: remove if not used
+   *  
    * @param {string} pageId - page id to listen for
    * @param {string} pageId - mark id to listen for
    */
-  listenToMark(pageId, markId) {
-    this.service.listenToMark(pageId, markId);
-  }
+  // listenToMark(pageId, markId) {
+  //   this.service.listenToMark(pageId, markId);
+  // }
 
   /**
    * @method getApprovedMarks
-   * @description Get approved marks for page
+   * @description Get approved marks for page.  Used by getPageMarks
    * 
    * @param {string} pageId - page id to get marks for
    * 
@@ -286,12 +288,14 @@ class MarksModel extends BaseModel {
    * @method pendingMarkSearch
    * @description Search pending marks
    * 
+   * TODO: who was using this?
+   * 
    * @param {Object} params - postgrest search params
    * @param {String} jwt - access token
    */
-  pendingMarkSearch(params, jwt) {
-    return this.service.pendingMarkSearch(params, jwt);
-  }
+  // pendingMarkSearch(params, jwt) {
+  //   return this.service.pendingMarkSearch(params, jwt);
+  // }
 
   /**
    * @method cleanup

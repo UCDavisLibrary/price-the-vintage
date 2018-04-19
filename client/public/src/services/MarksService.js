@@ -42,32 +42,34 @@ class MarksService extends BaseService {
    * @method pendingMarkSearch
    * @description Postgrest. Search pending marks
    * 
+   * TODO: who was using this?
+   * 
    * @param {object} params - postgrest search params 
    * 
    * @return {Promise}
    */
-  pendingMarkSearch(params = {}, jwt) {
-    return this.request({
-      url : `${API_HOST}/pending_mark_index`,
-      fetchOptions : {
-        headers : {
-          Authorization: `Bearer ${jwt}`,
-          Prefer: 'count=exact'
-        },
-        qs: params
-      },
-      onLoading : promise => this.store.setPendingSearchLoading(params, promise),
-      onError : e => this.store.setPendingSearchError(e, params),
-      onLoad : (resp) => {
-        var result = {
-          results : JSON.parse(resp.body)
-        };
-        setResultInfo(resp.headers['content-range'], result);
+  // pendingMarkSearch(params = {}, jwt) {
+  //   return this.request({
+  //     url : `${API_HOST}/pending_mark_index`,
+  //     qs: params,
+  //     fetchOptions : {
+  //       headers : {
+  //         Authorization: `Bearer ${jwt}`,
+  //         Prefer: 'count=exact'
+  //       }
+  //     },
+  //     onLoading : promise => this.store.setPendingSearchLoading(params, promise),
+  //     onError : e => this.store.setPendingSearchError(e, params),
+  //     onLoad : (resp) => {
+  //       var result = {
+  //         results : JSON.parse(resp.body)
+  //       };
+  //       setResultInfo(resp.headers['content-range'], result);
 
-        this.store.setPendingSearchLoaded(result, params)
-      }
-    });
-  }
+  //       this.store.setPendingSearchLoaded(result, params)
+  //     }
+  //   });
+  // }
 
   /**
    * @method approveMark 
@@ -271,14 +273,15 @@ class MarksService extends BaseService {
     ref.on('child_removed', (snapshot, key) => this._onPageChildRemoved(pageId, snapshot, key));
   }
 
-  listenToMark(pageId, markId) {
-    if( this.refs[markId] ) return;
+  // TODO: remove if not used
+  // listenToMark(pageId, markId) {
+  //   if( this.refs[markId] ) return;
 
-    var ref = firebase.database().ref(`marks/${pageId}/${markId}`);
-    this.refs[markId] = ref;
+  //   var ref = firebase.database().ref(`marks/${pageId}/${markId}`);
+  //   this.refs[markId] = ref;
 
-    ref.on('value', (snapshot) => this._onMarkChanged(pageId, markId, snapshot));
-  }
+  //   ref.on('value', (snapshot) => this._onMarkChanged(pageId, markId, snapshot));
+  // }
 
   /**
    * @method updateTempMark
@@ -368,18 +371,19 @@ class MarksService extends BaseService {
     } 
   }
 
-  _onMarkChanged(pageId, markId, snapshot) {
-    var val = snapshot.val();
+  // TODO: remove if not used
+  // _onMarkChanged(pageId, markId, snapshot) {
+  //   var val = snapshot.val();
 
-    if( this.model.isStale(val) ) {
-      if( this.log ) {
-        console.log(`Ignoring stale mark ${markId}`);
-      }
-      return;
-    }
+  //   if( this.model.isStale(val) ) {
+  //     if( this.log ) {
+  //       console.log(`Ignoring stale mark ${markId}`);
+  //     }
+  //     return;
+  //   }
 
-    this.store.setPendingMarkLoaded(pageId, markId, val);
-  }
+  //   this.store.setPendingMarkLoaded(pageId, markId, val);
+  // }
 
   _onPageChildAdded(pageId, childSnapshot, prevChildKey) {
     var val = childSnapshot.val();
