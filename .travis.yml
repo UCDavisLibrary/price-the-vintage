@@ -4,7 +4,7 @@ node_js:
 before_install:
 - openssl aes-256-cbc -K $encrypted_7fb687faff9d_key -iv $encrypted_7fb687faff9d_iv
   -in client/public/src/config/price-the-vintage-dev-firebase-adminsdk.json.enc 
-  -out client/public/src/config/config/price-the-vintage-dev-firebase-adminsdk.json
+  -out client/public/src/config/price-the-vintage-dev-firebase-adminsdk.json
   -d
 - openssl aes-256-cbc -K $encrypted_9387f7a0a82b_key -iv $encrypted_9387f7a0a82b_iv
   -in client/tests/secrets.json.enc 
