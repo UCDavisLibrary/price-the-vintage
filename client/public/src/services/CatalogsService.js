@@ -70,8 +70,11 @@ class CatalogsService extends BaseService {
     }
 
     return this.request({
-      url : `${API_HOST}/catalogs?catalog_id=eq.${id}`,
-      qs : {select: config.catalogs.searchSelectAttributes.join(',')},
+      url : `${API_HOST}/catalogs`,
+      qs : {
+        catalog_id : `eq.${id}`,
+        select: config.catalogs.searchSelectAttributes.join(',')
+      },
       checkCached : () => this.store.data.byId[id],
       onLoading : request => this.store.setCatalogLoading(id, request),
       onError : e => this.store.setCatalogError(id, e),

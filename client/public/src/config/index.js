@@ -19,6 +19,10 @@ const config = {
     searchSelectAttributes : ['pages','catalog_id','pages_finished','title','publisher','completed']
   },
 
+  pages : {
+    searchSelectAttributes : ['page_id','page','catalog_id','editable','marks', 'completed']
+  },
+
   suggestApiHost : 'https://wine-search.library.ucdavis.edu',
 
   // verbose, warn, error, info

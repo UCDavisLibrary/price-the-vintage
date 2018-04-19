@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests",
+    "test": "mocha client/tests --exit",
     "watch": "./build-scripts/watch.sh",
     "dist": "./build-scripts/dist.sh",
     "init": "npm install && rm ./node_modules/app && ln -s ../lib ./node_modules/app",

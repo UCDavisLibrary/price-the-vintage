@@ -1,12 +1,9 @@
-var request = require('superagent');
-var utils = require('./utils');
-var BaseService = require('cork-app-utils').BaseService;
-var PagesStore = require('../stores/PagesStore');
+const BaseService = require('@ucd-lib/cork-app-utils').BaseService;
+const PagesStore = require('../stores/PagesStore');
+const utils = require('./utils');
+const config = require('../config');
 
-var getHost = utils.getHost;
-var setResultInfo = utils.setResultInfo;
-
-var SELECT_PARAMS = ['page_id','page','catalog_id','editable','marks', 'completed'];
+const API_HOST = config.apiHost;
 
 class PagesService extends BaseService {
 
@@ -16,157 +13,149 @@ class PagesService extends BaseService {
   }
 
   /**
-   * Search catalog pages
+   * @method search
+   * @description Search catalog pages
    * 
-   * @param {Object} query - query parameters
-   * @param {string} [query.q] - text search value
-   * @param {string} [query.catalogId] - catalog to search
-   * @param {function} callback - service response handler
+   * @param {Object} query query parameters
+   * @param {String} query.q text search value
+   * @param {String} query.catalogId catalog to search
+   * 
+   * @returns {Promise}
    */
-  search(query = {}) {
-    var q = (query.q || '').trim();
+  async search(query = {}) {
+    let q = (query.q || '').trim();
 
-    var params = {
+    let params = {
+      select : config.pages.searchSelectAttributes.join(','),
       catalog_id : `eq.${query.catalogId}`
     };
 
-    this.store.setSearchLoading(params);
+    this.store.setSearchLoading(params, q);
 
-    return new Promise((resolve, reject) => {
-      if( q ) {
-        utils.escapeTSVector(q)
-              .then((resp) => {
-                var escaped = resp.body;
-                params.q = escaped ? escaped[0].phrase : q;
-                params.q = `@@.${params.q}`;
-                this._search(params, resolve, reject);
-              })
-              .catch((e) => {
-                this.store.setSearchError(e, params);
-                reject(e);
-              });
-      } else {
-        this._search(params, resolve, reject);
+    if( q ) {
+      params.q = await utils.escapeTSVector(q);
+    }
+
+    return this.request({
+      url : `${API_HOST}/pages`,
+      qs : params,
+      fetchOptions : {
+        headers : {
+          Prefer : 'count=exact'
+        }
+      },
+      onError : e => this.store.setSearchError(e, params, q),
+      onLoad : result => {
+        let response = result.response;
+        result = {results : result.body};
+        utils.setResultInfo(response.headers.get('content-range'), result);
+        this.store.setSearchLoaded(result, params, q);
       }
     });
   }
 
-  _search(params, resolve, reject) {
-    this.call({
-      request : this.request
-                  .get(`${getHost()}/pages`)
-                  .query(params)
-                  .set('Prefer', 'count=exact'),
-      onSuccess : (resp) => {
-        var result = {
-          results : resp.body
-        };
-        setResultInfo(resp.headers['content-range'], result);
-
-        this.store.setSearch(result, params);
-      },
-      onError : this.store.setSearchError,
-      params, resolve, reject
-    })
-  }
 
   /**
-   * Get the catalog page
+   * @method get
+   * @description Get the catalog page
    *
-   * @param {string} pageId - page id to get
-   * @param {function} callback - service response handler
+   * @param {String} pageId page id
+   * 
+   * @returns {Promise}
    */
   get(pageId) {
-    this.store.setPageLoading(pageId);
-
-    var query = {
-      select : SELECT_PARAMS.join(','),
-      page_id : `eq.${pageId}`
-    };
-
-    return this.call({
-      request : this.request
-                  .get(`${getHost()}/pages`)
-                  .query(query),
-      onSuccess : (resp) => {
-        let body = resp.body;
-        if( body.length === 0 ) this.store.setPageError(pageId, {error: true, message: 'Invalid page id'});
-        else this.store.setPage(body[0]);
-        return this.store.data.byId[pageId];
+    return this.request({
+      url : `${API_HOST}/pages`,
+      qs : {
+        select : config.pages.searchSelectAttributes.join(','),
+        page_id : `eq.${pageId}`
       },
-      onError : (error) => {
-        this.store.setPageError(pageId, error);
-        return this.store.data.byId[pageId];
+      onLoading : request => this.store.setPageLoading(pageId, request),
+      onError : e => this.store.setPageError(pageId, e),
+      onLoad : result => {
+        let body = result;
+        if( body.length === 0 ) this.store.setPageError(pageId, {error: true, message: 'Invalid page id'});
+        else this.store.setPageLoaded(pageId, result.body[0])
       }
     });
   }
 
   /**
-   * Get the catalog pages
+   * @method getPages
+   * @description Get the catalog pages
    *
-   * @param {string} catalogId - catalog id to get pages for
+   * @param {String} catalogId catalog id
+   * 
+   * @returns {Promise}
    */
   getPages(catalogId) {
-    this.store.setPagesLoading(catalogId);
-
-    var query = {
-      select : SELECT_PARAMS.join(','),
-      catalog_id : `eq.${catalogId}`,
-      order : 'page'
-    };
-
-    return this.call({
-      request : this.request
-                    .get(`${getHost()}/pages`)
-                    .query(query),
-      onSuccess : (resp) => {
-        this.store.setPages(catalogId, resp.body);
+    return this.request({
+      url : `${API_HOST}/pages`,
+      qs : {
+        select : config.pages.searchSelectAttributes.join(','),
+        catalog_id : `eq.${catalogId}`,
+        order : 'page'
       },
-      onError : (error) => {
-        this.store.setPagesError(catalogId, error);
-      }
-    })
+      onLoading : request => this.store.setPagesLoading(pageId, request),
+      onError : e => this.store.setPagesError(id, e),
+      onLoad : result => this.store.setPagesLoaded(pageId, result.body[0])
+    });
   }
 
   /**
-   * Admin call to toggle a pages editable status
+   * @method ignore
+   * @description Admin call to toggle a pages editable status
    * 
-   * @param {string} pageId - page id to toggle
-   * @param {boolean} ignore - should page be ignored
-   * @param {string} jwt - user token
+   * @param {String} pageId page id to toggle
+   * @param {Boolean} ignore should page be ignored
+   * @param {String} jwt user token
+   * 
+   * @return {Promise}
    */
   ignore(pageId, ignore, jwt) {
-    
-    var query = {
-      page_id : `eq.${pageId}`
-    };
-
-    return this.request
-              .patch(`${getHost()}/pages`)
-              .query(query)
-              .send({editable: !ignore})
-              .set('Prefer','return=representation')
-              .set('Authorization', `Bearer ${jwt}`);
+    return this.request({
+      url : `${API_HOST}/pages`,
+      qs : {page_id : `eq.${pageId}`},
+      fetchOptions : {
+        method : 'PATCH',
+        body : JSON.stringify({editable: !ignore}),
+        headers : {
+          Prefer : 'return=representation',
+          Authorization : `Bearer ${jwt}`
+        }
+      },
+      onLoading : request => this.store.setPageSaving(pageId, request),
+      onError : async e => this.store.setPageError(pageId, e),
+      onLoad : result => this.store.setPageLoaded(pageId, result.body[0])
+    });
   }
 
   /**
-   * Admin call to toggle a pages completed status
+   * @method completed
+   * @description Admin call to toggle a pages completed status
    * 
-   * @param {string} pageId - page id to toggle
-   * @param {boolean} completed - is the page completed
-   * @param {string} jwt - user token
+   * @param {String} pageId page id to toggle
+   * @param {Boolean} completed is the page completed
+   * @param {String} jwt user token
+   * 
+   * @returns {Promise}
    */
   completed(pageId, completed, jwt) {
-    var query = {
-      page_id : `eq.${pageId}`
-    };
-
-    return request
-      .patch(`${getHost()}/pages`)
-      .query(query)
-      .send({completed: completed})
-      .set('Prefer','return=representation')
-      .set('Authorization', `Bearer ${jwt}`);
+    return this.request({
+      url : `${API_HOST}/pages`,
+      qs : {page_id : `eq.${pageId}`},
+      fetchOptions : {
+        method : 'PATCH',
+        body : JSON.stringify({completed: completed}),
+        headers : {
+          Prefer : 'return=representation',
+          Authorization : `Bearer ${jwt}`
+        }
+      },
+      onLoading : request => this.store.setPageSaving(pageId, request),
+      onError : e => this.store.setPageError(pageId, e),
+      onLoad : result => this.store.setPageLoaded(pageId, result.body[0])
+    });
   }
 
 }
