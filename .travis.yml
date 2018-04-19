@@ -10,3 +10,5 @@ before_install:
   -in client/tests/secrets.json.enc 
   -out client/tests/secrets.json
   -d
+- npm install -g yarn
+- cd client/public && yarn install
