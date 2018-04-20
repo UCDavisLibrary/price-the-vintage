@@ -1,5 +1,4 @@
 const BaseStore = require('@ucd-lib/cork-app-utils').BaseStore;
-const deepEqual = require('fast-deep-equal');
 
 class MarksStore extends BaseStore {
 
@@ -148,11 +147,7 @@ class MarksStore extends BaseStore {
     }
 
     // check that something actually changed...
-    if( this.data.byId[mark.id] && 
-        this.data.byId[mark.id].state === mark.state &&
-        deepEqual(this.data.byId[mark.id], mark) ) {
-      return; // no change, skip event
-    }
+    if( !this.stateChanged(this.data.byId[mark.id], mark) ) return;
 
     this.data.byId[mark.id] = mark;
     this.emitMarkUpdateEvent(mark.id);

@@ -109,10 +109,11 @@
   version "0.2.8-1"
   resolved "https://registry.yarnpkg.com/@firebase/webchannel-wrapper/-/webchannel-wrapper-0.2.8-1.tgz#478588f273221b9b302418d2d5d7d5e06003be99"
 
-"@ucd-lib/cork-app-utils@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-app-utils/-/cork-app-utils-3.0.1.tgz#012a4088f11425deed025ae98774a42f56d48e2c"
+"@ucd-lib/cork-app-utils@3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-app-utils/-/cork-app-utils-3.0.2.tgz#d4a5dfa0b2a76823a85a5848962d575d5b419083"
   dependencies:
+    fast-deep-equal "^1.1.0"
     fs-extra "^4.0.2"
     isomorphic-fetch "^2.2.1"
 

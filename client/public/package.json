@@ -6,7 +6,7 @@
   "license": "MIT",
   "flat": true,
   "dependencies": {
-    "@ucd-lib/cork-app-utils": "3.0.1",
+    "@ucd-lib/cork-app-utils": "3.0.2",
     "auth0-js": "^9.4.2",
     "auth0-lock": "^11.5.2",
     "fast-deep-equal": "^1.1.0",

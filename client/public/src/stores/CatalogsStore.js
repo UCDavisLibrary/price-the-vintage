@@ -1,5 +1,4 @@
 const BaseStore = require('@ucd-lib/cork-app-utils').BaseStore;
-const deepEqual = require('fast-deep-equal');
 
 class CatalogsStore extends BaseStore {
 
@@ -37,11 +36,7 @@ class CatalogsStore extends BaseStore {
     };
 
     // nothing changed
-    if( this.data.byId[id] && 
-        this.data.byId[id].state === this.STATE.LOADED &&
-        deepEqual(this.data.byId[id], catalog) ) {
-      return;
-    }
+    if( !this.stateChanged(this.data.byId[id], catalog) ) return;
 
     this.data.byId[id] = catalog;
     this.emit(this.events.CATALOG_UPDATE, this.data.byId[id]);

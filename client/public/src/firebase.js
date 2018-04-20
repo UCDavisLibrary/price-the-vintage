@@ -30,7 +30,6 @@ module.exports = function(inject) {
     firebase = inject;
     init = true;
   } else if( !init ) {
-    console.log('here');
     firebase.initializeApp(config);
     init = true;
   }
