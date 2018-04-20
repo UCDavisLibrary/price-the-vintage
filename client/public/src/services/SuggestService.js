@@ -14,9 +14,9 @@ class SuggestService extends BaseService {
   /**
    * @method wineName
    * @description Suggest wine name.  This hits against
-   * the wine search, elasticsearch backend.
+   * the wine-search, elasticsearch backend.
    * 
-   * @param {Object} text - query parameters
+   * @param {Object} text text to suggest wine name with
    */
   wineName(text = '') {
     let query = {

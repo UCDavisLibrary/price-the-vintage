@@ -1,26 +1,31 @@
-var BaseStore = require('cork-app-utils').BaseStore;
-var ConfigModel = require('../models/ConfigModel');
+const BaseStore = require('@ucd-lib/cork-app-utils').BaseStore;
+const localStorage = require('../lib/local-storage');
+const config = require('../config');
 
 class AuthStore extends BaseStore {
 
   constructor() {
     super();
+
     this.CUSTOM_STATES = {
       PENDING : 'pending',
       NOT_LOGGED_IN : 'notLoggedIn',
       LOGGED_IN : 'loggedIn'
     }
 
-    var user = {};
-    if( typeof localStorage !== 'undefined' ) {
-      user = localStorage.getItem(ConfigModel.get().auth0.localStorageKey);
-      user = user ? JSON.parse(user) : {};
-    }
-
     this.events = {
       AUTH_UPDATE : 'auth-update'
     }
 
+    this.data = {};
+
+    this.reset();
+  }
+
+  // mostly used for testing
+  reset() {
+    let user = localStorage.getItem(config.auth0.localStorageKey);
+    user = user ? JSON.parse(user) : {};
 
     this.data = {
       state : this.CUSTOM_STATES.PENDING,
@@ -29,20 +34,26 @@ class AuthStore extends BaseStore {
   }
 
   setUser(user) {
-    this.data = {
+    let data = {
       user, 
       state: user.isAnonymous ? this.CUSTOM_STATES.NOT_LOGGED_IN : this.CUSTOM_STATES.LOGGED_IN
     };
-    
+
+    if( !this.stateChanged(this.data, data) ) return;
+
+    this.data = data;
     this.emit(this.events.AUTH_UPDATE, this.data);
   }
 
   notLoggedIn() {
-    this.data = {
+    let data = {
       user : {},
       state : this.CUSTOM_STATES.NOT_LOGGED_IN
     }
 
+    if( !this.stateChanged(this.data, data) ) return;
+
+    this.data = data;
     this.emit(this.events.AUTH_UPDATE, this.data);
   }
 

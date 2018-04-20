@@ -1,4 +1,4 @@
-var BaseModel = require('cork-app-utils').BaseModel;
+var BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
 var ActivityStore = require('../stores/ActivityStore');
 var AuthStore = require('../stores/AuthStore');
 var firebase = require('../firebase')();
@@ -22,6 +22,7 @@ class UserActivityModel extends BaseModel {
     // show logging, mostly FB connections and disconnections
     this.log = false;
 
+    // TODO: move this to appstate
     var connectedRef = firebase.database().ref(".info/connected");
     connectedRef.on("value", (snap) => {
       if (snap.val() === true) {

@@ -11,7 +11,7 @@ config = {
   credential: admin.credential.cert(serviceAccount)
 };
 
-// so we can text connecting/disconnecting from firebase
+// so we can test connecting/disconnecting from firebase
 admin.connect = function() {
   admin.initializeApp(config);
 }

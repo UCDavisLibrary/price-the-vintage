@@ -21,7 +21,7 @@ class SuggestModel extends BaseModel {
    * 
    * @param {String} text text to use to suggest name
    * 
-   * @returns {Promise}
+   * @returns {Promise} resolves to array of wine names in state object
    */
   async wineName(text) {
     await this.service.wineName(text);
@@ -34,7 +34,7 @@ class SuggestModel extends BaseModel {
    * 
    * @param {String} text text to use to suggest name
    * 
-   * @returns {Promise}
+   * @returns {Promise} resolves to array of country names in state object
    */
   async country(text) {
     await this.service.country(text);
@@ -50,7 +50,7 @@ class SuggestModel extends BaseModel {
    * 
    * @param {String} pageId 
    * 
-   * @returns {Array}
+   * @returns {Object} array of section names in state object
    */
   pageSection(pageId) {
     var results = {}, item;

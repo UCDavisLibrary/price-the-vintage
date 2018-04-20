@@ -25,7 +25,9 @@ let init = false;
 module.exports = function(inject) {
   if( inject ) {
     // destory current context first
-    if( init ) firebase.app.delete();
+    if( init && firebase.app.delete ) {
+      firebase.app.delete();
+    }
 
     firebase = inject;
     init = true;
@@ -33,7 +35,6 @@ module.exports = function(inject) {
     firebase.initializeApp(config);
     init = true;
   }
-
 
   return firebase;
 }

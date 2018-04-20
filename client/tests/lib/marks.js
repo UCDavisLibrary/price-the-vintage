@@ -2,6 +2,7 @@ const assert = require('assert');
 const firebase = require('../utils/firebase');
 const marks = require('../../public/src/lib/marks');
 const jwt = require('../utils/jwt');
+const assertEventOrder = require('../utils/assertEventOrder');
 
 let testPageId = '00000000-0000-0000-0000-000000000001';
 
@@ -99,35 +100,27 @@ describe('marks library', function() {
   })
 
   it('should listen to page marks', () => {
-    return new Promise(async (resolve, reject) => {
-      let eventCount = 0;
-      let eventOrder = ['saving', 'loaded', 'saving', 'loaded',
-      'deleting', 'deleted'];
-      
-      marks.MasterController.on(marks.store.events.MARKS_UPDATE, (e) => {
-        assert.equal(e.state, eventOrder[eventCount]);
-        eventCount++;
-        if( eventCount === eventOrder.length ) {
-          marks.MasterController.removeAllListeners(marks.store.events.MARKS_UPDATE);
-          resolve();
-        }
-      });
-
-      marks.listenToPageMarks(testPageId);
-      assert.equal(Object.keys(marks.service.refs).length === 1, true);
-      assert.notEqual(marks.service.refs[testPageId], undefined);
-
-      // set a new mark
-      let mark = await marks.setPending(testPageId, pendingMark);
-      testMarkId = mark.markId;
-      pendingMark.bottle = 'tall';
-
-      // update new mark
-      await marks.setPending(testPageId, testMarkId, pendingMark);
-
-      // delete new mark
-      await marks.removePending(testPageId, testMarkId);
-    });
+    return assertEventOrder(
+      marks.MasterController, 
+      marks.store.events.MARKS_UPDATE,
+      ['saving', 'loaded', 'saving', 'loaded', 'deleting', 'deleted'],
+      async () => {
+        marks.listenToPageMarks(testPageId);
+        assert.equal(Object.keys(marks.service.refs).length === 1, true);
+        assert.notEqual(marks.service.refs[testPageId], undefined);
+  
+        // set a new mark
+        let mark = await marks.setPending(testPageId, pendingMark);
+        testMarkId = mark.markId;
+        pendingMark.bottle = 'tall';
+  
+        // update new mark
+        await marks.setPending(testPageId, testMarkId, pendingMark);
+  
+        // delete new mark
+        await marks.removePending(testPageId, testMarkId);
+      }
+    )
   });
 
   it('should wait a sec so we don\'t pollute next test', () => {
@@ -141,71 +134,57 @@ describe('marks library', function() {
     assert.equal(Object.keys(marks.service.refs).length === 0, true);
     assert.equal(marks.service.refs[testPageId], undefined);
 
-    // now making mark updates should fire like so
-    return new Promise(async (resolve, reject) => {
-      let eventCount = 0;
-      let eventOrder = ['saving', 'loaded', 'saving', 'loaded',
-      'deleting', 'deleted'];
-      
-      marks.MasterController.on(marks.store.events.MARKS_UPDATE, (e) => {
-        assert.equal(e.state, eventOrder[eventCount]);
-        eventCount++;
-        if( eventCount === eventOrder.length ) {
-          marks.MasterController.removeAllListeners(marks.store.events.MARKS_UPDATE);
-          marks.cleanup();
-          resolve();
-        }
-      });
+    return assertEventOrder(
+      marks.MasterController, 
+      marks.store.events.MARKS_UPDATE,
+      ['saving', 'loaded', 'saving', 'loaded', 'deleting', 'deleted'],
+      async () => {
+        // set a new mark
+        let result = await marks.setPending(testPageId, pendingMark);
+        testMarkId = result.markId;
+        pendingMark.bottle = 'big';
 
-      // set a new mark
-      let result = await marks.setPending(testPageId, pendingMark);
-      testMarkId = result.markId;
-      pendingMark.bottle = 'big';
+        // update new mark
+        await marks.setPending(testPageId, testMarkId, pendingMark);
 
-      // update new mark
-      await marks.setPending(testPageId, testMarkId, pendingMark);
-
-      // delete new mark
-      await marks.removePending(testPageId, testMarkId);
-    });
+        // delete new mark
+        await marks.removePending(testPageId, testMarkId);
+      }
+    );
   });
 
-  it('let you approve a mark', function() {
+  it('let you approve a mark', async () => {
     // check event order is as we expect
-    return new Promise(async (resolve, reject) => {
-      let eventCount = 0;
-      let eventOrder = [{
-        state : 'saving', 
-        approved : false
-      }, {
-        state : 'loaded', 
-        approved : false
-      }, {
-        state: 'saving', 
-        approved : true
-      }, {
-        state : 'loaded',
-        approved : true
-      }];
-      
-      marks.MasterController.on(marks.store.events.MARKS_UPDATE, (e) => {
-        assert.equal(e.state, eventOrder[eventCount].state);
-        assert.equal(e.approved, eventOrder[eventCount].approved);
+    let eventOrder = [{
+      state : 'saving', 
+      approved : false
+    }, {
+      state : 'loaded', 
+      approved : false
+    }, {
+      state: 'saving', 
+      approved : true
+    }, {
+      state : 'loaded',
+      approved : true
+    }]
 
-        eventCount++;
-        if( eventCount === eventOrder.length ) {
-          marks.MasterController.removeAllListeners(marks.store.events.MARKS_UPDATE);
-          marks.cleanup();
-          resolve();
-        }
-      });
+    await assertEventOrder(
+      marks.MasterController, marks.store.events.MARKS_UPDATE, eventOrder,
+      async () => {
+        // add mark
+        let mark = await marks.setPending(testPageId, pendingMark);
 
-      // add mark
-      let mark = await marks.setPending(testPageId, pendingMark);
+        // now approve mark
+        await marks.approveMark(mark.payload, mark.id, mark.pageId, token);
+      },
+      (e, checkData) => {
+        assert.equal(e.state, checkData.state);
+        assert.equal(e.approved, checkData.approved);
+      }
+    );
 
-      // now approve mark
-      response = await marks.approveMark(mark.payload, mark.id, mark.pageId, token);
-    });
+    marks.cleanup();
   });
 
   it('let you get all marks for page (pending and approved)', async function() {

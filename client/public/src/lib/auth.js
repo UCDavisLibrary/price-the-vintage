@@ -5,8 +5,6 @@ const firebase = require('../firebase')();
 const config = require('../config');
 const localStorage = require('../lib/local-storage');
 
-var marks = require('../lib/MarksModel');
-var UserActivityModel = require('../models/ActivityModel');
 var AuthStore = require('../stores/AuthStore');
 
 class AuthModel extends BaseModel {
@@ -25,13 +23,18 @@ class AuthModel extends BaseModel {
       this.config.clientID = config.auth0DevClient;
     }
 
-    // login UI
-    this.lock = new Auth0Lock(this.config.clientID, this.config.domain, this.config.lockOptions);
+    if( typeof window !== 'undefined' ) {
+      // login UI
+      this.lock = new Auth0Lock(this.config.clientID, this.config.domain, this.config.lockOptions);
+      // used for silent login
+      this.auth0WebAuth = new Auth0.WebAuth({clientID: this.config.clientID, domain: this.config.domain});
+    }
+
     // auth0 library used for things like delegation 
     this.auth0 = new Auth0.Authentication({clientID: this.config.clientID, domain: this.config.domain});
-    // used for silent login
-    this.auth0WebAuth = new Auth0.WebAuth({clientID: this.config.clientID, domain: this.config.domain});
+    
 
+    console.log(firebase.apps);
     firebase.auth().onAuthStateChanged(user => this._onAuthStateChanged(user));
 
     setInterval(() => {
@@ -58,7 +61,8 @@ class AuthModel extends BaseModel {
 
       if( firebaseUser.isAnonymous ) {
         await this.setAnonymousUserFlag(firebaseUser.uid);
-        await marks.cleanupStaleTmpMarks(firebaseUser.uid);
+        // TODO: wire up as event listener
+        // await marks.cleanupStaleTmpMarks(firebaseUser.uid);
         this.store.setUser(firebaseUser);
         return;
       }
@@ -69,13 +73,13 @@ class AuthModel extends BaseModel {
         profile.photoURL = profile.picture;
       }
 
-      await marks.cleanupStaleTmpMarks(profile.uid);
+      // TODO: wire up as event listener
+      // await marks.cleanupStaleTmpMarks(profile.uid);
       this.store.setUser(profile);
 
     // no firebase user
     } else {
       this.store.notLoggedIn();
-      this.loginAnonymous()
     }
   }
 
@@ -236,12 +240,30 @@ class AuthModel extends BaseModel {
    * @description Start firebase login with JWT token.  Possibly generated from Auth0
    * delegation endpoint.  Or mint your own via firebase admin sdk.
    * 
-   * @param {string} token - Firebase JWT
+   * @param {string} token Firebase JWT
+   * 
+   * @returns {Promise}
    */
-  loginCustom(token) {
+  async loginCustom(token) {
     // Exchange the delegate token for a Firebase auth token
     this.cleanPresence();
-    return firebase.auth().signInWithCustomToken(token);
+    await firebase.auth().signInWithCustomToken(token);
+    return this.store.data;
+  }
+
+  /**
+   * @method createCustomLogin
+   * @description create a Firebase JWT token to login with above
+   * loginCustom() method.  The auth0 delegation endpoint is also used
+   * to generate these tokens.  THIS METHOD ONLY WORKS IN NODEJS.
+   * 
+   * @param {String} uid user id
+   * @param {Object} claim addiational claim information
+   * 
+   * @returns {Promise} resolves to JWT string
+   */
+  createCustomLogin(uid = '', claim = {}) {
+    return firebase.auth().createCustomToken(uid, claim);
   }
 
   /**
@@ -251,9 +273,9 @@ class AuthModel extends BaseModel {
    */
   async logout() {
     await this.cleanPresence();
-    console.log('Removing user profile', localStorage.getItem(this.config.localStorageKey));
     localStorage.removeItem(this.config.localStorageKey);
     await firebase.auth().signOut();
+    return this.getAuthState();
   }
 
   /**
@@ -261,8 +283,9 @@ class AuthModel extends BaseModel {
    * @description Before logout, make sure and remove any user presence data
    */
   async cleanPresence() {
-    await MarksModel.removeTempMark();
-    await UserActivityModel.beforeLogout();
+    // TODO: wire up as event listener
+    // await MarksModel.removeTempMark();
+    // await UserActivityModel.beforeLogout();
   }
 
   /**
@@ -272,7 +295,6 @@ class AuthModel extends BaseModel {
    * @param {Object} profile 
    */
   setUserProfile(profile = {}) {
-    console.log('Setting user profile', profile);
     localStorage.setItem(this.config.localStorageKey, profile);
   }
 
