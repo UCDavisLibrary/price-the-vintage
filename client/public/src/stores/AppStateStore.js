@@ -6,6 +6,7 @@ class AppStateStore extends BaseStore {
     super();
 
     this.data = {
+      firebaseConnection : false,
       section : '',
       editingMark : false,
       viewingMark : false,

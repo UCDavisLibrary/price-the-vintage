@@ -1,7 +1,7 @@
 const Auth0 = require('auth0-js');
 const Auth0Lock = require('auth0-lock').default;
 const {BaseModel} = require('@ucd-lib/cork-app-utils');
-const firebase = require('../firebase')();
+const firebase = require('../firebase');
 const config = require('../config');
 const localStorage = require('../lib/local-storage');
 
@@ -33,8 +33,6 @@ class AuthModel extends BaseModel {
     // auth0 library used for things like delegation 
     this.auth0 = new Auth0.Authentication({clientID: this.config.clientID, domain: this.config.domain});
     
-
-    console.log(firebase.apps);
     firebase.auth().onAuthStateChanged(user => this._onAuthStateChanged(user));
 
     setInterval(() => {
@@ -285,7 +283,6 @@ class AuthModel extends BaseModel {
   async cleanPresence() {
     // TODO: wire up as event listener
     // await MarksModel.removeTempMark();
-    // await UserActivityModel.beforeLogout();
   }
 
   /**

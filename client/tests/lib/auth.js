@@ -1,5 +1,6 @@
 const assert = require('assert');
-const firebase = require('../utils/firebase');
+const admin = require('../utils/firebase-admin');
+const firebase = require('../../public/src/firebase');
 const auth = require('../../public/src/lib/auth');
 const jwt = require('../utils/jwt');
 const assertEventOrder = require('../utils/assertEventOrder');
@@ -30,7 +31,7 @@ describe('auth library', function() {
   });
 
   it('should generate a firebase jwt', async () => {
-    fbJwt = await firebase.auth().createCustomToken(testUser);
+    fbJwt = await admin.auth().createCustomToken(testUser);
     assert.equal(typeof fbJwt, 'string');
     assert.equal(fbJwt.length > 0, true);
   });

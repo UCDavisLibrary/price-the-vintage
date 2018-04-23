@@ -1,5 +1,5 @@
 var BaseModel = require('cork-app-utils').BaseModel;
-var firebase = require('../firebase')();
+var firebase = require('../firebase');
 
 var AdminService = require('../services/AdminService');
 var MarkService = require('../services/MarksService');

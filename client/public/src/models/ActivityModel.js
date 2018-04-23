@@ -1,7 +1,8 @@
 var BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
 var ActivityStore = require('../stores/ActivityStore');
+var ActivityService = require('../services/ActivityService');
 var AuthStore = require('../stores/AuthStore');
-var firebase = require('../firebase')();
+var firebase = require('../firebase');
 
 /**
  * Controller for handling user activity.  This is simply where
@@ -18,321 +19,189 @@ class UserActivityModel extends BaseModel {
     super();
 
     this.store = ActivityStore;
+    this.service = ActivityService;
+    // service uses the isStale method
+    this.service.model = this;
 
-    // show logging, mostly FB connections and disconnections
-    this.log = false;
-
-    // TODO: move this to appstate
-    var connectedRef = firebase.database().ref(".info/connected");
-    connectedRef.on("value", (snap) => {
-      if (snap.val() === true) {
-        if( this.log ) {
-          console.warn("connected to firebase");
-        }
-      } else {
-        if( this.log ) {
-          console.warn("not connected to firebase");
-        }
-      }
-    });
-
+    // after 5 min and activity will be considered stale
+    this.STALE_TIME = 5 * 60 * 1000;
     // Used for hanging sessions.  anything over an hour hold 
     // will be removed when auth state changes
     this.CLEANUP_TIME = 60 * 60 * 1000;
 
-    // local store for current location
-    // TODO: perhaps grab this form redux store?
-    this.currentLocation = {
-      catalogId : '',
-      pageId : '',
-      uid : ''
-    }
+    // show logging, mostly FB connections and disconnections
+    this.log = false;
 
-    // firebase references for onDisconnect 
-    this.disconnectRefs = {};
-    // firebase references for updates
-    this.listenerRefs = {};
+    // cache data here from events below for setting current users activity
+    this.userId = '';
+    this.appState = {};
 
-    // cleanup hanging sessions
-    this.cleanupSessions();
+    // when auth state changes update activity
+    this.MasterController.on('auth-update', (e) => this._onAuthUpdate(e));
 
-    // when auth state changes, if we have set a location but
-    // not sent to FB cause we had no userId, do it now
-    this.eventBus.on('auth-update', (e) => {
-      if( this.pendingLocation ) {
-        this.set(
-          this.pendingLocation.catalogId, 
-          this.pendingLocation.pageId
-        );
-      }
-
-      // also, cleanup hanging sessions
-      this.cleanupSessions();
-    });
+    // when app state changes update activity
+    this.MasterController.on('app-state-update', (e) => this._onAppStateUpdate(e));
 
     // make sure to remove user activity when it goes stale
     setInterval(this.checkStaleActivity.bind(this), 30 * 1000);
 
-    this.registerIOC('UserActivityModel');
+    this.register('UserActivityModel');
   }
 
   /**
-   * Clean up hanging sessions
+   * @method _onAuthUpdate
+   * @description when the apps auth state updates, update activity state
+   * 
+   * @param {Object} e auth state
    */
-  cleanupSessions() {
-    // get the current User ID and database namespace
-    var uid = this.getUser().uid;
+  _onAuthUpdate(e) {
+    let uid = (e.state === 'loggedIn') ? e.user.uid : '';
+
+    // if user changed, cleanup current user activity before we switch
+    if( uid !== this.userId ) this.cleanupSessions(this.userId, force);
+    this.userId = uid;
+
+    this.set(this.userId, this.appState.catalogId, this.appState.pageId);
+  }
+
+  /**
+   * @method _onAppStateUpdate
+   * @description when the app state updates, update activity state
+   * 
+   * @param {Object} e app state
+   */
+  _onAppStateUpdate(e) {
+    this.appState = e;
+    this.set(this.userId, this.appState.catalogId, this.appState.pageId);
+  }
+
+  /**
+   * @method cleanupSessions
+   * @description Clean up hanging sessions
+   * 
+   * @param {String} uid user id
+   * @param {Boolean} force this flag will ignore activity time and current
+   * app state catalogId and pageId values.  If passed, all registered user
+   * activity for this user fill be removed.
+   * 
+   * @returns {Promise}
+   */
+  async cleanupSessions(uid, force = false) {
     if( !uid ) return;
 
     // grab last know activity from user object in FB
-    firebase
-      .database()
-      .ref(`users/${uid}/activity`)
-      .once('value')
-      .then((snapshot) => {
-        var activity = snapshot.val();
-        if( !activity ) return; // noop
-
-        // check for all activity past CLEANUP_TIME (1 hour)
-        var now = Date.now();
-        var removeUpdate = {};
-
-        for( var key in activity ) {
-          if( now - activity[key] > this.CLEANUP_TIME ) {
-            removeUpdate[`activity/${key}/${uid}`] = null;
-            removeUpdate[`users/${uid}/activity/${key}`] = null;
-          } 
-        }
-
-        if( Object.keys(removeUpdate).length === 0 ) {
-          return;
-        }
-
-        // remove all expired activity
-        firebase.database().ref().update(removeUpdate)
-      });
-  }
-
-  /**
-   * Set the current activity for the user
-   * @param {string} catalogId - current catalog user is viewing
-   * @param {string} [pageId] - current catalog page user is viewing
-   */
-  set(catalogId, pageId) {
-    return new Promise((resolve, reject) => {
-      var uid = this.getUser().uid;
-
-      // if there is no user object, just set to pending location for
-      // now.  Activity will be handled when auth state changes.
-      if( !uid ) {
-        this.pendingLocation = {catalogId, pageId};
-        return resolve();
-      }
-
-      // we have no current location
-      this.pendingLocation = null;
-
-      // first, remove current location
-      var update = this.getRemoveCurrentLocation();
-
-      // create the update object with current timestamp
-      var time = Date.now();
-
-      this.currentLocation.uid = uid;
-
-      if( catalogId ) {
-        this.currentLocation.catalogId = catalogId;
-        update[`/activity/${catalogId}/${uid}`] = time;
-        update[`/users/${uid}/activity/${catalogId}`] = time;
-      }
-
-      if( pageId ) {
-        this.currentLocation.pageId = pageId;
-        update[`/activity/${pageId}/${uid}`] = time;
-        update[`/users/${uid}/activity/${pageId}`] = time;
-      }
-
-      if( Object.keys(update) === 0 ) return resolve();
-
-      // set onDisconnect reference
-      this.setDisconnectRefs(update, () => {
-
-        // update FB
-        firebase
-          .database()
-          .ref()
-          .update(update)
-          .then(resolve)
-          .catch(reject);
-      });
-    });
+    let snapshot = await this.service.getUserActivity();
     
-  }
+    let activity = snapshot.val();
+    if( !activity ) return; // noop
 
-  beforeLogout() {
-    return this.set('', '');
-  }
-
-  /**
-   * If we lose connection, make sure that activity paths are set to null.
-   * @param {Object} update - Firebase multi-path update object 
-   */
-  setDisconnectRefs(update, callback) {
-    // cancel any current disconnectRefs
-    for( var key in this.disconnectRefs ) {
-      this.disconnectRefs[key].cancel();
-    }
-
-    var count = 0;
-    var total = Object.keys(update).length;
-    var onComplete = function() {
-      count++;
-      if( count === total ) callback();
-    }
-
-    if( total === 0 && callback ) callback();
-
-    // set new disconnectRefs
-    for( var key in update ) {
-      var ref = firebase.database().ref(key).onDisconnect();
-      ref.set(null, onComplete);
-      this.disconnectRefs[key] = ref;
-    }
-  }
-
-  /**
-   * Remove activity paths for current user location
-   * @param {function} callback 
-   */
-  getRemoveCurrentLocation(callback) {
-    // create multi-path FB update object
+    var now = Date.now();
     var removeUpdate = {};
 
-    if( this.currentLocation.catalogId && this.currentLocation.uid ) {
-      removeUpdate[`/activity/${this.currentLocation.catalogId}/${this.currentLocation.uid}`] = null;
-      removeUpdate[`/users/${this.currentLocation.uid}/activity/${this.currentLocation.catalogId}`] = null;
-    }
-    if( this.currentLocation.pageId && this.currentLocation.uid ) {
-      removeUpdate[`/activity/${this.currentLocation.pageId}/${this.currentLocation.uid}`] = null;
-      removeUpdate[`/users/${this.currentLocation.uid}/activity/${this.currentLocation.pageId}`] = null;
+    for( var key in activity ) {
+      if( this.appState.pageId !== key || 
+          this.appState.catalogId !== key || 
+          force ) {
+        
+        removeUpdate[`activity/${key}/${uid}`] = null;
+        removeUpdate[`users/${uid}/activity/${key}`] = null;
+
+      } else if( now - activity[key] > this.CLEANUP_TIME ) {
+        
+        removeUpdate[`activity/${key}/${uid}`] = null;
+        removeUpdate[`users/${uid}/activity/${key}`] = null;
+        
+      } 
     }
 
-    this.currentLocation = {
-      catalogId : '',
-      pageId : '',
-      uid : ''
+    // remove all expired activity
+    return this.service.clearUserActivity(removeUpdate);
+  }
+
+
+  /**
+   * @method set
+   * @description Set the current activity for the user
+   * 
+   * @param {String} userId current user id
+   * @param {String} catalogId current catalog user is viewing
+   * @param {String} pageId (optional) current catalog page user is viewing
+   */
+  async set(userId, catalogId, pageId) {
+    if( !userId ) return;
+
+    // we have no current location
+    this.pendingLocation = null;
+
+    // first, remove current location
+    await this.cleanupSessions(userId);
+
+    // create the update object with current timestamp
+    var time = Date.now();
+
+    if( catalogId ) {
+      this.currentLocation.catalogId = catalogId;
+      update[`/activity/${catalogId}/${userId}`] = time;
+      update[`/users/${userId}/activity/${catalogId}`] = time;
     }
 
-    return removeUpdate;
+    if( pageId ) {
+      this.currentLocation.pageId = pageId;
+      update[`/activity/${pageId}/${userId}`] = time;
+      update[`/users/${userId}/activity/${pageId}`] = time;
+    }
+
+    await this.service.setUserActivity(update);
   }
 
   /**
-   * Listen to resources activity.  Listeners will update redux when FB state 
-   * @param {string} id - resource guid to listen to.  This can be catalogId or pageId 
-   * @returns {object} - contains resource id and list of active users
+   * @method listen
+   * @description Listen to resources activity.
+   * 
+   * @param {String} id resource guid to listen to.  This can be catalogId or pageId 
    */
   async listen(id) {
-    // if we already have a FB reference, just return the redux state
-    if( this.listenerRefs[id] ) {
-     var users = this.store.data.byId[id] || {};
-     return {id, users, state: 'loaded'};
-    }
-
-    // setting up FB listeners as cost, you may want to know when this happens
-    if( this.log ) {
-      console.warn(`Setting up activity listener for ${id}`);
-    }
-    
-    // set up FB listener and listen for standard add, update, remove events.
-    // update Redux on event
-    var ref = firebase.database().ref(`activity/${id}`);
-    this.listenerRefs[id] = ref;
-
-    ref.on('child_added', (childSnapshot, prevChildKey) => {
-      var timestamp = childSnapshot.val();
-      var uid = childSnapshot.key;
-
-      if( this.isStale(timestamp) ) {
-        if( this.log ) {
-          console.warn(`Ignoring stale user activity: ${id}:${uid}`);
-        }
-        return;
-      }
-
-      this.store.set({id, uid, timestamp});
-    });
-
-    ref.on('child_changed', (childSnapshot, prevChildKey) => {
-      var timestamp = childSnapshot.val();
-      var uid = childSnapshot.key;
-
-      if( this.isStale(timestamp) ) {
-        if( this.log ) {
-          console.warn(`Ignoring stale user activity: ${id}:${uid}`);
-        }
-        return;
-      }
-
-      this.store.set({id, uid, timestamp});
-    });
-
-    ref.on('child_removed', (childSnapshot, prevChildKey) => {
-      var uid = childSnapshot.key;
-
-      this.store.remove({id, uid});
-    });
-
-    var users = this.store.data.byId[id] || {};
-
-    return {id, users, state: 'loaded'};
+    this.service.listen(id);
   }
 
   /**
-   * Disconnect firebase listener for resource
-   * @param {string} id - resource id
+   * @method unlisten
+   * @description Disconnect firebase listener for activity resource
+   * 
+   * @param {String} id resource id.  This can be catalogId or pageId 
    */
   unlisten(id) {
-    // noop
-    if( !this.listenerRefs[id] ) return;
-
-    if( this.log ) {
-      console.warn(`Unlistening to activity: ${id}`);
-    }
-    
-    // turn off FB listern
-    this.listenerRefs[id].off();
-    delete this.listenerRefs[id];
-
-    // clear data from redux
-    this.store.remove({id});
-
-    // remove onDisconnect reference if one exists
-    if( this.disconnectRefs[id] ) {
-      this.disconnectRefs[id].off();
-      delete this.disconnectRefs[id];
-    }
+    this.service.unlisten(id);
   }
 
   /**
-   * Called from interested parties controller.  remove all listeners that are NOT in object hash.
-   * @param {object} interested - hash of resource ids that have elements still interest in
+   * @method cleanup
+   * @description Called from interested parties controller.  remove all listeners that are NOT in object hash.
+   * 
+   * @param {Object} interested - hash of resource ids that have elements still interest in
    */
   cleanup(interested) {
-    for( var id in this.listenerRefs ) {
-      if( !interested[id] ) {
-        this.unlisten(id);
-      }
-    } 
+    this.service.cleanup(interested);
   }
 
-  // is a given activity considered stale?
-  isStale(activity) {
-    var expired = Date.now() - (5 * 60 * 1000);
-    if( activity > expired ) return false;
+  /**
+   * @method isStale
+   * @description has a given child activity gone state?
+   * 
+   * @param {Number} timestamp activity timestamp
+   * 
+   * @returns {Boolean}
+   */
+  isStale(timestamp) {
+    var expired = Date.now() - this.STALE_TIME;
+    if( timestamp > expired ) return false;
     return true;
   }
 
-  // make sure old user activity is removed
+  /**
+   * @method checkStaleActivity
+   * @description make sure old user activity is removed 
+   */
   checkStaleActivity() {
     var activity = this.store.data.byId;
     var pageActivity;
@@ -349,10 +218,6 @@ class UserActivityModel extends BaseModel {
         }
       }
     }
-  }
-
-  getUser() {
-    return AuthStore.data.user;
   }
 
 }

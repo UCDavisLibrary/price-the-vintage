@@ -1,6 +1,8 @@
 const assert = require('assert');
-const firebase = require('../utils/firebase');
+const admin = require('../utils/firebase-admin');
+const firebase = require('../../public/src/firebase');
 const marks = require('../../public/src/lib/marks');
+const auth = require('../utils/auth');
 const jwt = require('../utils/jwt');
 const assertEventOrder = require('../utils/assertEventOrder');
 
@@ -24,7 +26,10 @@ describe('marks library', function() {
   before(async () => {
     firebase.connect();
 
-    await firebase.database().ref(`marks/${testPageId}`).set(null);
+    // login test user
+    await auth.login();
+
+    await admin.database().ref(`marks/${testPageId}`).set(null);
     // clear marks db
     await marks.service.clearApprovedTestMarks(token);
   });
@@ -204,7 +209,7 @@ describe('marks library', function() {
 
   it('should check and remove stale tmp marks', async function() {
     // first, let's cleanup from prior tests
-    await firebase.database().ref(`marks/${testPageId}`).set(null);
+    await admin.database().ref(`marks/${testPageId}`).set(null);
     marks.store.data.byId = {};
 
     // now lets add two tmp marks
@@ -238,10 +243,13 @@ describe('marks library', function() {
 
   after(async () => {
     // clean test page
-    await firebase.database().ref(`marks/${testPageId}`).set(null);
+    await admin.database().ref(`marks/${testPageId}`).set(null);
 
     // clear marks db
     await marks.service.clearApprovedTestMarks(token);
+
+    // login test user
+    await auth.login();
 
     await firebase.disconnect();
   });

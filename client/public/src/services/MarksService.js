@@ -3,7 +3,7 @@ const MarksStore = require('../stores/MarksStore');
 const clone = require('clone');
 const utils = require('./utils');
 const config = require('../config');
-const firebase = require('../firebase')();
+const firebase = require('../firebase');
 
 var setResultInfo = utils.setResultInfo;
 var API_HOST = config.apiHost;

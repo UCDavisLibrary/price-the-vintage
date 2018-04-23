@@ -2,7 +2,7 @@ const uuid = require('uuid');
 const {BaseModel} = require('@ucd-lib/cork-app-utils');
 const MarksStore = require('../stores/MarksStore');
 const MarksService = require('../services/MarksService');
-const firebase = require('../firebase')();
+const firebase = require('../firebase');
 
 
 /**
