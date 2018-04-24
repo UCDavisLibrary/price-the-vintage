@@ -1,4 +1,4 @@
-let auth = require('../../public/src/lib/auth');
+let auth = require('../../public/src/models/AuthModel');
 let admin = require('./firebase-admin');
 
 // login test user
@@ -10,8 +10,8 @@ let auth0Profile = {
     isAdmin : true
   },
   photoURL : 'foo',
-  user_id : '123',
-  uid : '123',
+  user_id : TEST_UID,
+  uid : TEST_UID,
   role : 'admin',
   roles : ['admin']
 };

@@ -1,7 +1,6 @@
 var BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
 var ActivityStore = require('../stores/ActivityStore');
 var ActivityService = require('../services/ActivityService');
-var AuthStore = require('../stores/AuthStore');
 var firebase = require('../firebase');
 
 /**
@@ -36,16 +35,42 @@ class UserActivityModel extends BaseModel {
     this.userId = '';
     this.appState = {};
 
-    // when auth state changes update activity
-    this.MasterController.on('auth-update', (e) => this._onAuthUpdate(e));
+    this._onAuthUpdate = this._onAuthUpdate.bind(this);
+    this._onAppStateUpdate = this._onAppStateUpdate.bind(this);
 
-    // when app state changes update activity
-    this.MasterController.on('app-state-update', (e) => this._onAppStateUpdate(e));
+    this.enableModelListeners();
 
     // make sure to remove user activity when it goes stale
     setInterval(this.checkStaleActivity.bind(this), 30 * 1000);
 
     this.register('UserActivityModel');
+  }
+
+  /**
+   * @method enableModelListeners
+   * @description wire up event listeners for auth and app state events.
+   * Note.  This is mostly for testing so you can add/remove listeners.
+   * The app will probably only ever call this method once, in
+   * constructor above.
+   */
+  enableModelListeners() {
+    // when auth state changes update activity
+    this.MasterController.on('auth-update', this._onAuthUpdate);
+
+    // when app state changes update activity
+    this.MasterController.on('app-state-update', this._onAppStateUpdate);
+  }
+
+  /**
+   * @method disableModelListeners
+   * @description remove event listeners for auth and app state events.
+   * Note.  This is mostly for testing so you can add/remove listeners.
+   * The app will probably only ever call this method from a integration test case
+   * so this model is not reacting to events when not being tested.
+   */
+  disableModelListeners() {
+    this.MasterController.removeListener('auth-update', this._onAuthUpdate);
+    this.MasterController.removeListener('app-state-update', this._onAppStateUpdate);
   }
 
   /**
@@ -56,11 +81,7 @@ class UserActivityModel extends BaseModel {
    */
   _onAuthUpdate(e) {
     let uid = (e.state === 'loggedIn') ? e.user.uid : '';
-
-    // if user changed, cleanup current user activity before we switch
-    if( uid !== this.userId ) this.cleanupSessions(this.userId, force);
     this.userId = uid;
-
     this.set(this.userId, this.appState.catalogId, this.appState.pageId);
   }
 
@@ -90,9 +111,9 @@ class UserActivityModel extends BaseModel {
     if( !uid ) return;
 
     // grab last know activity from user object in FB
-    let snapshot = await this.service.getUserActivity();
-    
+    let snapshot = await this.service.getUserActivity(uid);
     let activity = snapshot.val();
+
     if( !activity ) return; // noop
 
     var now = Date.now();
@@ -137,16 +158,14 @@ class UserActivityModel extends BaseModel {
     await this.cleanupSessions(userId);
 
     // create the update object with current timestamp
-    var time = Date.now();
+    let time = Date.now();
+    let update = {};
 
     if( catalogId ) {
-      this.currentLocation.catalogId = catalogId;
       update[`/activity/${catalogId}/${userId}`] = time;
       update[`/users/${userId}/activity/${catalogId}`] = time;
     }
-
     if( pageId ) {
-      this.currentLocation.pageId = pageId;
       update[`/activity/${pageId}/${userId}`] = time;
       update[`/users/${userId}/activity/${pageId}`] = time;
     }

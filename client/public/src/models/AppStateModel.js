@@ -1,5 +1,6 @@
-var BaseModel = require('cork-app-utils').BaseModel;
-var AppStateStore = require('../stores/AppStateStore');
+const BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
+const AppStateStore = require('../stores/AppStateStore');
+const firebase = require('../firebase');
 
 /**
  * Controller for handling various states of the application.
@@ -14,20 +15,34 @@ class AppStateModel extends BaseModel {
     this.firstLoad = true;
     this._initWindowEvents();
 
-    firebase
-      .database()
-      .ref('.info/connected')
-      .on('value', (snap) => {
-        if (snap.val() === true) {
-          if( this.log ) console.warn("connected to firebase");
-          this.set({firebaseConnection: true});
-        } else {
-          if( this.log ) console.warn("not connected to firebase");
-          this.set({firebaseConnection: false});
-        }
-      });
+    this.connectionRef = null;
+    this.enableFirebaseConnectionListener();
 
     this.register('AppStateModel');
+  }
+
+  enableFirebaseConnectionListener() {
+    if( this.connectionRef ) return;
+
+    this.connectionRef = firebase
+      .database()
+      .ref('.info/connected');
+
+    this.connectionRef.on('value', (snap) => {
+      if (snap.val() === true) {
+        if( this.log ) console.warn("connected to firebase");
+        this.set({firebaseConnection: true});
+      } else {
+        if( this.log ) console.warn("not connected to firebase");
+        this.set({firebaseConnection: false});
+      }
+    });
+  }
+
+  disableFirebaseConnectionListener() {
+    if( !this.connectionRef ) return;
+    this.connectionRef.off();
+    this.connectionRef = null;
   }
 
   /**

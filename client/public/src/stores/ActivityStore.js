@@ -1,5 +1,4 @@
-var BaseStore = require('cork-app-utils').BaseStore;
-
+var BaseStore = require('@ucd-lib/cork-app-utils').BaseStore;
 
 class ActivityStore extends BaseStore {
 

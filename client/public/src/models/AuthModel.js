@@ -4,8 +4,10 @@ const {BaseModel} = require('@ucd-lib/cork-app-utils');
 const firebase = require('../firebase');
 const config = require('../config');
 const localStorage = require('../lib/local-storage');
+const AuthStore = require('../stores/AuthStore');
 
-var AuthStore = require('../stores/AuthStore');
+const marks = require('../lib/marks');
+const activity = require('../lib/activity');
 
 class AuthModel extends BaseModel {
 
@@ -33,13 +35,18 @@ class AuthModel extends BaseModel {
     // auth0 library used for things like delegation 
     this.auth0 = new Auth0.Authentication({clientID: this.config.clientID, domain: this.config.domain});
     
-    firebase.auth().onAuthStateChanged(user => this._onAuthStateChanged(user));
+    this.presenceHandlers = [];
+    this.enableFirebaseAuthListener();
 
     setInterval(() => {
       this.autoRenewAuth0();
     }, 36000 * 1000)
 
     this.register('AuthModel');
+  }
+
+  enableFirebaseAuthListener() {
+    firebase.auth().onAuthStateChanged(user => this._onAuthStateChanged(user));
   }
 
   /**
@@ -270,6 +277,10 @@ class AuthModel extends BaseModel {
    * TODO: should we be logging out of Auth0 as well?
    */
   async logout() {
+    if( this.getAuthState().state === this.store.CUSTOM_STATES.NOT_LOGGED_IN ) {
+      return;
+    }
+
     await this.cleanPresence();
     localStorage.removeItem(this.config.localStorageKey);
     await firebase.auth().signOut();
@@ -281,9 +292,11 @@ class AuthModel extends BaseModel {
    * @description Before logout, make sure and remove any user presence data
    */
   async cleanPresence() {
-    // TODO: wire up as event listener
-    // await MarksModel.removeTempMark();
+    let uid = this.getAuthState().user.uid;
+    await marks.removeTempMark(uid);
+    await activity.cleanupSessions(uid, true);
   }
+
 
   /**
    * @method setUserProfile

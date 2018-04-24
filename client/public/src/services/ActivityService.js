@@ -74,7 +74,7 @@ class ActivityService extends BaseService {
       this.disconnectRefs[key].cancel();
     }
 
-    if( total === 0 ) return; 
+    if( Object.keys(update).length === 0 ) return; 
 
     // set new disconnectRefs
     this.disconnectRefs = {};

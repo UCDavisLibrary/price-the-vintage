@@ -248,8 +248,8 @@ describe('marks library', function() {
     // clear marks db
     await marks.service.clearApprovedTestMarks(token);
 
-    // login test user
-    await auth.login();
+    // logout test user
+    await auth.logout();
 
     await firebase.disconnect();
   });
