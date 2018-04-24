@@ -4,6 +4,7 @@ const firebase = require('../../public/src/firebase');
 const activity = require('../../public/src/lib/activity');
 const AuthModel = require('../../public/src/models/AuthModel')
 const auth = require('../utils/auth');
+const wait = require('../utils/wait');
 const assertEventOrder = require('../utils/assertEventOrder');
 
 let testCatalogId = '10000000-0000-0000-0000-000000000000';
@@ -16,12 +17,11 @@ let testPageId2 = '00000000-0000-0000-0000-000000000002';
 describe('activity library', function() {
 
   before(async () => {
-    firebase.connect();
-
-    await cleanup();
-
+    console.log(0);
     // login test user
     await auth.login();
+    
+    await cleanup();
   });
 
   it('should set activity state', async () => {
@@ -88,16 +88,15 @@ describe('activity library', function() {
       .database()
       .ref('.info/connected');
 
-    connectionRef.on('value', (snap) => {
+    connectionRef.on('value', async (snap) => {
       if (snap.val() !== true) return;
 
-      setTimeout(async () => {
-        let after = Date.now();
-  
-        await assertActivityState(before, after, testCatalogId, testPageId);
-  
-        next();
-      }, 100);
+      await wait(200);
+
+      let after = Date.now();
+      await assertActivityState(before, after, testCatalogId, testPageId);
+
+      next();
     });
 
     // fake a event from AppStateModel
@@ -107,6 +106,7 @@ describe('activity library', function() {
   it('should remove activity on logout', async () => {
     // this was destroyed in test above
     AuthModel.enableFirebaseAuthListener();
+    await wait(200);
 
     // logout test user
     await auth.logout();
@@ -122,7 +122,6 @@ describe('activity library', function() {
 
     // logout test user
     await auth.logout();
-    firebase.disconnect();
   });
 
 });
@@ -130,15 +129,19 @@ describe('activity library', function() {
 function ensureNull() {
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
-      // use admin connection to ensure state
-      let uActivity = (await admin.database().ref(`users/${TEST_UID}/activity`).once('value')).val();
-      assert.equal(uActivity, null);
-      
-      let rActivity = await admin.database().ref(`/activity/${testCatalogId}`).once('value');
-      assert.equal(rActivity.val(), null);
+      try {
+        // use admin connection to ensure state
+        let uActivity = (await admin.database().ref(`users/${TEST_UID}/activity`).once('value')).val();
+        assert.equal(uActivity, null);
+        
+        let rActivity = await admin.database().ref(`/activity/${testCatalogId}`).once('value');
+        assert.equal(rActivity.val(), null);
 
-      rActivity = await admin.database().ref(`/activity/${testCatalogId}`).once('value');
-      assert.equal(rActivity.val(), null);
+        rActivity = await admin.database().ref(`/activity/${testCatalogId}`).once('value');
+        assert.equal(rActivity.val(), null);
+      } catch(e) {
+        reject(e);
+      }
 
       resolve();
     }, 100);

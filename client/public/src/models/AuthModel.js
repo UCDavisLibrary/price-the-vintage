@@ -35,7 +35,6 @@ class AuthModel extends BaseModel {
     // auth0 library used for things like delegation 
     this.auth0 = new Auth0.Authentication({clientID: this.config.clientID, domain: this.config.domain});
     
-    this.presenceHandlers = [];
     this.enableFirebaseAuthListener();
 
     setInterval(() => {
@@ -293,6 +292,7 @@ class AuthModel extends BaseModel {
    */
   async cleanPresence() {
     let uid = this.getAuthState().user.uid;
+    if( !uid ) return;
     await marks.removeTempMark(uid);
     await activity.cleanupSessions(uid, true);
   }

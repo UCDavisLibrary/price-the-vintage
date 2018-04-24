@@ -4,6 +4,8 @@ const firebase = require('../../public/src/firebase');
 const marks = require('../../public/src/lib/marks');
 const auth = require('../utils/auth');
 const jwt = require('../utils/jwt');
+const wait = require('../utils/wait');
+const AuthModel = require('../../public/src/models/AuthModel');
 const assertEventOrder = require('../utils/assertEventOrder');
 
 let testPageId = '00000000-0000-0000-0000-000000000001';
@@ -24,8 +26,6 @@ let token = jwt(testUser);
 describe('marks library', function() {
 
   before(async () => {
-    firebase.connect();
-
     // login test user
     await auth.login();
 
@@ -78,7 +78,10 @@ describe('marks library', function() {
   it('should remove tmp mark on disconnect', async () => {
     // custom methods for testing
     await firebase.disconnect(); 
+
     firebase.connect();
+    // this was destroyed on disconnect
+    AuthModel.enableFirebaseAuthListener();
 
     let mark = await marks.getPendingMark(testPageId, marks.tmpMark.id);
     assert.equal(mark.state, 'deleted');
@@ -205,13 +208,15 @@ describe('marks library', function() {
     assert.equal(resp.length, 2);
     assert.equal(resp.findIndex(mark => mark.approved === true) > -1 , true);
     assert.equal(resp.findIndex(mark => mark.approved === false) > -1 , true);
+
+    // cleanup
+    await marks.service.clearApprovedTestMarks(token);
+    await admin.database().ref(`marks/${testPageId}`).set(null);
+    marks.store.data.byId = {};
+    await wait(200);
   });
 
   it('should check and remove stale tmp marks', async function() {
-    // first, let's cleanup from prior tests
-    await admin.database().ref(`marks/${testPageId}`).set(null);
-    marks.store.data.byId = {};
-
     // now lets add two tmp marks
     await marks.setPending(testPageId, Object.assign({isTemp: true}, pendingMark));
     await marks.setPending(testPageId, Object.assign({isTemp: true}, pendingMark));
@@ -223,6 +228,7 @@ describe('marks library', function() {
         loaded.push(marks.store.data.byId[key]);
       }
     }
+
     assert.equal(loaded.length, 2);
 
     // now set our stale time to 0
@@ -250,8 +256,6 @@ describe('marks library', function() {
 
     // logout test user
     await auth.logout();
-
-    await firebase.disconnect();
   });
 
 });

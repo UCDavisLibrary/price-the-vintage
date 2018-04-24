@@ -20,7 +20,7 @@ module.exports = {
   login : async function() {
     auth.setUserProfile(auth0Profile);
     let token = await admin.auth().createCustomToken(TEST_UID);
-    return auth.loginCustom(token);
+    await auth.loginCustom(token);
   },
   logout : function() {
     return auth.logout();

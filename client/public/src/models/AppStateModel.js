@@ -1,5 +1,6 @@
 const BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
 const AppStateStore = require('../stores/AppStateStore');
+const AuthModel = require('./AuthModel');
 const firebase = require('../firebase');
 
 /**
@@ -11,6 +12,7 @@ class AppStateModel extends BaseModel {
   constructor() {
     super();
     this.store = AppStateStore;
+    this.window = (typeof window === 'undefined') ? null : window;
 
     this.firstLoad = true;
     this._initWindowEvents();
@@ -50,10 +52,10 @@ class AppStateModel extends BaseModel {
    * @description wire update window event listeners
    */
   _initWindowEvents() {
-    if( typeof window === 'undefined' ) return;
+    if( !this.window ) return;
 
     this._setPageAndAppState(true);
-    window.addEventListener('hashchange', e => this._setPageAndAppState());
+    this.window.addEventListener('hashchange', e => this._setPageAndAppState());
   }
 
   /**
@@ -82,7 +84,7 @@ class AppStateModel extends BaseModel {
     }
 
     // split up the hash state
-    var parts = window
+    var parts = this.window
       .location
       .hash
       .replace(/#/,'')
@@ -94,10 +96,10 @@ class AppStateModel extends BaseModel {
     }
 
     // parse app state information based on location in hash route
-    parts.forEach(part => this._parseRoute(part));
+    parts.forEach((part, index) => this._parseRoute(part, index));
 
     if( this.firstLoad && this.route.edit && !this.route.markId ) {
-      return window.location.hash = this.route.catalogId+'/'+this.route.pageId
+      return this.window.location.hash = this.route.catalogId+'/'+this.route.pageId
     }
 
     this.selectedSection = this.route.section;
@@ -115,7 +117,7 @@ class AppStateModel extends BaseModel {
 
     // set the user activity, ie which catalog and page the user
     // is currently viewing (this may be empty as well).
-    this._setUserActivity(this.route.catalogId, this.route.pageId);
+    // this._setUserActivity(this.route.catalogId, this.route.pageId);
   }
 
   /**
@@ -124,7 +126,7 @@ class AppStateModel extends BaseModel {
    * this method.  very useful for debugging.
    */
   _setWindowLocation(location) {
-    window.location.hash = location;
+    this.window.location.hash = location;
   }
 
   /**
@@ -175,24 +177,24 @@ class AppStateModel extends BaseModel {
   }
 
   _isAuthRedirect() {
-    var hash = '?'+window.location.hash.replace(/^#/,'');
+    var hash = '?'+this.window.location.hash.replace(/^#/,'');
 
     // crap..
     if( this._getParamByName('error', hash) || 
         (this._getParamByName('access_token', hash) && 
         this._getParamByName('id_token', hash)) ) {
 
-        this._continueAuth0Login(window.location.hash);
+        AuthModel.continueAuth0Login(this.window.location.hash);
         return true;
     } else {
-      this._initAuthRenewAuth0();
+      AuthModel.initAuthRenewAuth0();
     }
     return false;
   }
 
   _getParamByName(name, url) {
     if (!url) {
-      url = window.location.href;
+      url = this.window.location.href;
     }
     name = name.replace(/[\[\]]/g, "\\$&");
     var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),

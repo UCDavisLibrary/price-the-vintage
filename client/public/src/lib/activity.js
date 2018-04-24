@@ -35,6 +35,7 @@ class UserActivityModel extends BaseModel {
     this.userId = '';
     this.appState = {};
 
+    this.listenersEnabled = false;
     this._onAuthUpdate = this._onAuthUpdate.bind(this);
     this._onAppStateUpdate = this._onAppStateUpdate.bind(this);
 
@@ -54,6 +55,9 @@ class UserActivityModel extends BaseModel {
    * constructor above.
    */
   enableModelListeners() {
+    if( this.listenersEnabled ) return;
+    this.listenersEnabled = true;
+
     // when auth state changes update activity
     this.MasterController.on('auth-update', this._onAuthUpdate);
 
@@ -69,6 +73,9 @@ class UserActivityModel extends BaseModel {
    * so this model is not reacting to events when not being tested.
    */
   disableModelListeners() {
+    if( !this.listenersEnabled ) return;
+    this.listenersEnabled = false;
+    
     this.MasterController.removeListener('auth-update', this._onAuthUpdate);
     this.MasterController.removeListener('app-state-update', this._onAppStateUpdate);
   }

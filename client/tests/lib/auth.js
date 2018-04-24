@@ -24,8 +24,6 @@ let fbJwt;
 describe('auth library', function() {
 
   before(async () => {
-    await firebase.connect();
-
     // set a fake Auth0 profile
     auth.setUserProfile(auth0Profile);
   });
@@ -57,10 +55,6 @@ describe('auth library', function() {
       }
     )
   });
-
-  after(async () => {
-    await firebase.disconnect();  
-  })
 
   // TODO: test anonymous
 
