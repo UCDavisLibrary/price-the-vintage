@@ -344,31 +344,31 @@ class MarksService extends BaseService {
    * 
    * @param {string} pageId - page id to stop listening to
    */
-  unlistenRef(id) {
-    if( !this.refs[id] ) return;
+  unlistenRef(pageId) {
+    if( !this.refs[pageId] ) return;
 
     if( this.log ) {
-      console.warn(`Unlistening to mark(s): ${id}`);
+      console.warn(`Unlistening to page marks: ${pageId}`);
     }
 
-    this.refs[id].off();
-    delete this.refs[id];
+    this.refs[pageId].off();
+    delete this.refs[pageId];
   }
 
   /**
    * @method cleanup
    * @description After interested parties request, this will be called.  It will let you know
-   * all the resource ids that elements are still interested in.  You are free to 
+   * all the pageIds that elements are still interested in.  You are free to 
    * remove any Firebase Reference that is NOT in this list.
    * 
-   * @param {Object} interested - hash of interested resource ids
+   * @param {Object} interested - hash of interested pageIds
    */
   cleanup(interested = {}) {
-    for( var id in this.refs ) {
-      if( !interested[id] ) {
-        this.unlistenRef(id);
+    for( var pageId in this.refs ) {
+      if( !interested[pageId] ) {
+        this.unlistenRef(pageId);
       }
-    } 
+    }
   }
 
   // TODO: remove if not used

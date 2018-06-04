@@ -1,254 +1,49 @@
-<!--
-`price-the-vintage` is the main application element.  Controls paging based on appState.
-Parses URL on hash change and sets appState.
--->
-<link rel="import" href="base/base-elements.html">
 
-<dom-module id="price-the-vintage">
-  <template>
-    <style>
-      :host {
-        display: block;
-        height: 100%;
-        position: relative;
-      }
+<style>
+  :host {
+    display: block;
+    height: 100%;
+    position: relative;
+  }
 
-      paper-toolbar {
-        --paper-toolbar-background: var(--primary-color);
-      }
+  paper-toolbar {
+    --paper-toolbar-background: var(--primary-color);
+  }
 
-      paper-header-panel {
-        --paper-header-panel-shadow: {
-          z-index: 500;
-        }
-      }
-
-      iron-pages {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        bottom: 0;
-      }
-
-      #toolbar {
-        z-index: 550;
-      }
-    </style>
-
-    <paper-header-panel style="height: 100%">
-      <paper-toolbar id="toolbar" slot="header">
-        <app-header class="flex" slot="top"></app-header>
-      </paper-toolbar>
-
-
-      <iron-pages 
-        selected="[[selectedSection]]" 
-        attr-for-selected="section" 
-        selected-attribute="active">
-
-        <app-admin-interface section="admin"></app-admin-interface>
-        <app-catalogs-list section="list"></app-catalogs-list>
-        <app-page-markup section="page"></app-page-markup>
-        <app-user-dashboard section="user"></app-user-dashboard>
-      </iron-pages>
-
-    </paper-header-panel>
-
-  </template>
-
-  <script>
-
-
-    class PriceTheVintage extends 
-          Mixin(Polymer.Element)
-          .with(EventBusMixin, AppStateMixin, AuthMixin, UserActivityMixin, CatalogsMixin) {
-
-      static get is() { return 'price-the-vintage'; }
-
-      static get properties() {
-        return {
-            /**
-             * Controls the iron list selected page
-             **/
-            selectedSection : {
-              type : String,
-              value : ''
-            }
-          }
-      }
-
-      constructor() {
-        super();
-
-        this.bind = {
-          'ui-set-location' : '_setWindowUrl'
-        };
-      }
-
-      ready() {
-        this.active = true;
-        super.ready();
-
-        // listen for has changes to update app state
-        window.addEventListener('hashchange', this._setPageAndAppState.bind(this));
-
-        // trigger update of app state on first load
-        this._setPageAndAppState(null, true);
-      }
-
-      _onAuthUpdate(e) {
-        this.authState = e;
-
-        if( this.route && e.state === 'loggedIn' && this.route.catalogId && this.route.pageId ) {
-          this._setUserActivity(this.route.catalogId, this.route.pageId);
-        }
-      }
-
-      _isAuthRedirect() {
-        var hash = '?'+window.location.hash.replace(/^#/,'');
-
-        // crap..
-        if( this._getParamByName('error', hash) || 
-            (this._getParamByName('access_token', hash) && 
-            this._getParamByName('id_token', hash)) ) {
-
-            this._continueAuth0Login(window.location.hash);
-            return true;
-        } else {
-          this._initAuthRenewAuth0();
-        }
-        return false;
-      }
-
-      _getParamByName(name, url) {
-        if (!url) {
-          url = window.location.href;
-        }
-        name = name.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-      }
-
-      /**
-       * Set application state from url hash.  Cause the polymer app-route
-       * still falls short in some areas and is a mess to implement. 
-       **/
-      _setPageAndAppState(event, firstLoad) {
-
-        // are we in the middle of auth0 redirect?
-        // if so, ignore this.
-        if( firstLoad && this._isAuthRedirect() ) return;
-
-        // default route information
-        this.route = {
-          section : 'list',
-          catalog : '',
-          page : '',
-          edit : false,
-          viewMark : false,
-          markId : '',
-          catalogId : '',
-          pageId : ''
-        }
-
-        // split up the hash state
-        var parts = window
-          .location
-          .hash
-          .replace(/#/,'')
-          .split('/');
-        
-        // remove any empty spots
-        for( var i = parts.length-1; i >= 0; i-- ) {
-          if( !parts[i] ) parts.splice(i);
-        }
-
-        // parse app state information based on location in hash route
-        parts.forEach(this._parseRoute.bind(this));
-
-        if( firstLoad && this.route.edit && !this.route.markId ) {
-          return window.location.hash = this.route.catalogId+'/'+this.route.pageId
-        }
-
-        this.selectedSection = this.route.section;
-
-        // set the current app state
-        this._setAppState({
-            section: this.route.section,
-            editingMark: this.route.edit,
-            viewingMark: this.route.viewMark,
-            creatingMark : (this.route.edit && !this.route.markId),
-            markId : this.route.markId,
-            pageId : this.route.pageId,
-            catalogId : this.route.catalogId
-        });
-
-        // set the selected catalog (this may be empty)
-        // this.emit('select-catalog-page', {id: this.route.pageId});
-
-        // set the user activity, ie which catalog and page the user
-        // is currently viewing (this may be empty as well).
-        this._setUserActivity(this.route.catalogId, this.route.pageId);
-      }
-
-      /**
-       * Parse an individual route section
-       **/
-      _parseRoute(value, index) {
-        switch(index) {
-          case 0:
-            if( value === 'admin') {
-
-              if( this.authState ) {
-                if( this.authState.state === 'notLoggedIn' || !this.authState.user ) {
-                  console.warn('No user, admin page not allowed, redirecting', this.authState);
-                  window.location.hash = '';
-                  return;
-                } else if( !this.authState.user.isAdmin ) {
-                  console.warn('User is not an admin, redirecting', this.authState.user);
-                  window.location.hash = '';
-                  return;
-                }
-              }
-
-              this.route.section = 'admin';
-              return;
-            } else if( value === 'user' ) {
-              this.route.section = 'user';
-              return;
-            }
-
-            this.route.section = 'page';
-            this.route.catalogId = value;
-
-            break;
-          case 1:
-            this.route.section = 'page';
-            this.route.pageId = value;
-            break;
-          case 2:
-            if( value === 'edit') this.route.edit = true;
-            else if( value === 'view') this.route.viewMark = true;
-            break;
-          case 3:
-            if( this.route.edit || this.route.viewMark ) {
-              this.route.markId = value;
-            }
-            break;
-        }
-      }
-
-      _setWindowUrl(hash) {
-        window.location.hash = hash;
-      } 
-
+  paper-header-panel {
+    --paper-header-panel-shadow: {
+      z-index: 500;
     }
+  }
 
-    window.customElements.define(PriceTheVintage.is, PriceTheVintage);
-  </script>
+  iron-pages {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+  }
 
-</dom-module>
+  #toolbar {
+    z-index: 550;
+  }
+</style>
+
+<paper-header-panel style="height: 100%">
+  <paper-toolbar id="toolbar" slot="header">
+    <app-header class="flex" slot="top"></app-header>
+  </paper-toolbar>
+
+
+  <iron-pages 
+    selected="[[selectedSection]]" 
+    attr-for-selected="section" 
+    selected-attribute="active">
+
+    <app-admin-interface section="admin"></app-admin-interface>
+    <app-catalogs-list section="list"></app-catalogs-list>
+    <app-page-markup section="page"></app-page-markup>
+    <app-user-dashboard section="user"></app-user-dashboard>
+  </iron-pages>
+
+</paper-header-panel>

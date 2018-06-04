@@ -1,113 +1,45 @@
-<dom-module id="app-price-form-input">
-  <template>
-    <style>
-      :host {
-        display: block
-      }
+<style>
+  :host {
+    display: block
+  }
 
-      .label {
-        white-space: nowrap;
-        text-transform: uppercase;
-        color: var(--accent-color);
-        font-weight: 400;
-        font-size: 12px;
-        padding: 5px 0;
-      }
+  .label {
+    white-space: nowrap;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    font-weight: 400;
+    font-size: 12px;
+    padding: 5px 0;
+  }
 
-      .label[active] {
-        color: var(--default-primary-color);
-      }
+  .label[active] {
+    color: var(--default-primary-color);
+  }
 
-      cork-input[active] {
-        margin: 0;
-        --cork-border-width: 1px;
-        --cork-border-color: var(--default-primary-color);
-      }
+  cork-input[active] {
+    margin: 0;
+    --cork-border-width: 1px;
+    --cork-border-color: var(--default-primary-color);
+  }
 
-      .value-label {
-        font-size: var(--cork-font-size, 16px);
-      }
+  .value-label {
+    font-size: var(--cork-font-size, 16px);
+  }
 
-      [hidden] {
-        display: none;
-      }
-    </style>
+  [hidden] {
+    display: none;
+  }
+</style>
 
-    <div class="label" active$="[[active]]">[[label]]</div>
-    <cork-input 
-      hidden$="[[viewMode]]"
-      type="[[type]]" 
-      value="{{value}}" 
-      active$="[[active]]"
-      placeholder="[[placeholder]]"
-      on-focus="_onFocus"
-      on-blur="_onBlur">
-    </cork-input>
+<div class="label" active$="[[active]]">[[label]]</div>
+<cork-input 
+  hidden$="[[viewMode]]"
+  type="[[type]]" 
+  value="{{value}}" 
+  active$="[[active]]"
+  placeholder="[[placeholder]]"
+  on-focus="_onFocus"
+  on-blur="_onBlur">
+</cork-input>
 
-    <div hidden$="[[!viewMode]]" class="value-label">[[formattedValue]]</div>
-
-  </template>
-
-  <script>
-    class AppPriceFormInput extends Polymer.Element {
-
-      static get is() { return 'app-price-form-input'; }
-
-      static get properties() {
-        return {
-          value : {
-            type : String,
-            value : '',
-            notify : true
-          },
-          formattedValue : {
-            type : String,
-            computed : '_computeFormattedValue(value, isDollar)'
-          },
-          placeholder : {
-            type : String,
-            value : ''
-          },
-          type : {
-            type : String,
-            value : 'text'
-          },
-          label : {
-            type : String,
-            value : ''
-          },
-          active : {
-            type : Boolean,
-            value : false
-          },
-          viewMode : {
-            type : Boolean,
-            value : false
-          },
-          isDollar : {
-            type : Boolean,
-            value : false
-          }
-        };
-      }
-
-      _computeFormattedValue(value, isDollar) {
-        if( !isDollar ) return value;
-        if( value === '-' ) return value;
-        return '$'+parseFloat(value || 0).toFixed(2);
-      }
-
-      _onFocus() {
-        this.active = true;
-      }
-
-      _onBlur() {
-        this.active = false;
-      }
-
-
-    }
-
-    window.customElements.define(AppPriceFormInput.is, AppPriceFormInput);
-  </script>
-</dom-module>
+<div hidden$="[[!viewMode]]" class="value-label">[[formattedValue]]</div>

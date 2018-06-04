@@ -1,10 +1,9 @@
-var BaseModel = require('cork-app-utils').BaseModel;
-var activityController = require('./ActivityModel');
-var markupController = require('./MarksModel');
-// var pagesController = require('./PagesModel');
+var BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
+var activity = require('./lib/activity');
+var marks = require('../lib/marks');
 
 // number of seconds to query for interested parties
-var QUERY_INTERVAL = 10; 
+var QUERY_INTERVAL = 20; 
 
 /**
  * Controller for handling unregistering firebase listeners that are no longer used.
@@ -14,44 +13,44 @@ class InterestedPartyModel extends BaseModel {
   constructor() {
     super();
 
-    this.buffer = {};
+    this.responses = {};
     this.awaitingResponses = false;
     this.bufferTimer = -1;
 
-    // we want to listen for elements telling us they are interested in a resource
-    // this.eventBus.on('interested-party-response', this.onResponse.bind(this));
-
     // run every QUERY_INTERVAL seconds
     setInterval(this.query.bind(this), QUERY_INTERVAL * 1000);
+
+    this.TYPES = {
+      ACTIVITY : 'activity',
+      PAGE : 'page'
+    }
 
     this.events = {
       INTERESTED_PARTY_REQUEST : 'interested-party-request'
     }
 
-    this.registerIOC('InterestedPartyModel');
+    this.register('InterestedPartyModel');
   }
   
   /**
-   * Start the polling process.  This sends a single event that elements who 
-   * listen to Firebase realtime resources should listen for.  They should then
-   * send back a interested-party-response when received.  These responses will
-   * be buffered in the 'buffer' buy resource type.  After 100ms of no responses
+   * @method query
+   * @description Start the polling process.  This sends a single event that 
+   * elements who listen to Firebase realtime resources should listen for.  They 
+   * should then send back a interested-party-response when received.  These responses 
+   * will be buffered in the 'responses' buy resource type.  After 100ms of no responses
    * resources will be 'cleaned' (disconnected from firebase) based on resource
    * id/type that did NOT respond.
    */
   query() {
-    this.buffer = {
-      markup : {},
-      activity : {},
-      pages : {}
-    };
+    this.responses = {};
     this.awaitingResponses = true;
-    this.eventBus.emit(this.events.INTERESTED_PARTY_REQUEST);
+    this.eventBus.emit(this.events.INTERESTED_PARTY_REQUEST, {TYPES: this.TYPES});
     this.onResponse();
   }
 
   /**
-   * Handle interested-party-response
+   * @method onResponse
+   * @description Handle interested-party-response
    * 
    * @param {Object} e - event bus event
    * @param {Object} e.id - resource id
@@ -66,6 +65,10 @@ class InterestedPartyModel extends BaseModel {
     // add to buffer
     if( e ) {
       e.types.forEach((type) => {
+        if( !this.responses[type] ) {
+          this.responses[type] = {};
+        }
+
         if( e.ids ) {
           e.ids.forEach(id => this.buffer[type][id] = true);
         } else {
@@ -75,7 +78,7 @@ class InterestedPartyModel extends BaseModel {
     }
 
     // wait 100ms past last response, then run cleanup methods
-    if( this.bufferTimer != -1 ) {
+    if( this.bufferTimer !== -1 ) {
       clearTimeout(this.bufferTimer);
     }
 
@@ -83,9 +86,8 @@ class InterestedPartyModel extends BaseModel {
       this.awaitingResponses = false;
       this.bufferTimer = -1;
 
-      activityController.cleanup(this.buffer.activity);
-      markupController.cleanup(this.buffer.markup);
-      // pagesController.cleanup(this.buffer.pages);
+      activity.cleanup(this.responses.activity);
+      marks.cleanup(this.responses.page);
     }, 100);
   }
 }

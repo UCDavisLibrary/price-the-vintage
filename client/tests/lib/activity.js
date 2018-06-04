@@ -17,7 +17,6 @@ let testPageId2 = '00000000-0000-0000-0000-000000000002';
 describe('activity library', function() {
 
   before(async () => {
-    console.log(0);
     // login test user
     await auth.login();
     

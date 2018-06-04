@@ -1,51 +1,16 @@
+<style>
+  :host {
+    display: block;
+    left: -125px !important;
+    top: -2px !important;
+    position: absolute !important;
+  }
+  cork-tag {
+    color: white;
+    /* height: 30px; */
+  }
+</style>
 
-<dom-module id="app-help-text-control">
-  <template>
-    <style>
-      :host {
-        display: block;
-        left: -125px !important;
-        top: -2px !important;
-        position: absolute !important;
-      }
-      cork-tag {
-        color: white;
-        /* height: 30px; */
-      }
-    </style>
-
-    <cork-tag right-arrow id="view" on-click="hide">
-      <div style="padding: 2px 0 2px 2px; line-height: 14px;">Select marker<br /> to begin</div>
-    </cork-tag>
-
-  </template>
-  <script>
-
-
-    L.Control.HelpTextControl = L.Control.extend({
-      onAdd: function(map) {
-          var control = L.DomUtil.create('app-help-text-control');
-          return control;
-      },
-      onRemove: function(map) {}
-    });
-
-    L.control.helpTextControl = function(opts) {
-      return new L.Control.HelpTextControl(opts);
-    }
-
-    class AppHelpTextControl extends Polymer.Element {
-
-      static get is() { return 'app-help-text-control' }
-
-      hide() {
-        this.style.display = 'none';
-        var event = new CustomEvent('help-text-dismissed', {bubbles: true, composed: true});
-        this.dispatchEvent(event);
-      }
-
-    }
-    window.customElements.define(AppHelpTextControl.is, AppHelpTextControl);
-
-  </script>
-</dom-module>
+<cork-tag right-arrow id="view" on-click="hide">
+  <div style="padding: 2px 0 2px 2px; line-height: 14px;">Select marker<br /> to begin</div>
+</cork-tag>
