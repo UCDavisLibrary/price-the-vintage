@@ -318,12 +318,37 @@
     fs-extra "^4.0.2"
     isomorphic-fetch "^2.2.1"
 
+"@ucd-lib/cork-cancel-button@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-cancel-button/-/cork-cancel-button-1.0.0.tgz#f714937ff5753b06d54423a110c7fc92f519abe0"
+  dependencies:
+    "@polymer/iron-icon" "^3.0.0-pre.19"
+    "@polymer/paper-button" "^3.0.0-pre.19"
+    "@polymer/polymer" "^3.0.2"
+    "@ucd-lib/cork-icons" "^1.0.0"
+
 "@ucd-lib/cork-icons@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@ucd-lib/cork-icons/-/cork-icons-1.0.0.tgz#00cec68aecf127489f02217493e3934f49ab466c"
   dependencies:
     "@polymer/iron-icon" "^3.0.0-pre.12"
     "@polymer/iron-iconset-svg" "^3.0.0-pre.12"
+
+"@ucd-lib/cork-popup-button@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-popup-button/-/cork-popup-button-1.0.0.tgz#18ce5dca4675f51acb72ec45f30ae51c120574d2"
+  dependencies:
+    "@polymer/iron-icon" "^3.0.0-pre.19"
+    "@polymer/iron-icons" "^3.0.0-pre.19"
+    "@polymer/polymer" "^3.0.2"
+    "@ucd-lib/cork-icons" "^1.0.0"
+
+"@ucd-lib/cork-select@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-select/-/cork-select-1.0.0.tgz#5ec4bd4cd8b14e1bddbe7bed0901fc3fe1796f54"
+  dependencies:
+    "@polymer/polymer" "^3.0.2"
+    "@ucd-lib/cork-popup-button" "^1.0.0"
 
 "@ucd-lib/cork-style@^1.0.0":
   version "1.0.0"
