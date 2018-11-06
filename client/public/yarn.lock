@@ -172,7 +172,7 @@
     "@polymer/iron-iconset-svg" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/iron-iconset-svg@^3.0.0-pre.12", "@polymer/iron-iconset-svg@^3.0.0-pre.26":
+"@polymer/iron-iconset-svg@^3.0.0-pre.12", "@polymer/iron-iconset-svg@^3.0.0-pre.19", "@polymer/iron-iconset-svg@^3.0.0-pre.26":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@polymer/iron-iconset-svg/-/iron-iconset-svg-3.0.1.tgz#568d6e7dbc120299dae63be3600aeba0d30ddbea"
   dependencies:
@@ -344,16 +344,16 @@
     "@polymer/polymer" "^3.0.2"
     "@ucd-lib/cork-icons" "^1.0.0"
 
-"@ucd-lib/cork-icons@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-icons/-/cork-icons-1.0.0.tgz#00cec68aecf127489f02217493e3934f49ab466c"
+"@ucd-lib/cork-icons@^1.0.0", "@ucd-lib/cork-icons@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-icons/-/cork-icons-1.0.1.tgz#17c84d6516a881b96abc7b3e7642f55a80889ce1"
   dependencies:
-    "@polymer/iron-icon" "^3.0.0-pre.12"
-    "@polymer/iron-iconset-svg" "^3.0.0-pre.12"
+    "@polymer/iron-icon" "^3.0.0-pre.19"
+    "@polymer/iron-iconset-svg" "^3.0.0-pre.19"
 
-"@ucd-lib/cork-popup-button@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-popup-button/-/cork-popup-button-1.0.0.tgz#18ce5dca4675f51acb72ec45f30ae51c120574d2"
+"@ucd-lib/cork-popup-button@1.0.1", "@ucd-lib/cork-popup-button@1.0.2", "@ucd-lib/cork-popup-button@^1.0.0":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-popup-button/-/cork-popup-button-1.0.1.tgz#d28f9bbec9ba1069f450945c00793e299bb5c4b9"
   dependencies:
     "@polymer/iron-icon" "^3.0.0-pre.19"
     "@polymer/iron-icons" "^3.0.0-pre.19"

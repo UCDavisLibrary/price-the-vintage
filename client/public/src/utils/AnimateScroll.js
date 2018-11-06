@@ -34,4 +34,8 @@ class AnimateScroll {
   }
 }
 
+if( typeof window !== 'undefined' ) {
+  window.AnimateScroll = AnimateScroll;
+}
+
 module.exports = AnimateScroll;

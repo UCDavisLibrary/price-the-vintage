@@ -23,6 +23,7 @@
     "@ucd-lib/cork-app-load": "^0.1.3",
     "@ucd-lib/cork-app-utils": "^4.1.2",
     "@ucd-lib/cork-cancel-button": "^1.0.0",
+    "@ucd-lib/cork-popup-button": "^1.0.1",
     "@ucd-lib/cork-select": "^1.0.0",
     "@ucd-lib/cork-style": "^1.0.0",
     "@ucd-lib/cork-tag": "^1.0.0",
@@ -48,6 +49,8 @@
     "string-width": "2.1.1",
     "strip-ansi": "4.0.0",
     "is-fullwidth-code-point": "2.0.0",
-    "ansi-regex": "3.0.0"
+    "ansi-regex": "3.0.0",
+    "@ucd-lib/cork-popup-button": "1.0.1",
+    "@ucd-lib/cork-icons": "1.0.1"
   }
 }

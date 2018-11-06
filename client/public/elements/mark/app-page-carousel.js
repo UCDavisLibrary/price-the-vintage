@@ -29,6 +29,8 @@ class AppPageCarousel extends Mixin(PolymerElement)
     this.bind = {
       'ui-clear-search-catalog-pages' : '_clearSearch'
     }
+
+    
   }
 
   ready() {

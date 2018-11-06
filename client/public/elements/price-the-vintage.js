@@ -1,8 +1,20 @@
 import {PolymerElement, html} from "@polymer/polymer"
 import template from "./price-the-vintage.html"
 
+import "@polymer/paper-header-panel"
+import "@polymer/paper-toolbar"
+import "@polymer/iron-pages"
+
+import "@ucd-lib/cork-app-utils"
+
+import "../src/utils/AnimateScroll"
+import "../src/utils/ToggleStateMixin"
+
+import "./header/app-header"
+
+
 export class PriceTheVintage extends Mixin(PolymerElement)
-  .with(EventBusMixin, AppStateMixin, AuthMixin, UserActivityMixin, CatalogsMixin) {
+  .with(EventInterface) {
 
   static get properties() {
     return {
@@ -23,6 +35,8 @@ export class PriceTheVintage extends Mixin(PolymerElement)
   constructor() {
     super();
 
+    this._injectModel('AuthModel', 'UserActivityModel')
+
     this.bind = {
       'ui-set-location' : '_setWindowUrl'
     };
@@ -37,7 +51,7 @@ export class PriceTheVintage extends Mixin(PolymerElement)
     this.authState = e;
 
     if( this.route && e.state === 'loggedIn' && this.route.catalogId && this.route.pageId ) {
-      this._setUserActivity(this.route.catalogId, this.route.pageId);
+      this.UserActivityModel.set(this.route.catalogId, this.route.pageId);
     }
   }
 
