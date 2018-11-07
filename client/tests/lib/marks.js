@@ -109,7 +109,7 @@ describe('marks library', function() {
 
   it('should listen to page marks', () => {
     return assertEventOrder(
-      marks.MasterController, 
+      marks.EventBus, 
       marks.store.events.MARKS_UPDATE,
       ['saving', 'loaded', 'saving', 'loaded', 'deleting', 'deleted'],
       async () => {
@@ -143,7 +143,7 @@ describe('marks library', function() {
     assert.equal(marks.service.refs[testPageId], undefined);
 
     return assertEventOrder(
-      marks.MasterController, 
+      marks.EventBus, 
       marks.store.events.MARKS_UPDATE,
       ['saving', 'loaded', 'saving', 'loaded', 'deleting', 'deleted'],
       async () => {
@@ -178,7 +178,7 @@ describe('marks library', function() {
     }]
 
     await assertEventOrder(
-      marks.MasterController, marks.store.events.MARKS_UPDATE, eventOrder,
+      marks.EventBus, marks.store.events.MARKS_UPDATE, eventOrder,
       async () => {
         // add mark
         let mark = await marks.setPending(testPageId, pendingMark);

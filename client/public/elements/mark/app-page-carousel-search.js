@@ -2,7 +2,7 @@ import {PolymerElement, html} from "@polymer/polymer"
 import template from "./app-page-carousel-search.html"
 
 export class AppPageCarouselSearch extends Mixin(PolymerElement)
-  .with(EventBusMixin, ToggleStateMixin) {
+  .with(EventInterface, ToggleStateMixin) {
 
   static get properties() {
     return {

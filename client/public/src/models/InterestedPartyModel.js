@@ -1,5 +1,5 @@
 var BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
-var activity = require('./lib/activity');
+var activity = require('../lib/activity');
 var marks = require('../lib/marks');
 
 // number of seconds to query for interested parties
@@ -44,7 +44,7 @@ class InterestedPartyModel extends BaseModel {
   query() {
     this.responses = {};
     this.awaitingResponses = true;
-    this.eventBus.emit(this.events.INTERESTED_PARTY_REQUEST, {TYPES: this.TYPES});
+    this.EventBus.emit(this.events.INTERESTED_PARTY_REQUEST, {TYPES: this.TYPES});
     this.onResponse();
   }
 

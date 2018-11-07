@@ -1,5 +1,5 @@
 import {PolymerElement, html} from "@polymer/polymer"
-import template from "./app-header-editing.html"
+import template from "./app-header-catalogs.html"
 
 import "@polymer/paper-icon-button"
 
@@ -12,7 +12,7 @@ class AppHeaderCatalogs extends Mixin(PolymerElement)
 
   constructor() {
     super();
-    this._injectModel('CatalogModel', 'AppStateModel');
+    this._injectModel('CatalogsModel', 'AppStateModel');
   }
 
   ready() {
@@ -28,8 +28,9 @@ class AppHeaderCatalogs extends Mixin(PolymerElement)
 
   async _onAppStateUpdate(e) {
     this.catalogId = e.catalogId;
+    if( !this.catalogId ) return;
 
-    e = await this._getCatalog(e.catalogId)
+    e = await this.CatalogsModel.get(e.catalogId);
     this._onCatalogUpdate(e);
   }
 

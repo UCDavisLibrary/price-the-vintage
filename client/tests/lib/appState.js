@@ -25,7 +25,7 @@ describe('AppState Model', function() {
 
   it('should set app state', async () => {
     await assertEventOrder(
-      AppStateModel.MasterController, 
+      AppStateModel.EventBus, 
       'app-state-update', 
       [{foo: 'bar'}, {foo: 'baz'}], 
       async() => {
@@ -40,7 +40,7 @@ describe('AppState Model', function() {
 
   it('should set app state on init', async() => {
     await assertEventOrder(
-      AppStateModel.MasterController, 
+      AppStateModel.EventBus, 
       'app-state-update', 
       [{
         catalogId : testCatalogId,
@@ -60,7 +60,7 @@ describe('AppState Model', function() {
 
   it('should set app state on hash change', async() => {
     await assertEventOrder(
-      AppStateModel.MasterController, 
+      AppStateModel.EventBus, 
       'app-state-update', 
       [{
         catalogId : testCatalogId2,

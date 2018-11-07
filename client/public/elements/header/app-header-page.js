@@ -23,10 +23,11 @@ class AppHeaderPage extends Mixin(PolymerElement)
 
     this.$.helpPopup = document.querySelector('app-mark-help-popup');
 
-    if( !window.localStorage.getItem('first-catalog-viewing') ) {
-      this.$.helpPopup.open();
-      window.localStorage.setItem('first-catalog-viewing', 'true');
-    } 
+    console.warn('TODO: enable help popup')
+    // if( !window.localStorage.getItem('first-catalog-viewing') ) {
+    //   this.$.helpPopup.open();
+    //   window.localStorage.setItem('first-catalog-viewing', 'true');
+    // } 
   }
 
   _onCatalogUpdate(e) {
@@ -62,7 +63,9 @@ class AppHeaderPage extends Mixin(PolymerElement)
 
   async _onAppStateUpdate(e) {
     this.catalogId = e.catalogId;
-    e = await this.CatalogModel.get(this.catalogId);
+    if( !this.catalogId ) return;
+
+    e = await this.CatalogsModel.get(this.catalogId);
     this._onCatalogUpdate(e);
   }
 

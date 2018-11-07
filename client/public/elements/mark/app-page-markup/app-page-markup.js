@@ -10,8 +10,8 @@ import PageMarkup_CatalogPageMixin from "./catalog-page-controls"
 import PageMarkup_MapMixin from "./map-controls"
 import PageMarkup_MarkMixin from "./mark-controls"
 
-import leafletCSS from "leaflet/dist/leaflet.css"
-import leafletDrawCSS from "leaflet-draw/dist/leaflet.draw.css"
+import leafletCss from "leaflet/dist/leaflet.css"
+import leafletDrawCss from "leaflet-draw/dist/leaflet.draw.css"
 
 export class AppPageMarkup extends Mixin(PolymerElement)
   .with(EventInterface, ToggleStateMixin,
@@ -35,8 +35,8 @@ export class AppPageMarkup extends Mixin(PolymerElement)
   }
 
   static get template() {
-    return html`<style>${leafletCSS}</style>
-      <style>${leafletDrawCSS}</style>
+    return html`<style>${leafletCss}</style>
+      <style>${leafletDrawCss}</style>
       ${template}
     `;
   }

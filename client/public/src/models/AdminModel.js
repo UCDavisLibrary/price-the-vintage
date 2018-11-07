@@ -1,4 +1,4 @@
-var BaseModel = require('cork-app-utils').BaseModel;
+var BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
 var firebase = require('../firebase');
 
 var AdminService = require('../services/AdminService');
@@ -8,7 +8,7 @@ var MarksStore = require('../stores/MarksStore');
 var PagesStore = require('../stores/PagesStore');
 var AdminStore = require('../stores/AdminStore');
 var AuthStore = require('../stores/AuthStore');
-var MarksModel = require('../models/MarksModel');
+var MarksModel = require('../lib/marks');
 
 /**
  * Preform admin tasks
@@ -28,8 +28,7 @@ class AdminModel extends BaseModel {
       pages : PagesService,
       admin : AdminService
     };
-
-    this.registerIOC('AdminModel');
+    this.register('AdminModel');
   }
 
   /**

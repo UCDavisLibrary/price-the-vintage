@@ -6,7 +6,11 @@ import "@polymer/paper-toolbar"
 import "@polymer/iron-pages"
 
 import "@ucd-lib/cork-app-utils"
+import "@ucd-lib/cork-style"
 
+import "./styles/shared-styles"
+
+import "../src"
 import "../src/utils/AnimateScroll"
 import "../src/utils/ToggleStateMixin"
 

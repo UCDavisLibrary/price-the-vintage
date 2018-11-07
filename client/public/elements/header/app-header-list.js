@@ -27,7 +27,7 @@ class AppHeaderList extends Mixin(PolymerElement)
 
   constructor() {
     super();
-    this._injectModels('CatalogsModel', 'AppStateModel');
+    this._injectModel('CatalogsModel', 'AppStateModel');
   }
 
   ready() {

@@ -156,7 +156,7 @@
   dependencies:
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/iron-icon@^3.0.0-pre.12", "@polymer/iron-icon@^3.0.0-pre.19", "@polymer/iron-icon@^3.0.0-pre.26":
+"@polymer/iron-icon@^3.0.0-pre.19", "@polymer/iron-icon@^3.0.0-pre.26":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@polymer/iron-icon/-/iron-icon-3.0.1.tgz#93211c39d8825fe4965a68419566036c1df291eb"
   dependencies:
@@ -164,7 +164,7 @@
     "@polymer/iron-meta" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/iron-icons@^3.0.0-pre.19", "@polymer/iron-icons@^3.0.0-pre.26":
+"@polymer/iron-icons@^3.0.0-pre.1", "@polymer/iron-icons@^3.0.0-pre.19", "@polymer/iron-icons@^3.0.0-pre.26":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@polymer/iron-icons/-/iron-icons-3.0.1.tgz#c1bd31d8483afbdb5422cdc384081e19c9267cfe"
   dependencies:
@@ -172,7 +172,7 @@
     "@polymer/iron-iconset-svg" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/iron-iconset-svg@^3.0.0-pre.12", "@polymer/iron-iconset-svg@^3.0.0-pre.19", "@polymer/iron-iconset-svg@^3.0.0-pre.26":
+"@polymer/iron-iconset-svg@^3.0.0-pre.19", "@polymer/iron-iconset-svg@^3.0.0-pre.26":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@polymer/iron-iconset-svg/-/iron-iconset-svg-3.0.1.tgz#568d6e7dbc120299dae63be3600aeba0d30ddbea"
   dependencies:
@@ -259,7 +259,7 @@
     "@polymer/iron-flex-layout" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/paper-icon-button@^3.0.0-pre.26":
+"@polymer/paper-icon-button@^3.0.0-pre.1", "@polymer/paper-icon-button@^3.0.0-pre.26":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@polymer/paper-icon-button/-/paper-icon-button-3.0.1.tgz#4af7129c82de9d4a0ad59d43e1d3d8ec93414fbf"
   dependencies:
@@ -314,7 +314,7 @@
     "@polymer/paper-styles" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/polymer@^3.0.0", "@polymer/polymer@^3.0.0-pre.12", "@polymer/polymer@^3.0.2", "@polymer/polymer@^3.1.0":
+"@polymer/polymer@^3.0.0", "@polymer/polymer@^3.0.0-pre.1", "@polymer/polymer@^3.0.0-pre.12", "@polymer/polymer@^3.0.2", "@polymer/polymer@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@polymer/polymer/-/polymer-3.1.0.tgz#3e1b7447a1e350fd654e1823def655d0f0828a70"
   dependencies:
@@ -344,14 +344,22 @@
     "@polymer/polymer" "^3.0.2"
     "@ucd-lib/cork-icons" "^1.0.0"
 
-"@ucd-lib/cork-icons@^1.0.0", "@ucd-lib/cork-icons@^1.0.1":
+"@ucd-lib/cork-icons@1.0.1", "@ucd-lib/cork-icons@^1.0.0":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@ucd-lib/cork-icons/-/cork-icons-1.0.1.tgz#17c84d6516a881b96abc7b3e7642f55a80889ce1"
   dependencies:
     "@polymer/iron-icon" "^3.0.0-pre.19"
     "@polymer/iron-iconset-svg" "^3.0.0-pre.19"
 
-"@ucd-lib/cork-popup-button@1.0.1", "@ucd-lib/cork-popup-button@1.0.2", "@ucd-lib/cork-popup-button@^1.0.0":
+"@ucd-lib/cork-pagination@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-pagination/-/cork-pagination-2.1.1.tgz#e704e102c642f12927aafd54a83aacb4e5396e67"
+  dependencies:
+    "@polymer/iron-icons" "^3.0.0-pre.1"
+    "@polymer/paper-icon-button" "^3.0.0-pre.1"
+    "@polymer/polymer" "^3.0.0-pre.1"
+
+"@ucd-lib/cork-popup-button@1.0.1", "@ucd-lib/cork-popup-button@^1.0.0", "@ucd-lib/cork-popup-button@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@ucd-lib/cork-popup-button/-/cork-popup-button-1.0.1.tgz#d28f9bbec9ba1069f450945c00793e299bb5c4b9"
   dependencies:
@@ -367,9 +375,9 @@
     "@polymer/polymer" "^3.0.2"
     "@ucd-lib/cork-popup-button" "^1.0.0"
 
-"@ucd-lib/cork-style@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-style/-/cork-style-1.0.0.tgz#e802d339fa942f193f0b8399182e8bba083c829c"
+"@ucd-lib/cork-style@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-style/-/cork-style-1.0.1.tgz#8597200b1617823783af2478dff7c00c22222448"
   dependencies:
     "@polymer/paper-styles" "^3.0.0-pre.12"
     "@polymer/polymer" "^3.0.0-pre.12"
@@ -510,6 +518,10 @@ cliui@^3.0.3:
     string-width "^1.0.1"
     strip-ansi "^3.0.1"
     wrap-ansi "^2.0.0"
+
+clone@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
 
 code-point-at@^1.0.0:
   version "1.1.0"

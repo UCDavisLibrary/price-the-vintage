@@ -59,10 +59,10 @@ class UserActivityModel extends BaseModel {
     this.listenersEnabled = true;
 
     // when auth state changes update activity
-    this.MasterController.on('auth-update', this._onAuthUpdate);
+    this.EventBus.on('auth-update', this._onAuthUpdate);
 
     // when app state changes update activity
-    this.MasterController.on('app-state-update', this._onAppStateUpdate);
+    this.EventBus.on('app-state-update', this._onAppStateUpdate);
   }
 
   /**
@@ -76,8 +76,8 @@ class UserActivityModel extends BaseModel {
     if( !this.listenersEnabled ) return;
     this.listenersEnabled = false;
     
-    this.MasterController.removeListener('auth-update', this._onAuthUpdate);
-    this.MasterController.removeListener('app-state-update', this._onAppStateUpdate);
+    this.EventBus.removeListener('auth-update', this._onAuthUpdate);
+    this.EventBus.removeListener('app-state-update', this._onAppStateUpdate);
   }
 
   /**

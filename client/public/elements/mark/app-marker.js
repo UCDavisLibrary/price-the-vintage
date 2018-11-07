@@ -21,7 +21,7 @@ L.AppMarker = L.Icon.extend({
 L.appMarker = new L.AppMarker();
 
 export class AppMarker extends Mixin(PolymerElement)
-  .with(EventBusMixin, ToggleStateMixin) {
+  .with(EventInterface, ToggleStateMixin) {
 
   static get properties() {
     return {

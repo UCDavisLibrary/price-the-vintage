@@ -1,156 +1,104 @@
-<dom-module id="app-admin-card">
-  <template>
-    <style include="shared-styles"></style>
-    <style>
-      :host {
-        --card-height: 290px;
-        --card-width: 200px;
+<style include="shared-styles">
+  :host {
+    --card-height: 290px;
+    --card-width: 200px;
 
-        cursor: pointer;
-        display: inline-block;
-        vertical-align: top;
-        width: var(--thumbnail-width);
-        height: var(--thumbnail-height);
-        position: relative;
-        margin: 8px;
-        text-align: center;
-        background: white;
-      }
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: top;
+    width: var(--thumbnail-width);
+    height: var(--thumbnail-height);
+    position: relative;
+    margin: 8px;
+    text-align: center;
+    background: white;
+  }
 
-      paper-material {
-        display: block;
-        height: var(--card-height);
-        width: var(--card-width);
-      }
+  paper-material {
+    display: block;
+    height: var(--card-height);
+    width: var(--card-width);
+  }
 
-      iron-image {
-        width: var(--card-width);
-        height: 100px;
-      }
+  iron-image {
+    width: var(--card-width);
+    height: 100px;
+  }
 
-      .updated-text {
-        font-style: italic;
-        font-size: 12px;
-        font-weight: 400;
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, .8);
-        color: white;
-        padding: 6px;
-        overflow: hidden;
-      }
+  .updated-text {
+    font-style: italic;
+    font-size: 12px;
+    font-weight: 400;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, .8);
+    color: white;
+    padding: 6px;
+    overflow: hidden;
+  }
 
-      .details {
-        height: 90px;
-        margin-bottom: 10px;
-        font-size: 16px;
-      }
+  .details {
+    height: 90px;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
 
-      h1 {
-        font-size: 36px;
-        font-weight: bold;
-        margin: 0;
-        padding: 0;
-      }
-      
-      .title {
-        padding-top: 10px;
-        width: calc(var(--card-width) - 30);
-        height: 45px;
-        display: flex;
-        align-items: center;
-        border-top: 1px solid var(--input-border-color);
-      }
+  h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .title {
+    padding-top: 10px;
+    width: calc(var(--card-width) - 30);
+    height: 45px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--input-border-color);
+  }
 
-      .title > div {
-        height: 45px;
-        color: var(--accent-color);
-        text-transform: uppercase;
-        text-align: center;
-        width: calc(var(--card-width) - 30);
-        display: block;
-        overflow: auto;
-        text-overflow: ellipsis;
-        flex: 1;
-        font-size: 12px;
-        font-weight: 400;
-      }
+  .title > div {
+    height: 45px;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    text-align: center;
+    width: calc(var(--card-width) - 30);
+    display: block;
+    overflow: auto;
+    text-overflow: ellipsis;
+    flex: 1;
+    font-size: 12px;
+    font-weight: 400;
+  }
 
-      @media( max-width: 600px ) {
-        :host {
-          /* --thumbnail-height: 144px;
-          --thumbnail-width: 131px; */
-        }
-      }
-
-    </style>
-
-    <paper-material>
-       <div style="position: relative">
-        <iron-image sizing="cover" src$="[[imgUrl]]"></iron-image>
-        <div class="updated-text">[[lastUpdated]]</div>
-      </div>
-
-      <div style="padding: 15px">
-        <div class="details">
-          <h1>[[data.mark_count]]</h1>
-          <div>marks pending</div>
-          <div>on page [[data.page]]</div>
-        </div>
-        <div class="title">
-           <div>[[data.title]]</div> 
-          <!-- <div>REally long titles are really long but are they longer than the longest titles</div> -->
-        </div>
-      </div> 
-    </paper-material>
-    
-  </template>
-  <script>
-
-    class AppAdminCard extends Mixin(Polymer.Element)
-        .with(EventBusMixin, ConfigMixin) {
-      
-      static get is() { return 'app-admin-card'; }
-    
-      static get properties() {
-        return {
-          data : {
-            type : Object,
-            value : null
-          },
-          lastUpdated : {
-            type : String,
-            computed : '_computeLastUpdated(data)'
-          },
-          imgUrl : {
-            type : String,
-            computed : '_computeImgUrl(data, apiHost)'
-          }
-        }
-      }
-
-      ready() {
-        super.ready();
-        this.addEventListener('click', e => this.goToPage());
-      }
-
-      goToPage() {
-        this.emit('ui-set-location', this.data.catalog_id+'/'+this.data.page_id);
-      }
-
-      _computeImgUrl() {
-        if( !this.data ) return '';
-        return this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + this.data.page_id;
-      }
-
-      _computeLastUpdated() {
-        if( !this.data ) return '';
-        return 'Updated '+new Date(this.data.updated).toLocaleString();
-      }
+  @media( max-width: 600px ) {
+    :host {
+      /* --thumbnail-height: 144px;
+      --thumbnail-width: 131px; */
     }
-    window.customElements.define(AppAdminCard.is, AppAdminCard);
+  }
 
-  </script>
-</dom-module>
+</style>
+
+<paper-material>
+   <div style="position: relative">
+    <iron-image sizing="cover" src$="[[imgUrl]]"></iron-image>
+    <div class="updated-text">[[lastUpdated]]</div>
+  </div>
+
+  <div style="padding: 15px">
+    <div class="details">
+      <h1>[[data.mark_count]]</h1>
+      <div>marks pending</div>
+      <div>on page [[data.page]]</div>
+    </div>
+    <div class="title">
+       <div>[[data.title]]</div> 
+      <!-- <div>REally long titles are really long but are they longer than the longest titles</div> -->
+    </div>
+  </div> 
+</paper-material>

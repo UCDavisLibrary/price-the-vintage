@@ -1,6 +1,6 @@
 var request = require('superagent');
 var utils = require('./utils');
-var BaseService = require('cork-app-utils').BaseService;
+var BaseService = require('@ucd-lib/cork-app-utils').BaseService;
 var AdminStore = require('../stores/AdminStore');
 
 var getHost = utils.getHost;

@@ -5,7 +5,7 @@ const assert = require('assert');
  * @description allows you to write a check that asserts as both the result of a
  * async function call(s) as well as event emitted cause of the function call
  * 
- * @param {Object} controller the MasterController or EventEmitter class
+ * @param {Object} controller the EventBus or EventEmitter class
  * @param {String} event event to listen for
  * @param {Array} stateOrder array of strings.  Expect state for each event
  * @param {Function} work do you testing in this function (can by async).  Once all

@@ -12,7 +12,7 @@ import "./app-header-user"
 import "./app-auth-header-button"
 
 class AppHeader extends Mixin(PolymerElement)
-  .with(EventBusMixin, AppStateMixin) {
+  .with(EventInterface) {
 
   static get template() {
     return html([template]);
@@ -20,7 +20,7 @@ class AppHeader extends Mixin(PolymerElement)
   
   constructor() {
     super();
-    this._injectModel('AppStateModel');
+    this._injectModel('AppStateModel', 'AppStateModel');
   }
   
   _onAppStateUpdate(e) {

@@ -36,7 +36,7 @@ describe('auth library', function() {
 
   it('should let user login with custom token', () => {
     return assertEventOrder(
-      auth.store.MasterController, 'auth-update', [auth.store.CUSTOM_STATES.LOGGED_IN],
+      auth.store.EventBus, 'auth-update', [auth.store.CUSTOM_STATES.LOGGED_IN],
       async () => {
         let result = await auth.loginCustom(fbJwt);
         assert.equal(result.state, auth.store.CUSTOM_STATES.LOGGED_IN);
@@ -47,7 +47,7 @@ describe('auth library', function() {
 
   it('should let user logout', () => {
     return assertEventOrder(
-      auth.store.MasterController, 'auth-update', [auth.store.CUSTOM_STATES.NOT_LOGGED_IN],
+      auth.store.EventBus, 'auth-update', [auth.store.CUSTOM_STATES.NOT_LOGGED_IN],
       async () => {
         let result = await auth.logout();
         assert.equal(result.state, auth.store.CUSTOM_STATES.NOT_LOGGED_IN);

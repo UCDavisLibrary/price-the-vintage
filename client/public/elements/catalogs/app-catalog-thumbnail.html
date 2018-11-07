@@ -1,291 +1,115 @@
-<dom-module id="app-catalog-thumbnail">
-  <template>
-    <style include="shared-styles"></style>
-    <style>
-      :host {
-        --thumbnail-height: 192px;
-        --thumbnail-width: 175px;
+<style include="shared-styles">
+  :host {
+    --thumbnail-height: 192px;
+    --thumbnail-width: 175px;
 
-        cursor: pointer;
-        display: inline-block;
-        vertical-align: top;
-        width: var(--thumbnail-width);
-        height: var(--thumbnail-height);
-        position: relative;
-        padding: 8px;
-      }
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: top;
+    width: var(--thumbnail-width);
+    height: var(--thumbnail-height);
+    position: relative;
+    padding: 8px;
+  }
 
-      /* Doesn't work in Edge/IE */
-      /* @media(max-width: 600px) {
-        :host {
-          --thumbnail-height: 144px;
-          --thumbnail-width: 131px;
-        }
-      } */
+  /* Doesn't work in Edge/IE */
+  /* @media(max-width: 600px) {
+    :host {
+      --thumbnail-height: 144px;
+      --thumbnail-width: 131px;
+    }
+  } */
 
-      @keyframes fadeIn {
-        from {
-          transform: scale(.9);
-          -moz-transform: scale(.9);
-          opacity: .3;
-        }
-        to {
-          transform: scale(1.2);
-          -moz-transform: scale(1.2);
-          opacity: 1;
-        }
-      }
+  @keyframes fadeIn {
+    from {
+      transform: scale(.9);
+      -moz-transform: scale(.9);
+      opacity: .3;
+    }
+    to {
+      transform: scale(1.2);
+      -moz-transform: scale(1.2);
+      opacity: 1;
+    }
+  }
 
-      .grid-card-img {
-        display: block;
-        background-color: #ddd;
-        width: var(--thumbnail-width);
-        height: var(--thumbnail-height);
+  .grid-card-img {
+    display: block;
+    background-color: #ddd;
+    width: var(--thumbnail-width);
+    height: var(--thumbnail-height);
 
-        /* animation-duration: 1.75s;
-        animation-name: fadeIn; */
-        transform: scale(1.2);
-        -moz-transform: scale(1.2);
-      }
+    /* animation-duration: 1.75s;
+    animation-name: fadeIn; */
+    transform: scale(1.2);
+    -moz-transform: scale(1.2);
+  }
 
 
 
-      #loading {
-        text-align: center;
-        width: var(--thumbnail-width);
-        height: var(--thumbnail-height);
-      }
+  #loading {
+    text-align: center;
+    width: var(--thumbnail-width);
+    height: var(--thumbnail-height);
+  }
 
-      paper-material {
-        background :#ddd; 
-        position : relative;
-        display: block;
-        width: var(--thumbnail-width);
-        height: var(--thumbnail-height);
-      }
+  paper-material {
+    background :#ddd; 
+    position : relative;
+    display: block;
+    width: var(--thumbnail-width);
+    height: var(--thumbnail-height);
+  }
 
-      h3 {
-        padding: 0 5px;
-      }
+  h3 {
+    padding: 0 5px;
+  }
 
-      .align-bottom {
-        position: absolute;
-        left:0;
-        right:0;
-        bottom:0;
-        padding: 4px;
-        background-color: var(--input-border-color);
-        opacity: .9;
-        color: white;
-      }
+  .align-bottom {
+    position: absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    padding: 4px;
+    background-color: var(--input-border-color);
+    opacity: .9;
+    color: white;
+  }
 
-      #loading paper-spinner-lite {
-        --paper-spinner-color: var(--accent-color);
-        padding: 25px;
-      }
+  #loading paper-spinner-lite {
+    --paper-spinner-color: var(--accent-color);
+    padding: 25px;
+  }
 
-      .icon-label {
-        margin-right: 5px;
-      }
-    </style>
+  .icon-label {
+    margin-right: 5px;
+  }
+</style>
 
-    <paper-material>
-      <div hidden$="[[loading]]">
+<paper-material>
+  <div hidden$="[[loading]]">
 
-        <div  id="image" style="overflow: hidden"></div>
+    <div  id="image" style="overflow: hidden"></div>
 
-        <div class="align-bottom">
-        
-            <div class="layout">
-              <div class="flex" style="text-align:left">
-                <span hidden$="[[!showUserCount]]">
-                  <span class="icon-label">[[userCount]]</span>
-                  <iron-icon icon="social:group"></iron-icon>
-                </span>
-              </div>
-              <div style="text-align: right">
-                <span class="icon-label">[[percentComplete]]</span>
-                <iron-icon icon="done-all"></iron-icon>
-              </div>
-            </div>
-        
+    <div class="align-bottom">
+    
+      <div class="layout">
+        <div class="flex" style="text-align:left">
+          <span hidden$="[[!showUserCount]]">
+            <span class="icon-label">[[userCount]]</span>
+            <iron-icon icon="social:group"></iron-icon>
+          </span>
+        </div>
+        <div style="text-align: right">
+          <span class="icon-label">[[percentComplete]]</span>
+          <iron-icon icon="done-all"></iron-icon>
         </div>
       </div>
-
-      <div id="loading" hidden$="[[!loading]]">
-        <paper-spinner-lite active></paper-spinner-lite>
-      </div>
-    </paper-material>
     
-  </template>
-  <script>
+    </div>
+  </div>
 
-    class AppCatalogThumbnail extends 
-        Mixin(Polymer.Element)
-        .with(EventBusMixin, UserActivityMixin, PagesMixin, InterestedPartyMixin, ConfigMixin) {
-      
-      static get is() { return 'app-catalog-thumbnail'; }
-    
-      static get properties() {
-        return {
-          catalog : {
-            type : Object,
-            value : function() {
-              return {};
-            },
-            observer : '_onUpdate'
-          },
-          imgUrl : {
-            type : String,
-            computed : '_createImgUrl(catalog)'
-            // observer : '_setImgUrl'
-          },
-          imgSrcSet : {
-            type : String,
-            computed : '_createSrcSet(catalog)'
-          },
-          userCount : {
-            type : Number,
-            value : 0
-          },
-          showUserCount : {
-            type : Boolean,
-            value : false
-          },
-          percentComplete : {
-            type : String,
-            value : '',
-          },
-          loading: {
-            type : Boolean,
-            value : true
-          }
-        }
-      }
-
-      ready() {
-        super.ready();
-        this.addEventListener('click', e => {
-          this.pendingPagesLoad = true;
-          this._getCatalogPages(e)
-        });
-
-        this._resize = this._resize.bind(this);
-      }
-
-      connectedCallback() {
-        super.connectedCallback();
-        this._resize();
-        window.addEventListener('resize', this._resize);
-      }
-
-      disconnectedCallback() {
-        super.disconnectedCallback();
-        window.removeEventListener('resize', this._resize);
-      }
-
-      _resize() {
-        if( window.innerWidth <= 600 ) {
-          this.updateStyles({
-            '--thumbnail-height': '144px',
-            '--thumbnail-width': '131px'
-          });
-        } else {
-          this.updateStyles({
-            '--thumbnail-height': '192px',
-            '--thumbnail-width': '175px'
-          });
-        }
-      }
-
-      _onUserActivityUpdate(e) {
-        if( !this._isCatalogIdSet() ) return;
-        if( e.id !== this.catalog.catalog_id ) return;
-        this.userCount = Object.keys(e.users || {}).length;
-        this.showUserCount = (this.userCount > 0 ) ? true : false;
-      }
-
-      _getUserActivity() {
-        if( !this._isCatalogIdSet() ) return;
-        super._getUserActivity(this.catalog.catalog_id);
-      }
-
-      _getCatalogPages() {
-        if( !this._isCatalogIdSet() ) return;
-        super._getCatalogPages(this.catalog.catalog_id)
-            .then((e) => this._onCatalogPagesUpdate(e));
-      }
-
-      _isCatalogIdSet() {
-        if( !this.catalog ) return false;
-        if( !this.catalog.catalog_id ) return false;
-        return true;
-      }
-
-      _onCatalogPagesUpdate(e) {
-        if( e.id === this.catalog.catalog_id && 
-            e.state === 'loaded' && this.pendingPagesLoad ) {
-
-          this.pendingPagesLoad = false;
-
-          if( e.payload.length === 0 ) {
-            return alert('This catalog has no pages :(');
-          }
-
-          var page = e.payload[0];
-          this.emit('ui-set-location', this.catalog.catalog_id+'/'+page.page_id);
-        }
-      }
-
-      _createImgUrl(catalog) {
-        this.$.image.style.display = 'none';
-        var url = this.apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.catalog_id;
-        var img = new Image();
-
-        img.onload = function() {
-          setTimeout(() => {
-            this.$.image.innerHTML = `<img 
-              class="grid-card-img" 
-              src="${url}" 
-              srcset="${url} 1x, ${this.imgSrcSet} 2x" 
-              alt="${this.catalog.title}" />`;
-          }, 25);
-          
-          this.$.image.innerHTML = '';
-          this.$.image.style.display = 'block';
-          this.loading = false;
-        }.bind(this);
-        
-        img.src = url;
-        return url;
-      }
-
-      _createSrcSet(catalog) {
-        return this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + catalog.catalog_id;
-      }
-
-      _onUpdate() {
-        if( !this.catalog ) return;
-
-        this._getUserActivity();
-        this.percentComplete = this.catalog.pages_finished+' / '+this.catalog.pages;
-      }
-
-      _sendInterestedPartyResponse() {
-        if( !this._isCatalogIdSet() ) return;
-        super._sendInterestedPartyResponse(
-          this.catalog.catalog_id,
-          ['activity']
-        )
-      }
-
-      _onInterestedPartyRequest(e) {
-        if( !this._isCatalogIdSet() ) return;
-        this._sendInterestedPartyResponse();
-      }
-
-    }
-    window.customElements.define(AppCatalogThumbnail.is, AppCatalogThumbnail);
-
-  </script>
-</dom-module>
+  <div id="loading" hidden$="[[!loading]]">
+    <paper-spinner-lite active></paper-spinner-lite>
+  </div>
+</paper-material>
