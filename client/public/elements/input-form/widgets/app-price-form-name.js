@@ -2,7 +2,7 @@ import {PolymerElement, html} from "@polymer/polymer"
 import template from "./app-price-form-name.html"
 
 export class AppPriceFormName extends Mixin(PolymerElement)
-    .with(EventMixin, SuggestMixin) {
+    .with(EventInterface) {
   
   static get properties() {
     return {
@@ -31,6 +31,11 @@ export class AppPriceFormName extends Mixin(PolymerElement)
     return html([template])
   }
 
+  constructor() {
+    super();
+    this._injectModel('SuggestModel');
+  }
+
   get SUGGEST_KEY() {
     return 'name-suggest'
   }
@@ -53,26 +58,23 @@ export class AppPriceFormName extends Mixin(PolymerElement)
 
   // called from typeahead widget
   suggest(value) {
-    return new Promise((resolve, reject) => {
-      var parts = (value || '')
+    var parts = (value || '')
         .split(' ')
         .filter(val => val.length ? true : false);
 
-      if( parts.length === 0 ) {
-        return resolve([]);
-      }
+    if( parts.length === 0 ) {
+      return [];
+    }
 
-      this.suggestOn = parts[parts.length-1];
+    this.suggestOn = parts[parts.length-1];
 
-      if( this.suggestOn.length < 1 ) {
-        return resolve([]);
-      }
+    if( this.suggestOn.length < 1 ) {
+      return [];
+    }
 
-      this.resolveSuggest = resolve;
+    this.resolveSuggest = resolve;
 
-      this._suggestWineName(this.suggestOn);
-    });
-    
+    return this.SuggestModel.wineName(this.suggestOn);
   }
 
   _cancelHide(e) {
@@ -92,16 +94,16 @@ export class AppPriceFormName extends Mixin(PolymerElement)
 
     var currentValue = e.query.toLowerCase();
     var suggestions = resp
-                        .suggest[this.SUGGEST_KEY][0]
-                        .options
-                        .map((item) => item.text)
-                        .reduce((arr, val) => {
-                          val = val.toLowerCase();
-                          if( arr.indexOf(val) === -1 && val !== currentValue ) {
-                            arr.push(val);
-                          } 
-                          return arr;
-                        }, []);
+      .suggest[this.SUGGEST_KEY][0]
+      .options
+      .map((item) => item.text)
+      .reduce((arr, val) => {
+        val = val.toLowerCase();
+        if( arr.indexOf(val) === -1 && val !== currentValue ) {
+          arr.push(val);
+        } 
+        return arr;
+      }, []);
     
     this.resolveSuggest({results: suggestions, valueUsed: this.suggestOn});
     this.resolveSuggest = null;

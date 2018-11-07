@@ -21,17 +21,13 @@ L.AppMarker = L.Icon.extend({
 L.appMarker = new L.AppMarker();
 
 export class AppMarker extends Mixin(PolymerElement)
-  .with(EventBusMixin, ToggleStateMixin, AppStateMixin, AuthMixin) {
-  
-  static get is() { return 'app-marker' }
+  .with(EventBusMixin, ToggleStateMixin) {
 
   static get properties() {
     return {
       mark : {
         type : Object,
-        value : function() {
-          return null;
-        }
+        value : () => null
       },
       selected : {
         type : Boolean,
@@ -69,9 +65,15 @@ export class AppMarker extends Mixin(PolymerElement)
     }
   }
 
+  static get template() {
+    return html([template]);
+  }
+
   constructor() {
     super();
     this.active = true;
+
+    this._injectModel('AppStateModel', 'AuthModel');
 
     this.icons = {
       pending : 'more-horiz',
@@ -102,10 +104,10 @@ export class AppMarker extends Mixin(PolymerElement)
       this.toggleState('created');
     }
 
-    window.addEventListener('mouseup', function(){
+    window.addEventListener('mouseup', () => {
       if( !this.moving ) return;
       this._onMoveStop();
-    }.bind(this));
+    });
 
     this.render();
   }
@@ -273,4 +275,4 @@ export class AppMarker extends Mixin(PolymerElement)
 
 }
 
-window.customElements.define(AppMarker.is, AppMarker);
+window.customElements.define('app-marker', AppMarker);

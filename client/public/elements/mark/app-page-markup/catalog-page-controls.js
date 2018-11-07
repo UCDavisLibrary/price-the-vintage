@@ -34,22 +34,6 @@ class PageMarkup_CatalogPageControls extends subclass {
     }
   }
 
-  _getCatalogPages() {
-    return super._getCatalogPages(this.selectedCatalogId);
-  }
-
-  // _onCatalogPagesUpdate(e) {
-  //   if( e.id !== this.selectedCatalogId ) return;
-
-  //   this.loadedCatalog.id = this.selectedCatalogId;
-  //   this.loadedCatalog.state = e.state;
-
-  //   if (e.state !== 'loaded') return;
-    
-  //   this.pages = e.payload;
-  //   this._checkLoaded();
-  // }
-
   _selectPage() {
     this.selectedPage = null;
 

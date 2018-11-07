@@ -16,6 +16,10 @@ export class AppPriceEditWine extends PolymerElement {
     }
   }
 
+  static get template() {
+    return html([template]);
+  }
+
   get wineTypeOptions() {
     return [
       {

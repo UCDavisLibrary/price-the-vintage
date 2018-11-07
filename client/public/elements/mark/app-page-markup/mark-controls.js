@@ -15,11 +15,9 @@ class PageMarkup_MarkControls extends subclass {
     }
   }
 
-  _loadMarks() {
-    return this._getMarks(this.selectedPageId)
-                .then(marks => {
-                  marks.forEach(this._onMarksUpdate.bind(this))
-                });
+  async _loadMarks() {
+    let marks = await this.MarksModel.get(this.selectedPageId);
+    marks.forEach(this._onMarksUpdate.bind(this));
   }
 
   _onMarksUpdate(e) {

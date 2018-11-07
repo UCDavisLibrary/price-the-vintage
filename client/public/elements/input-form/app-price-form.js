@@ -1,19 +1,19 @@
 import {PolymerElement, html} from "@polymer/polymer"
 import template from "./app-price-form.html"
 
-/* <link rel="import" href="app-price-form-voting.html">
-<link rel="import" href="app-price-edit-form.html">
-<link rel="import" href="app-price-edit-wine.html">
-<link rel="import" href="app-price-edit-spirit.html">
-<link rel="import" href="widgets/app-price-form-wine-type.html">
-<link rel="import" href="widgets/app-price-form-input.html">
-<link rel="import" href="widgets/app-price-form-select.html">
-<link rel="import" href="widgets/app-price-form-name.html">
-<link rel="import" href="widgets/app-price-form-section.html">
-<link rel="import" href="widgets/app-price-form-country.html"> */
+import "./app-price-form-voting"
+import "./app-price-edit-form"
+import "./app-price-edit-wine"
+import "./app-price-edit-spirit"
+import "./widgets/app-price-form-country"
+import "./widgets/app-price-form-input"
+import "./widgets/app-price-form-name"
+import "./widgets/app-price-form-section"
+import "./widgets/app-price-form-select"
+import "./widgets/app-price-form-wine-type"
 
 class AppPriceForm extends Mixin(PolymerElement)
-  .with(EventBusMixin, AuthMixin, AppStateMixin) {
+  .with(EventInterface) {
 
   static get properties() {
     return {
@@ -40,6 +40,14 @@ class AppPriceForm extends Mixin(PolymerElement)
         value : false
       }
     }
+  }
+
+  static get template() {
+    return html([template]);
+  }
+
+  constructor() {
+    super._injectModel('AuthModel', 'AppStateModel');
   }
 
   _onAuthUpdate(e) {

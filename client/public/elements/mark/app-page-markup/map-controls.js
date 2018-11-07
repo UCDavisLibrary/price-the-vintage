@@ -68,10 +68,9 @@ class PageMarkup_MapControls extends subclass {
     ).addTo(this.map);
     
     this.map.fitBounds(this.bounds);
-    setTimeout(function(){
+    setTimeout(() => {
       this.map.zoomIn();
-    }.bind(this), 200);
-    
+    }, 200);
 
     this.marksLayer = new L.FeatureGroup();
     

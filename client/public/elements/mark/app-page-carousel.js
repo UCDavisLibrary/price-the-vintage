@@ -4,7 +4,7 @@ import template from "./app-page-carousel.html"
 import "./app-page-carousel-search"
 
 class AppPageCarousel extends Mixin(PolymerElement)
-  .with(EventBusMixin, ToggleStateMixin, AppStateMixin, CatalogsMixin, PagesMixin, ConfigMixin) {
+  .with(EventInterface, ToggleStateMixin) {
 
   static get properties() {
     return {
@@ -30,7 +30,7 @@ class AppPageCarousel extends Mixin(PolymerElement)
       'ui-clear-search-catalog-pages' : '_clearSearch'
     }
 
-    
+    this._injectModel('AppStateModel', 'CatalogsModel', 'PagesModel', 'ConfigModel');
   }
 
   ready() {
@@ -52,20 +52,11 @@ class AppPageCarousel extends Mixin(PolymerElement)
     this._render();
   }
 
-  _render() {
+  async _render() {
     if( !this.selected || !this.catalogId ) return;
 
-    this._getCatalogPages()
-        .then((e) => this._onCatalogPagesUpdate({
-            id: this.catalogId,
-            state: 'loaded',
-            payload: e
-          }));
-  }
-
-
-  _getCatalogPages() {
-    return super._getCatalogPages(this.catalogId);
+    let e = await this.CatalogsModel.get(this.catalogId);
+    this._onCatalogPagesUpdate(e);
   }
 
   _onCatalogPagesUpdate(e) {
@@ -104,10 +95,10 @@ class AppPageCarousel extends Mixin(PolymerElement)
   _setPageMatches() {
     if( !this.searchResults ) return;
     
-    this.pages.forEach(function(page, index) {
+    this.pages.forEach((page, index) => {
       var matched = this._getResultsPageById(this.searchResults, page.page_id);
       this.set('pages.'+index+'.noMatch', !matched ? true : false);
-    }.bind(this));
+    });
 
     // make sure the first page is showing
     var page = 0;
@@ -244,9 +235,9 @@ class AppPageCarousel extends Mixin(PolymerElement)
   _clearSearch() {
     this.searchResults = null;
 
-    this.pages.forEach(function(page, index){
+    this.pages.forEach((page, index) => {
       this.set('pages.'+index+'.noMatch', false);
-    }.bind(this));
+    });
   }
 
   _getResultsPageById(results, id) {

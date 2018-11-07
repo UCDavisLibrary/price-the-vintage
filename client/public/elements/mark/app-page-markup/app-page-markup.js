@@ -14,8 +14,7 @@ import leafletCSS from "leaflet/dist/leaflet.css"
 import leafletDrawCSS from "leaflet-draw/dist/leaflet.draw.css"
 
 export class AppPageMarkup extends Mixin(PolymerElement)
-  .with(EventBusMixin, ToggleStateMixin, AuthMixin, AppStateMixin, 
-        PagesMixin, MarksMixin, CatalogsMixin, ConfigMixin, InterestedPartyMixin,
+  .with(EventInterface, ToggleStateMixin,
         // flowing are partial mixins to break up this very big element
         PageMarkup_MarkMixin, PageMarkup_CatalogPageMixin, PageMarkup_MapMixin) {
 
@@ -36,11 +35,20 @@ export class AppPageMarkup extends Mixin(PolymerElement)
   }
 
   static get template() {
-    return html([template]);
+    return html`<style>${leafletCSS}</style>
+      <style>${leafletDrawCSS}</style>
+      ${template}
+    `;
   }
 
   constructor() {
     super();
+
+    this._injectModel(
+      'AuthModel', 'AppStateModel', 
+      'PagesModel', 'MarksModel', 'CatalogsModel', 
+      'ConfigModel', 'InterestedPartyModel'
+    );
 
     this.bind = {
       'ui-show-mark-noop-popup' : '_showPopup'
@@ -90,7 +98,7 @@ export class AppPageMarkup extends Mixin(PolymerElement)
     this.debounce('_render', () => this._renderAsync(), 50);
   }
 
-  _renderAsync() {
+  async _renderAsync() {
     this._hidePopup();
 
     // we need to be active and have a selected catalog
@@ -118,36 +126,32 @@ export class AppPageMarkup extends Mixin(PolymerElement)
     // show we are loading
     this.toggleState('loading');
 
-    this._getCatalogPages()
-        .then((pages) => {
-          this.pages = pages;
+    this.pages = await this.PagesModel.get(this.selectedCatalogId);
 
-          this._selectPage();
+    this._selectPage();
 
-          // url only had a catalog id, go select first page
-          // this will trip a state change and redo the render loop
-          // so we will go ahead and quit out
-          // there could have also been a bad page id passed
-          if( !this.selectedPage ) {  
-            return;
-          }
+    // url only had a catalog id, go select first page
+    // this will trip a state change and redo the render loop
+    // so we will go ahead and quit out
+    // there could have also been a bad page id passed
+    if( !this.selectedPage ) {  
+      return;
+    }
 
-          return this._loadImage();
-        })
-        .then(() => {
-          // render the leaflet map and add controls
-          this._renderMap();
+    await this._loadImage();
 
-          // render controls visibility states
-          this._renderMapControls();
+    // render the leaflet map and add controls
+    this._renderMap();
 
-          // go grab pending and active marks for page
-          // this will trigger _onMarksUpdate and will render a selected
-          // mark when it's loaded
-          this._loadMarks();
+    // render controls visibility states
+    this._renderMapControls();
 
-          this.renderedPageId = this.selectedPageId;
-        });
+    // go grab pending and active marks for page
+    // this will trigger _onMarksUpdate and will render a selected
+    // mark when it's loaded
+    this._loadMarks();
+
+    this.renderedPageId = this.selectedPageId;
   }
 
   // called from _onMarksUpdate after selected mark is loaded
@@ -173,7 +177,10 @@ export class AppPageMarkup extends Mixin(PolymerElement)
   }
 
   _sendInterestedPartyResponse(e) {
-    super._sendInterestedPartyResponse(this.selectedPageId, [e.TYPES.PAGE]);
+    this.InterestedPartyModel.onResponse({
+      id: this.selectedPageId,
+      types : [e.TYPES.PAGE]
+    });
   }
 
   _hidePopup() {

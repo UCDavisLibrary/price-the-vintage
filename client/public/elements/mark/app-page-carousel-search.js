@@ -2,7 +2,7 @@ import {PolymerElement, html} from "@polymer/polymer"
 import template from "./app-page-carousel-search.html"
 
 export class AppPageCarouselSearch extends Mixin(PolymerElement)
-  .with(EventBusMixin, ToggleStateMixin, AppStateMixin, PagesMixin ) {
+  .with(EventBusMixin, ToggleStateMixin) {
 
   static get properties() {
     return {
@@ -37,6 +37,11 @@ export class AppPageCarouselSearch extends Mixin(PolymerElement)
 
   static get template() {
     return html([template]);
+  }
+
+  constructor() {
+    super();
+    this._injectModel('AppStateModel', 'PagesModel');
   }
 
   _computeShowTag(showResults, searching) {
@@ -90,12 +95,12 @@ export class AppPageCarouselSearch extends Mixin(PolymerElement)
 
     if( this.searchActive ) {
       this.$.input.value = '';
-      setTimeout(function() {
+      setTimeout(() => {
         this.$.input.focus();
-      }.bind(this), 500);
+      }, 500);
     } else {
       this.emit('ui-clear-search-catalog-pages');
-      this._setAppState({
+      this.AppStateModel.set({
         searchText : ''
       });
     }
@@ -120,11 +125,11 @@ export class AppPageCarouselSearch extends Mixin(PolymerElement)
       return this.emit('ui-clear-search-catalog-pages');
     }
 
-    this._setAppState({
+    this.AppStateModel.set({
       searchText : this.$.input.value
     });
 
-    this._searchCatalogPages({
+    this.PagesModel.search({
       catalogId : this.catalogId,
       q : this.$.input.value,
     });

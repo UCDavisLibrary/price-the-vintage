@@ -5,7 +5,7 @@ import "@ucd-lib/cork-typeahead"
 import "./app-price-form-input"
 
 export class AppPriceFormSection extends Mixin(PolymerElement)
-  .with(EventMixin, SuggestMixin) {
+  .with(EventInterface) {
       
   static get properties() {
     return {
@@ -38,6 +38,11 @@ export class AppPriceFormSection extends Mixin(PolymerElement)
     return html([template]);
   }
 
+  constructor() {
+    super();
+    this._injectModel('SuggestModel');
+  }
+
   ready() {
     super.ready();
     this.$.suggest.search = this.suggest.bind(this);
@@ -53,12 +58,7 @@ export class AppPriceFormSection extends Mixin(PolymerElement)
 
   // called from typeahead widget
   suggest(value) {
-    return new Promise((resolve, reject) => {
-      this._suggestPageSection(this.pageId)
-          .then(results => resolve(results))
-          .catch(e => reject(e));
-    });
-    
+    return this.PageModel.pageSection(value);    
   }
 }
 window.customElements.define('app-price-form-section', AppPriceFormSection);

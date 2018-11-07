@@ -18,7 +18,7 @@ L.control.adminControl = function(opts) {
 
 
 class AppAdminMarkupControl extends Mixin(PolymerElement)
-  .with(EventBusMixin, AuthMixin, AppStateMixin, PagesMixin, AdminMixin) {
+  .with(EventInterface) {
 
   static get properties() {
     return {
@@ -37,6 +37,15 @@ class AppAdminMarkupControl extends Mixin(PolymerElement)
     }
   }
 
+  static get template() {
+    return html([template]);
+  }
+
+  constructor() {
+    super();
+    this._injectModel('AuthModel', 'AppStateModel', 'PagesModel', 'AdminModel');
+  }
+
   _onAuthUpdate(e) {
     this.authState = e;
 
@@ -47,15 +56,12 @@ class AppAdminMarkupControl extends Mixin(PolymerElement)
     }
   }
 
-  _onAppStateUpdate(e) {
+  async _onAppStateUpdate(e) {
     this.pageId = e.pageId;
     if( !this.pageId ) return;
 
-    this._getCatalogPage().then((e) => this._onCatalogPageUpdate(e));
-  }
-
-  _getCatalogPage() {
-    return super._getCatalogPage(this.pageId);
+    let e = await this.PageModel.get(this.pageId)
+    this._onCatalogPageUpdate(e);
   }
 
   _onCatalogPageUpdate(e) {
@@ -71,20 +77,22 @@ class AppAdminMarkupControl extends Mixin(PolymerElement)
     }
   }
 
-  _adminCompletedPage() {
-    super._adminCompletedPage(this.pageId, !this.page.payload.completed)
-        .catch((e) => {
-          console.error(e);
-          alert('Failed to update page :( ');
-        });
+  async _adminCompletedPage() {
+    try {
+      await this.AdminModel.pageCompleted(this.pageId, !this.page.payload.completed);
+    } catch(e) {
+      console.error(e);
+      alert('Failed to update page :( ');
+    }
   }
 
-  _adminIgnorePage() {
-    super._adminIgnorePage(this.pageId, this.page.payload.editable)
-        .catch((e) => {
-          console.error(e);
-          alert('Failed to update page :(');
-        });
+  async _adminIgnorePage() {
+    try {
+      await this.AdminModel.ignorePage(this.pageId, this.page.payload.editable);
+    } catch(e) {
+      console.error(e);
+      alert('Failed to update page :( ');
+    }
   }
 }
 window.customElements.define('app-admin-markup-control', AppAdminMarkupControl);

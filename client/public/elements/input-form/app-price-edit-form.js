@@ -11,7 +11,7 @@ import "./app-price-edit-wine"
 import "./app-price-edit-spirit"
 
 export class AppPriceEditForm extends Mixin(PolymerElement)
-  .with(EventBusMixin, AuthMixin, MarksMixin, AdminMixin) {
+  .with(EventInterface) {
 
   static get properties() {
     return {
@@ -25,9 +25,7 @@ export class AppPriceEditForm extends Mixin(PolymerElement)
       },
       userState : {
         type : Object,
-        value : function() {
-          return {}
-        }
+        value : () => ({})
       },
       pageId: {
         type : String,
@@ -52,6 +50,11 @@ export class AppPriceEditForm extends Mixin(PolymerElement)
     return html([template]);
   }
 
+  constructor() {
+    super();
+    this._injectModel('AuthModel', 'MarksModel', 'AdminModel');
+  }
+
   _computeCanApprove() {
     if( this.editMode && this.userState.user && this.userState.user.isAdmin ) {
       return true;
@@ -70,21 +73,21 @@ export class AppPriceEditForm extends Mixin(PolymerElement)
     this.$.wine.reset();
 
     setTimeout(() => {
-        this.$.wineType.focus();
+      this.$.wineType.focus();
     }, 50);
   }
 
-  _approve() {
+  async _approve() {
     var data = this._getData();
 
-    this._adminApproveMark(this.editMark.pageId, this.editMark.id, data)
-        .then(() => {
-          this.fire('cancel');
-        })
-        .catch((e) => {
-          console.error(e);
-          alert('Failed to approve mark :(\n'+e.response.body.message);
-        });
+    try {
+      await this.AdminModel.approveMark(this.editMark.pageId, this.editMark.id, data);
+    } catch(e) {
+      console.error(e);
+      alert('Failed to approve mark :(\n'+e.response.body.message);
+    }
+  
+    this.fire('cancel');
   }
 
   _delete() {

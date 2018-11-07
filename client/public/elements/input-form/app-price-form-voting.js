@@ -2,7 +2,7 @@ import {PolymerElement, html} from "@polymer/polymer"
 import template from "./app-price-form-voting.html"
 
 export class AppPriceFormVoting extends Mixin(PolymerElement)
-  .with(EventBusMixin, AuthMixin, MarksMixin) {
+  .with(EventInterface) {
 
   static get properties() {
     return {
@@ -33,9 +33,13 @@ export class AppPriceFormVoting extends Mixin(PolymerElement)
     return html([template]);
   }
 
-  ready() {
+  constructor() {
+    this._injectModel('AuthModel', 'MarksModel');
+  }
+
+  async ready() {
     super.ready();
-    this._getAuthState().then(e => this._onAuthUpdate(e));
+    this._onAuthUpdate(await this._getAuthState());
   }
 
   _onAuthUpdate(e) {
@@ -44,7 +48,12 @@ export class AppPriceFormVoting extends Mixin(PolymerElement)
   }
 
   _voteOnMark(vote) {
-    return super._voteOnMark(this.mark.pageId, this.mark.id, vote);
+    return MarksModel.votePending(
+      this.userState.user.uid,
+      this.mark.pageId, 
+      this.mark.id, 
+      vote
+    );
   }
 
   _onMarksUpdate(e) {
