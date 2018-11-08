@@ -13,7 +13,7 @@ import PageMarkup_MarkMixin from "./mark-controls"
 import leafletCss from "leaflet/dist/leaflet.css"
 import leafletDrawCss from "leaflet-draw/dist/leaflet.draw.css"
 
-export class AppPageMarkup extends Mixin(PolymerElement)
+class AppPageMarkup extends Mixin(PolymerElement)
   .with(EventInterface, ToggleStateMixin,
         // flowing are partial mixins to break up this very big element
         PageMarkup_MarkMixin, PageMarkup_CatalogPageMixin, PageMarkup_MapMixin) {
@@ -35,10 +35,11 @@ export class AppPageMarkup extends Mixin(PolymerElement)
   }
 
   static get template() {
-    return html`<style>${leafletCss}</style>
-      <style>${leafletDrawCss}</style>
-      ${template}
-    `;
+    return html([
+      `<style>${leafletCss}</style>`+
+      `<style>${leafletDrawCss}</style>`+
+      template
+    ])
   }
 
   constructor() {
@@ -47,7 +48,7 @@ export class AppPageMarkup extends Mixin(PolymerElement)
     this._injectModel(
       'AuthModel', 'AppStateModel', 
       'PagesModel', 'MarksModel', 'CatalogsModel', 
-      'ConfigModel', 'InterestedPartyModel'
+      'InterestedPartyModel'
     );
 
     this.bind = {

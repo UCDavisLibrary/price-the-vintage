@@ -1,13 +1,15 @@
 import {PolymerElement, html} from "@polymer/polymer"
 import template from "./price-the-vintage.html"
 
+import "leaflet"
+
 import "@polymer/paper-header-panel"
 import "@polymer/paper-toolbar"
 import "@polymer/iron-pages"
 
 import "@ucd-lib/cork-app-utils"
-import "@ucd-lib/cork-style"
 
+import "@ucd-lib/cork-style"
 import "./styles/shared-styles"
 
 import "../src"
@@ -15,9 +17,11 @@ import "../src/utils/AnimateScroll"
 import "../src/utils/ToggleStateMixin"
 
 import "./header/app-header"
+import "./catalogs/app-catalogs-list"
+import "./admin/app-admin-interface"
+import "./mark/app-page-markup/app-page-markup"
 
-
-export class PriceTheVintage extends Mixin(PolymerElement)
+class PriceTheVintage extends Mixin(PolymerElement)
   .with(EventInterface) {
 
   static get properties() {
@@ -39,7 +43,7 @@ export class PriceTheVintage extends Mixin(PolymerElement)
   constructor() {
     super();
 
-    this._injectModel('AuthModel', 'UserActivityModel')
+    this._injectModel('AuthModel', 'UserActivityModel', 'AppStateModel');
 
     this.bind = {
       'ui-set-location' : '_setWindowUrl'
@@ -49,6 +53,10 @@ export class PriceTheVintage extends Mixin(PolymerElement)
   ready() {
     this.active = true;
     super.ready();
+  }
+
+  _onAppStateUpdate(e) {
+    this.selectedSection = e.section;
   }
 
   _onAuthUpdate(e) {

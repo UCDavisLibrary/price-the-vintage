@@ -51,7 +51,7 @@ class AppCatalogThumbnail extends Mixin(PolymerElement)
 
   constructor() {
     super();
-    this._injectModel('UserActivityModel', 'PagesModel', 'InterestedPartyModel', 'ConfigModel');
+    this._injectModel('UserActivityModel', 'PagesModel', 'InterestedPartyModel');
   }
 
   ready() {
@@ -130,7 +130,7 @@ class AppCatalogThumbnail extends Mixin(PolymerElement)
 
   _createImgUrl(catalog) {
     this.$.image.style.display = 'none';
-    var url = this.apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.catalog_id;
+    var url = APP_CONFIG.apiHost + '/media?select=thumbnail_png&media_id=eq.' + catalog.catalog_id;
     var img = new Image();
 
     img.onload = function() {
@@ -152,7 +152,7 @@ class AppCatalogThumbnail extends Mixin(PolymerElement)
   }
 
   _createSrcSet(catalog) {
-    return this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + catalog.catalog_id;
+    return APP_CONFIG.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + catalog.catalog_id;
   }
 
   _onUpdate() {

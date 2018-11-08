@@ -42,6 +42,7 @@ class CatalogsService extends BaseService {
       url : `${API_HOST}/catalogs`,
       qs : params,
       fetchOptions : {
+        credentials : 'omit',
         headers : {
           Prefer : 'count=exact'
         }

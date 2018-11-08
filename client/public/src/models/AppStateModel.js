@@ -102,8 +102,6 @@ class AppStateModel extends BaseModel {
       return this.window.location.hash = this.route.catalogId+'/'+this.route.pageId
     }
 
-    this.selectedSection = this.route.section;
-
     // set the current app state
     this.set({
       section: this.route.section,

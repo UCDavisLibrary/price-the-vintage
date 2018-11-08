@@ -1,3 +1,9 @@
+let config = require('./config');
+
+if( typeof window !== 'undefined' && !window.APP_CONFIG ) {
+  window.APP_CONFIG = config;
+}
+
 module.exports = {
   ActivityModel : require('./lib/activity'),
   CatalogsModel : require('./lib/catalogs'),
@@ -7,5 +13,6 @@ module.exports = {
   AdminModel : require('./models/AdminModel'),
   AppStateModel : require('./models/AppStateModel'),
   AuthModel : require('./models/AuthModel'),
-  InterestedPartyModel : require('./models/InterestedPartyModel')
+  InterestedPartyModel : require('./models/InterestedPartyModel'),
+  config
 }

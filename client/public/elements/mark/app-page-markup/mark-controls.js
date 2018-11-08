@@ -172,3 +172,5 @@ class PageMarkup_MarkControls extends subclass {
   }
 
 }
+
+export default PageMarkup_MarkMixin;

@@ -1,5 +1,5 @@
 import {PolymerElement, html} from "@polymer/polymer"
-import template from "./app-marker"
+import template from "./app-marker.html"
 import "@ucd-lib/cork-tag"
 
 L.Control.HelpTextControl = L.Control.extend({
@@ -14,7 +14,7 @@ L.control.helpTextControl = function(opts) {
   return new L.Control.HelpTextControl(opts);
 }
 
-export class AppHelpTextControl extends PolymerElement {
+class AppHelpTextControl extends PolymerElement {
 
   static get template() {
     return html([template]);

@@ -3,7 +3,7 @@
  * */
 const PageMarkup_CatalogPageMixin = subclass =>
 
-class PageMarkup_CatalogPageControls extends subclass {
+  class PageMarkup_CatalogPageControls extends subclass {
 
   static get properties() {
     return {
@@ -66,3 +66,5 @@ class PageMarkup_CatalogPageControls extends subclass {
   }
 
 }
+
+export default PageMarkup_CatalogPageMixin;

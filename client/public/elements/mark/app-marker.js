@@ -1,8 +1,8 @@
 import {PolymerElement, html} from "@polymer/polymer"
-import "@polymer/paper-icon-button"
-import "../app-icon-spinner"
 import template from "./app-marker.html"
 
+import "@polymer/paper-icon-button"
+import "../app-icon-spinner"
 
 L.AppMarker = L.Icon.extend({
   options: {
@@ -20,7 +20,7 @@ L.AppMarker = L.Icon.extend({
 });
 L.appMarker = new L.AppMarker();
 
-export class AppMarker extends Mixin(PolymerElement)
+class AppMarker extends Mixin(PolymerElement)
   .with(EventInterface, ToggleStateMixin) {
 
   static get properties() {

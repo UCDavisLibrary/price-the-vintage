@@ -36,7 +36,7 @@ class AppCatalogsSearchResults extends Mixin(PolymerElement)
 
   _onCatalogSearchUpdate(e) {
     if( !e.state !== 'loaded' ) return;
-    this.total = e.results.total;
+    this.total = e.payload.results.total;
   }
 
   _onAppStateUpdate(e) {

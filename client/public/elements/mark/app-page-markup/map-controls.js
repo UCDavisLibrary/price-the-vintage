@@ -186,3 +186,5 @@ class PageMarkup_MapControls extends subclass {
   }
 
 }
+
+export default PageMarkup_MapMixin;

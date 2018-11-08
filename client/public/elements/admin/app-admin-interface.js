@@ -7,7 +7,7 @@ import "@polymer/paper-spinner/paper-spinner-lite"
 import "./app-admin-card"
 
 class AppAdminInterface extends Mixin(PolymerElement)
-  .with(EvenInterface, ToggleStateMixin) {
+  .with(EventInterface, ToggleStateMixin) {
 
   static get properties() {
     return {

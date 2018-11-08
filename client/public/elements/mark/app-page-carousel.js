@@ -30,7 +30,7 @@ class AppPageCarousel extends Mixin(PolymerElement)
       'ui-clear-search-catalog-pages' : '_clearSearch'
     }
 
-    this._injectModel('AppStateModel', 'CatalogsModel', 'PagesModel', 'ConfigModel');
+    this._injectModel('AppStateModel', 'CatalogsModel', 'PagesModel');
   }
 
   ready() {

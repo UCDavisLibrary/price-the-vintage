@@ -30,7 +30,6 @@ class AppAdminCard extends Mixin(PolymerElement)
 
   constructor() {
     super();
-    this._injectModel('ConfigModel');
   }
 
   ready() {
@@ -44,7 +43,7 @@ class AppAdminCard extends Mixin(PolymerElement)
 
   _computeImgUrl() {
     if( !this.data ) return '';
-    return this.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + this.data.page_id;
+    return APP_CONFIG.apiHost + '/media?select=thumbnail2x_png&media_id=eq.' + this.data.page_id;
   }
 
   _computeLastUpdated() {

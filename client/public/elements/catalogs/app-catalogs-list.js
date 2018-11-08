@@ -34,6 +34,11 @@ class AppCatalogsList extends Mixin(PolymerElement)
       loading : {
         type : Boolean,
         value : false
+      },
+      active : {
+        type : Boolean,
+        value : false,
+        observer : '_onActive'
       }
     }
   }
@@ -44,7 +49,7 @@ class AppCatalogsList extends Mixin(PolymerElement)
 
   constructor() {
     super();
-    this._injectModel('AppStateModel', 'CatalogsModel', 'ConfigModel');
+    this._injectModel('AppStateModel', 'CatalogsModel');
   }
 
   ready() {
@@ -65,7 +70,6 @@ class AppCatalogsList extends Mixin(PolymerElement)
   }
 
   _onCatalogSearchUpdate(e) {
-    console.log(e);
     if( e.state === 'loading' ) {
       this.loading = true;
       return;
@@ -73,7 +77,7 @@ class AppCatalogsList extends Mixin(PolymerElement)
 
     if( e.state !== 'loaded' ) return;
 
-    this.results = e.results;
+    this.results = e.payload;
     this.loading = false;
   }
 
