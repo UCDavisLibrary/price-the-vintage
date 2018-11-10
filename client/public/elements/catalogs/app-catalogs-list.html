@@ -126,8 +126,8 @@
 
     <cork-pagination 
       text-mode 
-      items-per-page="[[itemsPerPage]]" 
-      current-index="[[results.start]]" 
+      items-per-page="[[results.limit]]" 
+      current-index="[[results.offset]]" 
       total-results="[[results.total]]" 
       loading="[[loading]]"
       on-nav="_onPageNav" >
@@ -137,12 +137,12 @@
       <div hidden$="[[loading]]" style="max-width: 800px; text-align: center" >
           <template is="dom-repeat" items="[[results.results]]" as="catalog">
             <app-catalog-thumbnail 
-                style="display:inline-block"
-                class="grid-thumbnail" 
-                active="[[active]]"
-                catalog="[[catalog]]"
-                api-host="[[apiHost]]">
-              </app-catalog-thumbnail>
+              style="display:inline-block"
+              class="grid-thumbnail" 
+              active="[[active]]"
+              catalog="[[catalog]]"
+              api-host="[[apiHost]]">
+            </app-catalog-thumbnail>
           </template>
       </div>
 
@@ -153,8 +153,8 @@
 
     <div style="text-align:center; padding-bottom: 25px">
       <cork-pagination 
-        items-per-page="[[itemsPerPage]]" 
-        current-index="[[results.start]]" 
+        items-per-page="[[results.limit]]" 
+        current-index="[[results.offset]]" 
         total-results="[[results.total]]" 
         on-nav="_onPageNav" >
       </cork-pagination>

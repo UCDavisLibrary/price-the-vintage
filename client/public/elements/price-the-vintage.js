@@ -5,7 +5,9 @@ import "leaflet"
 
 import "@polymer/paper-header-panel"
 import "@polymer/paper-toolbar"
+import "@polymer/paper-button"
 import "@polymer/iron-pages"
+import "@polymer/iron-icons/social-icons"
 
 import "@ucd-lib/cork-app-utils"
 

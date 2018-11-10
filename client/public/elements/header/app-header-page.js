@@ -2,6 +2,7 @@ import {PolymerElement, html} from "@polymer/polymer"
 import template from "./app-header-page.html"
 
 import "@polymer/paper-icon-button"
+import "../app-mark-help-popup"
 
 class AppHeaderPage extends Mixin(PolymerElement)
   .with(EventInterface) {
@@ -22,12 +23,6 @@ class AppHeaderPage extends Mixin(PolymerElement)
     this._resize();
 
     this.$.helpPopup = document.querySelector('app-mark-help-popup');
-
-    console.warn('TODO: enable help popup')
-    // if( !window.localStorage.getItem('first-catalog-viewing') ) {
-    //   this.$.helpPopup.open();
-    //   window.localStorage.setItem('first-catalog-viewing', 'true');
-    // } 
   }
 
   _onCatalogUpdate(e) {

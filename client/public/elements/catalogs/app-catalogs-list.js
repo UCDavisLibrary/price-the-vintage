@@ -26,11 +26,6 @@ class AppCatalogsList extends Mixin(PolymerElement)
           }
         }
       },
-      
-      itemsPerPage : {
-        type : Number,
-        value : 12
-      },
       loading : {
         type : Boolean,
         value : false
@@ -93,8 +88,6 @@ class AppCatalogsList extends Mixin(PolymerElement)
   _search(offset) {
     this.CatalogsModel.search({
         q : this.searchText,
-        exact : true,
-        limit : this.itemsPerPage,
         offset : offset
     });
   }

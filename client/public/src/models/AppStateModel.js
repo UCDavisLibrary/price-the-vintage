@@ -2,6 +2,7 @@ const BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
 const AppStateStore = require('../stores/AppStateStore');
 const AuthModel = require('./AuthModel');
 const firebase = require('../firebase');
+const config = require('../config');
 
 /**
  * Controller for handling various states of the application.
@@ -92,10 +93,14 @@ class AppStateModel extends BaseModel {
     
     // remove any empty spots
     for( var i = parts.length-1; i >= 0; i-- ) {
-      if( !parts[i] ) parts.splice(i);
+      if( !parts[i] ) parts.splice(i, 1);
     }
 
     // parse app state information based on location in hash route
+    if( parts[0] === 'collection' ) {
+      parts = this.window.location.hash.replace(/#/,'').replace(config.catalogs.idRoot, '').split('/');
+      parts[0] = config.catalogs.idRoot+parts[0];
+    }
     parts.forEach((part, index) => this._parseRoute(part, index));
 
     if( this.firstLoad && this.route.edit && !this.route.markId ) {

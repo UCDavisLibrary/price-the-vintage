@@ -1,4 +1,6 @@
-let firebase = require('firebase');
+let firebase = require('firebase/app');
+require('firebase/database');
+require('firebase/auth');
 let config = require('./config').firebase;
 
 if( typeof window !== 'undefined' ) {

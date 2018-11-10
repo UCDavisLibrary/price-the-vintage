@@ -46,6 +46,10 @@ class AppHeaderList extends Mixin(PolymerElement)
     });
   }
 
+  _searchCatalogsDelay() {
+    this.debounce('search', () => this._searchCatalogs(), 300);
+  }
+
 
   _toggleSearch() {
     this.searchBoxActive = !this.searchBoxActive;

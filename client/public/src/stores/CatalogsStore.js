@@ -51,28 +51,22 @@ class CatalogsStore extends BaseStore {
     this.emit(this.events.CATALOG_UPDATE, this.data.byId[id]);
   }
 
-  setSearchLoading(params, text = '') {
+  setSearchLoading(request, params) {
     this.data.search = {
       state : this.STATE.LOADING,
-      params,
-      originalText : text
+      request, params
     };
 
     this.emit(this.events.CATALOG_SEARCH_UDPATE, this.data.search);
   }
 
-  setSearchLoaded(payload) {
+  setSearchLoaded(params, payload) {
     // first set and send search update
     this.data.search = {
       state : this.STATE.LOADED,
-      payload
+      payload, params
     }
     this.emit(this.events.CATALOG_SEARCH_UDPATE, this.data.search);
-
-    // set and send individual catalog updates
-    if( payload && payload.results ) {
-      payload.results.forEach(item => this.setCatalogLoaded(item.catalog_id, item));
-    }
   }
 
   setSearchError(error) {

@@ -26,34 +26,37 @@ class CatalogsService extends BaseService {
    */
   async search(query = {}) {
     var params = {
-      select : config.catalogs.searchSelectAttributes.join(','),
+      facets : {},
+      filters : {
+        'isPartOf.@id' : {
+          type : 'keyword',
+          op : 'or',
+          value : [config.catalogs.collection]
+        }
+      },
       offset : query.offset || 0,
       limit : query.limit || 12
     };
 
-    this.store.setSearchLoading(params, query.q);
-
     if( query.q ) {
-      params.q = query.q.trim()
-      params.q = await utils.escapeTSVector(params.q);
+      params.text = query.q.trim();
+      params.textFields = config.damsApi.textFields
     }
 
+    this.store.setSearchLoading(params, query.q);
+
     return this.request({
-      url : `${API_HOST}/catalogs`,
-      qs : params,
+      url : `${config.damsApi.host}/api/records/search`,
+      body : JSON.stringify(params),
+      json : true,
       fetchOptions : {
+        method : 'POST',
         credentials : 'omit',
-        headers : {
-          Prefer : 'count=exact'
-        }
+        body : params
       },
+      onLoading : request =>  this.store.setSearchLoading(request, params),
       onError : e => this.store.setSearchError(e),
-      onLoad : result => {
-        let response = result.response;
-        result = {results : result.body};
-        utils.setResultInfo(response.headers.get('content-range'), result);
-        this.store.setSearchLoaded(result);
-      }
+      onLoad : response => this.store.setSearchLoaded(params, response.body)
     });
   }
 
@@ -71,15 +74,30 @@ class CatalogsService extends BaseService {
     }
 
     return this.request({
-      url : `${API_HOST}/catalogs`,
-      qs : {
-        catalog_id : `eq.${id}`,
-        select: config.catalogs.searchSelectAttributes.join(',')
+      url : `${config.damsApi.host}/api/records${id}`,
+      fetchOptions : {
+        credentials : 'omit'
       },
       checkCached : () => this.store.data.byId[id],
       onLoading : request => this.store.setCatalogLoading(id, request),
       onError : e => this.store.setCatalogError(id, e),
-      onLoad : result => this.store.setCatalogLoaded(id, result.body[0])
+      onLoad : response => {
+        // set pages
+        let catalog = response.body;
+        let imageList = (catalog.associatedMedia || []).find(am => am.encodingFormat === 'ImageList') || {};
+        catalog.pages = (imageList.hasPart || [])
+          .map(page => {
+            page.position = parseInt(page.position)
+            return page;
+          })
+          .sort((a, b) => {
+            if( a.position < b.position ) return -1;
+            if( a.position > b.position ) return 1;
+            return 0;
+          });      
+
+        this.store.setCatalogLoaded(id, response.body)
+      }
     });
   }
 

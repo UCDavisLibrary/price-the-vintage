@@ -15,8 +15,15 @@ const config = {
     }
   },
 
+  damsApi : {
+    host : 'https:digital.ucdavis.edu',
+    textFields : ['name', 'description', 'abouts', 'alternativeHeadline', 'indexableContents']
+  },
+
   catalogs : {
-    searchSelectAttributes : ['pages','catalog_id','pages_finished','title','publisher','completed']
+    searchSelectAttributes : ['pages','catalog_id','pages_finished','title','publisher','completed'],
+    collection : '/collection/sherry-lehmann',
+    idRoot : '/collection/sherry-lehmann/catalogs/'
   },
 
   pages : {

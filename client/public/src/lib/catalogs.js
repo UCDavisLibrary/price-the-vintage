@@ -26,7 +26,10 @@ class CatalogsModel extends BaseModel {
    * @returns {Object} current search result state
    */
   async search(query) {
-    await this.service.search(query);
+    try {
+      await this.service.search(query);
+    } catch(e) {}
+
     return this.store.data.search;
   }
 
@@ -39,11 +42,13 @@ class CatalogsModel extends BaseModel {
    * @returns {Object} current catalog state
    */
   async get(id) {
-    let catalog = await this.service.get(id);
+    let catalog = this.store.data.byId[id];
 
     // if there is already a request pending, just wait on it
-    if( catalog.state === this.store.STATE.LOADING ) {
+    if( catalog && catalog.state === this.store.STATE.LOADING ) {
       await catalog.request;
+    } else {
+      await this.service.get(id);
     }
 
     return this.store.data.byId[id];
