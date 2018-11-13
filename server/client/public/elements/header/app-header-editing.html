@@ -1,0 +1,20 @@
+<style include="shared-styles">
+  :host {
+    display: block;
+  }
+  paper-icon-button {
+    color: white;
+  }
+</style>
+
+<div class="layout center">
+  <paper-icon-button icon="close" on-click="_cancelEdit"></paper-icon-button>
+  <h2 class="flex">[[title]]</h2>
+  <div>
+    <div id="icons">
+
+      <a href="#admin" hidden$="[[!userState.user.isAdmin]]"><paper-icon-button icon="gavel"></paper-icon-button></a>
+
+    </div>
+  </div>
+</div>

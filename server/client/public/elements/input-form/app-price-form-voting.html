@@ -1,0 +1,56 @@
+<style include="shared-styles"></style>
+<style>
+  :host {
+    display: inline-block;
+  }
+
+  #voteCount {
+    text-align: center;
+    margin:0;
+    padding:0;
+  }
+  h2.label {
+    margin:0;
+    text-align: center;
+    color: var(--default-primary-color);
+  }
+  .outer {
+    margin-left: 15px;
+  }
+  .voting {
+    color: #888;
+    margin-top: 0;
+    text-transform: capitalize;
+  }
+  .voting.voted {
+    color: var(--default-primary-color);
+  }
+
+  paper-icon-button {
+    width: 56px;
+    height: 56px;
+  }
+</style>
+
+<div class="voting outer" hidden$="[[!showVoting]]">
+  <div>
+    <div>
+      <paper-icon-button 
+        id="upVote" 
+        class="voting" 
+        icon="expand-less" 
+        on-click="_upVote">
+      </paper-icon-button>
+    </div>
+    <h2 id="voteCount" class="voting">[[count]]</h2>
+    <div>
+      <paper-icon-button 
+        id="downVote" 
+        class="voting"  
+        icon="expand-more" 
+        on-click="_downVote">
+      </paper-icon-button>
+    </div>
+    <h2 class="label">Vote</h2>
+  </div>
+</div>

@@ -1,0 +1,112 @@
+<style include="shared-styles">
+    :host {
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom:0;
+      overflow: hidden;
+    }
+
+    .leaflet-draw-toolbar-nobottom a:last-child {
+      border-radius: 4px !important;
+    }
+    .leaflet-draw-toolbar-notop a:first-child {
+      border-radius: 4px !important;
+    }
+
+    .leaflet-div-icon {
+      border: none !important;
+      background: transparent !important;
+    }
+
+    .leaflet-right .leaflet-draw-actions {
+      right: 35px !important;
+      top: 3px !important;
+    }
+
+    .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+      line-height: 35px !important;
+    }
+
+    .leaflet-bar a, .leaflet-bar a:hover {
+      color: var(--default-primary-color) !important;
+      width: 35px !important;
+      height: 35px !important;
+    }
+
+    .leaflet-draw-toolbar a {
+      background-image: url(/images/icons/leaflet-addmarker.png) !important;
+      background-position: 5px 5px !important;
+      background-size: 24px 24px !important;
+    }
+
+    [state="loaded"] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom:0;
+    }
+
+    [state="loading"] {
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    #map {
+      height: 100%;
+    }
+
+    #nothingToDo {
+      position: absolute;
+      text-align: center;
+      left: 0; 
+      right: 0;
+      top: 0px;
+      z-index: 500;
+    }
+
+    #nothingToDo paper-material {
+      display: block;
+      padding: 0 10px;
+      max-width: 600px;
+      background: white;
+      color: var(--default-primary-color);
+      text-align: left;
+      margin: auto;
+      z-index: 500;
+    }
+
+    paper-spinner-lite {
+      --paper-spinner-color: var(--accent-color);
+    }
+</style>
+
+<div id="nothingToDo">
+  <div style="margin: 0 50px"> 
+    <paper-material>
+      <div class="layout center">
+        <div class="flex">The current page doesn't have any pricing information, so it doesn't need any marking. Don’t despair, plenty more pages do! Click on another!</div>
+        <paper-icon-button on-click="_hidePopup" icon="close"></paper-icon-button>
+      </div>
+    </paper-material>
+  </div> 
+</div>
+
+<app-page-carousel id="carousel" active="[[active]]"></app-page-carousel>
+
+<div id="map" state="loaded"></div>
+
+<app-price-form 
+  id="priceItem" 
+  page-id="[[selected]]"
+  on-add-mark="_onAddMark" 
+  on-cancel="_onAddMarkCancel"
+  on-delete="_onDeleteMark">
+</app-price-form>
+
+<div state="loading">
+  <paper-spinner-lite active></paper-spinner-lite>
+</div>

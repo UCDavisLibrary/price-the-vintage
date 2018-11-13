@@ -1,0 +1,115 @@
+<style include="shared-styles">
+  :host {
+    --thumbnail-height: 192px;
+    --thumbnail-width: 175px;
+
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: top;
+    width: var(--thumbnail-width);
+    height: var(--thumbnail-height);
+    position: relative;
+    padding: 8px;
+  }
+
+  /* Doesn't work in Edge/IE */
+  /* @media(max-width: 600px) {
+    :host {
+      --thumbnail-height: 144px;
+      --thumbnail-width: 131px;
+    }
+  } */
+
+  @keyframes fadeIn {
+    from {
+      transform: scale(.9);
+      -moz-transform: scale(.9);
+      opacity: .3;
+    }
+    to {
+      transform: scale(1.2);
+      -moz-transform: scale(1.2);
+      opacity: 1;
+    }
+  }
+
+  .grid-card-img {
+    display: block;
+    background-color: #ddd;
+    width: var(--thumbnail-width);
+    height: var(--thumbnail-height);
+
+    /* animation-duration: 1.75s;
+    animation-name: fadeIn; */
+    transform: scale(1.2);
+    -moz-transform: scale(1.2);
+  }
+
+
+
+  #loading {
+    text-align: center;
+    width: var(--thumbnail-width);
+    height: var(--thumbnail-height);
+  }
+
+  paper-material {
+    background :#ddd; 
+    position : relative;
+    display: block;
+    width: var(--thumbnail-width);
+    height: var(--thumbnail-height);
+  }
+
+  h3 {
+    padding: 0 5px;
+  }
+
+  .align-bottom {
+    position: absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    padding: 4px;
+    background-color: var(--input-border-color);
+    opacity: .9;
+    color: white;
+  }
+
+  #loading paper-spinner-lite {
+    --paper-spinner-color: var(--accent-color);
+    padding: 25px;
+  }
+
+  .icon-label {
+    margin-right: 5px;
+  }
+</style>
+
+<paper-material>
+  <div hidden$="[[loading]]">
+
+    <div  id="image" style="overflow: hidden"></div>
+
+    <div class="align-bottom">
+    
+      <div class="layout">
+        <div class="flex" style="text-align:left">
+          <span hidden$="[[!showUserCount]]">
+            <span class="icon-label">[[userCount]]</span>
+            <iron-icon icon="social:group"></iron-icon>
+          </span>
+        </div>
+        <div style="text-align: right">
+          <span class="icon-label">[[percentComplete]]</span>
+          <iron-icon icon="done-all"></iron-icon>
+        </div>
+      </div>
+    
+    </div>
+  </div>
+
+  <div id="loading" hidden$="[[!loading]]">
+    <paper-spinner-lite active></paper-spinner-lite>
+  </div>
+</paper-material>
