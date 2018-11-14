@@ -58,7 +58,11 @@ class PriceTheVintage extends Mixin(PolymerElement)
   }
 
   _onAppStateUpdate(e) {
-    this.selectedSection = e.section;
+    if( e.section.match(/.*-mark$/) ) {
+      this.section = 'catalog';
+    } else {
+      this.selectedSection = e.section;
+    }
   }
 
   _onAuthUpdate(e) {

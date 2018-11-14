@@ -103,11 +103,13 @@ class AppPageMarkup extends Mixin(PolymerElement)
     this._hidePopup();
 
     // we need to be active and have a selected catalog
-    if( !this.active || !this.selectedCatalogId ) return;
+    console.log('TODO: Check active here');
+    if( !this.selectedCatalogId ) return;
 
     // if we are not creating a mark, make sure we remove tmp mark
     if( this.viewState !== 'create' ) {
-      this._removeTmpMark()
+      console.log('TODO: _removeTmpMark')
+      // this._removeTmpMark()
     }
 
     // don't repeat yourself.  if the currently rendered page is

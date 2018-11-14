@@ -62,8 +62,9 @@ class PageMarkup_MapControls extends subclass {
     // this is enabled on some browsers, not on others.  keeping css consistent
     this.$.map.classList.remove('leaflet-touch');
 
+    console.log(this.selectedPage);
     L.imageOverlay(
-      this.apiHost+'/media?select=contents&media_id=eq.'+this.selectedPage.page_id,
+      APP_CONIFG.damsApi.host+this.selectedPage.image.url,
       this.bounds
     ).addTo(this.map);
     

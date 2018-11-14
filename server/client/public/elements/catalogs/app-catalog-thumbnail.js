@@ -124,7 +124,7 @@ class AppCatalogThumbnail extends Mixin(PolymerElement)
       }
 
       // var page = e.payload.pages[0];
-      this.emit('ui-set-location', this.catalog['@id']+'/'+0);
+      this.emit('ui-set-location', 'catalog'+this.catalog['@id']+'/'+0);
     }
   }
 

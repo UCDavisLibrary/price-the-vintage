@@ -1,0 +1,77 @@
+<style include="shared-styles">
+  :host {
+    width: 94px;
+    height: 124px;
+    display: block;
+    cursor: pointer;
+    position: relative;
+    padding: 8px;
+  }
+  .grid-item-img {
+    display: block;
+    background-color: #ddd;
+    width: 94px;
+    height: 124px;
+  }
+  .details {
+    opacity: .9;
+    height: 24px;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    padding: 4px;
+    background-color: var(--input-border-color);
+    color: white;
+  }
+  paper-material {
+    width: 94px;
+    height: 124px;
+    display: block;
+    position: relative;
+    border: 2px solid white;
+    background :#ddd; 
+  }
+  paper-material.selected {
+    border: 2px solid var(--default-primary-color);
+  }
+  paper-material.current-page .details {
+    background-color: var(--default-primary-color);
+  }
+  iron-icon {
+    color: white;
+  }
+  [hidden] {
+    display: none;
+  }
+</style>
+
+
+<paper-material id="root">
+  <iron-image 
+    class="grid-item-img"
+    style="padding:0"
+    sizing="cover"
+    src="[[imgUrl]]" 
+    alt="Catalog Thumbnail Image">
+  </iron-image>
+
+  <div class="layout center details" hidden$="[[!showDetails]]">
+    <div hidden$="[[!showUserCount]]">
+      <span>[[userCount]]</span>
+      <iron-icon icon="social:group"></iron-icon> 
+    </div>
+    <div class="flex"></div>
+    <div hidden$="[[!showMarkCount]]">
+      <span>[[page.marks]]</span>
+      <iron-icon icon="check"></iron-icon> 
+    </div>
+    <div hidden$="[[!showNotEditable]]">
+      <iron-icon icon="block"></iron-icon>
+    </div>
+    <div hidden$="[[!showCompleted]]">
+      <iron-icon icon="done-all"></iron-icon>
+    </div>
+  </div>
+</paper-material>
+    

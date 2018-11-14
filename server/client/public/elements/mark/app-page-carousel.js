@@ -2,6 +2,7 @@ import {PolymerElement, html} from "@polymer/polymer"
 import template from "./app-page-carousel.html"
 
 import "./app-page-carousel-search"
+import "./app-page-item"
 
 class AppPageCarousel extends Mixin(PolymerElement)
   .with(EventInterface, ToggleStateMixin) {
@@ -74,8 +75,8 @@ class AppPageCarousel extends Mixin(PolymerElement)
     if( e.id === this.renderedPageId ) return;
     this.renderedPageId = e.id;
 
-    this.pages = e.payload;
-    this.pageOffset = this.pages[0].page;
+    this.pages = e.payload.pages;
+    this.pageOffset = this.pages[0].position;
     this._updateButtons();
     this._updateScroll();
     this._setPageMatches();

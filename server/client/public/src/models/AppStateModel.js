@@ -76,7 +76,7 @@ class AppStateModel extends BaseModel {
       section : 'list',
       catalog : '',
       page : '',
-      edit : false,
+      editMark : false,
       viewMark : false,
       markId : '',
       catalogId : '',
@@ -96,11 +96,7 @@ class AppStateModel extends BaseModel {
     }
 
     // parse app state information based on location in hash route
-    if( parts[0] === 'collection' ) {
-      parts = this.window.location.hash.replace(/#/,'').replace(APP_CONFIG.damsApi.catalogs.idRoot, '').split('/');
-      parts[0] = APP_CONFIG.damsApi.catalogs.idRoot+parts[0];
-    }
-    parts.forEach((part, index) => this._parseRoute(part, index));
+    this._parseRoute(this.window.location.hash.replace(/#/,'').split('/'));
 
     if( this.firstLoad && this.route.edit && !this.route.markId ) {
       return this.window.location.hash = this.route.catalogId+'/'+this.route.pageId
@@ -109,9 +105,9 @@ class AppStateModel extends BaseModel {
     // set the current app state
     this.set({
       section: this.route.section,
-      editingMark: this.route.edit,
+      editingMark: this.route.editMark,
       viewingMark: this.route.viewMark,
-      creatingMark : (this.route.edit && !this.route.markId),
+      creatingMark : this.route.createMark,
       markId : this.route.markId,
       pageId : this.route.pageId,
       catalogId : this.route.catalogId
@@ -134,47 +130,50 @@ class AppStateModel extends BaseModel {
   /**
    * Parse an individual route section
    **/
-  _parseRoute(value, index) {
-    switch(index) {
-      case 0:
-        if( value === 'admin') {
+  _parseRoute(parts) {
+    if( parts.length === 0 ) parts = ['list'];
+    if( !parts[0] ) parts[0] = ['list'];
 
-          if( this.authState ) {
-            if( this.authState.state === 'notLoggedIn' || !this.authState.user ) {
-              console.warn('No user, admin page not allowed, redirecting', this.authState);
-              window.location.hash = '';
-              return;
-            } else if( !this.authState.user.isAdmin ) {
-              console.warn('User is not an admin, redirecting', this.authState.user);
-              window.location.hash = '';
-              return;
-            }
-          }
-
-          this.route.section = 'admin';
+    this.route.section = parts[0];
+    
+    if( this.route.section === 'admin' ) {
+      if( this.authState ) {
+        if( this.authState.state === 'notLoggedIn' || !this.authState.user ) {
+          console.warn('No user, admin page not allowed, redirecting', this.authState);
+          window.location.hash = '';
           return;
-        } else if( value === 'user' ) {
-          this.route.section = 'user';
+        } else if( !this.authState.user.isAdmin ) {
+          console.warn('User is not an admin, redirecting', this.authState.user);
+          window.location.hash = '';
           return;
         }
+      }
+      return;
+    }
 
-        this.route.section = 'page';
-        this.route.catalogId = value;
+    parts.splice(0,1);
 
-        break;
-      case 1:
-        this.route.section = 'page';
-        this.route.pageId = value;
-        break;
-      case 2:
-        if( value === 'edit') this.route.edit = true;
-        else if( value === 'view') this.route.viewMark = true;
-        break;
-      case 3:
-        if( this.route.edit || this.route.viewMark ) {
-          this.route.markId = value;
-        }
-        break;
+    if( this.route.section === 'view-mark' || 
+        this.route.section === 'edit-mark' ) {
+      
+      this.route.markId = parts.splice(parts.length-1, 1)[0];
+    }
+
+    if( this.route.section === 'view-mark' || 
+        this.route.section === 'edit-mark' || 
+        this.route.section === 'create-mark' || 
+        this.route.section === 'catalog' ) {
+
+      this.route.pageId = parts.splice(parts.length-1, 1)[0];
+      this.route.catalogId = '/'+parts.join('/');
+    }
+
+    if( this.route.section === 'view-mark' ) {
+      this.route.viewMark = true;
+    } else if( this.route.section === 'create-mark' ) {
+      this.route.createMark = true;
+    } else if( this.route.section === 'edit-mark' ) {
+      this.route.editMark = true;
     }
   }
 
