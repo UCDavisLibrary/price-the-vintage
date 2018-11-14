@@ -96,7 +96,7 @@ class AppStateModel extends BaseModel {
     }
 
     // parse app state information based on location in hash route
-    this._parseRoute(this.window.location.hash.replace(/#/,'').split('/'));
+    this._parseRoute(this.window.location.hash);
 
     if( this.firstLoad && this.route.edit && !this.route.markId ) {
       return this.window.location.hash = this.route.catalogId+'/'+this.route.pageId
@@ -130,7 +130,11 @@ class AppStateModel extends BaseModel {
   /**
    * Parse an individual route section
    **/
-  _parseRoute(parts) {
+  _parseRoute(hash) {
+    let parts = hash
+      .replace(/#\/?/,'')
+      .split('/');
+
     if( parts.length === 0 ) parts = ['list'];
     if( !parts[0] ) parts[0] = ['list'];
 

@@ -16,7 +16,7 @@ class PageMarkup_MarkControls extends subclass {
   }
 
   async _loadMarks() {
-    let marks = await this.MarksModel.get(this.selectedPageId);
+    let marks = await this.MarksModel.getPageMarks(this.selectedPageId);
     marks.forEach(this._onMarksUpdate.bind(this));
   }
 
@@ -135,13 +135,13 @@ class PageMarkup_MarkControls extends subclass {
     }
 
     this._removeTmpMark();
-    this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId);
+    this.emit('ui-set-location', 'catalog' + this.selectedCatalogId + '/' + this.selectedPageId);
   }
 
   _onDeleteMark(e) {
     var mark = e.detail;
     this._removeMarkStart(this.selectedPageId, mark.id);
-    this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId);
+    this.emit('ui-set-location', 'catalog' + this.selectedCatalogId + '/' + this.selectedPageId);
   }
 
   /**

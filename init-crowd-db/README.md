@@ -1,0 +1,1 @@
+Init the PGR/crowd-source-db instance with the collection, catalogs and pages.

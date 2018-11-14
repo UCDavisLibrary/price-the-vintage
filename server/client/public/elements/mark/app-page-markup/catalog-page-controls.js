@@ -14,7 +14,7 @@ const PageMarkup_CatalogPageMixin = subclass =>
 
       selectedPageId : {
         type : String,
-        value : ''
+        value : '0'
       },
 
       selectedCatalogId : {
@@ -36,11 +36,11 @@ const PageMarkup_CatalogPageMixin = subclass =>
 
   _selectPage() {
     this.selectedPage = null;
-
+    
     if( !this.selectedPageId ) {
       if( this.pages.length > 0 ) {
         this._setAppState({
-          pageId : this.pages[0].page_id
+          pageId : this.pages[0].position
         });
       } else {
         alert('Catalog has no pages :(');
@@ -49,7 +49,7 @@ const PageMarkup_CatalogPageMixin = subclass =>
     }
 
     for( var i = 0; i < this.pages.length; i++ ) {
-      if( this.pages[i].page_id === this.selectedPageId ) {
+      if( this.pages[i].position+'' === this.selectedPageId ) {
         this.selectedPage = this.pages[i];
         break;
       }

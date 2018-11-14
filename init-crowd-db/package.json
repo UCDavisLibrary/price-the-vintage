@@ -1,0 +1,16 @@
+{
+  "name": "@ucd-lib/ptv-init-crowd-db",
+  "version": "0.0.1",
+  "description": "Init the PGR/crowd-source-db instance with the collection, catalogs and pages.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jrmerz@ucdavis.edu",
+  "license": "MIT",
+  "dependencies": {
+    "@ucd-lib/fin-node-api": "^0.9.7",
+    "jsonwebtoken": "^8.4.0",
+    "request": "^2.88.0"
+  }
+}

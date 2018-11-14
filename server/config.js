@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const PORT = process.env.PORT || 8000;
 
-let serverEnv = process.env.SERVER_ENV || process.env.NODE_ENV || 'dev';
+let serverEnv = process.env.SERVER_ENV || process.env.NODE_ENV || 'dams' || 'dev';
 let clientEnv = process.env.CLIENT_ENV || 'dev';
 
 let assetsDir = (clientEnv === 'prod') ? 'dist' : 'public';
@@ -30,6 +30,12 @@ let firebase = {
     authDomain: "price-the-vintage.firebaseapp.com",
     databaseURL: "https://price-the-vintage.firebaseio.com",
     storageBucket: "price-the-vintage.appspot.com"
+  },
+  dams : {
+    apiKey: "AIzaSyCJ3-m8UxxXBk7rWCwAVBVeDsGHH33uOOk",
+    authDomain: "price-the-vintage-dams.firebaseapp.com",
+    databaseURL: "https://price-the-vintage-dams.firebaseio.com",
+    storageBucket: "price-the-vintage-dams.appspot.com"
   }
 };
 firebase = firebase[serverEnv];

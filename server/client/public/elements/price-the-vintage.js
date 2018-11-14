@@ -2,6 +2,7 @@ import {PolymerElement, html} from "@polymer/polymer"
 import template from "./price-the-vintage.html"
 
 import "leaflet"
+import "leaflet-draw"
 
 import "@polymer/paper-header-panel"
 import "@polymer/paper-toolbar"
@@ -58,7 +59,7 @@ class PriceTheVintage extends Mixin(PolymerElement)
   }
 
   _onAppStateUpdate(e) {
-    if( e.section.match(/.*-mark$/) ) {
+    if( (e.section || '').match(/.*-mark$/) ) {
       this.section = 'catalog';
     } else {
       this.selectedSection = e.section;

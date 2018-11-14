@@ -129,7 +129,9 @@ class AppPageMarkup extends Mixin(PolymerElement)
     // show we are loading
     this.toggleState('loading');
 
-    this.pages = await this.PagesModel.get(this.selectedCatalogId);
+    // TODO: adding page info query
+    this.pages = (await this.CatalogsModel.get(this.selectedCatalogId)).payload.pages;
+    // this.pages = await this.PagesModel.get(this.selectedCatalogId);
 
     this._selectPage();
 
