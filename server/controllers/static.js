@@ -43,6 +43,7 @@ module.exports = (app) => {
         env : config.env,
         firebase : config.firebase,
         damsApi : config.damsApi,
+        pgrApi : config.pgrApi,
         suggestApi : config.suggestApi,
         auth0 : config.auth0,
       });

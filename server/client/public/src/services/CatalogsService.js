@@ -79,7 +79,8 @@ class CatalogsService extends BaseService {
       onLoad : response => {
         // set pages
         let catalog = response.body;
-        let imageList = (catalog.associatedMedia || []).find(am => am.encodingFormat === 'ImageList') || {};
+        let imageList = (catalog.associatedMedia || [])
+          .find(am => am.encodingFormat === 'ImageList') || {};
         catalog.pages = (imageList.hasPart || [])
           .map(page => {
             page.position = parseInt(page.position)

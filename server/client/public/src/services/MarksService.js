@@ -3,7 +3,7 @@ const MarksStore = require('../stores/MarksStore');
 const utils = require('./utils');
 const firebase = require('../firebase');
 
-var API_HOST = '';
+var API_HOST = APP_CONFIG.pgrApi.host;
 
 class MarksService extends BaseService {
 
@@ -23,50 +23,17 @@ class MarksService extends BaseService {
    */
   getApprovedMarks(pageId) {
     return this.request({
-      url : `${API_HOST}/marks`,
+      url : `${API_HOST}/crowd_inputs`,
       qs : {
-        page_id: `eq.${pageId}`
+        item_id: `eq.${pageId}`
       },
       onLoading : promise => this.store.setApprovedByPageLoading(pageId, promise), 
       onLoad : (result) => {
-        this.store.setApprovedByPageLoaded(pageId, result.body.map(fromPgMark));
+        this.store.setApprovedByPageLoaded(pageId, result.body.map(fromPgrMark));
       },
       onError : e => console.error(e)
     });
   }
-
-  /**
-   * @method pendingMarkSearch
-   * @description Postgrest. Search pending marks
-   * 
-   * TODO: who was using this?
-   * 
-   * @param {object} params - postgrest search params 
-   * 
-   * @return {Promise}
-   */
-  // pendingMarkSearch(params = {}, jwt) {
-  //   return this.request({
-  //     url : `${API_HOST}/pending_mark_index`,
-  //     qs: params,
-  //     fetchOptions : {
-  //       headers : {
-  //         Authorization: `Bearer ${jwt}`,
-  //         Prefer: 'count=exact'
-  //       }
-  //     },
-  //     onLoading : promise => this.store.setPendingSearchLoading(params, promise),
-  //     onError : e => this.store.setPendingSearchError(e, params),
-  //     onLoad : (resp) => {
-  //       var result = {
-  //         results : JSON.parse(resp.body)
-  //       };
-  //       setResultInfo(resp.headers['content-range'], result);
-
-  //       this.store.setPendingSearchLoaded(result, params)
-  //     }
-  //   });
-  // }
 
   /**
    * @method approveMark 
@@ -80,10 +47,10 @@ class MarksService extends BaseService {
    * @returns {Promise}
    */
   approveMark(mark, markId, pageId, jwt) {
-    var pgMark = toPgMark(mark, markId, pageId);
+    var pgMark = toPgrMark(mark, markId, pageId);
 
     return this.request({
-      url : `${API_HOST}/marks`,
+      url : `${API_HOST}/crowd_inputs`,
       fetchOptions : {
         method : 'POST',
         headers : {
@@ -115,10 +82,10 @@ class MarksService extends BaseService {
    */
   clearApprovedTestMarks(jwt) {
     return this.request({
-      url : `${API_HOST}/marks`,
+      url : `${API_HOST}/crowd_inputs`,
       fetchOptions : {
         method : 'DELETE',
-        qs : {section: 'eq.test'},
+        qs : {'data->section': 'eq.test'},
         headers : {
           Authorization: `Bearer ${jwt}`
         }
@@ -429,26 +396,26 @@ class MarksService extends BaseService {
 /**
  * Transfer from firebase/app pending mark structure to pg mark structure
  */
-function toPgMark(mark, markId, pageId) {
-  mark.xy = mark.xy || [0,0];
-
+function toPgrMark(mark, markId, pageId) {
   return {
-    mark_id : markId,
-    page_id : pageId,
+    crowd_input_id : markId,
+    item_id : pageId,
     user_id : mark.user,
-    type : mark.type,
-    wine_type : mark.wineType,
-    color : mark.color,
-    country : mark.country,
-    producer : mark.producer,
-    section : mark.section,
-    name : mark.name,
-    vintage : mark.year || 0,
-    bottle_type : mark.bottleType,
-    perprice : mark.price || 0,
-    caseprice : mark.casePrice || 0,
+    data : JSON.stringify({
+      type : mark.type,
+      wineType : mark.wineType,
+      color : mark.color,
+      country : mark.country,
+      producer : mark.producer,
+      section : mark.section,
+      name : mark.name,
+      vintage : mark.year || 0,
+      bottleType : mark.bottleType,
+      perprice : mark.price || 0,
+      caseprice : mark.casePrice || 0,
+      xy : mark.xy || [0,0]
+    }),
     anonymous : mark.isAnonymous,
-    xy : `{${Math.floor(mark.xy[0])},${Math.floor(mark.xy[1])}}`,
     created : new Date(mark.created).toISOString(),
     updated : new Date(mark.updated).toISOString()
   }
@@ -457,28 +424,23 @@ function toPgMark(mark, markId, pageId) {
 /**
  * Transfer from pg mark structure to firebase/app mark structure
  */
-function fromPgMark(pgMark) {
-  return {
-    markId: pgMark.mark_id,
-    pageId : pgMark.page_id,
-    user : pgMark.user_id,
-    type : pgMark.type,
-    wineType : pgMark.wine_type,
-    color : pgMark.color,
-    name : pgMark.name,
-    country : pgMark.country,
-    producer : pgMark.producer,
-    section : pgMark.section,
-    year : pgMark.vintage || '',
-    bottleType : pgMark.bottle_type,
-    price : pgMark.perprice || '',
-    casePrice : pgMark.caseprice || '',
-    xy : pgMark.xy,
-    isAnonymous : pgMark.anonymous,
+function fromPgMark(pgrMark) {
+  let mark =  {
+    markId: pgrMark.crowd_input_id,
+    pageId : pgrMark.item_id,
+    user : pgrMark.user_id,
+    isAnonymous : pgrMark.anonymous,
     approved : true,
-    created : new Date(pgMark.created).getTime(),
-    updated : new Date(pgMark.updated).getTime()
+    created : new Date(pgrMark.created).getTime(),
+    updated : new Date(pgrMark.updated).getTime()
   }
+
+  let data = JSON.parse(pgrMark.data);
+  for( let key in data ) {
+    mark[key] = data[key];
+  }
+
+  return mark;
 }
 
 module.exports = new MarksService();

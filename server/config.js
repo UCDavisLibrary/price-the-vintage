@@ -83,6 +83,10 @@ module.exports = {
     }
   },
 
+  pgrApi : {
+    host : process.env.PGR_HOST || 'http://localhost:3000'
+  },
+
   suggestApi : {
     host : process.env.SUGGEST_HOST || 'https://wine-search.library.ucdavis.edu'
   },

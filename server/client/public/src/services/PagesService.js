@@ -2,7 +2,7 @@ const BaseService = require('@ucd-lib/cork-app-utils').BaseService;
 const PagesStore = require('../stores/PagesStore');
 const utils = require('./utils');
 
-const API_HOST = '';
+const API_HOST = APP_CONFIG.pgrApi.host;
 
 class PagesService extends BaseService {
 
@@ -22,52 +22,52 @@ class PagesService extends BaseService {
    * @returns {Promise}
    */
   async search(query = {}) {
-    let q = (query.q || '').trim();
+    throw new Error('Not implemented');
+    // let q = (query.q || '').trim();
 
-    let params = {
-      // select : config.pages.searchSelectAttributes.join(','),
-      catalog_id : `eq.${query.catalogId}`
-    };
+    // let params = {
+    //   // select : config.pages.searchSelectAttributes.join(','),
+    //   catalog_id : `eq.${query.catalogId}`
+    // };
 
-    this.store.setSearchLoading(params, q);
+    // this.store.setSearchLoading(params, q);
 
-    if( q ) {
-      params.q = await utils.escapeTSVector(q);
-    }
+    // if( q ) {
+    //   params.q = await utils.escapeTSVector(q);
+    // }
 
-    return this.request({
-      url : `${API_HOST}/pages`,
-      qs : params,
-      fetchOptions : {
-        headers : {
-          Prefer : 'count=exact'
-        }
-      },
-      onError : e => this.store.setSearchError(e, params, q),
-      onLoad : result => {
-        let response = result.response;
-        result = {results : result.body};
-        utils.setResultInfo(response.headers.get('content-range'), result);
-        this.store.setSearchLoaded(result, params, q);
-      }
-    });
+    // return this.request({
+    //   url : `${API_HOST}/pages`,
+    //   qs : params,
+    //   fetchOptions : {
+    //     headers : {
+    //       Prefer : 'count=exact'
+    //     }
+    //   },
+    //   onError : e => this.store.setSearchError(e, params, q),
+    //   onLoad : result => {
+    //     let response = result.response;
+    //     result = {results : result.body};
+    //     utils.setResultInfo(response.headers.get('content-range'), result);
+    //     this.store.setSearchLoaded(result, params, q);
+    //   }
+    // });
   }
 
 
   /**
-   * @method get
-   * @description Get the catalog page
+   * @method getCrowdData
+   * @description Get the crowd source data for a page
    *
    * @param {String} pageId page id
    * 
    * @returns {Promise}
    */
-  get(pageId) {
+  getCrowdData(pageId) {
     return this.request({
-      url : `${API_HOST}/pages`,
+      url : `${API_HOST}/items`,
       qs : {
-        // select : config.pages.searchSelectAttributes.join(','),
-        page_id : `eq.${pageId}`
+        item_id : `eq.${pageId}`
       },
       onLoading : request => this.store.setPageLoading(pageId, request),
       onError : e => this.store.setPageError(pageId, e),
@@ -87,13 +87,12 @@ class PagesService extends BaseService {
    * 
    * @returns {Promise}
    */
-  getPages(catalogId) {
+  getPagesCrowdData(catalogId) {
     return this.request({
-      url : `${API_HOST}/pages`,
+      url : `${API_HOST}/items`,
       qs : {
-        // select : config.pages.searchSelectAttributes.join(','),
-        catalog_id : `eq.${catalogId}`,
-        order : 'page'
+        parent_id : `eq.${catalogId}`,
+        order : 'index'
       },
       onLoading : request => this.store.setPagesLoading(pageId, request),
       onError : e => this.store.setPagesError(id, e),
@@ -113,8 +112,8 @@ class PagesService extends BaseService {
    */
   ignore(pageId, ignore, jwt) {
     return this.request({
-      url : `${API_HOST}/pages`,
-      qs : {page_id : `eq.${pageId}`},
+      url : `${API_HOST}/items`,
+      qs : {item_id : `eq.${pageId}`},
       fetchOptions : {
         method : 'PATCH',
         body : JSON.stringify({editable: !ignore}),
@@ -141,8 +140,8 @@ class PagesService extends BaseService {
    */
   completed(pageId, completed, jwt) {
     return this.request({
-      url : `${API_HOST}/pages`,
-      qs : {page_id : `eq.${pageId}`},
+      url : `${API_HOST}/items`,
+      qs : {item_id : `eq.${pageId}`},
       fetchOptions : {
         method : 'PATCH',
         body : JSON.stringify({completed: completed}),
