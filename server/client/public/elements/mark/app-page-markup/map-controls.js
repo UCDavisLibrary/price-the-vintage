@@ -79,7 +79,7 @@ class PageMarkup_MapControls extends subclass {
     L.drawLocal.draw.handlers.marker.tooltip.start = 'Place by the name of the wine';
     this.drawControl = new L.Control.Draw(this.drawToolOptions);
 
-    if( this.selectedPage.editable && !this.selectedPage.completed ) {
+    if( this.crowdData.editable && !this.crowdData.completed ) {
       if( !this.helpTextDismissed ) {
         this.helpTextControl = L.control.helpTextControl({ position: 'topright' }).addTo(this.map);
       }
@@ -171,10 +171,14 @@ class PageMarkup_MapControls extends subclass {
         layer = e.layer;
     
 
-    this._updateTempMark(this.selectedPageId, [e.layer._latlng.lng, e.layer._latlng.lat]);
+    this.MarksModel.updateTempMark(
+      this.userState.user.sub,
+      this.selectedPage['@id'], 
+      [e.layer._latlng.lng, e.layer._latlng.lat]
+    );
 
     this.pendingAddMark = layer;
-    this.emit('ui-set-location', this.selectedCatalogId + '/' + this.selectedPageId + '/edit');
+    this.emit('ui-set-location', 'create-mark'+this.selectedCatalogId + '/' + this.selectedPageIndex);
   }
 
   _updateMapSize() {

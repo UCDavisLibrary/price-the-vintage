@@ -38,6 +38,10 @@ export class AppPriceFormSelect extends PolymerElement {
     };
   }
 
+  static get template() {
+    return html([template]);
+  }
+
   _onValueChange() {
     setTimeout(() => {
       this.icon = this.$.select.icon;

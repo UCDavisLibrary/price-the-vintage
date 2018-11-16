@@ -1,0 +1,53 @@
+{
+  "id": "/WineMark",
+  "type": "object",
+  "properties": {
+    "type" : {
+      "type" : "string"
+    },
+    "wineType" : {
+      "type" : "string"
+    },
+    "color" : {
+      "type" : "string"
+    },
+    "country" : {
+      "type" : "string"
+    },
+    "producer" : {
+      "type" : "string"
+    },
+    "section" : {
+      "type" : "string"
+    },
+    "name" : {
+      "type" : "string"
+    },
+    "vintage" : {
+      "type" : "number"
+    },
+    "bottleType" : {
+      "type" : "string",
+      "enum" : ["Piccolo", "Split", "Quarter", "Chopine", "Demi", "Half Bottle", 
+        "Tenth", "Jennie", "Demie", "Pinte", "Clavelin", "Standard", "Fifth", 
+        "Litre", "Magnum", "Marie Jeanne", "Jeroboam", "Rehoboam", "McKenzie", 
+        "Imperial", "Methuselah", "Salmanazar", "Balthazar", "Nebuchadnezzar", 
+        "Melchior", "Solomon", "Sovereign", "Primat", "Goliath", "Melchizedek", "Midas"]
+    },
+    "perprice" : {
+      "type" : "number"
+    },
+    "caseprice" : {
+      "type" : "number"
+    },
+    "xy" : {
+      "type" : "array",
+      "items": {"type": "number"}
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "name", "type", "wineType", "color", "country", "producer",
+    "section", "vintage", "bottleType", "perprice", "caseprice", "xy"
+  ]
+}

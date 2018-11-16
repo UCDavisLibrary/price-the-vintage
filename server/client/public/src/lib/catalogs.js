@@ -61,6 +61,19 @@ class CatalogsModel extends BaseModel {
   clear() {
     this.store.clear();
   }
+
+  /**
+   * @method getPageId
+   * @description get a page id by catalogId and page index in catalog
+   * 
+   * @param {String} catalogId
+   * @param {Number} index
+   */
+  async getPageId(catalogId, index) {
+    index = parseInt(index);
+    let catalog = (await this.get(catalogId)).payload;
+    return catalog.pages[index]['@id'];
+  }
 }
 
 

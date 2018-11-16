@@ -60,7 +60,7 @@ class AppAdminMarkupControl extends Mixin(PolymerElement)
     this.pageId = e.pageId;
     if( !this.pageId ) return;
 
-    e = await this.PageModel.get(this.pageId)
+    e = await this.PagesModel.get(this.pageId)
     this._onCatalogPageUpdate(e);
   }
 

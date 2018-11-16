@@ -47,7 +47,8 @@ class AppPriceForm extends Mixin(PolymerElement)
   }
 
   constructor() {
-    super._injectModel('AuthModel', 'AppStateModel');
+    super()
+    this._injectModel('AuthModel', 'AppStateModel');
   }
 
   _onAuthUpdate(e) {

@@ -368,9 +368,9 @@
     "@polymer/polymer" "^3.0.2"
     "@ucd-lib/cork-icons" "^1.0.0"
 
-"@ucd-lib/cork-select@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-select/-/cork-select-1.0.0.tgz#5ec4bd4cd8b14e1bddbe7bed0901fc3fe1796f54"
+"@ucd-lib/cork-select@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@ucd-lib/cork-select/-/cork-select-1.0.1.tgz#74f57294db484b9d3cef041e61f20d9bda02d5a4"
   dependencies:
     "@polymer/polymer" "^3.0.2"
     "@ucd-lib/cork-popup-button" "^1.0.0"

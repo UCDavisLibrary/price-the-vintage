@@ -8,6 +8,7 @@ let clientEnv = process.env.CLIENT_ENV || 'dev';
 
 let assetsDir = (clientEnv === 'prod') ? 'dist' : 'public';
 let clientPackage = require(`./client/${assetsDir}/package.json`);
+// let secrets = require('./secrets.json');
 
 const GOOGLE_ENV = process.env.GOOGLE_CLOUD_PROJECT ? true : false;
 let googleSecret;
@@ -42,9 +43,11 @@ firebase = firebase[serverEnv];
 
 let auth0ClientId = {
   dev : 'RmgYnxJ7hFnQ6HW5ja1I5NVYotPYO2PZ',
+  dams : 'S2lJXBGTU09SrTZMcQNHLv4K4DmXRgAz',
   prod : 'PKb1b9gAh5sdtzrqgdSLjzso0TedWfDf'
 }
 auth0ClientId = auth0ClientId[serverEnv];
+// let auth0ClientSecret = secrets.auth0.secret[serverEnv];
 
 module.exports = {
   GOOGLE_ENV,
@@ -101,14 +104,14 @@ module.exports = {
   auth0 : {
     domain : 'ucdlibrary.auth0.com', 
     clientID: auth0ClientId,
-    scope : 'openid email role isAdmin',
+    scope : 'openid email profile',
     localStorageKey : 'auth0-profile',
     lockOptions : {
       auth : {
         autoParseHash: false,
         params: {
             responseType: 'token id_token',
-            scope: 'openid email role isAdmin'
+            scope: 'openid mail profile'
         }
       },
       languageDictionary: {
@@ -118,6 +121,7 @@ module.exports = {
         logo: '/images/library.png',
         primaryColor: '#912046'
       }
-    }
+    },
+    jwksUrl : 'https://ucdlibrary.auth0.com/.well-known/jwks.json'
   }
 }

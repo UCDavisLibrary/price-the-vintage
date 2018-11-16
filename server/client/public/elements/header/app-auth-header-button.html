@@ -75,14 +75,14 @@
 <div state="pending">...</div>
 
 <div state="loggedIn">
-  < id="menuBtn" no-btn-arrow>
+  <cork-popup-button id="menuBtn" no-btn-arrow>
     <div slot="btn-content">
       <paper-icon-button icon="social:person" hidden$="[[hasPhoto]]"></paper-icon-button>
       <img src="[[photo]]" hidden$="[[!hasPhoto]]" alt="User profile image"/>
     </div>
     <div>
       <div class="option">[[username]]</div>
-      <div class="option selectable" on-click="_onLogout">
+      <div class="option selectable" on-click="_onLogoutClicked">
         <iron-icon icon="exit-to-app"></iron-icon>&nbsp;Logout
       </div>
 
@@ -93,9 +93,9 @@
     </div>
   </cork-popup-button>
 
-  <paper-icon-button on-click="_loginAuth0" icon="social:person-outline" hidden$="[[!isAnonymous]]" ></paper-icon-button>
+  <paper-icon-button on-click="_onLoginClicked" icon="social:person-outline" hidden$="[[!isAnonymous]]" ></paper-icon-button>
 </div>
 
 <div state="notLoggedIn">
-  <paper-icon-button on-click="_loginAuth0" icon="social:person-outline"></paper-icon-button>
+  <paper-icon-button on-click="_onLoginClicked" icon="social:person-outline"></paper-icon-button>
 </div>

@@ -65,6 +65,22 @@ class AppAuthHeaderButton extends Mixin(PolymerElement)
     this.toggleState(this.auth.state);
   }
 
+  /**
+   * @method _onLoginClicked
+   * @description bound to login click events
+   */
+  _onLoginClicked() {
+    this.AuthModel.loginAuth0();
+  }
+
+  /**
+   * @method _onLogoutClicked
+   * @description bound to logout btn click events
+   */
+  _onLogoutClicked() {
+    this.AuthModel.logout();
+  }
+
   _onAppStateUpdate(e) {
     this.appState = e;
   }

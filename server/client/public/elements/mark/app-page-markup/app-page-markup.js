@@ -5,6 +5,7 @@ import "../app-page-carousel"
 import "../app-admin-markup-control"
 import "../app-help-text-control"
 import "../app-marker"
+import "../../input-form/app-price-form"
 
 import PageMarkup_CatalogPageMixin from "./catalog-page-controls"
 import PageMarkup_MapMixin from "./map-controls"
@@ -20,6 +21,12 @@ class AppPageMarkup extends Mixin(PolymerElement)
 
   static get properties() {
     return {
+      active : {
+        type : Boolean,
+        value : false,
+        observer : '_activeObserver'
+      },
+
       // should be one of: view, edit or create
       viewState : {
         type : String,
@@ -60,7 +67,11 @@ class AppPageMarkup extends Mixin(PolymerElement)
     super.ready();
   }
 
-  _onActive() {
+  /**
+   * @method _activeObserver
+   * @description bound to active property
+   */
+  _activeObserver() {
     if( !this.active ) {
       if( this.addMarker && this.drawTool ) {
         this._removeTmpMark();
@@ -76,6 +87,7 @@ class AppPageMarkup extends Mixin(PolymerElement)
 
   _onAuthUpdate(e) {
     this.userState = e;
+    console.log(e);
     this._renderMapControls();
   }
 
@@ -84,7 +96,7 @@ class AppPageMarkup extends Mixin(PolymerElement)
     this.appState = appState;
 
     this.selectedCatalogId = appState.catalogId;
-    this.selectedPageId = appState.pageId;  
+    this.selectedPageIndex = appState.pageIndex;  
     
     // helper
     this.viewState = '';
@@ -103,7 +115,7 @@ class AppPageMarkup extends Mixin(PolymerElement)
     this._hidePopup();
 
     // we need to be active and have a selected catalog
-    console.log('TODO: Check active here');
+    if( !this.active ) return;
     if( !this.selectedCatalogId ) return;
 
     // if we are not creating a mark, make sure we remove tmp mark
@@ -114,7 +126,9 @@ class AppPageMarkup extends Mixin(PolymerElement)
 
     // don't repeat yourself.  if the currently rendered page is
     // the same as the selected page there is nothing todo
-    if( this.selectedPageId === this.renderedPageId ) {
+    if( this.selectedPageIndex !== -1 &&
+        this.selectedPageIndex === this.renderedPageIndex && 
+        this.selectedCatalogId === this.renderedCatalogId ) {
       // render map controls visibility states
       this._renderMapControls();
 
@@ -126,13 +140,17 @@ class AppPageMarkup extends Mixin(PolymerElement)
       return;
     }
 
+    // we haven't rendered current catalog/page yet but we are working on it.
+    if( this.loading ) return;
+    this.loading = true;
+
     // show we are loading
     this.toggleState('loading');
 
     // TODO: adding page info query
     this.pages = (await this.CatalogsModel.get(this.selectedCatalogId)).payload.pages;
-    // this.pages = await this.PagesModel.get(this.selectedCatalogId);
 
+    // make sure we have a page selected
     this._selectPage();
 
     // url only had a catalog id, go select first page
@@ -142,6 +160,9 @@ class AppPageMarkup extends Mixin(PolymerElement)
     if( !this.selectedPage ) {  
       return;
     }
+
+    let state = await this.PagesModel.get(this.selectedPage['@id']);
+    this.crowdData = state.payload;
 
     await this._loadImage();
 
@@ -156,7 +177,9 @@ class AppPageMarkup extends Mixin(PolymerElement)
     // mark when it's loaded
     this._loadMarks();
 
-    this.renderedPageId = this.selectedPageId;
+    this.loading = false;
+    this.renderedPageIndex = this.selectedPageIndex;
+    this.renderedCatalogId = this.selectedCatalogId;
   }
 
   // called from _onMarksUpdate after selected mark is loaded

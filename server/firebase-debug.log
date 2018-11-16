@@ -1,0 +1,21 @@
+[debug] [2018-11-15T23:52:48.231Z] ----------------------------------------------------------------------
+[debug] [2018-11-15T23:52:48.233Z] Command:       /usr/local/Cellar/node/10.10.0/bin/node /usr/local/bin/firebase deploy --only database
+[debug] [2018-11-15T23:52:48.234Z] CLI Version:   6.0.1
+[debug] [2018-11-15T23:52:48.234Z] Platform:      darwin
+[debug] [2018-11-15T23:52:48.234Z] Node Version:  v10.10.0
+[debug] [2018-11-15T23:52:48.235Z] Time:          Thu Nov 15 2018 15:52:48 GMT-0800 (Pacific Standard Time)
+[debug] [2018-11-15T23:52:48.235Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-11-15T23:52:48.252Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-11-15T23:52:48.252Z] > authorizing via signed-in user
+[debug] [2018-11-15T23:52:48.253Z] [iam] checking project price-the-vintage-dams for permissions ["firebase.projects.get","firebasedatabase.instances.update"]
+[debug] [2018-11-15T23:52:48.254Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-11-15T23:52:48.254Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2018-11-15T23:52:48.473Z] <<< HTTP RESPONSE 200
+[debug] [2018-11-15T23:52:48.481Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/price-the-vintage-dams:testIamPermissions  
+
+[debug] [2018-11-15T23:52:48.958Z] <<< HTTP RESPONSE 200
+[debug] [2018-11-15T23:52:48.960Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/price-the-vintage-dams  
+ 
+[debug] [2018-11-15T23:52:49.230Z] <<< HTTP RESPONSE 200

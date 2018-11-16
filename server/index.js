@@ -17,12 +17,13 @@ process.on('unhandledRejection', (e) => logger.fatal(e));
 const app = express();
 
 // setup sessions
-// app.use(require('./lib/session'));
+
 
 // parse cookies and add compression
 app.use(cookieParser()); 
 app.use(compression());
 
+app.use('/auth', require('./controllers/auth'));
 require('./controllers/static')(app);
 
 app.listen(config.server.port, () => {

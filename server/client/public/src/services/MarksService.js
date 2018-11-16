@@ -258,6 +258,7 @@ class MarksService extends BaseService {
    * @returns {Promise}
    */
   async updateTempMark(update) {
+    debugger;
     await this.setTmpMarkDisconnectRefs(update);
     return firebase
       .database()
@@ -424,7 +425,7 @@ function toPgrMark(mark, markId, pageId) {
 /**
  * Transfer from pg mark structure to firebase/app mark structure
  */
-function fromPgMark(pgrMark) {
+function fromPgrMark(pgrMark) {
   let mark =  {
     markId: pgrMark.crowd_input_id,
     pageId : pgrMark.item_id,

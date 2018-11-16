@@ -37,10 +37,10 @@ const PageMarkup_CatalogPageMixin = subclass =>
   _selectPage() {
     this.selectedPage = null;
     
-    if( !this.selectedPageId ) {
+    if( this.selectedPageIndex === -1 ) {
       if( this.pages.length > 0 ) {
-        this._setAppState({
-          pageId : this.pages[0].position
+        this.AppStateModel.set({
+          pageIndex : this.pages[0].position
         });
       } else {
         alert('Catalog has no pages :(');
@@ -49,20 +49,21 @@ const PageMarkup_CatalogPageMixin = subclass =>
     }
 
     for( var i = 0; i < this.pages.length; i++ ) {
-      if( this.pages[i].position+'' === this.selectedPageId ) {
+      if( this.pages[i].position === this.selectedPageIndex ) {
         this.selectedPage = this.pages[i];
+        this.selectedPageId = this.selectedPage['@id'];
         break;
       }
     }
 
     if( !this.selectedPage ) {
-      alert('Unknown page id: '+this.selectedPageId);
+      alert('Unknown page index: '+this.selectedPageIndex);
     }
   }
 
   _getCatalogPage() {
     if( !this.selectedCatalogId ) return;
-    return super._getCatalogPage(this.selectedCatalogId);
+    return this.PagesModel.getPagesCrowdData(this.selectedCatalogId);
   }
 
 }

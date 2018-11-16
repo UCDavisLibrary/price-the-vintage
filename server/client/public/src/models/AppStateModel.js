@@ -80,7 +80,7 @@ class AppStateModel extends BaseModel {
       viewMark : false,
       markId : '',
       catalogId : '',
-      pageId : ''
+      pageIndex : -1
     }
 
     // split up the hash state
@@ -109,7 +109,7 @@ class AppStateModel extends BaseModel {
       viewingMark: this.route.viewMark,
       creatingMark : this.route.createMark,
       markId : this.route.markId,
-      pageId : this.route.pageId,
+      pageIndex : this.route.pageIndex,
       catalogId : this.route.catalogId
     });
 
@@ -136,7 +136,7 @@ class AppStateModel extends BaseModel {
       .split('/');
 
     if( parts.length === 0 ) parts = ['list'];
-    if( !parts[0] ) parts[0] = ['list'];
+    if( !parts[0] ) parts[0] = 'list';
 
     this.route.section = parts[0];
     
@@ -168,7 +168,7 @@ class AppStateModel extends BaseModel {
         this.route.section === 'create-mark' || 
         this.route.section === 'catalog' ) {
 
-      this.route.pageId = parts.splice(parts.length-1, 1)[0];
+      this.route.pageIndex = parseInt(parts.splice(parts.length-1, 1)[0]);
       this.route.catalogId = '/'+parts.join('/');
     }
 

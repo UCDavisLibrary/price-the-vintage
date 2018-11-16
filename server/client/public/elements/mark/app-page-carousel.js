@@ -47,14 +47,14 @@ class AppPageCarousel extends Mixin(PolymerElement)
   }
 
   _onAppStateUpdate(appState) {
-    this.selected = appState.pageId;
+    this.selected = appState.pageIndex;
     this.catalogId = appState.catalogId;
 
     this._render();
   }
 
   async _render() {
-    if( !this.selected || !this.catalogId ) return;
+    if( this.selected === -1 || !this.catalogId ) return;
 
     let e = await this.CatalogsModel.get(this.catalogId);
     this._onCatalogPagesUpdate(e);
@@ -71,7 +71,7 @@ class AppPageCarousel extends Mixin(PolymerElement)
   _asyncOnCatalogPagesUpdate(e) {
     this.toggleState(e.state, 'loading-state');
     if( e.state !== 'loaded' ) return;
-
+    
     if( e.id === this.renderedPageId ) return;
     this.renderedPageId = e.id;
 
@@ -124,7 +124,7 @@ class AppPageCarousel extends Mixin(PolymerElement)
 
     var currentPage;
     for( var i = 0; i < this.pages.length; i++ ) {
-      if( this.selected === this.pages[i].page_id ) {
+      if( this.selected === this.pages[i].position ) {
         currentPage = this.pages[i];
         break;
       }
@@ -154,7 +154,7 @@ class AppPageCarousel extends Mixin(PolymerElement)
     if( !this.pages ) return -1;
 
     for( var i = 0; i < this.pages.length; i++ ) {
-      if( this.pages[i].page_id === this.selected ) {
+      if( this.pages[i].position === this.selected ) {
         return this.pages[i].page;
       }
     }
@@ -164,8 +164,8 @@ class AppPageCarousel extends Mixin(PolymerElement)
     if( !this.pages ) return -1;
 
     for( var i = 0; i < this.pages.length; i++ ) {
-      if( this.pages[i].page === page ) {
-        return this.pages[i].page_id;
+      if( this.pages[i].position === page ) {
+        return this.pages[i]['@id'];
       }
     }
   }
@@ -230,7 +230,7 @@ class AppPageCarousel extends Mixin(PolymerElement)
   }
 
   _select(e) {
-    this.emit('ui-set-location',  this.catalogId+'/'+e.currentTarget.page.page_id);
+    this.emit('ui-set-location',  this.catalogId+'/'+e.currentTarget.page.position);
   }
 
   _clearSearch() {
@@ -243,7 +243,7 @@ class AppPageCarousel extends Mixin(PolymerElement)
 
   _getResultsPageById(results, id) {
     for( var i = 0; i < results.length; i++ ) {
-      if( results[i].page_id === id ) {
+      if( results[i]['@id'] === id ) {
         return results[i];
       }
     }

@@ -45,7 +45,7 @@ class PagesModel extends BaseModel {
       return page;
     }
 
-    await this.service.get(pageId);
+    await this.service.getCrowdData(pageId);
     return this.store.data.byId[pageId];
   }
 
@@ -58,7 +58,7 @@ class PagesModel extends BaseModel {
    * @returns {Promise}
    */
   async getPages(catalogId) {
-    await this.service.getPages(catalogId);
+    await this.service.getPagesCrowdData(catalogId);
     return this.store.data.byCatalogId[catalogId];
   }
 

@@ -4,6 +4,7 @@ const {BaseModel} = require('@ucd-lib/cork-app-utils');
 const firebase = require('../firebase');
 const localStorage = require('../lib/local-storage');
 const AuthStore = require('../stores/AuthStore');
+const AuthService = require('../services/AuthService')
 
 const marks = require('../lib/marks');
 const activity = require('../lib/activity');
@@ -18,6 +19,7 @@ class AuthModel extends BaseModel {
     super();
 
     this.store = AuthStore;
+    this.service = AuthService;
     this.config = APP_CONFIG.auth0;
 
     if( typeof window !== 'undefined' ) {
@@ -123,6 +125,14 @@ class AuthModel extends BaseModel {
     var userData = this.getUserProfile();
     if( !userData ) return;
 
+    // TODO: get this working... docs suck
+    // https://auth0.com/docs/libraries/auth0js/v8#using-checksession-to-acquire-new-tokens
+    // this.auth0WebAuth.checkSession({
+      
+    // }, (e, result) => {
+    //   this._autoRenewAuth0Complete(e, result)
+    // });
+
     this.auth0WebAuth.renewAuth({
       scope: this.config.scope,
       redirectUri: window.location.protocol+'//'+window.location.host+'/silent-login.html',
@@ -145,13 +155,16 @@ class AuthModel extends BaseModel {
 
     console.log('Silent login success, token renewed');
 
+    // update id token, old one might be expired
     var user = this.getAuthState().user;
 
-    // update id token, old one might be expired
-    user.auth0Token = authResult.idToken;
+    if( authResult.idToken ) {  
+      user.auth0Token = authResult.idToken;
+      this.setUserProfile(user);
+      this.store.setUser(user);
+    }
 
-    this.setUserProfile(user);
-    this.store.setUser(user);
+    this.loginFirebase(user.auth0Token);
   }
 
   /**
@@ -192,36 +205,36 @@ class AuthModel extends BaseModel {
         }
 
         // grab the the Auth0 user profile
-        this.lock.getProfile(authResult.idToken, (error, profile) => {
+        this.lock.getUserInfo(authResult.accessToken, async (error, profile) => {
           if( error ) throw error;
 
           // set the profiles Auth0 Token
           profile.auth0Token = authResult.idToken;
           this.setUserProfile(profile);
 
-          // Set the options to retreive a firebase delegation token
-          var options = {
-            grant_type : 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            id_token : authResult.idToken,
-            api : 'firebase',
-            scope : this.config.scope,
-            target: this.config.clientID
-          };
-
-          // Make a call to the Auth0 '/delegate'
-          // basically this uses the Auth0 token to generate a Firebase JWT
-          this.auth0.delegation(options, (error, result) => {
-            if( error ) throw error;
-
-            // login into Firebase with Auth0 generated Firebase JWT
-            this.loginCustom(result.idToken);
+          try {
+            await this.loginFirebase(profile.auth0Token);
             resolve();
-          });
+          } catch(e) {
+            reject(e);
+          }
+
         });
+
       });
-    });
-    
+    });  
   }
+
+  async loginFirebase(auth0Token) {
+    let {body} = await this.service.loginFirebase(auth0Token);
+    
+    let profile = this.getUserProfile();
+    profile.firebaseToken = body.token;
+    this.setUserProfile(profile);
+    
+    this.loginCustom(body.token);
+  }
+
 
   /**
    * @method loginAnonymous
@@ -244,7 +257,6 @@ class AuthModel extends BaseModel {
    * @returns {Promise}
    */
   async loginCustom(token) {
-    // Exchange the delegate token for a Firebase auth token
     this.cleanPresence();
     await firebase.auth().signInWithCustomToken(token);
     return this.store.data;

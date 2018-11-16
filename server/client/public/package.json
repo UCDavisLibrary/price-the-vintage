@@ -25,7 +25,7 @@
     "@ucd-lib/cork-cancel-button": "^1.0.0",
     "@ucd-lib/cork-pagination": "^2.1.1",
     "@ucd-lib/cork-popup-button": "^1.0.1",
-    "@ucd-lib/cork-select": "^1.0.0",
+    "@ucd-lib/cork-select": "1.0.1",
     "@ucd-lib/cork-style": "1.0.1",
     "@ucd-lib/cork-tag": "^1.0.0",
     "@ucd-lib/cork-typeahead": "^1.0.0",

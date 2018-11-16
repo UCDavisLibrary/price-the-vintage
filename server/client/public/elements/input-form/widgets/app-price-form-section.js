@@ -58,7 +58,7 @@ export class AppPriceFormSection extends Mixin(PolymerElement)
 
   // called from typeahead widget
   suggest(value) {
-    return this.PageModel.pageSection(value);    
+    return this.PagesModel.pageSection(value);    
   }
 }
 window.customElements.define('app-price-form-section', AppPriceFormSection);

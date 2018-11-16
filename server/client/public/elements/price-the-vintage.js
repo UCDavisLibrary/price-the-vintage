@@ -9,6 +9,7 @@ import "@polymer/paper-toolbar"
 import "@polymer/paper-button"
 import "@polymer/iron-pages"
 import "@polymer/iron-icons/social-icons"
+import "@polymer/iron-icons/iron-icons"
 
 import "@ucd-lib/cork-app-utils"
 
@@ -60,7 +61,7 @@ class PriceTheVintage extends Mixin(PolymerElement)
 
   _onAppStateUpdate(e) {
     if( (e.section || '').match(/.*-mark$/) ) {
-      this.section = 'catalog';
+      this.selectedSection = 'catalog';
     } else {
       this.selectedSection = e.section;
     }

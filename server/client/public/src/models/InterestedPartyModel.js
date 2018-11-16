@@ -70,9 +70,9 @@ class InterestedPartyModel extends BaseModel {
         }
 
         if( e.ids ) {
-          e.ids.forEach(id => this.buffer[type][id] = true);
+          e.ids.forEach(id => this.responses[type][id] = true);
         } else {
-          this.buffer[type][e.id] = true
+          this.responses[type][e.id] = true
         }
       });
     }

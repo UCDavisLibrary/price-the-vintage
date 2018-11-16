@@ -249,11 +249,11 @@ class MarksModel extends BaseModel {
 
     var update = {
       [`/users/${uid}/tempMarks/${this.tmpMark.id}`] : tmpMark,
-      [`/marks/${pageId}/${this.tmpMark.id}`] : tmpMark
+      [`/marks${pageId}/${this.tmpMark.id}`] : tmpMark
     };
 
     if( this.tmpMark.pageId && this.tmpMark.pageId !== tmpMark.pageId ) {
-      update[`/marks/${this.tmpMark.pageId}/${this.tmpMark.id}`] = null;
+      update[`/marks${this.tmpMark.pageId}/${this.tmpMark.id}`] = null;
     }
 
     this.tmpMark.pageId = pageId;
@@ -273,7 +273,7 @@ class MarksModel extends BaseModel {
 
     let removeUpdate = {
       [`/users/${uid}/tempMarks/${this.tmpMark.id}`] : null,
-      [`/marks/${this.tmpMark.pageId}/${this.tmpMark.id}`] : null
+      [`/marks${this.tmpMark.pageId}/${this.tmpMark.id}`] : null
     };
 
     this.tmpMark.pageId = '';
