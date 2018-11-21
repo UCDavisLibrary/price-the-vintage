@@ -1,14 +1,6 @@
-var BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
-var firebase = require('../firebase');
-
-var AdminService = require('../services/AdminService');
-var MarkService = require('../services/MarksService');
-var PagesService = require('../services/PagesService');
-var MarksStore = require('../stores/MarksStore');
-var PagesStore = require('../stores/PagesStore');
-var AdminStore = require('../stores/AdminStore');
-var AuthStore = require('../stores/AuthStore');
-var MarksModel = require('../lib/marks');
+const {BaseModel} = require('@ucd-lib/cork-app-utils');
+const {ItemsModel, SuggestModel} = require('@ucd-lib/crowd-source-js');
+const AdminService = require('../services/AdminService');
 
 /**
  * Preform admin tasks
@@ -18,142 +10,60 @@ class AdminModel extends BaseModel {
   constructor() {
     super();
 
-    this.store = AdminStore;
-    this.stores = {
-      mark : MarksStore,
-      pages : PagesStore
-    };
-    this.services = {
-      mark : MarkService,
-      pages : PagesService,
-      admin : AdminService
-    };
+    this.service = AdminService;
+
     this.register('AdminModel');
   }
 
   /**
-   * Toggle a pages editable status
+   * @method ignorePage
+   * @description Toggle a pages editable status
    * 
    * @param {string} pageId - page id of mark
    * @param {boolean} ignore - set page as not editable
    */
   ignorePage(pageId, ignore) {
-    return new Promise((resolve, reject) => {
-      var user = this.getUser();
-
-      if( !user.auth0Token || !user.isAdmin ) {
-        return reject(new Error('Must be admin and have a token'));
-      }
-
-      this.services
-          .pages
-          .ignore(pageId, ignore, user.auth0Token)
-          .then((res) => {
-            if( res.body.length === 0 ) return reject(new Error('Bad response from server'));
-            var page = res.body[0];
-            this.stores.pages.setPage(page);
-            resolve(page);
-          })
-          .catch((e) => reject(e));
-    });
+    return ItemsModel.updateCrowdInfo(pageId, {editable: !ignore});
   }
 
   /**
-   * Toggle a pages completed status
+   * @method pageCompleted
+   * @description Toggle a pages completed status
    * 
    * @param {string} pageId - page id of mark
    * @param {boolean} completed - set page as completed
    */
   pageCompleted(pageId, completed) {
-    return new Promise((resolve, reject) => {
-      var user = this.getUser();
-      
-      if( !user.auth0Token || !user.isAdmin ) {
-        return reject(new Error('Must be admin and have a token'));
-      }
-
-      this.services
-          .pages
-          .completed(pageId, completed, user.auth0Token)
-          .then((res) => {
-            if( res.body.length === 0 ) return reject(new Error('Bad response from server'));
-            var page = res.body[0];
-            this.stores.pages.setPage(page);
-            resolve(page);
-          })
-          .catch((e) => reject(e));   
-    });
+    return ItemsModel.updateCrowdInfo(pageId, {completed});
   }
 
   /**
-   * Approve mark
+   * @method approveMark
+   * @description Approve mark
    * 
-   * @param {string} pageId - page id of mark
-   * @param {string} markId - mark id
    * @param {object} mark - mark data
    */
-  approveMark(pageId, markId, mark) {
-    return new Promise((resolve, reject) => {
-      var user = this.getUser();
+  approveMark(mark, jwt) {
+    let mark = await CrowdInputModel.setApproved(mark, 'wine-mark', jwt);
+    if( mark.state !== 'loaded') {
+      return mark;
+    }
 
-      if( !user.auth0Token || !user.isAdmin ) {
-        return reject(new Error('Must be admin and have a token'));
-      }
-
-      var uid = user.uid;
-
-      this.services.mark
-                  .approveMark(mark, markId, pageId, user.auth0Token)
-                  .then(() => {
-                    // have MarkModel remove mark
-                    MarksModel.removePending(pageId, markId)
-                        .then(resolve)
-                        .catch(reject);
-                  })
-                  .catch(reject);
-    });
+    await SuggestModel.addSuggestion('wine-name', mark.payload.data.wineName);
+    return mark;
   }
 
   /**
-   * Clear test marks.  Test marks are any mark with section=test
-   * 
-   * @param {function} callback - function response handler
+   * @method 
+   * @description Clear test marks.  Test marks are any mark with collectionId=test-collection
+   *
    */
-  clearTestMarks(callback) {
-    return new Promise((resolve, reject) => {
-      
-      var user = this.getUser();
-      if( !user.auth0Token || !user.isAdmin ) {
-        return reject(new Error('Must be admin and have a token'));
-      }
-
-      firebase
-        .database()
-        .ref('pending-marks')
-        .orderByChild('test')
-        .equalTo(true)
-        .once('value', (snapshot) => {
-          var marks = snapshot.val() || {};
-
-          for( var id in marks ) {
-            MarksModel.removePending(pageId, markId);
-          }
-
-          this.services.mark
-                      .clearApprovedTestMarks(user.auth0Token)
-                      .then(resolve)
-                      .catch(reject);
-        });
-
-    });    
+  clearTestMarks() {
+    return this.service.clearTestMarks();
   }
 
-  searchPendingMarkPages(params) {
-    return this.services.admin.search(params);
-  }
-
-  getUser() {
-    return AuthStore.data.user;
+  getAllPageMarks() {
+    return this.service.getAllPageMarks();
   }
 
 }

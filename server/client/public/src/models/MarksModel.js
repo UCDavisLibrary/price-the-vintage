@@ -1,8 +1,5 @@
 const {BaseModel} = require('@ucd-lib/cork-app-utils');
 const {CrowdInputModel, PresenceModel} = require('@ucd-lib/crowd-source-js')
-const MarksStore = require('../stores/MarksStore');
-const MarksService = require('../services/MarksService');
-
 
 /**
  * Mark controller for handling page marks as well as connection to Firebase 
@@ -13,16 +10,12 @@ class MarksModel extends BaseModel {
   constructor() {
     super();
 
-    this.store = MarksStore;
-    this.service = MarksService;
-    // the mark service does some stale mark checking, method
-    // included in this class...
-    MarksService.model = this;
-
     // Used for hanging temp marks.  anything over 5min old 
     // will be removed when auth state changes
     this.CLEANUP_TIME = 5 * 60 * 1000;
-    this.tmpMark = {};
+    this.tmpMark = {
+      type : 'mark'
+    };
 
     setInterval(this.checkStaleMarks.bind(this), 30 * 1000);
     this.register('MarksModel');
@@ -60,12 +53,8 @@ class MarksModel extends BaseModel {
    * @return {Promise} firebase response
    */
   votePending(userId, pageId, markId, vote) {
-    if( !userId ) {
-      throw new Error('You must be logged in to vote');
-    }
-
-    // save vote to firebase
-    return this.service.votePending(userId, pageId, markId, vote);
+    // TODO
+    console.warn('voting to implemented yet ...');
   }
 
   /**
@@ -113,18 +102,6 @@ class MarksModel extends BaseModel {
     return CrowdInputModel.getPending(markId);
   }
 
-  /**
-   * @method approveMark 
-   * @description Approve mark (admin)
-   * 
-   * @param {string} markId - mark id
-   * @param {string} jwt Optional. user pgr jwt token.  Defaults to auth model token
-   * 
-   * @returns {Promise}
-   */
-  approveMark(markId, jwt) {
-    return CrowdInputModel.setApproved(markId, 'wine-mark', jwt)
-  }
 
   /**
    * @method listenToPageMarks
@@ -166,7 +143,7 @@ class MarksModel extends BaseModel {
     this.tmpMark.updated = Date.now();
     this.tmpMark.data = {xy};
 
-    return PresenceModel.updatePresence(this.tmpMark);
+    return PresenceModel.updateUserPresence(this.tmpMark);
   }
 
   /**
@@ -177,7 +154,7 @@ class MarksModel extends BaseModel {
   async removeTempMark() {
     // we haven't created a tmp mark yet
     if( !this.tmpMark.id ) return;
-    return PresenceModel.removePresence(this.tmpMark.id);
+    return PresenceModel.removeUserPresence(this.tmpMark.id);
   }
 
   /**

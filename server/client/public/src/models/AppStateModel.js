@@ -1,7 +1,7 @@
-const BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
+const {BaseModel} = require('@ucd-lib/cork-app-utils');
+const {Auth0Model} = require('@ucd-lib/crowd-source-js');
 const AppStateStore = require('../stores/AppStateStore');
-const AuthModel = require('./AuthModel');
-const firebase = require('../firebase');
+
 
 /**
  * Controller for handling various states of the application.
@@ -17,34 +17,7 @@ class AppStateModel extends BaseModel {
     this.firstLoad = true;
     this._initWindowEvents();
 
-    this.connectionRef = null;
-    this.enableFirebaseConnectionListener();
-
     this.register('AppStateModel');
-  }
-
-  enableFirebaseConnectionListener() {
-    if( this.connectionRef ) return;
-
-    this.connectionRef = firebase
-      .database()
-      .ref('.info/connected');
-
-    this.connectionRef.on('value', (snap) => {
-      if (snap.val() === true) {
-        if( this.log ) console.warn("connected to firebase");
-        this.set({firebaseConnection: true});
-      } else {
-        if( this.log ) console.warn("not connected to firebase");
-        this.set({firebaseConnection: false});
-      }
-    });
-  }
-
-  disableFirebaseConnectionListener() {
-    if( !this.connectionRef ) return;
-    this.connectionRef.off();
-    this.connectionRef = null;
   }
 
   /**
@@ -54,7 +27,7 @@ class AppStateModel extends BaseModel {
   _initWindowEvents() {
     if( !this.window ) return;
 
-    this._setPageAndAppState(true);
+    this._setPageAndAppState();
     this.window.addEventListener('hashchange', e => this._setPageAndAppState());
   }
 
@@ -66,7 +39,7 @@ class AppStateModel extends BaseModel {
   _setPageAndAppState() {
     // are we in the middle of auth0 redirect?
     // if so, ignore this.
-    if( this.firstLoad && this._isAuthRedirect() ) {
+    if( this.firstLoad && Auth0Model.isRedirect(true) ) {
       this.firstLoad = false;
       return;
     }
@@ -181,36 +154,10 @@ class AppStateModel extends BaseModel {
     }
   }
 
-  _isAuthRedirect() {
-    var hash = '?'+this.window.location.hash.replace(/^#/,'');
-
-    // crap..
-    if( this._getParamByName('error', hash) || 
-        (this._getParamByName('access_token', hash) && 
-        this._getParamByName('id_token', hash)) ) {
-
-        AuthModel.continueAuth0Login(this.window.location.hash);
-        return true;
-    } else {
-      AuthModel.initAuthRenewAuth0();
-    }
-    return false;
-  }
-
-  _getParamByName(name, url) {
-    if (!url) {
-      url = this.window.location.href;
-    }
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-  }
-
   /**
-   * Get the current redux appState
+   * @method get
+   * @description get the current application state
+   * 
    * @returns {Object} appState
    */
   async get() {
@@ -218,8 +165,12 @@ class AppStateModel extends BaseModel {
   }
 
   /**
-   * Update the app state
-   * @returns {Object} update - keys to be updated
+   * @method set
+   * @description Update the app state
+   * 
+   * @param {Object} update state keys to update
+   * 
+   * @returns {Object}
    */
   set(update) {
     this.store.set(update);

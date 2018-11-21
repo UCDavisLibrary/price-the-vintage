@@ -5,10 +5,6 @@ class PagesModel extends BaseModel {
 
   constructor() {
     super();
-
-    this.store = PagesStore;
-    this.service = PagesService;
-
     this.register('PagesModel');
   }
 

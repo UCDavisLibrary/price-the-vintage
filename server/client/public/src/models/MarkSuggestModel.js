@@ -1,18 +1,11 @@
-/**
- * Wired up to suggest tools powered by: https://wine-search.library.ucdavis.edu/
- */
-const BaseModel = require('@ucd-lib/cork-app-utils').BaseModel;
-const SuggestStore = require('../stores/SuggestStore');
-const MarksStore = require('../stores/MarksStore');
-const SuggestService = require('../services/SuggestService');
+const {BaseModel} = require('@ucd-lib/cork-app-utils');
+const {SuggestModel, CrowdInputsModel} = require('@ucd-lib/crowd-source-js');
 
 class SuggestModel extends BaseModel {
 
   constructor() {
     super();
-    this.store = SuggestStore;
-    this.service = SuggestService;
-    this.register('SuggestModel');
+    this.register('WineSuggestModel');
   }
 
   /**
@@ -21,11 +14,10 @@ class SuggestModel extends BaseModel {
    * 
    * @param {String} text text to use to suggest name
    * 
-   * @returns {Promise} resolves to array of wine names in state object
+   * @returns {Promise}
    */
   async wineName(text) {
-    await this.service.wineName(text);
-    return this.store.data['wine-name'][text];
+    return SuggestModel.findSuggestion('wine-name', text);
   }
 
   /**
@@ -34,11 +26,10 @@ class SuggestModel extends BaseModel {
    * 
    * @param {String} text text to use to suggest name
    * 
-   * @returns {Promise} resolves to array of country names in state object
+   * @returns {Promise}
    */
   async country(text) {
-    await this.service.country(text);
-    return this.store.data.country[text];
+    return SuggestModel.findSuggestion('country', text);
   }
 
   /**
@@ -54,13 +45,18 @@ class SuggestModel extends BaseModel {
    */
   pageSection(pageId) {
     var results = {}, item;
-    for( var key in MarksStore.data.byId ) {
-      item = MarksStore.data.byId[key];
 
-      if( item.payload && item.payload.section && item.pageId === pageId  ) {
-        results[item.payload.section] = 1;
+    [
+      CrowdInputsModel.store.data.pending.byItem[pageId] || {},
+      CrowdInputsModel.store.data.approved.byItem[pageId] || {}
+    ].forEach(group => {
+      for( let id in group) {
+        item = group[id];
+        if( item.payload && item.payload.data && item.payload.data.section ) {
+          results[item.payload.data.section] = 1;
+        }
       }
-    }
+    });
 
     return {
       state: this.store.STATE.LOADED,

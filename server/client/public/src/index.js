@@ -1,3 +1,11 @@
+const {config} = require('@ucd-lib/crowd-source-js');
+config.appId = 'price-the-vintage-dev';
+if( typeof APP_CONFIG !== 'undefined' && APP_CONFIG.appId ) {
+  config.appId = APP_CONFIG.appId;
+}
+
+
+
 module.exports = {
   ActivityModel : require('./lib/activity'),
   CatalogsModel : require('./lib/catalogs'),
