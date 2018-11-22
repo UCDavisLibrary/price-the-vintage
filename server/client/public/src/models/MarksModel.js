@@ -45,16 +45,32 @@ class MarksModel extends BaseModel {
    * @method votePending
    * @description Vote a page mark up or down
    * 
-   * @param {String} userId user id
-   * @param {string} pageId page id for mark
    * @param {string} markId mark id to vote on
    * @param {string} vote vote type.  Should be 'up' or 'down'
+   * @param {String} jwt Optional
    * 
-   * @return {Promise} firebase response
+   * @return {Promise}
    */
-  votePending(userId, pageId, markId, vote) {
-    // TODO
-    console.warn('voting to implemented yet ...');
+  votePending(markId, vote, jwt) {
+    if( vote === 'up' ) vote = 1;
+    else if( vote === 'down' ) vote = -1;
+    else if( vote !== 1 && vote !== -1 ) {
+      throw new Error('Invalid vote: '+vote);
+    } 
+
+    return CrowdInputModel.votePending(markId, vote, jwt)
+  }
+
+  /**
+   * @method removeVotePending
+   * 
+   * @param {string} markId mark id to remove vote
+   * @param {String} jwt Optional
+   * 
+   * @return {Promise}
+   */
+  removeVotePending(markId, jwt) {
+    return CrowdInputModel.removeVotePending(markId, jwt);
   }
 
   /**
